@@ -144,6 +144,12 @@ async function handleCommand(command, params) {
       return await setMultipleTextContents(params);
     case "set_auto_layout":
       return await setAutoLayout(params);
+    case "createImageAsync":
+      return await handleCreateImageAsync(params);
+    case "get_image_by_hash":
+      return await handleGetImageByHash(params);
+    case "list_stored_images":
+      return await handleListStoredImages(params);
     default:
       throw new Error(`Unknown command: ${command}`);
   }
@@ -1956,4 +1962,436 @@ async function setAutoLayout(params) {
     layoutWrap: node.layoutWrap,
     strokesIncludedInLayout: node.strokesIncludedInLayout
   };
+}
+
+// Function to store image hashes for future retrieval
+async function storeImageHash(hash, name, nodeId) {
+  try {
+    // Get existing image hashes or initialize empty object
+    const imageHashes = await figma.clientStorage.getAsync("imageHashes") || {};
+    
+    // Store the new hash information
+    imageHashes[hash] = {
+      name,
+      nodeId,
+      timestamp: Date.now()
+    };
+    
+    // Save back to client storage
+    await figma.clientStorage.setAsync("imageHashes", imageHashes);
+    console.log(`Stored image hash: ${hash} for node: ${nodeId}`);
+  } catch (error) {
+    console.error("Error storing image hash:", error);
+    // Continue anyway, this is not critical
+  }
+}
+
+// Implementation of createImageAsync
+async function handleCreateImageAsync(params) {
+  const commandId = params.commandId || generateCommandId();
+  
+  try {
+    const { 
+      x = 0, 
+      y = 0, 
+      width, 
+      height, 
+      source, 
+      sourceType, 
+      name = "Image", 
+      parentId, 
+      scaleMode = "FIT" 
+    } = params;
+    
+    if (!source) {
+      throw new Error("Missing source parameter");
+    }
+    
+    if (!sourceType || (sourceType !== "URL" && sourceType !== "BASE64")) {
+      throw new Error("Invalid sourceType. Must be 'URL' or 'BASE64'");
+    }
+    
+    // Send initial progress update
+    sendProgressUpdate(
+      commandId,
+      "createImageAsync",
+      "started",
+      0,
+      100,
+      0,
+      "Starting image creation process...",
+      null
+    );
+    
+    // Step 1: Get the image data
+    sendProgressUpdate(
+      commandId,
+      "createImageAsync",
+      "in_progress",
+      10,
+      100,
+      10,
+      sourceType === "URL" ? "Downloading image from URL..." : "Processing base64 image data...",
+      null
+    );
+    
+    let imageHash;
+    
+    if (sourceType === "URL") {
+      try {
+        // Fetch image from URL
+        imageHash = await figma.createImageAsync(source);
+      } catch (error) {
+        throw new Error(`Failed to download image from URL: ${error.message}`);
+      }
+    } else {
+      try {
+        // Process base64 data
+        let base64Data = source;
+        
+        // If the string includes a data URL prefix, remove it
+        if (base64Data.includes("base64,")) {
+          base64Data = base64Data.split("base64,")[1];
+        }
+        
+        // Convert base64 to array buffer
+        const byteCharacters = atob(base64Data);
+        const byteArrays = [];
+        
+        for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+          const slice = byteCharacters.slice(offset, offset + 1024);
+          const byteNumbers = new Array(slice.length);
+          
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          
+          byteArrays.push(new Uint8Array(byteNumbers));
+        }
+        
+        // Get hash from image data
+        imageHash = await figma.createImageAsync(new Blob(byteArrays));
+      } catch (error) {
+        throw new Error(`Failed to process base64 image data: ${error.message}`);
+      }
+    }
+    
+    sendProgressUpdate(
+      commandId,
+      "createImageAsync",
+      "in_progress",
+      50,
+      100,
+      50,
+      "Image loaded, creating node...",
+      { imageHash }
+    );
+    
+    // Step 2: Create a rectangle node for the image
+    const rect = figma.createRectangle();
+    rect.name = name;
+    rect.x = x;
+    rect.y = y;
+    
+    // Set dimensions if provided
+    if (width !== undefined && height !== undefined) {
+      rect.resize(width, height);
+    } else if (width !== undefined) {
+      // Set width and maintain aspect ratio
+      const image = figma.getImageByHash(imageHash);
+      if (image) {
+        const imageSize = await image.getSizeAsync();
+        const aspectRatio = imageSize.width / imageSize.height;
+        rect.resize(width, width / aspectRatio);
+      } else {
+        rect.resize(width, width);
+      }
+    }
+    
+    // Set fill with image
+    rect.fills = [{
+      type: "IMAGE",
+      scaleMode: scaleMode,
+      imageHash: imageHash
+    }];
+    
+    sendProgressUpdate(
+      commandId,
+      "createImageAsync",
+      "in_progress",
+      75,
+      100,
+      75,
+      "Setting up node properties...",
+      null
+    );
+    
+    // Step 3: Add to parent if specified
+    if (parentId) {
+      const parentNode = await figma.getNodeByIdAsync(parentId);
+      if (!parentNode) {
+        throw new Error(`Parent node not found with ID: ${parentId}`);
+      }
+      if (!("appendChild" in parentNode)) {
+        throw new Error(`Parent node does not support children: ${parentId}`);
+      }
+      parentNode.appendChild(rect);
+    } else {
+      figma.currentPage.appendChild(rect);
+    }
+    
+    // Store the image hash for future use
+    await storeImageHash(imageHash, name, rect.id);
+    
+    sendProgressUpdate(
+      commandId,
+      "createImageAsync",
+      "completed",
+      100,
+      100,
+      100,
+      "Image created successfully!",
+      { nodeId: rect.id }
+    );
+    
+    return {
+      success: true,
+      id: rect.id,
+      name: rect.name,
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      imageHash: imageHash
+    };
+  } catch (error) {
+    // Send error progress update
+    sendProgressUpdate(
+      commandId,
+      "createImageAsync",
+      "error",
+      0,
+      100,
+      0,
+      `Error creating image: ${error.message}`,
+      { error: error.message }
+    );
+    
+    console.error("Error in handleCreateImageAsync:", error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+// Implementation of getImageByHash
+async function handleGetImageByHash(params) {
+  const commandId = params.commandId || generateCommandId();
+  
+  try {
+    const { 
+      hash, 
+      createNewNode = false, 
+      x = 0, 
+      y = 0, 
+      width, 
+      height, 
+      name, 
+      parentId, 
+      scaleMode = "FIT" 
+    } = params;
+    
+    if (!hash) {
+      throw new Error("Missing hash parameter");
+    }
+    
+    // Send initial progress update
+    sendProgressUpdate(
+      commandId,
+      "getImageByHash",
+      "started",
+      0,
+      100,
+      0,
+      "Starting to retrieve image by hash...",
+      null
+    );
+    
+    // Retrieve stored image information
+    const imageHashes = await figma.clientStorage.getAsync("imageHashes") || {};
+    const imageInfo = imageHashes[hash];
+    
+    if (!imageInfo) {
+      sendProgressUpdate(
+        commandId,
+        "getImageByHash",
+        "error",
+        0,
+        100,
+        0,
+        `No image found with hash: ${hash}`,
+        { error: `No image found with hash: ${hash}` }
+      );
+      
+      return {
+        success: false,
+        error: `No image found with hash: ${hash}`
+      };
+    }
+    
+    sendProgressUpdate(
+      commandId,
+      "getImageByHash",
+      "in_progress",
+      50,
+      100,
+      50,
+      "Image hash found in storage",
+      { imageInfo }
+    );
+    
+    // If we only want information, return it
+    if (!createNewNode) {
+      sendProgressUpdate(
+        commandId,
+        "getImageByHash",
+        "completed",
+        100,
+        100,
+        100,
+        "Retrieved image information",
+        { imageInfo }
+      );
+      
+      return {
+        success: true,
+        info: imageInfo
+      };
+    }
+    
+    // Otherwise create a new node with this image
+    try {
+      // Create a rectangle node for the image
+      const rect = figma.createRectangle();
+      rect.name = name || imageInfo.name || "Retrieved Image";
+      rect.x = x;
+      rect.y = y;
+      
+      // Set dimensions if provided
+      if (width !== undefined && height !== undefined) {
+        rect.resize(width, height);
+      } else if (width !== undefined) {
+        // Try to maintain aspect ratio if possible
+        try {
+          const image = figma.getImageByHash(hash);
+          if (image) {
+            const imageSize = await image.getSizeAsync();
+            const aspectRatio = imageSize.width / imageSize.height;
+            rect.resize(width, width / aspectRatio);
+          } else {
+            rect.resize(width, width);
+          }
+        } catch (error) {
+          // If we can't get the image size, just use the width
+          rect.resize(width, width);
+        }
+      }
+      
+      // Apply the image as fill
+      rect.fills = [{
+        type: "IMAGE",
+        scaleMode: scaleMode,
+        imageHash: hash
+      }];
+      
+      // Set parent if provided
+      if (parentId) {
+        const parentNode = await figma.getNodeByIdAsync(parentId);
+        if (!parentNode) {
+          throw new Error(`Parent node not found with ID: ${parentId}`);
+        }
+        if (!("appendChild" in parentNode)) {
+          throw new Error(`Parent node does not support children: ${parentId}`);
+        }
+        parentNode.appendChild(rect);
+      } else {
+        figma.currentPage.appendChild(rect);
+      }
+      
+      sendProgressUpdate(
+        commandId,
+        "getImageByHash",
+        "completed",
+        100,
+        100,
+        100,
+        "Created new node with retrieved image",
+        { nodeId: rect.id }
+      );
+      
+      return {
+        success: true,
+        id: rect.id,
+        name: rect.name,
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        imageHash: hash
+      };
+    } catch (error) {
+      throw new Error(`Error creating node with image: ${error.message}`);
+    }
+  } catch (error) {
+    // Send error progress update
+    sendProgressUpdate(
+      commandId,
+      "getImageByHash",
+      "error",
+      0,
+      100,
+      0,
+      `Error retrieving image: ${error.message}`,
+      { error: error.message }
+    );
+    
+    console.error("Error in handleGetImageByHash:", error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+// Utility function to list all stored images
+async function handleListStoredImages(params) {
+  // Instead of using ?. (optional chaining operator), we use traditional verification
+  const commandId = (params && params.commandId) || generateCommandId();
+  
+  try {
+    const imageHashes = await figma.clientStorage.getAsync("imageHashes") || {};
+    
+    // Format the data for display
+    const images = Object.entries(imageHashes).map(([hash, info]) => ({
+      hash,
+      name: info.name || "Unnamed Image",
+      nodeId: info.nodeId,
+      timestamp: info.timestamp,
+      // Convert timestamp to readable date if available
+      created: info.timestamp ? new Date(info.timestamp).toLocaleString() : "Unknown"
+    }));
+    
+    return {
+      success: true,
+      count: images.length,
+      images
+    };
+  } catch (error) {
+    console.error("Error listing stored images:", error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
 }

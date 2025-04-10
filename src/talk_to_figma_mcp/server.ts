@@ -1446,6 +1446,223 @@ server.tool(
   }
 );
 
+// Create Image Async Tool
+server.tool(
+  "createImageAsync",
+  "Create a new image element in Figma asynchronously from URL or base64 data",
+  {
+    x: z.number().describe("X position"),
+    y: z.number().describe("Y position"),
+    width: z.number().optional().describe("Optional width for the image"),
+    height: z.number().optional().describe("Optional height for the image"),
+    source: z.string().describe("URL or base64 data of the image"),
+    sourceType: z.enum(["URL", "BASE64"]).describe("Type of source data"),
+    name: z.string().optional().describe("Optional name for the image"),
+    parentId: z.string().optional().describe("Optional parent node ID"),
+    scaleMode: z.enum(["FILL", "FIT", "STRETCH", "TILE"]).optional().describe("Scale mode for the image"),
+  },
+  async ({ x, y, width, height, source, sourceType, name, parentId, scaleMode }) => {
+    try {
+      const initialStatus = {
+        type: "text" as const,
+        text: "Starting image creation. This may take a moment for large images...",
+      };
+
+      const result = await sendCommandToFigma("createImageAsync", {
+        x, 
+        y, 
+        width, 
+        height, 
+        source, 
+        sourceType, 
+        name: name || "Image", 
+        parentId, 
+        scaleMode: scaleMode || "FIT"
+      });
+
+      if (result.success) {
+        return {
+          content: [
+            initialStatus,
+            {
+              type: "text",
+              text: `Created image "${result.name}" with ID: ${result.id}`,
+            },
+          ],
+        };
+      } else {
+        return {
+          content: [
+            initialStatus,
+            {
+              type: "text",
+              text: `Error creating image: ${result.error}`,
+            },
+          ],
+        };
+      }
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error creating image: ${error instanceof Error ? error.message : String(error)}`,
+          },
+        ],
+      };
+    }
+  }
+);
+
+// Get Image By Hash Tool
+server.tool(
+  "getImageByHash",
+  "Get an image by its hash and optionally create a new node with it",
+  {
+    hash: z.string().describe("The hash of the image to retrieve"),
+    createNewNode: z.boolean().optional().describe("Whether to create a new node with this image"),
+    x: z.number().optional().describe("X position for new node (if creating)"),
+    y: z.number().optional().describe("Y position for new node (if creating)"),
+    width: z.number().optional().describe("Width for new node (if creating)"),
+    height: z.number().optional().describe("Height for new node (if creating)"),
+    name: z.string().optional().describe("Name for new node (if creating)"),
+    parentId: z.string().optional().describe("Parent node ID (if creating)"),
+    scaleMode: z.enum(["FILL", "FIT", "STRETCH", "TILE"]).optional().describe("Scale mode for the image"),
+  },
+  async ({ hash, createNewNode, x, y, width, height, name, parentId, scaleMode }) => {
+    try {
+      const initialStatus = {
+        type: "text" as const,
+        text: "Retrieving image by hash...",
+      };
+
+      const result = await sendCommandToFigma("get_image_by_hash", {
+        hash,
+        createNewNode: createNewNode || false,
+        x, 
+        y, 
+        width, 
+        height, 
+        name, 
+        parentId,
+        scaleMode: scaleMode || "FIT"
+      });
+
+      if (result.success) {
+        if (createNewNode) {
+          return {
+            content: [
+              initialStatus,
+              {
+                type: "text",
+                text: `Retrieved image and created new node "${result.name}" with ID: ${result.id}`,
+              },
+            ],
+          };
+        } else {
+          return {
+            content: [
+              initialStatus,
+              {
+                type: "text",
+                text: `Retrieved image information: ${JSON.stringify(result.info, null, 2)}`,
+              },
+            ],
+          };
+        }
+      } else {
+        return {
+          content: [
+            initialStatus,
+            {
+              type: "text",
+              text: `Error: ${result.error || "Image not found"}`,
+            },
+          ],
+        };
+      }
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error retrieving image: ${error instanceof Error ? error.message : String(error)}`,
+          },
+        ],
+      };
+    }
+  }
+);
+
+// List Stored Images Tool
+server.tool(
+  "listStoredImages",
+  "List all stored images that can be retrieved by hash",
+  {},
+  async () => {
+    try {
+      const result = await sendCommandToFigma("list_stored_images") as { 
+        success: boolean; 
+        images?: Array<{ 
+          hash: string; 
+          name: string; 
+          nodeId: string; 
+          timestamp?: number; 
+          created?: string; 
+        }>; 
+        error?: string;
+      };
+
+      if (result.success) {
+        const images = result.images || [];
+        
+        if (images.length === 0) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "No stored images found. Create images first using createImageAsync.",
+              },
+            ],
+          };
+        }
+        
+        // Format the images nicely for display
+        const formattedImages = images.map(img => 
+          `- Hash: ${img.hash.substring(0, 8)}...\n  Name: ${img.name}\n  Created: ${img.created || "Unknown"}`
+        ).join("\n\n");
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Found ${images.length} stored images:\n\n${formattedImages}`,
+            },
+          ],
+        };
+      } else {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error listing stored images: ${result.error || "Unknown error"}`,
+            },
+          ],
+        };
+      }
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error listing stored images: ${error instanceof Error ? error.message : String(error)}`,
+          },
+        ],
+      };
+    }
+  }
+);
+
 // Define command types and parameters
 type FigmaCommand =
   | "get_document_info"
@@ -1470,7 +1687,10 @@ type FigmaCommand =
   | "set_text_content"
   | "scan_text_nodes"
   | "set_multiple_text_contents"
-  | "set_auto_layout";
+  | "set_auto_layout"
+  | "createImageAsync"
+  | "get_image_by_hash"
+  | "list_stored_images";
 
 // Helper function to process Figma node responses
 function processFigmaNodeResponse(result: unknown): any {
