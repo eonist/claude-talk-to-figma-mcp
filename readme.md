@@ -121,67 +121,67 @@ Once installed, you just need to start it:
 
 ## 🛠️ Available Commands
 
-As Claude is connected to our MCP, it already knows the list of tools to manipulate Figma. But if you want, you can mention them in your prompts:  
+As Claude is connected to our MCP, it already knows the list of tools to manipulate Figma. These tools are organized by categories:
 
-### Basic Commands
-- `clone_node`  
-  Clone an existing node in Figma
-- `create_component_instance`  
-  Create an instance of a component in Figma
-- `create_ellipse`  
-  Create a new ellipse or circle in Figma
-- `create_frame`  
-  Create a new frame in Figma
-- `create_line`  
-  Create a new line in Figma
-- `create_polygon`  
-  Create a new polygon with customizable sides in Figma
-- `create_rectangle`  
-  Create a new rectangle in Figma
-- `create_star`  
-  Create a new star with customizable points in Figma
-- `create_text`  
-  Create a new text element in Figma
-- `create_vector`  
-  Create a new vector shape in Figma
-- `delete_node`  
-  Delete a node from Figma
-- `export_node_as_image`  
-  Export a node as an image from Figma
+### Document Tools
 - `get_document_info`  
   Get detailed information about the current Figma document
-- `get_local_components`  
-  Get all local components from the Figma document
-- `get_node_info`  
-  Get detailed information about a specific node in Figma
-- `get_nodes_info`  
-  Get detailed information about multiple nodes in Figma
-- `get_selection`  
-  Get information about the current selection in Figma
 - `get_styles`  
   Get all styles from the current Figma document
 - `join_channel`  
   Join a specific channel to communicate with Figma
-- `move_node`  
-  Move a node to a new position in Figma
-- `resize_node`  
-  Resize a node in Figma
+
+### Selection Tools
+- `get_selection`  
+  Get information about the current selection in Figma
 - `scan_text_nodes`  
   Scan all text nodes in the selected Figma node
-- `set_corner_radius`  
-  Set the corner radius of a node in Figma
+
+### Node Tools
+- `get_node_info`  
+  Get detailed information about a specific node in Figma
+- `get_nodes_info`  
+  Get detailed information about multiple nodes in Figma
+- `move_node`  
+  Move a node to a new position in Figma
+- `clone_node`  
+  Clone an existing node in Figma
+- `resize_node`  
+  Resize a node in Figma
+- `delete_node`  
+  Delete a node from Figma
+- `export_node_as_image`  
+  Export a node as an image from Figma
 - `set_fill_color`  
-  Set the fill color of a node in Figma can be TextNode or FrameNode
-- `set_multiple_text_contents`  
-  Set multiple text contents parallelly in a node
+  Set the fill color of a node in Figma
 - `set_stroke_color`  
   Set the stroke color of a node in Figma
-- `set_auto_layout`  
-  Configure auto layout properties for a node in Figma
+- `set_corner_radius`  
+  Set the corner radius of a node in Figma
+
+### Shape Tools
+- `create_rectangle`  
+  Create a new rectangle in Figma
+- `create_frame`  
+  Create a new frame in Figma
+- `create_ellipse`  
+  Create a new ellipse or circle in Figma
+- `create_polygon`  
+  Create a new polygon with customizable sides in Figma
+- `create_star`  
+  Create a new star with customizable points in Figma
+- `create_line`  
+  Create a new line in Figma
+- `create_vector`  
+  Create a new vector shape in Figma
+
+### Text Tools
+- `create_text`  
+  Create a new text element in Figma
 - `set_text_content`  
   Set the text content of an existing text node in Figma
-
-### Text and Font Commands
+- `set_multiple_text_contents`  
+  Set multiple text contents parallelly in a node
 - `set_font_name`  
   Set the font name and style of a text node in Figma (e.g., "Arial", "Bold")
 - `set_font_size`  
@@ -202,10 +202,74 @@ As Claude is connected to our MCP, it already knows the list of tools to manipul
   Get text segments with specific styling in a text node (by fontName, fontSize, etc.)
 - `load_font_async`  
   Load a font asynchronously in Figma
+
+### Component Tools
+- `get_local_components`  
+  Get all local components from the Figma document
 - `get_remote_components`  
   Get available components from team libraries in Figma
+- `create_component_instance`  
+  Create an instance of a component in Figma
+
+### Layout Tools
+- `set_auto_layout`  
+  Configure auto layout properties for a node in Figma
+
+### Effect Tools
+- `set_effects`  
+  Set the visual effects of a node in Figma
+- `set_effect_style_id`  
+  Apply an effect style to a node in Figma
+
+## 🧠 Available Prompts
+
+Claude has been pre-loaded with specialized knowledge about Figma best practices. You can access these prompts to get expert guidance:
+
+### Design Prompts
+- `design_strategy`  
+  Best practices for working with Figma designs
+- `layout_strategy`  
+  Strategies for creating effective layouts in Figma
+
+### Interaction Prompts
+- `user_flow_strategy`  
+  Best practices for creating user flows in Figma
+- `prototype_strategy`  
+  Guidance for creating interactive prototypes in Figma
+
+### Documentation Prompts
+- `style_guide_strategy`  
+  Best practices for creating style guides in Figma
+- `developer_handoff_strategy`  
+  Best practices for design-to-developer handoff in Figma
+
+### Workflow Prompts
+- `collaboration_workflow`  
+  Best practices for team collaboration in Figma
+- `design_system_workflow`  
+  Strategies for maintaining design systems in Figma
+- `efficiency_workflow`  
+  Techniques for efficient design workflows in Figma
+
+You can ask Claude to apply these strategies to your projects, for example: "Can you help me create a style guide for my mobile app using the style guide strategy?"
 
 ## 📝 CHANGELOG
+
+### 0.5.0
+- Complete codebase refactoring for improved maintainability and extensibility:
+  - Modular architecture with clear separation of responsibilities
+  - Reorganized tools into logical categories (document, selection, node, shape, text, component, layout, effect)
+  - Created centralized tool registration system
+  - Improved error handling and logging
+  - Enhanced type safety throughout the codebase
+- Added extensive prompt library with specialized Figma knowledge:
+  - Design prompts for best practices and layout strategies
+  - Interaction prompts for user flows and prototyping
+  - Documentation prompts for style guides and developer handoff
+  - Workflow prompts for team collaboration and efficiency
+- Added debug mode with detailed logging (use `--debug` flag)
+- Improved WebSocket connection stability and timeout handling
+- Enhanced documentation with categorized command list
 
 ### 0.4.0
 - Added new tools for creating advanced shapes:

@@ -1,3 +1,5 @@
 node_modules/
 dist/
 docs/
+# Temporarily allowing context/ for documentation purposes
+# context/
