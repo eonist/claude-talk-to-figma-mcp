@@ -185,10 +185,56 @@ export class WebSocketClient extends EventEmitter {
     }
 
     try {
-      await this.sendCommand("join", { channel: channelName });
-      this.currentChannel = channelName;
-      logger.info(`Unido al canal: ${channelName}`);
-      this.emit('channel_joined', channelName);
+      // No usar sendCommand para el comando join, enviar directamente en el formato
+      // que espera el servidor socket.ts
+      return new Promise<void>((resolve, reject) => {
+        const message = {
+          type: "join",
+          channel: channelName.trim()
+        };
+        
+        if (this.ws) {
+          this.ws.send(JSON.stringify(message));
+          logger.info(`Solicitud de unión al canal enviada: ${channelName}`);
+          
+          // Establecer timeout para la respuesta
+          const timeout = setTimeout(() => {
+            reject(new Error(`Timeout al unirse al canal ${channelName}`));
+          }, WS_REQUEST_TIMEOUT);
+
+          // Configurar un listener de una sola vez para esperar la confirmación
+          const joinListener = (data: any) => {
+            try {
+              const message = JSON.parse(data.toString());
+              
+              if (message.type === "system" && 
+                  message.message && 
+                  message.message.result && 
+                  message.channel === channelName) {
+                // Éxito al unirse al canal
+                clearTimeout(timeout);
+                this.currentChannel = channelName;
+                logger.info(`Unido al canal: ${channelName}`);
+                this.emit('channel_joined', channelName);
+                this.ws?.removeListener('message', joinListener);
+                resolve();
+              }
+              // Si es un error, también lo manejamos
+              else if (message.type === "error") {
+                clearTimeout(timeout);
+                this.ws?.removeListener('message', joinListener);
+                reject(new Error(message.message || "Error al unirse al canal"));
+              }
+            } catch (error) {
+              // No hacemos nada aquí - otros listeners manejarán esto
+            }
+          };
+
+          this.ws.on('message', joinListener);
+        } else {
+          reject(new Error("No conectado a Figma"));
+        }
+      });
     } catch (error) {
       logger.error(`Error al unirse al canal: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
