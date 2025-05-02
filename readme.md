@@ -168,6 +168,9 @@ Talk to Figma, channel {channel-ID}
 
 ## Changelog
 
+### 0.4.3
+- Autolayout "hug content" and "fill container" feature
+
 ### 0.4.2
 - Ability to rename layers
 - Ability to read available tools
