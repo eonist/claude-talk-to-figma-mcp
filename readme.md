@@ -129,44 +129,53 @@ Talk to Figma, channel {channel-ID}
 
 ## Available Commands
 
-**Basic Commands:**
-- `rename_layer` - Rename single layer in figma.
-- `rename_layers` - Rename multiple layers in figma.
-- `get_tools` - Read available tools in the mcp
-- `clone_node` - Clone a Figma node.
-- `create_component_instance` - Create an instance of a component.
-- `create_ellipse`, `create_polygon`, `create_star`, `create_vector` - Create various shapes.
-- `create_frame`, `create_line`, `create_rectangle` - Create basic Figma elements.
-- `delete_node` - Remove a Figma node.
-- `export_node_as_image` - Export a node as an image.
-- `get_document_info` - Retrieve Figma document details.
-- `get_local_components` - List local components.
-- `get_node_info` / `get_nodes_info` - Get detailed node information.
-- `get_selection` - Get the current selection.
-- `get_styles` - Retrieve all styles.
-- `join_channel` - Join a communication channel.
-- `move_node` - Reposition a node.
-- `resize_node` - Alter node dimensions.
-- `scan_text_nodes` - Discover text nodes.
-- `set_corner_radius` - Adjust node corner radii.
-- `set_fill_color`, `set_stroke_color` - Modify node colors.
-- `set_multiple_text_contents` - Update multiple text elements.
-- `set_auto_layout` - Configure auto layout.
-- `set_text_content` - Change text within a node.
+| Command                  | Description                              | Parameters                          |
+|--------------------------|------------------------------------------|-----------------------------------|
+| `rename_layer`           | Rename a single layer in Figma           | `nodeId`, `newName`, `setAutoRename` |
+| `rename_layers`          | Rename multiple layers in Figma          | `layer_ids`, `new_name`, `match_pattern`, `replace_with` |
+| `get_tools`              | Read available tools in the MCP          | None                              |
+| `clone_node`             | Clone a Figma node                       | `nodeId`, `x`, `y`                |
+| `create_component_instance` | Create an instance of a component        | `componentKey`, `x`, `y`         |
+| `create_ellipse`         | Create an ellipse shape                   | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_polygon`         | Create a polygon shape                    | `x`, `y`, `width`, `height`, `sides`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_star`            | Create a star shape                       | `x`, `y`, `width`, `height`, `points`, `innerRadius`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_vector`          | Create a vector shape                     | `x`, `y`, `width`, `height`, `name`, `parentId`, `vectorPaths`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_line`            | Create a line shape                       | `x1`, `y1`, `x2`, `y2`, `name`, `parentId`, `strokeColor`, `strokeWeight`, `strokeCap` |
+| `create_frame`           | Create a frame                           | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_rectangle`       | Create a rectangle shape                  | `x`, `y`, `width`, `height`, `name`, `parentId` |
+| `delete_node`            | Remove a Figma node                      | `nodeId`                         |
+| `export_node_as_image`   | Export a node as an image                | `nodeId`, `scale`                |
+| `get_document_info`      | Retrieve Figma document details          | None                            |
+| `get_local_components`   | List local components                    | None                            |
+| `get_node_info` / `get_nodes_info` | Get detailed node information            | `nodeId` / `nodeIds`           |
+| `get_selection`          | Get the current selection                | None                            |
+| `get_styles`             | Retrieve all styles                      | None                            |
+| `join_channel`           | Join a communication channel             | `channel`                       |
+| `move_node`              | Reposition a node                       | `nodeId`, `x`, `y`              |
+| `resize_node`            | Alter node dimensions                    | `nodeId`, `width`, `height`     |
+| `scan_text_nodes`        | Discover text nodes                      | `nodeId`                       |
+| `set_corner_radius`      | Adjust node corner radii                 | `nodeId`, `radius`, `corners`   |
+| `set_fill_color`         | Modify node fill color                   | `nodeId`, `color`                |
+| `set_stroke_color`       | Modify node stroke color and weight      | `nodeId`, `color`, `weight`     |
+| `set_multiple_text_contents` | Update multiple text elements            | `nodeId`, `text`               |
+| `set_auto_layout`        | Configure auto layout                    | `nodeId`, `layoutMode`, `paddingTop`, `paddingBottom`, `paddingLeft`, `paddingRight`, `itemSpacing`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `layoutWrap`, `strokesIncludedInLayout` |
+| `set_text_content`       | Change text within a node                | `nodeId`, `text`                |
 
 **Text and Font Commands:**
 
-- `set_font_name` - Set text font and style.
-- `set_font_size` - Change text size.
-- `set_font_weight` - Adjust font weight.
-- `set_letter_spacing` - Modify spacing between letters.
-- `set_line_height` - Adjust the text line height.
-- `set_paragraph_spacing` - Set the spacing between paragraphs.
-- `set_text_case` - Change text case (ORIGINAL, UPPER, LOWER, TITLE).
-- `set_text_decoration` - Add text decorations (e.g., underline).
-- `get_styled_text_segments` - Retrieve styled segments.
-- `load_font_async` - Load a font asynchronously.
-- `get_remote_components` - Access team library components.
+| Command                  | Parameters                          | Description                              |
+|--------------------------|-----------------------------------|------------------------------------------|
+| `set_font_name`          | `nodeId`, `family`, `style`       | Set text font and style                  |
+| `set_font_size`          | `nodeId`, `fontSize`               | Change text size                        |
+| `set_font_weight`        | `nodeId`, `weight`                 | Adjust font weight                      |
+| `set_letter_spacing`     | `nodeId`, `letterSpacing`, `unit` | Modify spacing between letters          |
+| `set_line_height`        | `nodeId`, `lineHeight`, `unit`     | Adjust the text line height              |
+| `set_paragraph_spacing`  | `nodeId`, `paragraphSpacing`       | Set the spacing between paragraphs      |
+| `set_text_case`          | `nodeId`, `textCase`               | Change text case (ORIGINAL, UPPER, LOWER, TITLE) |
+| `set_text_decoration`    | `nodeId`, `textDecoration`         | Add text decorations (e.g., underline)  |
+| `get_styled_text_segments` | `nodeId`, `property`              | Retrieve styled segments                 |
+| `load_font_async`        | `family`, `style`                  | Load a font asynchronously               |
+| `get_remote_components`  | None                              | Access team library components           |
 
 ---
 
