@@ -1,5 +1,9 @@
 # Claude Talk to Figma MCP
 
+[![version](https://img.shields.io/badge/version-0.4.2-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
+
+- [TOC]
+
 A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly interact with Figma for AI-assisted design.
 
 > [!IMPORTANT]  
