@@ -11,9 +11,9 @@
       },
       "devDependencies": {
         "@types/bun": "latest",
-        "bun-types": "^1.2.5",
+        "bun-types": "^1.2.9",
         "tsup": "^8.4.0",
-        "typescript": "^5.0.0",
+        "typescript": "^5.8.3",
       },
     },
   },

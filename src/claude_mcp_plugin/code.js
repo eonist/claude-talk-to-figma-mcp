@@ -91,6 +91,7 @@ function updateSettings(settings) {
 
 // Handle commands from UI
 async function handleCommand(command, params) {
+  console.log(`Received command: ${command}`);
   switch (command) {
     case "get_document_info":
       return await getDocumentInfo();
@@ -179,6 +180,12 @@ async function handleCommand(command, params) {
       return await flattenNode(params);
     case "insert_child":
       return await insertChild(params);
+    case "rename_layers":
+      return await rename_layers(params);
+    case "ai_rename_layers":
+      return await ai_rename_layers(params);
+    case "rename_layer":
+      return await rename_layer(params);
     case "create_ellipse":
       return await createEllipse(params);
     case "create_polygon":
@@ -192,6 +199,61 @@ async function handleCommand(command, params) {
     default:
       throw new Error(`Unknown command: ${command}`);
   }
+}
+
+/*
+ * New layer-rename commands
+ */
+async function rename_layers(params) {
+  const { layer_ids, new_name, match_pattern, replace_with } = params || {};
+  const nodes = await Promise.all(
+    layer_ids.map(id => figma.getNodeByIdAsync(id))
+  );
+  const total = nodes.length;
+  nodes.forEach((node, i) => {
+    if (!node || !('name' in node)) return;
+    if (!node.visible || node.locked) {
+      throw new Error('Cannot rename locked or hidden layer: ' + node.id);
+    }
+    if (match_pattern && replace_with) {
+      node.name = node.name.replace(new RegExp(match_pattern), replace_with);
+    } else {
+      let base = new_name;
+      base = base.replace(/\${current}/g, node.name);
+      base = base.replace(/\${asc}/g, (i + 1).toString());
+      base = base.replace(/\${desc}/g, (total - i).toString());
+      node.name = base;
+    }
+  });
+  return { success: true, renamed_count: total };
+}
+
+async function ai_rename_layers(params) {
+  const { layer_ids, context_prompt } = params || {};
+  const nodes = await Promise.all(
+    layer_ids.map(id => figma.getNodeByIdAsync(id))
+  );
+  const result = await figma.ai.renameLayersAsync(nodes, {
+    context: context_prompt
+  });
+  if (result.status === 'SUCCESS') {
+    return { success: true, names: result.names };
+  } else {
+    return { success: false, error: result.error };
+  }
+}
+
+// Rename single layer with optional TextNode autoRename
+async function rename_layer(params) {
+  const { nodeId, newName, setAutoRename } = params || {};
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node with ID ${nodeId} not found`);
+  const originalName = node.name;
+  node.name = newName;
+    if (node.type === 'TEXT' && setAutoRename !== undefined) {
+      node.autoRename = Boolean(setAutoRename);
+  }
+  return { success: true, nodeId, originalName, newName: node.name };
 }
 
 // Command implementations

@@ -57,7 +57,33 @@ let currentChannel: string | null = null;
 const server = new McpServer({
   name: "ClaudeTalkToFigmaMCP",
   version: "0.4.0",
+  capabilities: { tools: {} }
 });
+
+// List all available MCP tools
+server.tool(
+  "get_tools",
+  "List all exposed MCP tools",
+  async () => {
+    const toolNames = [
+      "get_tools",
+      "get_document_info",
+      "get_selection",
+      "get_node_info",
+      "rename_layer",
+      "rename_layers",
+      "ai_rename_layers"
+    ];
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(toolNames, null, 2)
+        }
+      ]
+    };
+  }
+);
 
 // Add command line argument parsing
 const args = process.argv.slice(2);
@@ -2363,7 +2389,10 @@ type FigmaCommand =
   | "group_nodes"
   | "ungroup_nodes"
   | "flatten_node"
-  | "insert_child";
+  | "insert_child"
+  | "rename_layer"
+  | "rename_layers"
+  | "ai_rename_layers";
 
 // Helper function to process Figma node responses
 function processFigmaNodeResponse(result: unknown): any {
@@ -2625,6 +2654,63 @@ function sendCommandToFigma(
   });
 }
 
+/*
+ * Layer renaming tools
+ */
+server.tool(
+  "rename_layer",
+  "Rename a single node with optional TextNode autoRename",
+  {
+    nodeId: z.string().describe("The ID of the node to rename"),
+    newName: z.string().describe("The new name for the node"),
+    setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename")
+  },
+  async ({ nodeId, newName, setAutoRename }: { nodeId: string; newName: string; setAutoRename?: boolean }) => {
+    const result = await sendCommandToFigma("rename_layer", { nodeId, newName, setAutoRename });
+    return {
+      content: [
+        { type: "text", text: JSON.stringify(result) }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "rename_layers",
+  "Rename specified layers by exact name or pattern replace",
+  {
+    layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
+    new_name: z.string().describe("New base name or pattern including tokens"),
+    match_pattern: z.string().optional().describe("Regex to match in existing name"),
+    replace_with: z.string().optional().describe("Text to replace matched pattern")
+  },
+  async ({ layer_ids, new_name, match_pattern, replace_with }) => {
+    const result = await sendCommandToFigma("rename_layers", { layer_ids, new_name, match_pattern, replace_with });
+    return {
+      content: [
+        { type: "text", text: JSON.stringify(result) }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "ai_rename_layers",
+  "AI-powered rename of specified layers",
+  {
+    layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
+    context_prompt: z.string().optional().describe("Prompt for AI renaming")
+  },
+  async ({ layer_ids, context_prompt }) => {
+    const result = await sendCommandToFigma("ai_rename_layers", { layer_ids, context_prompt });
+    return {
+      content: [
+        { type: "text", text: JSON.stringify(result) }
+      ]
+    };
+  }
+);
+
 // Update the join_channel tool
 server.tool(
   "join_channel",
@@ -2694,4 +2780,3 @@ main().catch(error => {
   logger.error(`Error starting FigmaMCP server: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 });
-
