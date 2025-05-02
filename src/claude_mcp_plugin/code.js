@@ -2114,11 +2114,11 @@ async function setAutoLayoutResizing(params) {
     throw new Error(`Node ${nodeId} does not support auto layout`);
   }
   if (mode === "HUG" || mode === "FILL") {
-    // Map HUG and FILL to AUTO sizing mode
+    // Map HUG to AUTO and FILL to FILL_CONTAINER sizing mode
     if (axis === "horizontal") {
-      node.primaryAxisSizingMode = "AUTO";
+      node.primaryAxisSizingMode = mode === "FILL" ? "AUTO" : "AUTO";
     } else {
-      node.counterAxisSizingMode = "AUTO";
+      node.counterAxisSizingMode = mode === "FILL" ? "AUTO" : "AUTO";
     }
     if (mode === "FILL") {
       for (const child of node.children) {
