@@ -2065,7 +2065,39 @@ async function setAutoLayout(params) {
     strokesIncludedInLayout: node.strokesIncludedInLayout
   };
 }
-
+/**
+ * Adjust Auto-Layout Resizing of a Node
+ *
+ * This function adjusts the sizing mode along a specified axis (horizontal or vertical)
+ * for a given node that supports auto layout. When using the "FILL" mode, the function
+ * also sets the layoutGrow property on each child element so that they expand to fill the space.
+ *
+ * Parameters:
+ *   - nodeId (string): The unique identifier of the node to update.
+ *   - axis (string): The axis along which to adjust the resizing. Allowed values are "horizontal" or "vertical".
+ *   - mode (string): The sizing mode to set for the specified axis. Must be one of:
+ *         "AUTO"   - The node’s dimension adjusts automatically based on its content.
+ *         "FIXED"  - The node maintains a fixed size.
+ *         "FILL"   - The node stretches to fill its container. For this mode, the function sets
+ *                    the axis sizing mode to "AUTO" and applies a layoutGrow of 1 to each child.
+ *
+ * Throws:
+ *   - An error if required parameters are missing or invalid.
+ *   - An error if the specified node does not support auto layout.
+ *
+ * Returns:
+ *   An object containing:
+ *     - id: The node's ID.
+ *     - primaryAxisSizingMode: The current sizing mode of the primary (horizontal) axis.
+ *     - counterAxisSizingMode: The current sizing mode of the counter (vertical) axis.
+ *
+ * Example:
+ *   const result = await setAutoLayoutResizing({
+ *     nodeId: "12345",
+ *     axis: "horizontal",
+ *     mode: "FILL"
+ *   });
+ */
 async function setAutoLayoutResizing(params) {
   const { nodeId, axis, mode } = params || {};
   if (!nodeId) {
@@ -2074,23 +2106,31 @@ async function setAutoLayoutResizing(params) {
   if (!axis || (axis !== "horizontal" && axis !== "vertical")) {
     throw new Error("Invalid or missing axis parameter");
   }
-  if (!mode || !["HUG", "FIXED", "FILL"].includes(mode)) {
+  if (!mode || !["AUTO", "FIXED", "FILL"].includes(mode)) {
     throw new Error("Invalid or missing mode parameter");
   }
   const node = await figma.getNodeByIdAsync(nodeId);
   if (!node || !("primaryAxisSizingMode" in node)) {
     throw new Error(`Node ${nodeId} does not support auto layout`);
   }
-  if (axis === "horizontal") {
-    node.primaryAxisSizingMode = mode;
-  } else {
-    node.counterAxisSizingMode = mode;
-  }
   if (mode === "FILL") {
+    // For FILL, set axis sizing mode to AUTO and set layoutGrow on children
+    if (axis === "horizontal") {
+      node.primaryAxisSizingMode = "AUTO";
+    } else {
+      node.counterAxisSizingMode = "AUTO";
+    }
     for (const child of node.children) {
       if ("layoutGrow" in child) {
         child.layoutGrow = 1;
       }
+    }
+  } else {
+    // For AUTO or FIXED, set axis sizing mode directly
+    if (axis === "horizontal") {
+      node.primaryAxisSizingMode = mode;
+    } else {
+      node.counterAxisSizingMode = mode;
     }
   }
   return {
