@@ -2,15 +2,14 @@
 
 # Claude Talk to Figma MCP
 
-A Model Context Protocol (MCP) plugin that enables Claude Desktop to directly interact with Figma for AI-assisted design.
+A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly interact with Figma for AI-assisted design.
 
-> **Note:** This project is based on [cursor-talk-to-figma-mcp](https://github.com/sonnylazuardi/cursor-talk-to-figma-mcp) by Sonny Lazuardi, adapted for Claude Desktop.
-
+> **Important:** 
+⚠️️ To use this build. Point the client mcp to local build. ⚠️️ `"/Users/<your_user_name>/claude-talk-to-figma-mcp/src/talk_to_figma_mcp/server.ts"` (This is a temp solution, until registered with npm registry)
 ---
 
 ## Features
 
-- **Native Claude Integration**: Seamlessly connects Claude with Figma.
 - **Powerful Commands**: Create, modify, or delete Figma elements.
 - **Advanced Text & Font Control**: Customize typography with precision.
 - **Bidirectional Communication**: Uses a real-time WebSocket channel.
@@ -21,7 +20,7 @@ A Model Context Protocol (MCP) plugin that enables Claude Desktop to directly in
 
 ## Prerequisites
 
-- [Claude Desktop](https://claude.ai/download)
+- [Cline for VS code](https://cline.bot/)
 - [Figma Desktop](https://www.figma.com/downloads/)
 - A [Figma](https://figma.com) account
 - [Bun](https://bun.sh) v1.0.0 or higher  
@@ -40,7 +39,7 @@ A Model Context Protocol (MCP) plugin that enables Claude Desktop to directly in
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/arinspunk/claude-talk-to-figma-mcp.git
+    git clone https://github.com/eonist/claude-talk-to-figma-mcp.git
     cd claude-talk-to-figma-mcp
     ```
 2. Install dependencies:
@@ -51,17 +50,24 @@ A Model Context Protocol (MCP) plugin that enables Claude Desktop to directly in
     ```bash
     bun run build
     ```
-4. Configure the MCP in Claude Desktop:
-    ```bash
-    bun run configure-claude
+4. Configure the MCP in Cline in vscode:
+    > Add this cript to cline mcp config file:
     ```
-    *Restart Claude Desktop if it is already running.*
-
-    > This script:
-    > - Locates the configuration file (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS).
-    > - Creates a backup.
-    > - Updates or creates the file to include "ClaudeTalkToFigma" in the list of MCPs.
-    > - Sets the command for starting the MCP.
+    {
+        "mcpServers": {
+            "ClaudeTalkToFigma": {
+            "autoApprove": [],
+            "disabled": false,
+            "timeout": 30,
+            "command": "node",
+            "args": [
+                "/Users/<your-user-name>/claude-talk-to-figma-mcp/src/talk_to_figma_mcp/server.ts"
+            ],
+            "transportType": "stdio"
+            }
+        }
+        }
+    ```
 
 5. Install the Figma plugin:
     - Open Figma.
@@ -88,8 +94,8 @@ A Model Context Protocol (MCP) plugin that enables Claude Desktop to directly in
     - Open the Claude MCP Plugin in Figma.
     - Copy and supply the generated channel ID to Claude.
 
-3. **Using Claude Desktop:**
-    - Open Claude Desktop and select "ClaudeTalkToFigma" from the MCP selector.
+3. **Using Cline in VS-code:**
+    - Open Cline in vs-code and make sure mcp "ClaudeTalkToFigma" is toggled to on.
 
 Now you're ready to send commands to Figma from Claude!
 
@@ -107,7 +113,7 @@ Talk to Figma, channel {channel-ID}
 ```
 +----------------+     +-------+     +---------------+     +---------------+
 |                |     |       |     |               |     |               |
-| Claude Desktop |<--->|  MCP  |<--->| WebSocket Srv |<--->| Figma Plugin  |
+| VS-Code Cline  |<--->|  MCP  |<--->| WebSocket Srv |<--->| Figma Plugin  |
 |   (AI Agent)   |     |       |     |  (Port 3055)  |     |  (UI Plugin)  |
 |                |     |       |     |               |     |               |
 +----------------+     +-------+     +---------------+     +---------------+
@@ -118,7 +124,9 @@ Talk to Figma, channel {channel-ID}
 ## Available Commands
 
 **Basic Commands:**
-
+- `rename_layer` - Rename single layer in figma.
+- `rename_layers` - Rename multiple layers in figma.
+- `get_tools` - Read available tools in the mcp
 - `clone_node` - Clone a Figma node.
 - `create_component_instance` - Create an instance of a component.
 - `create_ellipse`, `create_polygon`, `create_star`, `create_vector` - Create various shapes.
@@ -158,6 +166,10 @@ Talk to Figma, channel {channel-ID}
 
 ## Changelog
 
+### 0.4.2
+- Ability to rename layers
+- Ability to read available tools
+
 ### 0.4.0
 - New tools for advanced shape creation.
 - Enhanced text and font manipulation.
@@ -176,9 +188,7 @@ Talk to Figma, channel {channel-ID}
 
 - **Connection Error:** Ensure the WebSocket server is running (`bun socket`).
 - **Plugin Not Appearing:** Verify the plugin import in Figma Development settings.
-- **Claude MCP Not Found:** Run `bun run configure-claude` and restart Claude Desktop.
 - **Execution or Font Loading Errors:** Check Figma’s development console for details.
-- **rename_layer Tool Not Found:** Ensure the tool is registered as "rename_layer" (all lower-case, underscores) in the MCP server and that the client references it exactly. Clear relevant caches and review server logs for registration confirmation.
 
 ---
 
@@ -212,6 +222,7 @@ MIT License – see the [LICENSE](LICENSE) file for details.
 
 - **Xúlio Zé** – Adaptation for Claude | [GitHub](https://github.com/arinspunk)
 - **Sonny Lazuardi** – Original implementation | [GitHub](https://github.com/sonnylazuardi)
+- **André J** – Adoption for Cline with new features | [GitHub](https://github.com/eonist)
 
 ---
 
