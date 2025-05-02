@@ -1,5 +1,3 @@
-<img src="images/claude-talk-to-figma.png" alt="Claude Talk to Figma collage" />
-
 # Claude Talk to Figma MCP
 
 A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly interact with Figma for AI-assisted design.
