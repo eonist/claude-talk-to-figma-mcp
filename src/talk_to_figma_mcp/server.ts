@@ -1187,6 +1187,39 @@ server.tool(
   }
 );
 
+// New resizing tool for auto layout sizing modes
+server.tool(
+  "set_auto_layout_resizing",
+  "Set hug or fill sizing mode on an auto layout frame or child node",
+  {
+    nodeId: z.string().describe("The ID of the node to modify sizing for"),
+    axis: z.enum(["horizontal", "vertical"]).describe("Which axis to apply sizing mode"),
+    mode: z.enum(["FIXED", "HUG", "FILL"]).describe("Sizing mode to apply")
+  },
+  async ({ nodeId, axis, mode }) => {
+    try {
+      const result = await sendCommandToFigma("set_auto_layout_resizing", { nodeId, axis, mode });
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error setting resizing mode: ${error instanceof Error ? error.message : String(error)}`
+          }
+        ]
+      };
+    }
+  }
+);
+
 // Auto Layout Tool
 server.tool(
   "set_auto_layout",
@@ -2478,6 +2511,7 @@ type FigmaCommand =
   | "scan_text_nodes"
   | "set_multiple_text_contents"
   | "set_auto_layout"
+  | "set_auto_layout_resizing"
   | "set_font_name"
   | "set_font_size"
   | "set_font_weight"

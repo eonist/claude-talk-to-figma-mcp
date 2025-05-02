@@ -145,6 +145,10 @@ async function handleCommand(command, params) {
       return await setMultipleTextContents(params);
     case "set_auto_layout":
       return await setAutoLayout(params);
++
++    case "set_auto_layout_resizing":
++      // Apply "HUG", "FIXED", or "FILL" sizing on a horizontal or vertical axis
++      return await setAutoLayoutResizing(params);
     // Nuevos comandos para propiedades de texto
     case "set_font_name":
       return await setFontName(params);
