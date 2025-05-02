@@ -178,6 +178,7 @@ Talk to Figma, channel {channel-ID}
 - **Plugin Not Appearing:** Verify the plugin import in Figma Development settings.
 - **Claude MCP Not Found:** Run `bun run configure-claude` and restart Claude Desktop.
 - **Execution or Font Loading Errors:** Check Figma’s development console for details.
+- **rename_layer Tool Not Found:** Ensure the tool is registered as "rename_layer" (all lower-case, underscores) in the MCP server and that the client references it exactly. Clear relevant caches and review server logs for registration confirmation.
 
 ---
 

@@ -1,13 +1,14 @@
 {
   "name": "talk-to-figma-mcp",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "description": "MCP server for Figma integration",
   "main": "server.ts",
   "type": "module",
   "scripts": {
     "start": "node --loader ts-node/esm server.ts",
     "build": "tsc",
-    "dev": "node --loader ts-node/esm --watch server.ts"
+    "dev": "node --loader ts-node/esm --watch server.ts",
+    "socket-win": "cmd /c bun run server.ts"
   },
   "keywords": [
     "figma",
