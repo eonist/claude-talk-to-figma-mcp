@@ -2,16 +2,28 @@
 
 [![version](https://img.shields.io/badge/version-0.4.2-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
 
-- [TOC]
-
 A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly interact with Figma for AI-assisted design.
-
 
 <img width="640" alt="img" src="https://s4.gifyu.com/images/bLldl.gif">
 
 > [!TIP]  
 > [Prompt overview](https://gist.github.com/eonist/1d18de2ecd2e18bacf36ddc669d3bddf) and [AI figma instructions and guidlines](https://gist.github.com/eonist/166bf55c1c61b99d5712e826c6df0d15)
  
+## Table of Contents
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Architecture](#architecture)
+- [Available Commands](#available-commands)
+- [Changelog](#changelog)
+- [Troubleshooting](#troubleshooting)
+- [Testing](#testing)
+- [Contributions](#contributions)
+- [License](#license)
+- [Authors](#authors)
+- [Acknowledgments](#acknowledgments)
+
 ## Features
 
 - **Powerful Commands**: Create, modify, or delete Figma elements.
