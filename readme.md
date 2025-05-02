@@ -4,13 +4,13 @@ A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly 
 
 <img width="640" alt="img" src="https://s4.gifyu.com/images/bLldl.gif">
 
-> **Note:** 
-[Prompt overview](https://gist.github.com/eonist/1d18de2ecd2e18bacf36ddc669d3bddf) and [AI figma instructions and guidlines](https://gist.github.com/eonist/166bf55c1c61b99d5712e826c6df0d15) 
----
+> **Note:**  
+> [Prompt overview](https://gist.github.com/eonist/1d18de2ecd2e18bacf36ddc669d3bddf) and [AI figma instructions and guidlines](https://gist.github.com/eonist/166bf55c1c61b99d5712e826c6df0d15)
 
-> **Important:** 
-⚠️️ To use this build. Point the client mcp to local build. ⚠️️ `"/Users/<your_user_name>/claude-talk-to-figma-mcp/src/talk_to_figma_mcp/server.ts"` (This is a temp solution, until registered with npm registry)
----
+> **Important:**  
+> ⚠️ To use this build, point the client mcp to the local build.  
+> ⚠️ `"/Users/<your_user_name>/claude-talk-to-figma-mcp/src/talk_to_figma_mcp/server.ts"`  
+> (This is a temp solution, until registered with npm registry)
 
 ## Features
 
