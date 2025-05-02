@@ -2343,6 +2343,111 @@ server.tool(
   }
 );
 
+/**
+ * Layer Renaming Tool
+ *
+ * Renames a specified Figma node.
+ *
+ * @param nodeId - The unique identifier of the Figma node to rename.
+ * @param newName - The new name to assign to the node.
+ * @param setAutoRename - (Optional) If set to true, preserves the automatic renaming behavior 
+ *                        for TextNodes (i.e. Figma's auto-update of text formatting when changes occur).
+ *
+ * Example Usage:
+ *   - To rename a node while maintaining its TextNode auto-renaming, pass true for setAutoRename.
+ */
+server.tool(
+  "rename_layer",
+  "Rename a single node with optional TextNode autoRename",
+  {
+    nodeId: z.string().describe("The ID of the node to rename"),
+    newName: z.string().describe("The new name for the node"),
+    setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename")
+  },
+  async ({ nodeId, newName, setAutoRename }: { nodeId: string; newName: string; setAutoRename?: boolean }) => {
+    const result = await sendCommandToFigma("rename_layer", { nodeId, newName, setAutoRename });
+    return {
+      content: [
+        { type: "text", text: JSON.stringify(result) }
+      ]
+    };
+  }
+);
+/**
+ * Rename Layers Tool
+ *
+ * Renames multiple Figma layers either by assigning a new base name or through a
+ * regex pattern-based replacement.
+ *
+ * - If only new_name is provided, all specified layers will be renamed to that new base name.
+ * - If match_pattern and replace_with are provided, the tool will replace the matched part
+ *   in each layer's name with the provided replacement text.
+ *
+ * @param layer_ids - An array of layer IDs to be renamed.
+ * @param new_name - The new base name or naming pattern to apply to the layers.
+ * @param match_pattern - (Optional) A regex pattern to identify parts of the existing names.
+ * @param replace_with - (Optional) The text to replace the matched pattern with.
+ *
+ * Example Usage:
+ *   // Simple renaming:
+ *   rename_layers({ layer_ids: ['id1', 'id2'], new_name: "NewLayer" });
+ *
+ *   // Pattern-based renaming:
+ *   rename_layers({ layer_ids: ['id1', 'id2'], new_name: "Layer_$1", match_pattern: "Old(.*)", replace_with: "$1" });
+ */
+server.tool(
+  "rename_layers",
+  "Rename specified layers by exact name or pattern replace",
+  {
+    layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
+    new_name: z.string().describe("New base name or pattern including tokens"),
+    match_pattern: z.string().optional().describe("Regex to match in existing name"),
+    replace_with: z.string().optional().describe("Text to replace matched pattern")
+  },
+  async ({ layer_ids, new_name, match_pattern, replace_with }) => {
+    const result = await sendCommandToFigma("rename_layers", { layer_ids, new_name, match_pattern, replace_with });
+    return {
+      content: [
+        { type: "text", text: JSON.stringify(result) }
+      ]
+    };
+  }
+);
+/**
+ * AI-Powered Rename Layers Tool
+ *
+ * Leverages artificial intelligence to intelligently rename multiple Figma layers.
+ *
+ * Parameters:
+ *   - layer_ids: An array of Figma layer IDs to be renamed.
+ *   - context_prompt: (Optional) A textual prompt providing context or guidelines for the AI renaming process.
+ *                     If omitted, the tool relies on default AI naming behavior.
+ *
+ * The tool sends the provided parameters to Figma and returns the AI-generated renaming results.
+ *
+ * Example Usage:
+ *   ai_rename_layers({
+ *     layer_ids: ['id1', 'id2'],
+ *     context_prompt: "Rename these layers according to our branding guidelines."
+ *   });
+ */
+server.tool(
+  "ai_rename_layers",
+  "AI-powered rename of specified layers",
+  {
+    layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
+    context_prompt: z.string().optional().describe("Prompt for AI renaming")
+  },
+  async ({ layer_ids, context_prompt }) => {
+    const result = await sendCommandToFigma("ai_rename_layers", { layer_ids, context_prompt });
+    return {
+      content: [
+        { type: "text", text: JSON.stringify(result) }
+      ]
+    };
+  }
+);
+
 // Define command types and parameters
 type FigmaCommand =
   | "get_document_info"
@@ -2653,63 +2758,6 @@ function sendCommandToFigma(
     ws.send(JSON.stringify(request));
   });
 }
-
-/*
- * Layer renaming tools
- */
-server.tool(
-  "rename_layer",
-  "Rename a single node with optional TextNode autoRename",
-  {
-    nodeId: z.string().describe("The ID of the node to rename"),
-    newName: z.string().describe("The new name for the node"),
-    setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename")
-  },
-  async ({ nodeId, newName, setAutoRename }: { nodeId: string; newName: string; setAutoRename?: boolean }) => {
-    const result = await sendCommandToFigma("rename_layer", { nodeId, newName, setAutoRename });
-    return {
-      content: [
-        { type: "text", text: JSON.stringify(result) }
-      ]
-    };
-  }
-);
-
-server.tool(
-  "rename_layers",
-  "Rename specified layers by exact name or pattern replace",
-  {
-    layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
-    new_name: z.string().describe("New base name or pattern including tokens"),
-    match_pattern: z.string().optional().describe("Regex to match in existing name"),
-    replace_with: z.string().optional().describe("Text to replace matched pattern")
-  },
-  async ({ layer_ids, new_name, match_pattern, replace_with }) => {
-    const result = await sendCommandToFigma("rename_layers", { layer_ids, new_name, match_pattern, replace_with });
-    return {
-      content: [
-        { type: "text", text: JSON.stringify(result) }
-      ]
-    };
-  }
-);
-
-server.tool(
-  "ai_rename_layers",
-  "AI-powered rename of specified layers",
-  {
-    layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
-    context_prompt: z.string().optional().describe("Prompt for AI renaming")
-  },
-  async ({ layer_ids, context_prompt }) => {
-    const result = await sendCommandToFigma("ai_rename_layers", { layer_ids, context_prompt });
-    return {
-      content: [
-        { type: "text", text: JSON.stringify(result) }
-      ]
-    };
-  }
-);
 
 // Update the join_channel tool
 server.tool(
