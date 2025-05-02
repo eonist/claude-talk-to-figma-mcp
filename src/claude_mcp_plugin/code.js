@@ -2113,22 +2113,53 @@ async function setAutoLayoutResizing(params) {
   if (!node || !("primaryAxisSizingMode" in node)) {
     throw new Error(`Node ${nodeId} does not support auto layout`);
   }
-  if (mode === "HUG" || mode === "FILL") {
-    // Map HUG to AUTO and FILL to FILL_CONTAINER sizing mode
+  if (mode === "HUG") {
     if (axis === "horizontal") {
-      node.primaryAxisSizingMode = mode === "FILL" ? "AUTO" : "AUTO";
+      node.primaryAxisSizingMode = "AUTO";
     } else {
-      node.counterAxisSizingMode = mode === "FILL" ? "AUTO" : "AUTO";
+      node.counterAxisSizingMode = "AUTO";
     }
-    if (mode === "FILL") {
-      for (const child of node.children) {
-        if ("layoutGrow" in child) {
+    for (const child of node.children) {
+      if (axis === "horizontal") {
+        if (node.layoutMode === "HORIZONTAL" && "layoutGrow" in child) {
+          child.layoutGrow = 0;
+        }
+        if (node.layoutMode !== "HORIZONTAL" && "layoutAlign" in child) {
+          child.layoutAlign = "INHERIT";
+        }
+      } else {
+        if (node.layoutMode === "VERTICAL" && "layoutGrow" in child) {
+          child.layoutGrow = 0;
+        }
+        if (node.layoutMode !== "VERTICAL" && "layoutAlign" in child) {
+          child.layoutAlign = "INHERIT";
+        }
+      }
+    }
+  } else if (mode === "FILL") {
+    if (axis === "horizontal") {
+      node.primaryAxisSizingMode = "AUTO";
+    } else {
+      node.counterAxisSizingMode = "AUTO";
+    }
+    for (const child of node.children) {
+      if (axis === "horizontal") {
+        if (node.layoutMode === "HORIZONTAL" && "layoutGrow" in child) {
           child.layoutGrow = 1;
+        }
+        if (node.layoutMode !== "HORIZONTAL" && "layoutAlign" in child) {
+          child.layoutAlign = "STRETCH";
+        }
+      } else {
+        if (node.layoutMode === "VERTICAL" && "layoutGrow" in child) {
+          child.layoutGrow = 1;
+        }
+        if (node.layoutMode !== "VERTICAL" && "layoutAlign" in child) {
+          child.layoutAlign = "STRETCH";
         }
       }
     }
   } else {
-    // For FIXED, set axis sizing mode directly
     if (axis === "horizontal") {
       node.primaryAxisSizingMode = "FIXED";
     } else {
