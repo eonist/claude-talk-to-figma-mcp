@@ -145,9 +145,8 @@ async function handleCommand(command, params) {
       return await setMultipleTextContents(params);
     case "set_auto_layout":
       return await setAutoLayout(params);
-+   case "set_auto_layout_resizing":
-+     // Apply "HUG", "FIXED", or "FILL" sizing on a horizontal or vertical axis
-+     return await setAutoLayoutResizing(params);
+    case "set_auto_layout_resizing":
+      return await setAutoLayoutResizing(params);
     case "set_font_name":
       return await setFontName(params);
     case "set_font_size":
@@ -2064,6 +2063,40 @@ async function setAutoLayout(params) {
     counterAxisAlignItems: node.counterAxisAlignItems,
     layoutWrap: node.layoutWrap,
     strokesIncludedInLayout: node.strokesIncludedInLayout
+  };
+}
+
+async function setAutoLayoutResizing(params) {
+  const { nodeId, axis, mode } = params || {};
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+  if (!axis || (axis !== "horizontal" && axis !== "vertical")) {
+    throw new Error("Invalid or missing axis parameter");
+  }
+  if (!mode || !["HUG", "FIXED", "FILL"].includes(mode)) {
+    throw new Error("Invalid or missing mode parameter");
+  }
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node || !("primaryAxisSizingMode" in node)) {
+    throw new Error(`Node ${nodeId} does not support auto layout`);
+  }
+  if (axis === "horizontal") {
+    node.primaryAxisSizingMode = mode;
+  } else {
+    node.counterAxisSizingMode = mode;
+  }
+  if (mode === "FILL") {
+    for (const child of node.children) {
+      if ("layoutGrow" in child) {
+        child.layoutGrow = 1;
+      }
+    }
+  }
+  return {
+    id: node.id,
+    primaryAxisSizingMode: node.primaryAxisSizingMode,
+    counterAxisSizingMode: node.counterAxisSizingMode
   };
 }
 
