@@ -2173,6 +2173,46 @@ async function setAutoLayoutResizing(params) {
   };
 }
 
+function setFillContainer(node, axis) {
+  const parent = node.parent;
+  if (!parent || parent.layoutMode === 'NONE') return;
+
+  if (axis === 'horizontal') {
+    parent.layoutMode === 'HORIZONTAL'
+      ? node.layoutGrow = 1
+      : node.layoutAlign = 'STRETCH';
+  } else {
+    parent.layoutMode === 'VERTICAL'
+      ? node.layoutGrow = 1
+      : node.layoutAlign = 'STRETCH';
+  }
+}
+
+function setHugContents(node, axis) {
+  const parent = node.parent;
+  if (!parent || parent.layoutMode === 'NONE') return;
+
+  if (axis === 'horizontal') {
+    parent.layoutMode === 'HORIZONTAL'
+      ? node.layoutGrow = 0
+      : node.layoutAlign = 'INHERIT';
+  } else {
+    parent.layoutMode === 'VERTICAL'
+      ? node.layoutGrow = 0
+      : node.layoutAlign = 'INHERIT';
+  }
+}
+
+function setFixedSize(node, axis, size) {
+  if (axis === 'horizontal') {
+    node.resize(size, node.height);
+    node.layoutGrow = 0;
+  } else {
+    node.resize(node.width, size);
+    node.layoutGrow = 0;
+  }
+}
+
 // Nuevas funciones para propiedades de texto
 
 async function setFontName(params) {
