@@ -6,8 +6,6 @@
 
 A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly interact with Figma for AI-assisted design.
 
-> [!IMPORTANT]  
-> ⚠To use this build, point the client mcp to the local build. `"/Users/<your_user_name>/claude-talk-to-figma-mcp/src/talk_to_figma_mcp/server.ts"` (This is a temp solution, until registered with npm registry)
 
 <img width="640" alt="img" src="https://s4.gifyu.com/images/bLldl.gif">
 
@@ -56,6 +54,7 @@ A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly 
     ```bash
     bun run build
     ```
+**Important:** Point the client MCP to the local build at `"/Users/<your_user_name>/claude-talk-to-figma-mcp/src/talk_to_figma_mcp/server.ts"`. This is a temporary solution until the package is published to npm.
 4. Configure the MCP in Cline in vscode:
     > Add this cript to cline mcp config file:
     ```
@@ -72,7 +71,7 @@ A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly 
             "transportType": "stdio"
             }
         }
-        }
+    }
     ```
 
 5. Install the Figma plugin:
