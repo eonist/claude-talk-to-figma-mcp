@@ -2106,31 +2106,33 @@ async function setAutoLayoutResizing(params) {
   if (!axis || (axis !== "horizontal" && axis !== "vertical")) {
     throw new Error("Invalid or missing axis parameter");
   }
-  if (!mode || !["AUTO", "FIXED", "FILL"].includes(mode)) {
+  if (!mode || !["HUG", "FIXED", "FILL"].includes(mode)) {
     throw new Error("Invalid or missing mode parameter");
   }
   const node = await figma.getNodeByIdAsync(nodeId);
   if (!node || !("primaryAxisSizingMode" in node)) {
     throw new Error(`Node ${nodeId} does not support auto layout`);
   }
-  if (mode === "FILL") {
-    // For FILL, set axis sizing mode to AUTO and set layoutGrow on children
+  if (mode === "HUG" || mode === "FILL") {
+    // Map HUG and FILL to AUTO sizing mode
     if (axis === "horizontal") {
       node.primaryAxisSizingMode = "AUTO";
     } else {
       node.counterAxisSizingMode = "AUTO";
     }
-    for (const child of node.children) {
-      if ("layoutGrow" in child) {
-        child.layoutGrow = 1;
+    if (mode === "FILL") {
+      for (const child of node.children) {
+        if ("layoutGrow" in child) {
+          child.layoutGrow = 1;
+        }
       }
     }
   } else {
-    // For AUTO or FIXED, set axis sizing mode directly
+    // For FIXED, set axis sizing mode directly
     if (axis === "horizontal") {
-      node.primaryAxisSizingMode = mode;
+      node.primaryAxisSizingMode = "FIXED";
     } else {
-      node.counterAxisSizingMode = mode;
+      node.counterAxisSizingMode = "FIXED";
     }
   }
   return {
