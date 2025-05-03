@@ -2161,7 +2161,19 @@ server.tool(
   }
 );
 
-// Define design strategy prompt
+/**
+ * Design Strategy Prompt
+ *
+ * Provides best practices for working with Figma designs.
+ *
+ * @param {object} extra - Additional parameters (unused).
+ *
+ * @returns {object} An object containing messages and description for the design strategy.
+ *
+ * @example
+ * const strategy = await server.prompt("design_strategy");
+ * console.log(strategy);
+ */
 server.prompt(
   "design_strategy",
   "Best practices for working with Figma designs",
@@ -2206,7 +2218,7 @@ server.prompt(
      * Use strokeColor for borders
      * Set proper fontWeight for different text elements
 
-6. Mofifying existing elements:
+6. Modifying existing elements:
   - use set_text_content() to modify text content.
 
 7. Visual Hierarchy:
