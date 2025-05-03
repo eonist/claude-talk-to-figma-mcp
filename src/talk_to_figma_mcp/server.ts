@@ -3532,84 +3532,73 @@ function connectToFigma(port: number = defaultPort) {
 
     ws.on("message", (data: any) => {
       try {
-        // Define a more specific type with an index signature to allow any property access
-        interface ProgressMessage {
-          message: FigmaResponse | any;
+        // Attempt to parse the incoming data as JSON.
+        const json = JSON.parse(data) as {
           type?: string;
           id?: string;
-          [key: string]: any; // Allow any other properties
-        }
+          message: any;
+          [key: string]: any;
+        };
 
-        const json = JSON.parse(data) as ProgressMessage;
-
-        // Handle progress updates
+        // If the message type indicates a progress update, handle it separately.
         if (json.type === 'progress_update') {
+          // Extract the progress data and request identifier.
           const progressData = json.message.data as CommandProgressUpdate;
           const requestId = json.id || '';
 
           if (requestId && pendingRequests.has(requestId)) {
             const request = pendingRequests.get(requestId)!;
-
-            // Update last activity timestamp
+            // Record current activity time.
             request.lastActivity = Date.now();
 
-            // Reset the timeout to prevent timeouts during long-running operations
+            // Clear previous timeout and set up a new one to extend activity if command is long-running.
             clearTimeout(request.timeout);
-
-            // Create a new timeout
             request.timeout = setTimeout(() => {
               if (pendingRequests.has(requestId)) {
                 logger.error(`Request ${requestId} timed out after extended period of inactivity`);
                 pendingRequests.delete(requestId);
                 request.reject(new Error('Request to Figma timed out'));
               }
-            }, 60000); // 60 second timeout for inactivity
+            }, 60000); // 60-second timeout extension during activity
 
-            // Log progress
+            // Log the progress update details.
             logger.info(`Progress update for ${progressData.commandType}: ${progressData.progress}% - ${progressData.message}`);
 
-            // For completed updates, we could resolve the request early if desired
+            // Optionally, you may resolve early if progress indicates 100% completion.
             if (progressData.status === 'completed' && progressData.progress === 100) {
-              // Optionally resolve early with partial data
-              // request.resolve(progressData.payload);
-              // pendingRequests.delete(requestId);
-
-              // Instead, just log the completion, wait for final result from Figma
               logger.info(`Operation ${progressData.commandType} completed, waiting for final result`);
             }
           }
+          // Exit early after handling progress updates.
           return;
         }
 
-        // Handle regular responses
+        // For non-progress messages, treat as regular command responses.
         const myResponse = json.message;
         logger.debug(`Received message: ${JSON.stringify(myResponse)}`);
-        logger.log('myResponse' + JSON.stringify(myResponse));
 
-        // Handle response to a request
-        if (
-          myResponse.id &&
-          pendingRequests.has(myResponse.id) &&
-          myResponse.result
-        ) {
+        // Check if this response corresponds to a pending request.
+        if (myResponse.id && pendingRequests.has(myResponse.id) && myResponse.result !== undefined) {
           const request = pendingRequests.get(myResponse.id)!;
+          // Clear the timeout for the request since we've received a response.
           clearTimeout(request.timeout);
 
+          // If an error occurred in the response, log and reject the promise.
           if (myResponse.error) {
             logger.error(`Error from Figma: ${myResponse.error}`);
             request.reject(new Error(myResponse.error));
           } else {
-            if (myResponse.result) {
-              request.resolve(myResponse.result);
-            }
+            // Otherwise, resolve the request promise with the result.
+            request.resolve(myResponse.result);
           }
-
+          // Remove the pending request from the tracking map.
           pendingRequests.delete(myResponse.id);
         } else {
-          // Handle broadcast messages or events
+          // For broadcast messages or unassociated responses, log accordingly.
           logger.info(`Received broadcast message: ${JSON.stringify(myResponse)}`);
         }
       } catch (error) {
+        // Log error details if JSON parsing or any processing fails.
         logger.error(`Error parsing message: ${error instanceof Error ? error.message : String(error)}`);
       }
     });
