@@ -2,197 +2,225 @@
 import { customBase64Encode } from './utils.js';
 
 /**
- * Gets all local components from the document.
+ * Retrieves all local components available in the Figma document.
+ *
+ * Loads all pages and finds components by type, returning a summary including component id, name, and key.
+ *
+ * @returns {Promise<object>} An object containing a count of components and an array with each component's details.
+ *
+ * @example
+ * const components = await getLocalComponents();
+ * console.log(components.count, components.components);
  */
 export async function getLocalComponents() {
-  // Return mock data for simplified implementation
+  await figma.loadAllPagesAsync();
+
+  const components = figma.root.findAllWithCriteria({
+    types: ["COMPONENT"],
+  });
+
   return {
-    count: 0,
-    components: []
+    count: components.length,
+    components: components.map((component) => ({
+      id: component.id,
+      name: component.name,
+      key: "key" in component ? component.key : null,
+    })),
   };
 }
 
 /**
- * Gets available remote components from team libraries.
+ * Retrieves available remote components from team libraries in Figma.
+ *
+ * @returns {Promise<object>} An object containing success status, count, and an array of components with details.
+ *
+ * @throws Will return an error object if the API is unavailable or retrieval fails.
  */
 export async function getRemoteComponents() {
-  // Return mock data for simplified implementation
-  return {
-    success: true,
-    count: 0,
-    components: []
-  };
+  try {
+    // Check if figma.teamLibrary is available
+    if (!figma.teamLibrary) {
+      console.error("Error: figma.teamLibrary API is not available");
+      return {
+        error: true,
+        message: "The figma.teamLibrary API is not available in this context",
+        apiAvailable: false
+      };
+    }
+    
+    // Check if figma.teamLibrary.getAvailableComponentsAsync exists
+    if (!figma.teamLibrary.getAvailableComponentsAsync) {
+      console.error("Error: figma.teamLibrary.getAvailableComponentsAsync is not available");
+      return {
+        error: true,
+        message: "The getAvailableComponentsAsync method is not available",
+        apiAvailable: false
+      };
+    }
+    
+    console.log("Starting remote components retrieval...");
+    
+    // Set up a manual timeout to detect deadlocks
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error("Internal timeout while retrieving remote components (15s)"));
+      }, 15000); // 15 seconds internal timeout
+    });
+    
+    // Execute the request with a manual timeout
+    const fetchPromise = figma.teamLibrary.getAvailableComponentsAsync();
+    
+    // Use Promise.race to implement the timeout
+    const teamComponents = await Promise.race([fetchPromise, timeoutPromise])
+      .finally(() => {
+        clearTimeout(timeoutId); // Clear the timeout
+      });
+    
+    console.log(`Retrieved ${teamComponents.length} remote components`);
+    
+    return {
+      success: true,
+      count: teamComponents.length,
+      components: teamComponents.map(component => ({
+        key: component.key,
+        name: component.name,
+        description: component.description || "",
+        libraryName: component.libraryName
+      }))
+    };
+  } catch (error) {
+    console.error(`Detailed error retrieving remote components: ${error.message || "Unknown error"}`);
+    console.error(`Stack trace: ${error.stack || "Not available"}`);
+    
+    return {
+      error: true,
+      message: `Error retrieving remote components: ${error.message}`,
+      stack: error.stack,
+      apiAvailable: true,
+      methodExists: true
+    };
+  }
 }
 
 /**
- * Creates an instance of a component.
+ * Creates an instance of a component in the Figma document.
+ *
+ * @param {object} params - Parameters for creating component instance.
+ * @param {string} params.componentKey - The key of the component to import.
+ * @param {number} [params.x=0] - The X coordinate for the new instance.
+ * @param {number} [params.y=0] - The Y coordinate for the new instance.
+ *
+ * @returns {Promise<object>} Details of the created instance including id, name, position, size, and componentId.
+ *
+ * @throws Will throw an error if the component cannot be imported.
+ *
+ * @example
+ * const instance = await createComponentInstance({ componentKey: "abc123", x: 10, y: 20 });
+ * console.log(instance.id, instance.name);
  */
 export async function createComponentInstance(params) {
-  const x = params && params.x ? params.x : 0;
-  const y = params && params.y ? params.y : 0;
-  const componentKey = params && params.componentKey ? params.componentKey : "unknown";
-  
-  // Return mock data for simplified implementation
-  return {
-    id: "component-instance-id",
-    name: "Component Instance",
-    x: x,
-    y: y,
-    width: 100,
-    height: 100,
-    componentId: componentKey
-  };
+  const { componentKey, x = 0, y = 0 } = params || {};
+
+  if (!componentKey) {
+    throw new Error("Missing componentKey parameter");
+  }
+
+  try {
+    const component = await figma.importComponentByKeyAsync(componentKey);
+    const instance = component.createInstance();
+
+    instance.x = x;
+    instance.y = y;
+
+    figma.currentPage.appendChild(instance);
+
+    return {
+      id: instance.id,
+      name: instance.name,
+      x: instance.x,
+      y: instance.y,
+      width: instance.width,
+      height: instance.height,
+      componentId: instance.componentId,
+    };
+  } catch (error) {
+    throw new Error(`Error creating component instance: ${error.message}`);
+  }
 }
 
 /**
- * Exports a node as an image.
+ * Exports a node as an image in the Figma document.
+ *
+ * @param {object} params - Export parameters.
+ * @param {string} params.nodeId - The ID of the node to export.
+ * @param {string} [params.format="PNG"] - The desired image format ("PNG","JPG","SVG","PDF").
+ * @param {number} [params.scale=1] - The scale factor for the export.
+ *
+ * @returns {Promise<object>} An object containing nodeId, format, scale, mimeType, and base64-encoded image data.
+ *
+ * @throws Will throw an error if the node is not found, does not support exporting, or if the export fails.
+ *
+ * @example
+ * const image = await exportNodeAsImage({ nodeId: "12345", format: "PNG", scale: 2 });
+ * console.log(image.mimeType, image.imageData);
  */
 export async function exportNodeAsImage(params) {
-  const nodeId = params && params.nodeId ? params.nodeId : "unknown";
-  const format = params && params.format ? params.format : "PNG";
-  const scale = params && params.scale ? params.scale : 1;
-  
-  // Return mock data for simplified implementation
-  return {
-    nodeId: nodeId,
-    format: format, 
-    scale: scale,
-    mimeType: "image/png",
-    imageData: "base64encodedmockdata"
-  };
-}
+  const { nodeId, scale = 1 } = params || {};
+  const format = "PNG";
 
-/**
- * Groups multiple nodes into a single group.
- */
-export async function groupNodes(params) {
-  const name = params && params.name ? params.name : "Group";
-  const nodeIds = params && params.nodeIds ? params.nodeIds : [];
-  
-  // Return mock data for simplified implementation
-  return {
-    id: "group-id",
-    name: name,
-    type: "GROUP",
-    children: nodeIds.map(function(id) {
-      return {
-        id: id,
-        name: "Node " + id,
-        type: "UNKNOWN"
-      };
-    })
-  };
-}
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
 
-/**
- * Ungroups a group into its constituent nodes.
- */
-export async function ungroupNodes(params) {
-  // Return mock data for simplified implementation
-  return {
-    success: true,
-    ungroupedCount: 2,
-    items: [
-      { id: "child-1", name: "Child 1", type: "RECTANGLE" },
-      { id: "child-2", name: "Child 2", type: "RECTANGLE" }
-    ]
-  };
-}
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
 
-/**
- * Inserts a child node into a parent node at a specific index.
- */
-export async function insertChild(params) {
-  const parentId = params && params.parentId ? params.parentId : "unknown";
-  const childId = params && params.childId ? params.childId : "unknown";
-  const index = params && params.index !== undefined ? params.index : 0;
-  
-  // Return mock data for simplified implementation
-  return {
-    parentId: parentId,
-    childId: childId,
-    index: index,
-    success: true,
-    previousParentId: null
-  };
-}
+  if (!("exportAsync" in node)) {
+    throw new Error(`Node does not support exporting: ${nodeId}`);
+  }
 
-/**
- * Renames a single layer in the document.
- */
-export async function rename_layer(params) {
-  const nodeId = params && params.nodeId ? params.nodeId : "unknown";
-  const newName = params && params.newName ? params.newName : "Renamed Layer";
-  
-  // Return mock data for simplified implementation
-  return {
-    success: true,
-    nodeId: nodeId,
-    originalName: "Old Name",
-    newName: newName
-  };
-}
+  try {
+    const settings = {
+      format: format,
+      constraint: { type: "SCALE", value: scale },
+    };
 
-/**
- * Renames multiple layers with a pattern.
- */
-export async function rename_layers(params) {
-  const layer_ids = params && params.layer_ids ? params.layer_ids : [];
-  const new_name = params && params.new_name ? params.new_name : "New Layer Name";
-  
-  // Return mock data for simplified implementation
-  return {
-    success: true,
-    renamed_count: layer_ids.length
-  };
-}
+    const bytes = await node.exportAsync(settings);
 
-/**
- * Renames multiple layers with distinct names.
- */
-export async function rename_multiple(params) {
-  const layer_ids = params && params.layer_ids ? params.layer_ids : [];
-  const new_names = params && params.new_names ? params.new_names : [];
-  
-  // Return mock data for simplified implementation
-  return {
-    success: true,
-    results: function() {
-      var results = [];
-      for (var i = 0; i < layer_ids.length; i++) {
-        results.push({
-          nodeId: layer_ids[i],
-          status: "renamed",
-          result: {
-            nodeId: layer_ids[i],
-            originalName: "Old Name",
-            newName: i < new_names.length ? new_names[i] : "Default Name"
-          }
-        });
-      }
-      return results;
-    }()
-  };
-}
+    let mimeType;
+    switch (format) {
+      case "PNG":
+        mimeType = "image/png";
+        break;
+      case "JPG":
+        mimeType = "image/jpeg";
+        break;
+      case "SVG":
+        mimeType = "image/svg+xml";
+        break;
+      case "PDF":
+        mimeType = "application/pdf";
+        break;
+      default:
+        mimeType = "application/octet-stream";
+    }
 
-/**
- * Uses AI to rename layers.
- */
-export async function ai_rename_layers(params) {
-  const layer_ids = params && params.layer_ids ? params.layer_ids : [];
-  const context_prompt = params && params.context_prompt ? params.context_prompt : "";
-  
-  // Return mock data for simplified implementation
-  return {
-    success: true,
-    names: function() {
-      var names = [];
-      for (var i = 0; i < layer_ids.length; i++) {
-        names.push("AI Generated Name");
-      }
-      return names;
-    }()
-  };
+    // Convert Uint8Array to base64
+    const base64 = customBase64Encode(bytes);
+
+    return {
+      nodeId,
+      format,
+      scale,
+      mimeType,
+      imageData: base64,
+    };
+  } catch (error) {
+    throw new Error(`Error exporting node as image: ${error.message}`);
+  }
 }
 
 // Export the operations as a group
@@ -200,12 +228,5 @@ export const componentOperations = {
   getLocalComponents,
   getRemoteComponents,
   createComponentInstance,
-  exportNodeAsImage,
-  groupNodes,
-  ungroupNodes,
-  insertChild,
-  rename_layer,
-  rename_layers,
-  rename_multiple,
-  ai_rename_layers
+  exportNodeAsImage
 };

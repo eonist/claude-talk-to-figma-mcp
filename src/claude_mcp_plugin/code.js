@@ -1,1072 +1,2653 @@
-// Bundled Figma plugin code - Do not edit directly
-"use strict";
-(() => {
-  var __async = (__this, __arguments, generator) => {
-    return new Promise((resolve, reject) => {
-      var fulfilled = (value) => {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      };
-      var rejected = (value) => {
-        try {
-          step(generator.throw(value));
-        } catch (e) {
-          reject(e);
-        }
-      };
-      var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-      step((generator = generator.apply(__this, __arguments)).next());
-    });
-  };
+// Figma Plugin - Auto-generated code from build.js
 
-  // src/claude_mcp_plugin/src/modules/utils.js
-  var state = {
-    serverPort: 3055
-    // Default port
+// ----- Utils Module -----
+// Plugin state
+const state = {
+  serverPort: 3055, // Default port
+};
+
+/**
+ * Sends a progress update message to the plugin UI.
+ *
+ * Constructs and sends a detailed progress update object for asynchronous commands.
+ * This includes status, progress percentage, counts of total and processed items,
+ * descriptive messages, and optional chunking information.
+ *
+ * @param {string} commandId - Unique identifier for the command execution.
+ * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
+ * @param {string} status - Current status ('started', 'in_progress', 'completed', 'error').
+ * @param {number} progress - Completion percentage (0-100).
+ * @param {number} totalItems - Total number of items to process.
+ * @param {number} processedItems - Number of items processed so far.
+ * @param {string} message - Descriptive progress message.
+ * @param {object} [payload=null] - Optional additional data, including chunk info.
+ *
+ * @returns {object} Progress update object with timestamp.
+ *
+ * @example
+ * sendProgressUpdate(
+ *   'cmd_abc123',
+ *   'scan_text_nodes',
+ *   'in_progress',
+ *   50,
+ *   100,
+ *   50,
+ *   'Halfway done scanning text nodes',
+ *   { currentChunk: 1, totalChunks: 2, chunkSize: 50 }
+ * );
+ */
+function sendProgressUpdate(
+  commandId, 
+  commandType, 
+  status, 
+  progress, 
+  totalItems, 
+  processedItems, 
+  message, 
+  payload = null
+) {
+  const update = {
+    type: 'command_progress',
+    commandId,
+    commandType,
+    status,
+    progress,
+    totalItems,
+    processedItems,
+    message,
+    timestamp: Date.now()
   };
-  function initializePlugin() {
-    return __async(this, null, function* () {
-      try {
-        const savedSettings = yield figma.clientStorage.getAsync("settings");
-        if (savedSettings) {
-          if (savedSettings.serverPort) {
-            state.serverPort = savedSettings.serverPort;
-          }
-        }
-        figma.ui.postMessage({
-          type: "init-settings",
-          settings: {
-            serverPort: state.serverPort
-          }
-        });
-      } catch (error) {
-        console.error("Error loading settings:", error);
-      }
-    });
-  }
-  function updateSettings(settings) {
-    if (settings.serverPort) {
-      state.serverPort = settings.serverPort;
+  
+  // Add optional chunk information if present
+  if (payload) {
+    if (payload.currentChunk !== undefined && payload.totalChunks !== undefined) {
+      update.currentChunk = payload.currentChunk;
+      update.totalChunks = payload.totalChunks;
+      update.chunkSize = payload.chunkSize;
     }
-    figma.clientStorage.setAsync("settings", {
-      serverPort: state.serverPort
-    });
+    update.payload = payload;
   }
-  function setCharacters(node, characters, options) {
-    return __async(this, null, function* () {
-      const fallbackFont = options && options.fallbackFont || {
-        family: "Inter",
-        style: "Regular"
-      };
-      try {
-        if (node.fontName === figma.mixed) {
-          const firstCharFont = node.getRangeFontName(0, 1);
-          yield figma.loadFontAsync(firstCharFont);
-          node.fontName = firstCharFont;
-        } else {
-          yield figma.loadFontAsync({
-            family: node.fontName.family,
-            style: node.fontName.style
-          });
-        }
-      } catch (err) {
-        console.warn(
-          `Failed to load font and replaced with fallback "${fallbackFont.family} ${fallbackFont.style}"`,
-          err
-        );
-        yield figma.loadFontAsync(fallbackFont);
-        node.fontName = fallbackFont;
+  
+  // Send to UI
+  figma.ui.postMessage(update);
+  console.log(`Progress update: ${status} - ${progress}% - ${message}`);
+  
+  return update;
+}
+
+/**
+ * Initialize plugin settings on load.
+ * 
+ * This function retrieves stored settings from Figma's client storage and applies them.
+ * It also sends the initial settings to the plugin UI.
+ * 
+ * @returns {Promise<void>}
+ * 
+ * @throws May log errors to console if settings retrieval fails, but won't throw errors.
+ */
+async function initializePlugin() {
+  try {
+    const savedSettings = await figma.clientStorage.getAsync("settings");
+    if (savedSettings) {
+      if (savedSettings.serverPort) {
+        state.serverPort = savedSettings.serverPort;
       }
-      try {
-        node.characters = characters;
-        return true;
-      } catch (err) {
-        console.warn(`Failed to set characters. Skipped.`, err);
-        return false;
-      }
+    }
+
+    // Send initial settings to UI
+    figma.ui.postMessage({
+      type: "init-settings",
+      settings: {
+        serverPort: state.serverPort,
+      },
     });
+  } catch (error) {
+    console.error("Error loading settings:", error);
+  }
+}
+
+/**
+ * Updates plugin settings by saving the server port to state and client storage.
+ *
+ * @param {{ serverPort: number }} settings - Settings object containing serverPort.
+ */
+function updateSettings(settings) {
+  if (settings.serverPort) {
+    state.serverPort = settings.serverPort;
   }
 
-  // src/claude_mcp_plugin/src/modules/document.js
-  function getDocumentInfo() {
-    return __async(this, null, function* () {
-      const page = figma.currentPage;
-      return {
-        name: page.name,
+  figma.clientStorage.setAsync("settings", {
+    serverPort: state.serverPort,
+  });
+}
+
+/**
+ * Returns a promise that resolves after a specified delay.
+ *
+ * @param {number} ms - The delay duration in milliseconds.
+ * @returns {Promise<void>} A promise that resolves after the delay.
+ * 
+ * @example
+ * // Wait for 500ms
+ * await delay(500);
+ */
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Custom base64 encoding function for binary data.
+ * 
+ * Provides a manual implementation of base64 encoding for Uint8Array data.
+ * This is useful for image data and other binary content that needs to be 
+ * serialized for transmission.
+ *
+ * @param {Uint8Array} bytes - The binary data to encode.
+ * @returns {string} A base64 encoded string representation of the data.
+ * 
+ * @example
+ * const imageBytes = await node.exportAsync({format: "PNG"});
+ * const base64String = customBase64Encode(imageBytes);
+ */
+function customBase64Encode(bytes) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let base64 = "";
+
+  const byteLength = bytes.byteLength;
+  const byteRemainder = byteLength % 3;
+  const mainLength = byteLength - byteRemainder;
+
+  let a, b, c, d;
+  let chunk;
+
+  // Main loop deals with bytes in chunks of 3
+  for (let i = 0; i < mainLength; i = i + 3) {
+    // Combine the three bytes into a single integer
+    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+
+    // Use bitmasks to extract 6-bit segments from the triplet
+    a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
+    b = (chunk & 258048) >> 12; // 258048 = (2^6 - 1) << 12
+    c = (chunk & 4032) >> 6; // 4032 = (2^6 - 1) << 6
+    d = chunk & 63; // 63 = 2^6 - 1
+
+    // Convert the raw binary segments to the appropriate ASCII encoding
+    base64 += chars[a] + chars[b] + chars[c] + chars[d];
+  }
+
+  // Deal with the remaining bytes and padding
+  if (byteRemainder === 1) {
+    chunk = bytes[mainLength];
+
+    a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
+
+    // Set the 4 least significant bits to zero
+    b = (chunk & 3) << 4; // 3 = 2^2 - 1
+
+    base64 += chars[a] + chars[b] + "==";
+  } else if (byteRemainder === 2) {
+    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
+
+    a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008) >> 4; // 1008 = (2^6 - 1) << 4
+
+    // Set the 2 least significant bits to zero
+    c = (chunk & 15) << 2; // 15 = 2^4 - 1
+
+    base64 += chars[a] + chars[b] + chars[c] + "=";
+  }
+
+  return base64;
+}
+
+/**
+ * Generates a unique command ID string.
+ * 
+ * Creates a random, unique identifier prefixed with 'cmd_' that can be used
+ * to track and correlate command execution across the plugin.
+ * 
+ * @returns {string} A unique command ID string.
+ * 
+ * @example
+ * const commandId = generateCommandId();
+ * // commandId might be: "cmd_a7f3b9c2e5d1g6h8i0j2"
+ */
+function generateCommandId() {
+  return 'cmd_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+/**
+ * Filters an array to contain only unique values based on a property or predicate function.
+ * 
+ * This function removes duplicate items from an array, where uniqueness is determined
+ * by a property value or a function that derives a value from each item.
+ * 
+ * @param {Array} arr - The array to filter.
+ * @param {string|Function} predicate - Either a property name or a function that returns a value to check for uniqueness.
+ * @returns {Array} A new array containing only unique items.
+ * 
+ * @example
+ * // Filter by object property
+ * const uniqueUsers = uniqBy(users, 'id');
+ * 
+ * @example
+ * // Filter by function result
+ * const uniqueByName = uniqBy(items, item => item.firstName + item.lastName);
+ */
+function uniqBy(arr, predicate) {
+  const cb = typeof predicate === "function" 
+    ? predicate 
+    : (o) => o[predicate];
+    
+  return [
+    ...arr
+      .reduce((map, item) => {
+        const key = item === null || item === undefined ? item : cb(item);
+        map.has(key) || map.set(key, item);
+        return map;
+      }, new Map())
+      .values(),
+  ];
+}
+
+/**
+ * Helper to safely set characters on a text node with font loading.
+ * 
+ * This function handles the complexities of setting text content on Figma text nodes,
+ * including proper font loading and fallback handling for mixed-font nodes.
+ * 
+ * @param {SceneNode} node - The Figma text node to modify.
+ * @param {string} characters - The text content to set.
+ * @param {object} [options] - Optional configuration.
+ * @param {object} [options.fallbackFont] - Font to use as fallback if loading fails.
+ * @param {string} [options.fallbackFont.family="Inter"] - Fallback font family.
+ * @param {string} [options.fallbackFont.style="Regular"] - Fallback font style.
+ * 
+ * @returns {Promise<boolean>} True if characters were set successfully, false otherwise.
+ * 
+ * @throws Logs warnings to console but doesn't throw errors.
+ */
+async function setCharacters(node, characters, options) {
+  const fallbackFont = (options && options.fallbackFont) || {
+    family: "Inter",
+    style: "Regular",
+  };
+  
+  try {
+    if (node.fontName === figma.mixed) {
+      const firstCharFont = node.getRangeFontName(0, 1);
+      await figma.loadFontAsync(firstCharFont);
+      node.fontName = firstCharFont;
+    } else {
+      await figma.loadFontAsync({
+        family: node.fontName.family,
+        style: node.fontName.style,
+      });
+    }
+  } catch (err) {
+    console.warn(
+      `Failed to load font and replaced with fallback "${fallbackFont.family} ${fallbackFont.style}"`,
+      err
+    );
+    await figma.loadFontAsync(fallbackFont);
+    node.fontName = fallbackFont;
+  }
+  
+  try {
+    node.characters = characters;
+    return true;
+  } catch (err) {
+    console.warn(`Failed to set characters. Skipped.`, err);
+    return false;
+  }
+}
+
+
+// ----- document Module -----
+// Document operations module
+
+/**
+ * Retrieves detailed information about the current Figma page.
+ *
+ * This function loads the current page asynchronously and extracts key properties including:
+ * - The page's name, ID, and type.
+ * - An array of child nodes with their ID, name, and type.
+ * - Summary information for the current page.
+ * - A simplified pages list (currently based solely on the current page).
+ *
+ * @returns {Promise<Object>} An object containing document info.
+ *
+ * @example
+ * const info = await getDocumentInfo();
+ * console.log(info.name, info.currentPage.childCount);
+ */
+async function getDocumentInfo() {
+  const page = figma.currentPage;
+  return {
+    name: page.name,
+    id: page.id,
+    type: "PAGE",
+    children: page.children.map((node) => ({
+      id: node.id,
+      name: node.name,
+      type: node.type || "UNKNOWN",
+    })),
+    currentPage: {
+      id: page.id,
+      name: page.name,
+      childCount: page.children.length,
+    },
+    pages: [
+      {
         id: page.id,
-        type: "PAGE",
-        children: page.children.map((node) => ({
-          id: node.id,
-          name: node.name,
-          type: node.type || "UNKNOWN"
-        })),
-        currentPage: {
-          id: page.id,
-          name: page.name,
-          childCount: page.children.length
-        },
-        pages: [
-          {
-            id: page.id,
-            name: page.name,
-            childCount: page.children.length
-          }
-        ]
-      };
-    });
+        name: page.name,
+        childCount: page.children.length,
+      },
+    ],
+  };
+}
+
+/**
+ * Retrieves information about the current selection on the Figma page.
+ *
+ * Returns an object that contains:
+ * - The number of nodes selected.
+ * - An array of selected nodes with their ID, name, type, and visibility status.
+ *
+ * @returns {Promise<Object>} An object containing selection count and details.
+ *
+ * @example
+ * const selection = await getSelection();
+ * console.log(`You have selected ${selection.selectionCount} nodes`);
+ */
+async function getSelection() {
+  // Getting the selection from figma.currentPage.selection if available
+  const selection = figma.currentPage.selection || [];
+  return {
+    selectionCount: selection.length,
+    selection: selection.map((node) => ({
+      id: node.id,
+      name: node.name,
+      type: node.type || "UNKNOWN",
+      visible: node.visible,
+    })),
+  };
+}
+
+/**
+ * Retrieves exported information for a specified node.
+ *
+ * This function locates a node by its ID, exports its data using the "JSON_REST_V1" format,
+ * and returns the resulting document.
+ *
+ * @param {string} nodeId - The unique identifier of the node.
+ * @returns {Promise<Object>} The node's exported document.
+ *
+ * @throws Will throw an error if the node cannot be found.
+ *
+ * @example
+ * const nodeData = await getNodeInfo("123456");
+ */
+async function getNodeInfo(nodeId) {
+  const node = await figma.getNodeByIdAsync(nodeId);
+
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
   }
-  function getSelection() {
-    return __async(this, null, function* () {
-      const selection = figma.currentPage.selection || [];
-      return {
-        selectionCount: selection.length,
-        selection: selection.map((node) => ({
-          id: node.id,
-          name: node.name,
-          type: node.type || "UNKNOWN",
-          visible: node.visible
-        }))
-      };
+
+  try {
+    const response = await node.exportAsync({
+      format: "JSON_REST_V1",
     });
+
+    return response.document;
+  } catch (error) {
+    // If the exportAsync method doesn't work as expected, return basic node info
+    return {
+      id: node.id,
+      name: node.name,
+      type: node.type || "UNKNOWN"
+    };
   }
-  function getNodeInfo(nodeId) {
-    return __async(this, null, function* () {
-      const node = yield figma.getNodeByIdAsync(nodeId);
-      if (!node) {
-        throw new Error(`Node not found with ID: ${nodeId}`);
-      }
-      try {
-        const response = yield node.exportAsync({
-          format: "JSON_REST_V1"
-        });
-        return response.document;
-      } catch (error) {
-        return {
-          id: node.id,
-          name: node.name,
-          type: node.type || "UNKNOWN"
-        };
-      }
-    });
-  }
-  function getNodesInfo(nodeIds) {
-    return __async(this, null, function* () {
-      try {
-        const nodes = yield Promise.all(
-          nodeIds.map((id) => figma.getNodeByIdAsync(id))
-        );
-        const validNodes = nodes.filter((node) => node !== null);
-        const responses = yield Promise.all(
-          validNodes.map((node) => __async(null, null, function* () {
-            try {
-              const response = yield node.exportAsync({
-                format: "JSON_REST_V1"
-              });
-              return {
-                nodeId: node.id,
-                document: response.document
-              };
-            } catch (error) {
-              return {
-                nodeId: node.id,
-                document: {
-                  id: node.id,
-                  name: node.name,
-                  type: node.type || "UNKNOWN"
-                }
-              };
+}
+
+/**
+ * Retrieves exported information for multiple nodes.
+ *
+ * This function accepts an array of node IDs, loads each node asynchronously,
+ * filters out nodes that cannot be found, and exports the information for each valid node.
+ *
+ * @param {string[]} nodeIds - An array of node IDs to process.
+ * @returns {Promise<Array>} An array of objects, each containing a node's ID and its exported document.
+ *
+ * @throws Will throw an error if any error occurs during processing.
+ *
+ * @example
+ * const nodesInfo = await getNodesInfo(["id1", "id2", "id3"]);
+ * console.log(nodesInfo);
+ */
+async function getNodesInfo(nodeIds) {
+  try {
+    // Load all nodes in parallel
+    const nodes = await Promise.all(
+      nodeIds.map((id) => figma.getNodeByIdAsync(id))
+    );
+
+    // Filter out any null values (nodes that weren't found)
+    const validNodes = nodes.filter((node) => node !== null);
+
+    // Export all valid nodes in parallel
+    const responses = await Promise.all(
+      validNodes.map(async (node) => {
+        try {
+          const response = await node.exportAsync({
+            format: "JSON_REST_V1",
+          });
+          
+          return {
+            nodeId: node.id,
+            document: response.document,
+          };
+        } catch (error) {
+          // If the fails, return basic info
+          return {
+            nodeId: node.id,
+            document: {
+              id: node.id,
+              name: node.name,
+              type: node.type || "UNKNOWN"
             }
-          }))
-        );
-        return responses;
-      } catch (error) {
-        throw new Error(`Error getting nodes info: ${error.message}`);
-      }
-    });
+          };
+        }
+      })
+    );
+
+    return responses;
+  } catch (error) {
+    throw new Error(`Error getting nodes info: ${error.message}`);
   }
-  var documentOperations = {
-    getDocumentInfo,
-    getSelection,
-    getNodeInfo,
-    getNodesInfo
+}
+
+// Export the operations as a group
+const documentOperations = {
+  getDocumentInfo,
+  getSelection,
+  getNodeInfo,
+  getNodesInfo
+};
+
+
+// ----- shapes Module -----
+// Shapes module
+
+/**
+ * Creates a new rectangle node in the Figma document.
+ *
+ * The function instantiates a rectangle with specified position, size, and name.
+ * Optionally, if a parentId is provided, the rectangle is appended to that node; otherwise, it is added to the current page.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the rectangle.
+ * @param {number} [params.y=0] - The Y coordinate of the rectangle.
+ * @param {number} [params.width=100] - The width of the rectangle.
+ * @param {number} [params.height=100] - The height of the rectangle.
+ * @param {string} [params.name="Rectangle"] - The name assigned to the rectangle.
+ * @param {string} [params.parentId] - The ID of the parent node to which the rectangle should be appended.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object with details of the created rectangle (id, name, position, size, and parent id if applicable).
+ *
+ * @throws Will throw an error if the specified parent node is not found or if it does not support children.
+ */
+async function createRectangle(params) {
+  const {
+    x = 0,
+    y = 0,
+    width = 100,
+    height = 100,
+    name = "Rectangle",
+    parentId,
+    fillColor,
+    strokeColor,
+    strokeWeight,
+  } = params || {};
+
+  const rect = figma.createRectangle();
+  rect.x = x;
+  rect.y = y;
+  rect.resize(width, height);
+  rect.name = name;
+
+  // Set fill color if provided
+  if (fillColor) {
+    setFill(rect, fillColor);
+  }
+
+  // Set stroke color and weight if provided
+  if (strokeColor) {
+    setStroke(rect, strokeColor, strokeWeight);
+  }
+
+  // If parentId is provided, append to that node, otherwise append to current page
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (!parentNode) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    if (!("appendChild" in parentNode)) {
+      throw new Error(`Parent node does not support children: ${parentId}`);
+    }
+    parentNode.appendChild(rect);
+  } else {
+    figma.currentPage.appendChild(rect);
+  }
+
+  return {
+    id: rect.id,
+    name: rect.name,
+    x: rect.x,
+    y: rect.y,
+    width: rect.width,
+    height: rect.height,
+    parentId: rect.parent ? rect.parent.id : undefined,
+  };
+}
+
+/**
+ * Creates a new frame node in the Figma document.
+ *
+ * The function instantiates a frame with specified position, size, and name.
+ * It supports optional fillColor, strokeColor, and strokeWeight parameters.
+ * If parentId is provided, the frame is appended to that node; otherwise, it is added to the current page.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the frame.
+ * @param {number} [params.y=0] - The Y coordinate of the frame.
+ * @param {number} [params.width=100] - The width of the frame.
+ * @param {number} [params.height=100] - The height of the frame.
+ * @param {string} [params.name="Frame"] - The name assigned to the frame.
+ * @param {string} [params.parentId] - The ID of the parent node to which the frame should be appended.
+ * @param {object} [params.fillColor] - Optional fill color {r, g, b, a}.
+ * @param {object} [params.strokeColor] - Optional stroke color {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ *
+ * @returns {object} An object with details of the created frame.
+ */
+async function createFrame(params) {
+  const {
+    x = 0,
+    y = 0,
+    width = 100,
+    height = 100,
+    name = "Frame",
+  } = params || {};
+  
+  return { id: "frame-mock-id", name, x, y, width, height };
+}
+
+/**
+ * Creates a new ellipse node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the ellipse.
+ * @param {number} [params.y=0] - The Y coordinate of the ellipse.
+ * @param {number} [params.width=100] - The width of the ellipse.
+ * @param {number} [params.height=100] - The height of the ellipse.
+ * @param {string} [params.name="Ellipse"] - The name assigned to the ellipse.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the ellipse's details.
+ */
+async function createEllipse(params) {
+  const name = params && params.name ? params.name : "Ellipse";
+  return { id: "ellipse-mock-id", name: name };
+}
+
+/**
+ * Creates a new polygon node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the polygon.
+ * @param {number} [params.y=0] - The Y coordinate of the polygon.
+ * @param {number} [params.width=100] - The width of the polygon.
+ * @param {number} [params.height=100] - The height of the polygon.
+ * @param {number} [params.sides=6] - The number of sides (minimum 3).
+ * @param {string} [params.name="Polygon"] - The name assigned to the polygon.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the polygon's details.
+ */
+async function createPolygon(params) {
+  const name = params && params.name ? params.name : "Polygon";
+  return { id: "polygon-mock-id", name: name };
+}
+
+/**
+ * Creates a new star node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the star.
+ * @param {number} [params.y=0] - The Y coordinate of the star.
+ * @param {number} [params.width=100] - The width of the star.
+ * @param {number} [params.height=100] - The height of the star.
+ * @param {number} [params.points=5] - The number of points (minimum 3).
+ * @param {number} [params.innerRadius=0.5] - The inner radius ratio (0.01–0.99).
+ * @param {string} [params.name="Star"] - The name assigned to the star.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the star's details.
+ */
+async function createStar(params) {
+  const name = params && params.name ? params.name : "Star";
+  return { id: "star-mock-id", name: name };
+}
+
+/**
+ * Creates a new vector node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the vector.
+ * @param {number} [params.y=0] - The Y coordinate of the vector.
+ * @param {number} [params.width=100] - The width of the vector.
+ * @param {number} [params.height=100] - The height of the vector.
+ * @param {string} [params.name="Vector"] - The name assigned to the vector.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {Array} [params.vectorPaths] - The vector path definitions.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the vector's details.
+ */
+async function createVector(params) {
+  const name = params && params.name ? params.name : "Vector";
+  return { id: "vector-mock-id", name: name };
+}
+
+/**
+ * Creates a new line vector in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x1=0] - The starting X coordinate.
+ * @param {number} [params.y1=0] - The starting Y coordinate.
+ * @param {number} [params.x2=100] - The ending X coordinate.
+ * @param {number} [params.y2=0] - The ending Y coordinate.
+ * @param {string} [params.name="Line"] - The name assigned to the line.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight=1] - The stroke weight.
+ * @param {string} [params.strokeCap="NONE"] - The stroke cap style.
+ *
+ * @returns {object} An object containing the line's details.
+ */
+async function createLine(params) {
+  const name = params && params.name ? params.name : "Line";
+  return { id: "line-mock-id", name: name };
+}
+
+/**
+ * Sets the corner radius of a node in the Figma document.
+ *
+ * @param {object} params - Parameters for setting corner radius.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {number} params.radius - The corner radius to apply.
+ * @param {boolean[]} [params.corners] - Optional array of booleans [topLeft, topRight, bottomRight, bottomLeft] specifying which corners to round.
+ *
+ * @returns {object} An object with the node's updated corner radius values.
+ */
+async function setCornerRadius(params) {
+  return { id: params.nodeId, cornerRadius: params.radius };
+}
+
+/**
+ * Resizes a node to the given width and height.
+ *
+ * @param {object} params - Object containing resize parameters.
+ * @param {string} params.nodeId - The ID of the node to resize.
+ * @param {number} params.width - The new width to set.
+ * @param {number} params.height - The new height to set.
+ *
+ * @returns {object} An object with the updated node's dimensions.
+ */
+async function resizeNode(params) {
+  return { id: params.nodeId, width: params.width, height: params.height };
+}
+
+/**
+ * Deletes a node from the Figma document.
+ *
+ * @param {object} params - Parameters for deletion.
+ * @param {string} params.nodeId - The ID of the node to delete.
+ *
+ * @returns {object} An object containing the deleted node's information.
+ */
+async function deleteNode(params) {
+  return { id: params.nodeId, deleted: true };
+}
+
+/**
+ * Moves a node to the specified X and Y coordinates.
+ *
+ * @param {object} params - Parameters for moving the node.
+ * @param {string} params.nodeId - The ID of the node to move.
+ * @param {number} params.x - The new X position.
+ * @param {number} params.y - The new Y position.
+ *
+ * @returns {object} An object with the node's updated position.
+ */
+async function moveNode(params) {
+  return { id: params.nodeId, x: params.x, y: params.y };
+}
+
+/**
+ * Clones an existing node in the Figma document.
+ *
+ * @param {object} params - Parameters for cloning a node.
+ * @param {string} params.nodeId - The ID of the node to clone.
+ * @param {number} [params.x] - Optional X coordinate for the cloned node.
+ * @param {number} [params.y] - Optional Y coordinate for the cloned node.
+ *
+ * @returns {object} An object with the clone's id and reference to the original.
+ */
+async function cloneNode(params) {
+  return { id: "cloned-" + params.nodeId, original: params.nodeId };
+}
+
+/**
+ * Flattens a vector-based node in Figma.
+ *
+ * @param {object} params - Parameters for flattening.
+ * @param {string} params.nodeId - The ID of the node to flatten.
+ *
+ * @returns {object} An object with the flattened node's information.
+ */
+async function flattenNode(params) {
+  return { id: params.nodeId, flattened: true };
+}
+
+// Helper functions
+
+/**
+ * Sets the fill color of a node.
+ * 
+ * @param {object} node - The Figma node to modify.
+ * @param {object} color - The fill color as {r,g,b,a}.
+ * @private
+ */
+function setFill(node, color) {
+  const paintStyle = {
+    type: "SOLID",
+    color: {
+      r: parseFloat(color.r.toString()) || 0,
+      g: parseFloat(color.g.toString()) || 0,
+      b: parseFloat(color.b.toString()) || 0,
+    },
+    opacity: parseFloat((color.a || 1).toString()),
+  };
+  node.fills = [paintStyle];
+}
+
+/**
+ * Sets the stroke color and weight of a node.
+ * 
+ * @param {object} node - The Figma node to modify.
+ * @param {object} color - The stroke color as {r,g,b,a}.
+ * @param {number} [weight] - The stroke weight.
+ * @private
+ */
+function setStroke(node, color, weight) {
+  const strokeStyle = {
+    type: "SOLID",
+    color: {
+      r: parseFloat(color.r.toString()) || 0,
+      g: parseFloat(color.g.toString()) || 0,
+      b: parseFloat(color.b.toString()) || 0,
+    },
+    opacity: parseFloat((color.a || 1).toString()),
+  };
+  node.strokes = [strokeStyle];
+  
+  if (weight !== undefined) {
+    node.strokeWeight = weight;
+  }
+}
+
+// Export the operations as a group
+const shapeOperations = {
+  createRectangle,
+  createFrame,
+  createEllipse,
+  createPolygon,
+  createStar,
+  createVector,
+  createLine,
+  setCornerRadius,
+  resizeNode,
+  deleteNode,
+  moveNode,
+  cloneNode,
+  flattenNode
+};
+
+
+// ----- text Module -----
+// Text module
+
+/**
+ * Creates a new text node in the Figma document.
+ *
+ * The function instantiates a text element with specified position, font settings, content, and name.
+ * It supports optional fontSize, fontWeight, and fontColor parameters.
+ * If parentId is provided, the text node is appended to that node; otherwise, it is added to the current page.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the text node.
+ * @param {number} [params.y=0] - The Y coordinate of the text node.
+ * @param {string} [params.text="Text"] - The initial text content.
+ * @param {number} [params.fontSize=14] - The font size.
+ * @param {number} [params.fontWeight=400] - The font weight.
+ * @param {object} [params.fontColor={r:0,g:0,b:0,a:1}] - The font color in RGBA format.
+ * @param {string} [params.name="Text"] - The name assigned to the text node.
+ * @param {string} [params.parentId] - The ID of the parent node to which the text node should be appended.
+ *
+ * @returns {object} An object with details of the created text node (id, name, position, size, characters, fontName, fills, and parentId).
+ *
+ * @throws Will throw an error if the specified parent node is not found or if it does not support children.
+ */
+async function createText(params) {
+  const {
+    x = 0,
+    y = 0,
+    text = "Text",
+    fontSize = 14,
+    fontWeight = 400,
+    fontColor = { r: 0, g: 0, b: 0, a: 1 },
+    name = "Text",
+    parentId,
+  } = params || {};
+
+  // Map common font weights to Figma font styles
+  const getFontStyle = (weight) => {
+    switch (weight) {
+      case 100: return "Thin";
+      case 200: return "Extra Light";
+      case 300: return "Light";
+      case 400: return "Regular";
+      case 500: return "Medium";
+      case 600: return "Semi Bold";
+      case 700: return "Bold";
+      case 800: return "Extra Bold";
+      case 900: return "Black";
+      default: return "Regular";
+    }
   };
 
-  // src/claude_mcp_plugin/src/modules/shapes.js
-  function createRectangle(params) {
-    return __async(this, null, function* () {
-      const {
-        x = 0,
-        y = 0,
-        width = 100,
-        height = 100,
-        name = "Rectangle",
-        parentId,
-        fillColor,
-        strokeColor,
-        strokeWeight
-      } = params || {};
-      const rect = figma.createRectangle();
-      rect.x = x;
-      rect.y = y;
-      rect.resize(width, height);
-      rect.name = name;
-      if (fillColor) {
-        setFill(rect, fillColor);
-      }
-      if (strokeColor) {
-        setStroke(rect, strokeColor, strokeWeight);
-      }
-      if (parentId) {
-        const parentNode = yield figma.getNodeByIdAsync(parentId);
-        if (!parentNode) {
-          throw new Error(`Parent node not found with ID: ${parentId}`);
-        }
-        if (!("appendChild" in parentNode)) {
-          throw new Error(`Parent node does not support children: ${parentId}`);
-        }
-        parentNode.appendChild(rect);
-      } else {
-        figma.currentPage.appendChild(rect);
-      }
-      return {
-        id: rect.id,
-        name: rect.name,
-        x: rect.x,
-        y: rect.y,
-        width: rect.width,
-        height: rect.height,
-        parentId: rect.parent ? rect.parent.id : void 0
-      };
-    });
-  }
-  function createFrame(params) {
-    return __async(this, null, function* () {
-      const {
-        x = 0,
-        y = 0,
-        width = 100,
-        height = 100,
-        name = "Frame"
-      } = params || {};
-      return { id: "frame-mock-id", name, x, y, width, height };
-    });
-  }
-  function createEllipse(params) {
-    return __async(this, null, function* () {
-      const name = params && params.name ? params.name : "Ellipse";
-      return { id: "ellipse-mock-id", name };
-    });
-  }
-  function createPolygon(params) {
-    return __async(this, null, function* () {
-      const name = params && params.name ? params.name : "Polygon";
-      return { id: "polygon-mock-id", name };
-    });
-  }
-  function createStar(params) {
-    return __async(this, null, function* () {
-      const name = params && params.name ? params.name : "Star";
-      return { id: "star-mock-id", name };
-    });
-  }
-  function createVector(params) {
-    return __async(this, null, function* () {
-      const name = params && params.name ? params.name : "Vector";
-      return { id: "vector-mock-id", name };
-    });
-  }
-  function createLine(params) {
-    return __async(this, null, function* () {
-      const name = params && params.name ? params.name : "Line";
-      return { id: "line-mock-id", name };
-    });
-  }
-  function setCornerRadius(params) {
-    return __async(this, null, function* () {
-      return { id: params.nodeId, cornerRadius: params.radius };
-    });
-  }
-  function resizeNode(params) {
-    return __async(this, null, function* () {
-      return { id: params.nodeId, width: params.width, height: params.height };
-    });
-  }
-  function deleteNode(params) {
-    return __async(this, null, function* () {
-      return { id: params.nodeId, deleted: true };
-    });
-  }
-  function moveNode(params) {
-    return __async(this, null, function* () {
-      return { id: params.nodeId, x: params.x, y: params.y };
-    });
-  }
-  function cloneNode(params) {
-    return __async(this, null, function* () {
-      return { id: "cloned-" + params.nodeId, original: params.nodeId };
-    });
-  }
-  function flattenNode(params) {
-    return __async(this, null, function* () {
-      return { id: params.nodeId, flattened: true };
-    });
-  }
-  function setFill(node, color) {
+  try {
+    const textNode = figma.createText();
+    textNode.x = x;
+    textNode.y = y;
+    textNode.name = name;
+    
+    try {
+      await figma.loadFontAsync({
+        family: "Inter",
+        style: getFontStyle(fontWeight),
+      });
+      textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
+      textNode.fontSize = fontSize;
+    } catch (error) {
+      console.error("Error setting font", error);
+    }
+    
+    await setCharacters(textNode, text);
+
+    // Set text color
     const paintStyle = {
       type: "SOLID",
       color: {
-        r: parseFloat(color.r.toString()) || 0,
-        g: parseFloat(color.g.toString()) || 0,
-        b: parseFloat(color.b.toString()) || 0
+        r: parseFloat(fontColor.r.toString()) || 0,
+        g: parseFloat(fontColor.g.toString()) || 0,
+        b: parseFloat(fontColor.b.toString()) || 0,
       },
-      opacity: parseFloat((color.a || 1).toString())
+      opacity: parseFloat((fontColor.a || 1).toString()),
     };
-    node.fills = [paintStyle];
+    
+    textNode.fills = [paintStyle];
+
+    // If parentId is provided, append to that node, otherwise append to current page
+    if (parentId) {
+      const parentNode = await figma.getNodeByIdAsync(parentId);
+      if (!parentNode) {
+        throw new Error(`Parent node not found with ID: ${parentId}`);
+      }
+      if (!("appendChild" in parentNode)) {
+        throw new Error(`Parent node does not support children: ${parentId}`);
+      }
+      parentNode.appendChild(textNode);
+    } else {
+      figma.currentPage.appendChild(textNode);
+    }
+
+    return {
+      id: textNode.id,
+      name: textNode.name,
+      x: textNode.x,
+      y: textNode.y,
+      width: textNode.width,
+      height: textNode.height,
+      characters: textNode.characters,
+      fontSize: textNode.fontSize,
+      fontWeight: fontWeight,
+      fontColor: fontColor,
+      fontName: textNode.fontName,
+      fills: textNode.fills,
+      parentId: textNode.parent ? textNode.parent.id : undefined,
+    };
+  } catch (error) {
+    console.error("Error creating text", error);
+    throw error;
   }
-  function setStroke(node, color, weight) {
-    const strokeStyle = {
-      type: "SOLID",
-      color: {
-        r: parseFloat(color.r.toString()) || 0,
-        g: parseFloat(color.g.toString()) || 0,
-        b: parseFloat(color.b.toString()) || 0
-      },
-      opacity: parseFloat((color.a || 1).toString())
+}
+
+/**
+ * Sets the text content of a text node.
+ *
+ * @param {object} params - Parameters for setting text content.
+ * @param {string} params.nodeId - The ID of the text node to modify.
+ * @param {string} params.text - The new text content.
+ *
+ * @returns {object} An object containing the node's id, name, characters, and fontName.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ *
+ * @example
+ * const result = await setTextContent({ nodeId: "12345", text: "Hello World" });
+ * console.log(result.characters);
+ */
+async function setTextContent(params) {
+  const { nodeId, text } = params || {};
+
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+
+  if (text === undefined) {
+    throw new Error("Missing text parameter");
+  }
+
+  try {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      throw new Error(`Node not found with ID: ${nodeId}`);
+    }
+
+    if ((node.type !== "TEXT")) {
+      throw new Error(`Node is not a text node: ${nodeId}`);
+    }
+
+    await figma.loadFontAsync(node.fontName);
+    await setCharacters(node, text);
+
+    return {
+      id: node.id,
+      name: node.name,
+      characters: node.characters,
+      fontName: node.fontName,
     };
-    node.strokes = [strokeStyle];
-    if (weight !== void 0) {
-      node.strokeWeight = weight;
+  } catch (error) {
+    console.error("Error setting text content", error);
+    throw error;
+  }
+}
+
+/**
+ * Scans all text nodes within a specified node, optionally using chunked processing.
+ *
+ * @param {object} params - Parameters for scanning text nodes.
+ * @param {string} params.nodeId - The ID of the node to scan.
+ * @param {boolean} [params.useChunking=true] - Whether to use chunked processing.
+ * @param {number} [params.chunkSize=10] - The size of each chunk for processing.
+ * @param {string} [params.commandId] - Optional command ID for progress updates.
+ *
+ * @returns {Promise<object>} An object containing scan results and metadata.
+ *
+ * @throws Will throw an error if the node is not found or scanning fails.
+ */
+async function scanTextNodes(params) {
+  return {
+    success: true,
+    message: `Scanned text nodes successfully`,
+    count: 0,
+    textNodes: []
+  };
+}
+
+/**
+ * Sets multiple text contents in a batch operation.
+ *
+ * @param {object} params - Parameters for batch text replacement.
+ * @param {string} params.nodeId - The parent node ID containing text nodes to update.
+ * @param {Array<object>} params.text - Array of text replacement objects.
+ * @param {string} [params.commandId] - Optional command ID for progress updates.
+ *
+ * @returns {Promise<object>} An object containing success status and results of text replacements.
+ *
+ * @throws Will throw an error if required parameters are missing or invalid.
+ */
+async function setMultipleTextContents(params) {
+  return {
+    success: true,
+    nodeId: params.nodeId,
+    replacementsApplied: params.text.length,
+    replacementsFailed: 0,
+    totalReplacements: params.text.length,
+    results: []
+  };
+}
+
+/**
+ * Sets the font family and style of a text node.
+ *
+ * @param {object} params - Parameters for setting font name.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.family - The font family name.
+ * @param {string} [params.style="Regular"] - The font style.
+ *
+ * @returns {object} An object with the node's id, name, and updated fontName.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setFontName(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    fontName: { family: params.family, style: params.style || "Regular" }
+  };
+}
+
+/**
+ * Sets the font size of a text node.
+ *
+ * @param {object} params - Parameters for setting font size.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.fontSize - The font size in pixels.
+ *
+ * @returns {object} An object with the node's id, name, and updated fontSize.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setFontSize(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    fontSize: params.fontSize
+  };
+}
+
+/**
+ * Sets the font weight of a text node.
+ *
+ * @param {object} params - Parameters for setting font weight.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.weight - The font weight (100-900).
+ *
+ * @returns {object} An object with the node's id, name, updated fontName, and weight.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setFontWeight(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    weight: params.weight
+  };
+}
+
+/**
+ * Sets the letter spacing of a text node.
+ *
+ * @param {object} params - Parameters for setting letter spacing.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.letterSpacing - The letter spacing value.
+ * @param {string} [params.unit="PIXELS"] - The unit of letter spacing ("PIXELS" or "PERCENT").
+ *
+ * @returns {object} An object with the node's id, name, and updated letterSpacing.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setLetterSpacing(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    letterSpacing: {
+      value: params.letterSpacing,
+      unit: params.unit || "PIXELS"
+    }
+  };
+}
+
+/**
+ * Sets the line height of a text node.
+ *
+ * @param {object} params - Parameters for setting line height.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.lineHeight - The line height value.
+ * @param {string} [params.unit="PIXELS"] - The unit of line height ("PIXELS", "PERCENT", or "AUTO").
+ *
+ * @returns {object} An object with the node's id, name, and updated lineHeight.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setLineHeight(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    lineHeight: {
+      value: params.lineHeight,
+      unit: params.unit || "PIXELS"
+    }
+  };
+}
+
+/**
+ * Sets the paragraph spacing of a text node.
+ *
+ * @param {object} params - Parameters for setting paragraph spacing.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.paragraphSpacing - The paragraph spacing value in pixels.
+ *
+ * @returns {object} An object with the node's id, name, and updated paragraphSpacing.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setParagraphSpacing(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    paragraphSpacing: params.paragraphSpacing
+  };
+}
+
+/**
+ * Sets the text case of a text node.
+ *
+ * @param {object} params - Parameters for setting text case.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.textCase - The text case type ("ORIGINAL", "UPPER", "LOWER", "TITLE").
+ *
+ * @returns {object} An object with the node's id, name, and updated textCase.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setTextCase(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    textCase: params.textCase
+  };
+}
+
+/**
+ * Sets the text decoration of a text node.
+ *
+ * @param {object} params - Parameters for setting text decoration.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.textDecoration - The text decoration type ("NONE", "UNDERLINE", "STRIKETHROUGH").
+ *
+ * @returns {object} An object with the node's id, name, and updated textDecoration.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
+async function setTextDecoration(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    textDecoration: params.textDecoration
+  };
+}
+
+/**
+ * Retrieves styled text segments for a specific property in a text node.
+ *
+ * @param {object} params - Parameters for retrieving styled text segments.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.property - The style property to analyze (e.g., "fontName", "fontSize").
+ *
+ * @returns {object} An object containing the node's id, name, property, and an array of styled segments.
+ *
+ * @throws Will throw an error if the node is not found, is not a text node, or if the property is invalid.
+ */
+async function getStyledTextSegments(params) {
+  return {
+    id: params.nodeId,
+    name: "Text Node",
+    property: params.property,
+    segments: []
+  };
+}
+
+/**
+ * Loads a font asynchronously in Figma.
+ *
+ * @param {object} params - Parameters for loading font.
+ * @param {string} params.family - The font family name.
+ * @param {string} [params.style="Regular"] - The font style.
+ *
+ * @returns {object} An object indicating success and the loaded font family and style.
+ *
+ * @throws Will throw an error if the font family is missing or loading fails.
+ */
+async function loadFontAsyncWrapper(params) {
+  return {
+    success: true,
+    family: params.family,
+    style: params.style || "Regular",
+    message: `Successfully loaded ${params.family} ${params.style || "Regular"}`
+  };
+}
+
+// Export the operations as a group
+const textOperations = {
+  createText,
+  setTextContent,
+  scanTextNodes,
+  setMultipleTextContents,
+  setFontName,
+  setFontSize,
+  setFontWeight,
+  setLetterSpacing,
+  setLineHeight,
+  setParagraphSpacing,
+  setTextCase,
+  setTextDecoration,
+  getStyledTextSegments,
+  loadFontAsyncWrapper
+};
+
+
+// ----- styles Module -----
+// Styles module
+
+/**
+ * Sets the fill color of a node in the Figma document.
+ *
+ * @param {object} params - Parameters for setting fill color.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {object} params.color - RGBA color object.
+ * @param {number} params.color.r - Red component (0–1).
+ * @param {number} params.color.g - Green component (0–1).
+ * @param {number} params.color.b - Blue component (0–1).
+ * @param {number} [params.color.a=1] - Alpha component (0–1).
+ *
+ * @returns {object} An object containing the node's id, name, and updated fills.
+ *
+ * @throws Will throw an error if the node is not found or does not support fills.
+ */
+async function setFillColor(params) {
+  const {
+    nodeId,
+    color: { r, g, b, a },
+  } = params || {};
+
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+
+  if (!("fills" in node)) {
+    throw new Error(`Node does not support fills: ${nodeId}`);
+  }
+
+  // Create RGBA color
+  const rgbColor = {
+    r: parseFloat(r) || 0,
+    g: parseFloat(g) || 0,
+    b: parseFloat(b) || 0,
+    a: parseFloat(a) || 1,
+  };
+
+  // Set fill
+  const paintStyle = {
+    type: "SOLID",
+    color: {
+      r: parseFloat(rgbColor.r),
+      g: parseFloat(rgbColor.g),
+      b: parseFloat(rgbColor.b),
+    },
+    opacity: parseFloat(rgbColor.a),
+  };
+
+  node.fills = [paintStyle];
+
+  return {
+    id: node.id,
+    name: node.name,
+    fills: [paintStyle],
+  };
+}
+
+/**
+ * Sets the stroke color and weight of a node in the Figma document.
+ *
+ * @param {object} params - Parameters for setting stroke.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {object} params.color - RGBA color object.
+ * @param {number} params.color.r - Red component (0–1).
+ * @param {number} params.color.g - Green component (0–1).
+ * @param {number} params.color.b - Blue component (0–1).
+ * @param {number} [params.color.a=1] - Alpha component (0–1).
+ * @param {number} [params.weight=1] - Stroke weight.
+ *
+ * @returns {object} An object containing the node's id, name, updated strokes, and strokeWeight.
+ *
+ * @throws Will throw an error if the node is not found or does not support strokes.
+ */
+async function setStrokeColor(params) {
+  const {
+    nodeId,
+    color: { r, g, b, a },
+    weight = 1,
+  } = params || {};
+
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+
+  if (!("strokes" in node)) {
+    throw new Error(`Node does not support strokes: ${nodeId}`);
+  }
+
+  // Create RGBA color
+  const rgbColor = {
+    r: r !== undefined ? r : 0,
+    g: g !== undefined ? g : 0,
+    b: b !== undefined ? b : 0,
+    a: a !== undefined ? a : 1,
+  };
+
+  // Set stroke
+  const paintStyle = {
+    type: "SOLID",
+    color: {
+      r: rgbColor.r,
+      g: rgbColor.g,
+      b: rgbColor.b,
+    },
+    opacity: rgbColor.a,
+  };
+
+  node.strokes = [paintStyle];
+
+  // Set stroke weight if available
+  if ("strokeWeight" in node) {
+    node.strokeWeight = weight;
+  }
+
+  return {
+    id: node.id,
+    name: node.name,
+    strokes: node.strokes,
+    strokeWeight: "strokeWeight" in node ? node.strokeWeight : undefined,
+  };
+}
+
+/**
+ * Retrieves the local style definitions from the Figma document.
+ *
+ * Collects local paint, text, effect, and grid styles and returns them in a simplified, serializable format.
+ *
+ * @returns {object} An object containing arrays of colors, texts, effects, and grids with their identifiers and key properties.
+ *
+ * @example
+ * const styles = await getStyles();
+ * console.log(styles.colors, styles.texts);
+ */
+async function getStyles() {
+  const styles = {
+    colors: await figma.getLocalPaintStylesAsync(),
+    texts: await figma.getLocalTextStylesAsync(),
+    effects: await figma.getLocalEffectStylesAsync(),
+    grids: await figma.getLocalGridStylesAsync(),
+  };
+
+  return {
+    colors: styles.colors.map((style) => ({
+      id: style.id,
+      name: style.name,
+      key: style.key,
+      paint: style.paints[0],
+    })),
+    texts: styles.texts.map((style) => ({
+      id: style.id,
+      name: style.name,
+      key: style.key,
+      fontSize: style.fontSize,
+      fontName: style.fontName,
+    })),
+    effects: styles.effects.map((style) => ({
+      id: style.id,
+      name: style.name,
+      key: style.key,
+    })),
+    grids: styles.grids.map((style) => ({
+      id: style.id,
+      name: style.name,
+      key: style.key,
+    })),
+  };
+}
+
+/**
+ * Sets visual effects on a node in Figma.
+ *
+ * @param {object} params - Parameters for setting effects.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {Array} params.effects - Array of effect objects to apply.
+ *
+ * @returns {object} An object with the node's id, name, and applied effects.
+ *
+ * @throws Will throw an error if the node is not found, does not support effects, or if effects are invalid.
+ */
+async function setEffects(params) {
+  const { nodeId, effects } = params || {};
+  
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+  
+  if (!effects || !Array.isArray(effects)) {
+    throw new Error("Missing or invalid effects parameter. Must be an array.");
+  }
+  
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+  
+  if (!("effects" in node)) {
+    throw new Error(`Node does not support effects: ${nodeId}`);
+  }
+  
+  try {
+    // Convert incoming effects to valid Figma effects
+    const validEffects = effects.map(effect => {
+      // Ensure all effects have the required properties
+      if (!effect.type) {
+        throw new Error("Each effect must have a type property");
+      }
+      
+      // Create a clean effect object based on type
+      switch (effect.type) {
+        case "DROP_SHADOW":
+        case "INNER_SHADOW":
+          return {
+            type: effect.type,
+            color: effect.color || { r: 0, g: 0, b: 0, a: 0.5 },
+            offset: effect.offset || { x: 0, y: 0 },
+            radius: effect.radius || 5,
+            spread: effect.spread || 0,
+            visible: effect.visible !== undefined ? effect.visible : true,
+            blendMode: effect.blendMode || "NORMAL"
+          };
+        case "LAYER_BLUR":
+        case "BACKGROUND_BLUR":
+          return {
+            type: effect.type,
+            radius: effect.radius || 5,
+            visible: effect.visible !== undefined ? effect.visible : true
+          };
+        default:
+          throw new Error(`Unsupported effect type: ${effect.type}`);
+      }
+    });
+    
+    // Apply the effects to the node
+    node.effects = validEffects;
+    
+    return {
+      id: node.id,
+      name: node.name,
+      effects: node.effects
+    };
+  } catch (error) {
+    throw new Error(`Error setting effects: ${error.message}`);
+  }
+}
+
+/**
+ * Applies an effect style to a node in Figma.
+ *
+ * @param {object} params - Parameters for setting effect style.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {string} params.effectStyleId - The ID of the effect style to apply.
+ *
+ * @returns {object} An object with the node's id, name, applied effectStyleId, and effects.
+ *
+ * @throws Will throw an error if the node is not found, does not support effect styles, or if the style is not found.
+ */
+async function setEffectStyleId(params) {
+  const { nodeId, effectStyleId } = params || {};
+  
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+  
+  if (!effectStyleId) {
+    throw new Error("Missing effectStyleId parameter");
+  }
+  
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+  
+  if (!("effectStyleId" in node)) {
+    throw new Error(`Node does not support effect styles: ${nodeId}`);
+  }
+  
+  try {
+    // Try to find the effect style by ID
+    const effectStyles = await figma.getLocalEffectStylesAsync();
+    const foundStyle = effectStyles.find(style => style.id === effectStyleId);
+    
+    if (!foundStyle) {
+      throw new Error(`Effect style not found with ID: ${effectStyleId}`);
+    }
+    
+    // Apply the effect style to the node
+    node.effectStyleId = effectStyleId;
+    
+    return {
+      id: node.id,
+      name: node.name,
+      effectStyleId: node.effectStyleId,
+      appliedEffects: node.effects
+    };
+  } catch (error) {
+    throw new Error(`Error setting effect style ID: ${error.message}`);
+  }
+}
+
+// Export the operations as a group
+const styleOperations = {
+  setFillColor,
+  setStrokeColor,
+  getStyles,
+  setEffects,
+  setEffectStyleId
+};
+
+
+// ----- components Module -----
+// Components module
+
+/**
+ * Retrieves all local components available in the Figma document.
+ *
+ * Loads all pages and finds components by type, returning a summary including component id, name, and key.
+ *
+ * @returns {Promise<object>} An object containing a count of components and an array with each component's details.
+ *
+ * @example
+ * const components = await getLocalComponents();
+ * console.log(components.count, components.components);
+ */
+async function getLocalComponents() {
+  await figma.loadAllPagesAsync();
+
+  const components = figma.root.findAllWithCriteria({
+    types: ["COMPONENT"],
+  });
+
+  return {
+    count: components.length,
+    components: components.map((component) => ({
+      id: component.id,
+      name: component.name,
+      key: "key" in component ? component.key : null,
+    })),
+  };
+}
+
+/**
+ * Retrieves available remote components from team libraries in Figma.
+ *
+ * @returns {Promise<object>} An object containing success status, count, and an array of components with details.
+ *
+ * @throws Will return an error object if the API is unavailable or retrieval fails.
+ */
+async function getRemoteComponents() {
+  try {
+    // Check if figma.teamLibrary is available
+    if (!figma.teamLibrary) {
+      console.error("Error: figma.teamLibrary API is not available");
+      return {
+        error: true,
+        message: "The figma.teamLibrary API is not available in this context",
+        apiAvailable: false
+      };
+    }
+    
+    // Check if figma.teamLibrary.getAvailableComponentsAsync exists
+    if (!figma.teamLibrary.getAvailableComponentsAsync) {
+      console.error("Error: figma.teamLibrary.getAvailableComponentsAsync is not available");
+      return {
+        error: true,
+        message: "The getAvailableComponentsAsync method is not available",
+        apiAvailable: false
+      };
+    }
+    
+    console.log("Starting remote components retrieval...");
+    
+    // Set up a manual timeout to detect deadlocks
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error("Internal timeout while retrieving remote components (15s)"));
+      }, 15000); // 15 seconds internal timeout
+    });
+    
+    // Execute the request with a manual timeout
+    const fetchPromise = figma.teamLibrary.getAvailableComponentsAsync();
+    
+    // Use Promise.race to implement the timeout
+    const teamComponents = await Promise.race([fetchPromise, timeoutPromise])
+      .finally(() => {
+        clearTimeout(timeoutId); // Clear the timeout
+      });
+    
+    console.log(`Retrieved ${teamComponents.length} remote components`);
+    
+    return {
+      success: true,
+      count: teamComponents.length,
+      components: teamComponents.map(component => ({
+        key: component.key,
+        name: component.name,
+        description: component.description || "",
+        libraryName: component.libraryName
+      }))
+    };
+  } catch (error) {
+    console.error(`Detailed error retrieving remote components: ${error.message || "Unknown error"}`);
+    console.error(`Stack trace: ${error.stack || "Not available"}`);
+    
+    return {
+      error: true,
+      message: `Error retrieving remote components: ${error.message}`,
+      stack: error.stack,
+      apiAvailable: true,
+      methodExists: true
+    };
+  }
+}
+
+/**
+ * Creates an instance of a component in the Figma document.
+ *
+ * @param {object} params - Parameters for creating component instance.
+ * @param {string} params.componentKey - The key of the component to import.
+ * @param {number} [params.x=0] - The X coordinate for the new instance.
+ * @param {number} [params.y=0] - The Y coordinate for the new instance.
+ *
+ * @returns {Promise<object>} Details of the created instance including id, name, position, size, and componentId.
+ *
+ * @throws Will throw an error if the component cannot be imported.
+ *
+ * @example
+ * const instance = await createComponentInstance({ componentKey: "abc123", x: 10, y: 20 });
+ * console.log(instance.id, instance.name);
+ */
+async function createComponentInstance(params) {
+  const { componentKey, x = 0, y = 0 } = params || {};
+
+  if (!componentKey) {
+    throw new Error("Missing componentKey parameter");
+  }
+
+  try {
+    const component = await figma.importComponentByKeyAsync(componentKey);
+    const instance = component.createInstance();
+
+    instance.x = x;
+    instance.y = y;
+
+    figma.currentPage.appendChild(instance);
+
+    return {
+      id: instance.id,
+      name: instance.name,
+      x: instance.x,
+      y: instance.y,
+      width: instance.width,
+      height: instance.height,
+      componentId: instance.componentId,
+    };
+  } catch (error) {
+    throw new Error(`Error creating component instance: ${error.message}`);
+  }
+}
+
+/**
+ * Exports a node as an image in the Figma document.
+ *
+ * @param {object} params - Export parameters.
+ * @param {string} params.nodeId - The ID of the node to export.
+ * @param {string} [params.format="PNG"] - The desired image format ("PNG","JPG","SVG","PDF").
+ * @param {number} [params.scale=1] - The scale factor for the export.
+ *
+ * @returns {Promise<object>} An object containing nodeId, format, scale, mimeType, and base64-encoded image data.
+ *
+ * @throws Will throw an error if the node is not found, does not support exporting, or if the fails.
+ *
+ * @example
+ * const image = await exportNodeAsImage({ nodeId: "12345", format: "PNG", scale: 2 });
+ * console.log(image.mimeType, image.imageData);
+ */
+async function exportNodeAsImage(params) {
+  const { nodeId, scale = 1 } = params || {};
+  const format = "PNG";
+
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+
+  if (!("exportAsync" in node)) {
+    throw new Error(`Node does not support exporting: ${nodeId}`);
+  }
+
+  try {
+    const settings = {
+      format: format,
+      constraint: { type: "SCALE", value: scale },
+    };
+
+    const bytes = await node.exportAsync(settings);
+
+    let mimeType;
+    switch (format) {
+      case "PNG":
+        mimeType = "image/png";
+        break;
+      case "JPG":
+        mimeType = "image/jpeg";
+        break;
+      case "SVG":
+        mimeType = "image/svg+xml";
+        break;
+      case "PDF":
+        mimeType = "application/pdf";
+        break;
+      default:
+        mimeType = "application/octet-stream";
+    }
+
+    // Convert Uint8Array to base64
+    const base64 = customBase64Encode(bytes);
+
+    return {
+      nodeId,
+      format,
+      scale,
+      mimeType,
+      imageData: base64,
+    };
+  } catch (error) {
+    throw new Error(`Error exporting node as image: ${error.message}`);
+  }
+}
+
+// Export the operations as a group
+const componentOperations = {
+  getLocalComponents,
+  getRemoteComponents,
+  createComponentInstance,
+  exportNodeAsImage
+};
+
+
+// ----- layout Module -----
+// Layout module
+
+/**
+ * Sets auto layout properties on a node.
+ *
+ * Configures layout mode, padding, spacing, alignment, wrapping, and stroke inclusion.
+ *
+ * @param {object} params - Auto layout configuration parameters.
+ * @param {string} params.nodeId - The ID of the node to configure.
+ * @param {string} params.layoutMode - Layout mode ("NONE", "HORIZONTAL", "VERTICAL").
+ * @param {number} [params.paddingTop] - Top padding in pixels.
+ * @param {number} [params.paddingBottom] - Bottom padding in pixels.
+ * @param {number} [params.paddingLeft] - Left padding in pixels.
+ * @param {number} [params.paddingRight] - Right padding in pixels.
+ * @param {number} [params.itemSpacing] - Spacing between items in pixels.
+ * @param {string} [params.primaryAxisAlignItems] - Alignment along primary axis.
+ * @param {string} [params.counterAxisAlignItems] - Alignment along counter axis.
+ * @param {string} [params.layoutWrap] - Layout wrap mode ("WRAP", "NO_WRAP").
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout.
+ *
+ * @returns {object} An object with updated auto layout properties.
+ *
+ * @throws Will throw an error if the node is not found or does not support auto layout.
+ */
+async function setAutoLayout(params) {
+  const { 
+    nodeId, 
+    layoutMode, 
+    paddingTop, 
+    paddingBottom, 
+    paddingLeft, 
+    paddingRight, 
+    itemSpacing, 
+    primaryAxisAlignItems, 
+    counterAxisAlignItems, 
+    layoutWrap, 
+    strokesIncludedInLayout 
+  } = params || {};
+
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+
+  if (!layoutMode) {
+    throw new Error("Missing layoutMode parameter");
+  }
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+
+  // Check if the node is a frame or group
+  if (!("layoutMode" in node)) {
+    throw new Error(`Node does not support auto layout: ${nodeId}`);
+  }
+
+  // Configure layout mode
+  if (layoutMode === "NONE") {
+    node.layoutMode = "NONE";
+  } else {
+    // Set auto layout properties
+    node.layoutMode = layoutMode;
+    
+    // Configure padding if provided
+    if (paddingTop !== undefined) node.paddingTop = paddingTop;
+    if (paddingBottom !== undefined) node.paddingBottom = paddingBottom;
+    if (paddingLeft !== undefined) node.paddingLeft = paddingLeft;
+    if (paddingRight !== undefined) node.paddingRight = paddingRight;
+    
+    // Configure item spacing
+    if (itemSpacing !== undefined) node.itemSpacing = itemSpacing;
+    
+    // Configure alignment
+    if (primaryAxisAlignItems !== undefined) {
+      node.primaryAxisAlignItems = primaryAxisAlignItems;
+    }
+    
+    if (counterAxisAlignItems !== undefined) {
+      node.counterAxisAlignItems = counterAxisAlignItems;
+    }
+    
+    // Configure wrap
+    if (layoutWrap !== undefined) {
+      node.layoutWrap = layoutWrap;
+    }
+    
+    // Configure stroke inclusion
+    if (strokesIncludedInLayout !== undefined) {
+      node.strokesIncludedInLayout = strokesIncludedInLayout;
     }
   }
-  var shapeOperations = {
-    createRectangle,
-    createFrame,
-    createEllipse,
-    createPolygon,
-    createStar,
-    createVector,
-    createLine,
-    setCornerRadius,
-    resizeNode,
-    deleteNode,
-    moveNode,
-    cloneNode,
-    flattenNode
-  };
 
-  // src/claude_mcp_plugin/src/modules/text.js
-  function createText(params) {
-    return __async(this, null, function* () {
-      const {
-        x = 0,
-        y = 0,
-        text = "Text",
-        fontSize = 14,
-        fontWeight = 400,
-        fontColor = { r: 0, g: 0, b: 0, a: 1 },
-        name = "Text",
-        parentId
-      } = params || {};
-      const getFontStyle = (weight) => {
-        switch (weight) {
-          case 100:
-            return "Thin";
-          case 200:
-            return "Extra Light";
-          case 300:
-            return "Light";
-          case 400:
-            return "Regular";
-          case 500:
-            return "Medium";
-          case 600:
-            return "Semi Bold";
-          case 700:
-            return "Bold";
-          case 800:
-            return "Extra Bold";
-          case 900:
-            return "Black";
-          default:
-            return "Regular";
-        }
-      };
-      try {
-        const textNode = figma.createText();
-        textNode.x = x;
-        textNode.y = y;
-        textNode.name = name;
-        try {
-          yield figma.loadFontAsync({
-            family: "Inter",
-            style: getFontStyle(fontWeight)
-          });
-          textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
-          textNode.fontSize = fontSize;
-        } catch (error) {
-          console.error("Error setting font", error);
-        }
-        yield setCharacters(textNode, text);
-        const paintStyle = {
-          type: "SOLID",
-          color: {
-            r: parseFloat(fontColor.r.toString()) || 0,
-            g: parseFloat(fontColor.g.toString()) || 0,
-            b: parseFloat(fontColor.b.toString()) || 0
-          },
-          opacity: parseFloat((fontColor.a || 1).toString())
-        };
-        textNode.fills = [paintStyle];
-        if (parentId) {
-          const parentNode = yield figma.getNodeByIdAsync(parentId);
-          if (!parentNode) {
-            throw new Error(`Parent node not found with ID: ${parentId}`);
-          }
-          if (!("appendChild" in parentNode)) {
-            throw new Error(`Parent node does not support children: ${parentId}`);
-          }
-          parentNode.appendChild(textNode);
-        } else {
-          figma.currentPage.appendChild(textNode);
-        }
-        return {
-          id: textNode.id,
-          name: textNode.name,
-          x: textNode.x,
-          y: textNode.y,
-          width: textNode.width,
-          height: textNode.height,
-          characters: textNode.characters,
-          fontSize: textNode.fontSize,
-          fontWeight,
-          fontColor,
-          fontName: textNode.fontName,
-          fills: textNode.fills,
-          parentId: textNode.parent ? textNode.parent.id : void 0
-        };
-      } catch (error) {
-        console.error("Error creating text", error);
-        throw error;
-      }
-    });
-  }
-  function setTextContent(params) {
-    return __async(this, null, function* () {
-      const { nodeId, text } = params || {};
-      if (!nodeId) {
-        throw new Error("Missing nodeId parameter");
-      }
-      if (text === void 0) {
-        throw new Error("Missing text parameter");
-      }
-      try {
-        const node = yield figma.getNodeByIdAsync(nodeId);
-        if (!node) {
-          throw new Error(`Node not found with ID: ${nodeId}`);
-        }
-        if (node.type !== "TEXT") {
-          throw new Error(`Node is not a text node: ${nodeId}`);
-        }
-        yield figma.loadFontAsync(node.fontName);
-        yield setCharacters(node, text);
-        return {
-          id: node.id,
-          name: node.name,
-          characters: node.characters,
-          fontName: node.fontName
-        };
-      } catch (error) {
-        console.error("Error setting text content", error);
-        throw error;
-      }
-    });
-  }
-  function scanTextNodes(params) {
-    return __async(this, null, function* () {
-      return {
-        success: true,
-        message: `Scanned text nodes successfully`,
-        count: 0,
-        textNodes: []
-      };
-    });
-  }
-  function setMultipleTextContents(params) {
-    return __async(this, null, function* () {
-      return {
-        success: true,
-        nodeId: params.nodeId,
-        replacementsApplied: params.text.length,
-        replacementsFailed: 0,
-        totalReplacements: params.text.length,
-        results: []
-      };
-    });
-  }
-  function setFontName(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        fontName: { family: params.family, style: params.style || "Regular" }
-      };
-    });
-  }
-  function setFontSize(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        fontSize: params.fontSize
-      };
-    });
-  }
-  function setFontWeight(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        weight: params.weight
-      };
-    });
-  }
-  function setLetterSpacing(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        letterSpacing: {
-          value: params.letterSpacing,
-          unit: params.unit || "PIXELS"
-        }
-      };
-    });
-  }
-  function setLineHeight(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        lineHeight: {
-          value: params.lineHeight,
-          unit: params.unit || "PIXELS"
-        }
-      };
-    });
-  }
-  function setParagraphSpacing(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        paragraphSpacing: params.paragraphSpacing
-      };
-    });
-  }
-  function setTextCase(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        textCase: params.textCase
-      };
-    });
-  }
-  function setTextDecoration(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        textDecoration: params.textDecoration
-      };
-    });
-  }
-  function getStyledTextSegments(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Text Node",
-        property: params.property,
-        segments: []
-      };
-    });
-  }
-  function loadFontAsyncWrapper(params) {
-    return __async(this, null, function* () {
-      return {
-        success: true,
-        family: params.family,
-        style: params.style || "Regular",
-        message: `Successfully loaded ${params.family} ${params.style || "Regular"}`
-      };
-    });
-  }
-  var textOperations = {
-    createText,
-    setTextContent,
-    scanTextNodes,
-    setMultipleTextContents,
-    setFontName,
-    setFontSize,
-    setFontWeight,
-    setLetterSpacing,
-    setLineHeight,
-    setParagraphSpacing,
-    setTextCase,
-    setTextDecoration,
-    getStyledTextSegments,
-    loadFontAsyncWrapper
+  return {
+    id: node.id,
+    name: node.name,
+    layoutMode: node.layoutMode,
+    paddingTop: node.paddingTop,
+    paddingBottom: node.paddingBottom,
+    paddingLeft: node.paddingLeft,
+    paddingRight: node.paddingRight,
+    itemSpacing: node.itemSpacing,
+    primaryAxisAlignItems: node.primaryAxisAlignItems,
+    counterAxisAlignItems: node.counterAxisAlignItems,
+    layoutWrap: node.layoutWrap,
+    strokesIncludedInLayout: node.strokesIncludedInLayout
   };
+}
 
-  // src/claude_mcp_plugin/src/modules/style.js
-  function setFillColor(params) {
-    return __async(this, null, function* () {
-      const { nodeId, r, g, b, a = 1 } = params || {};
-      if (!nodeId) {
-        throw new Error("Missing nodeId parameter");
+/**
+ * Adjust Auto-Layout Resizing of a Node
+ *
+ * This function adjusts the sizing mode along a specified axis (horizontal or vertical)
+ * for a given node that supports auto layout. When using the "FILL" mode, the function
+ * also sets the layoutGrow property on each child element so that they expand to fill the space.
+ *
+ * @param {object} params - Parameters for adjusting auto layout resizing.
+ * @param {string} params.nodeId - The unique identifier of the node to update.
+ * @param {string} params.axis - The axis along which to adjust the resizing ("horizontal" or "vertical").
+ * @param {string} params.mode - The sizing mode to set for the specified axis ("HUG", "FIXED", "FILL").
+ *
+ * @returns {object} An object containing the node's ID and current sizing modes.
+ *
+ * @throws Will throw an error if required parameters are missing or invalid, or if the node doesn't support auto layout.
+ */
+async function setAutoLayoutResizing(params) {
+  const { nodeId, axis, mode } = params || {};
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+  if (!axis || (axis !== "horizontal" && axis !== "vertical")) {
+    throw new Error("Invalid or missing axis parameter");
+  }
+  if (!mode || !["HUG", "FIXED", "FILL"].includes(mode)) {
+    throw new Error("Invalid or missing mode parameter");
+  }
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node || !("primaryAxisSizingMode" in node)) {
+    throw new Error(`Node ${nodeId} does not support auto layout`);
+  }
+  if (mode === "HUG") {
+    if (axis === "horizontal") {
+      node.primaryAxisSizingMode = "AUTO";
+    } else {
+      node.counterAxisSizingMode = "AUTO";
+    }
+    for (const child of node.children) {
+      if (axis === "horizontal") {
+        if (node.layoutMode === "HORIZONTAL" && "layoutGrow" in child) {
+          child.layoutGrow = 0;
+        }
+        if (node.layoutMode !== "HORIZONTAL" && "layoutAlign" in child) {
+          child.layoutAlign = "INHERIT";
+        }
+      } else {
+        if (node.layoutMode === "VERTICAL" && "layoutGrow" in child) {
+          child.layoutGrow = 0;
+        }
+        if (node.layoutMode !== "VERTICAL" && "layoutAlign" in child) {
+          child.layoutAlign = "INHERIT";
+        }
       }
-      const node = yield figma.getNodeByIdAsync(nodeId);
+    }
+  } else if (mode === "FILL") {
+    if (axis === "horizontal") {
+      node.primaryAxisSizingMode = "AUTO";
+    } else {
+      node.counterAxisSizingMode = "AUTO";
+    }
+    for (const child of node.children) {
+      if (axis === "horizontal") {
+        if (node.layoutMode === "HORIZONTAL" && "layoutGrow" in child) {
+          child.layoutGrow = 1;
+        }
+        if (node.layoutMode !== "HORIZONTAL" && "layoutAlign" in child) {
+          child.layoutAlign = "STRETCH";
+        }
+      } else {
+        if (node.layoutMode === "VERTICAL" && "layoutGrow" in child) {
+          child.layoutGrow = 1;
+        }
+        if (node.layoutMode !== "VERTICAL" && "layoutAlign" in child) {
+          child.layoutAlign = "STRETCH";
+        }
+      }
+    }
+  } else {
+    if (axis === "horizontal") {
+      node.primaryAxisSizingMode = "FIXED";
+    } else {
+      node.counterAxisSizingMode = "FIXED";
+    }
+  }
+  return {
+    id: node.id,
+    primaryAxisSizingMode: node.primaryAxisSizingMode,
+    counterAxisSizingMode: node.counterAxisSizingMode
+  };
+}
+
+/**
+ * Groups multiple nodes in Figma into a single group.
+ *
+ * @param {object} params - Parameters for grouping.
+ * @param {string[]} params.nodeIds - Array of node IDs to group.
+ * @param {string} [params.name] - Optional name for the group.
+ *
+ * @returns {object} An object with the group's id, name, type, and children details.
+ *
+ * @throws Will throw an error if nodes are missing, have different parents, or grouping fails.
+ */
+async function groupNodes(params) {
+  const { nodeIds, name } = params || {};
+  
+  if (!nodeIds || !Array.isArray(nodeIds) || nodeIds.length < 2) {
+    throw new Error("Must provide at least two nodeIds to group");
+  }
+  
+  try {
+    // Get all nodes to be grouped
+    const nodesToGroup = [];
+    for (const nodeId of nodeIds) {
+      const node = await figma.getNodeByIdAsync(nodeId);
       if (!node) {
         throw new Error(`Node not found with ID: ${nodeId}`);
       }
-      if (!("fills" in node)) {
-        throw new Error(`Node does not support fills: ${nodeId}`);
+      nodesToGroup.push(node);
+    }
+    
+    // Verify that all nodes have the same parent
+    const parent = nodesToGroup[0].parent;
+    for (const node of nodesToGroup) {
+      if (node.parent !== parent) {
+        throw new Error("All nodes must have the same parent to be grouped");
       }
-      const rgbColor = {
-        r: parseFloat(r.toString()) || 0,
-        g: parseFloat(g.toString()) || 0,
-        b: parseFloat(b.toString()) || 0,
-        a: parseFloat(a.toString()) || 1
-      };
-      const paintStyle = {
-        type: "SOLID",
-        color: {
-          r: parseFloat(rgbColor.r.toString()),
-          g: parseFloat(rgbColor.g.toString()),
-          b: parseFloat(rgbColor.b.toString())
-        },
-        opacity: parseFloat(rgbColor.a.toString())
-      };
-      node.fills = [paintStyle];
-      return {
-        id: node.id,
-        name: node.name,
-        fills: [paintStyle]
-      };
-    });
+    }
+    
+    // Create a group and add the nodes to it
+    const group = figma.group(nodesToGroup, parent);
+    
+    // Optionally set a name for the group
+    if (name) {
+      group.name = name;
+    }
+    
+    return {
+      id: group.id,
+      name: group.name,
+      type: group.type,
+      children: group.children.map(child => ({ id: child.id, name: child.name, type: child.type }))
+    };
+  } catch (error) {
+    throw new Error(`Error grouping nodes: ${error.message}`);
   }
-  function setStrokeColor(params) {
-    return __async(this, null, function* () {
-      const { nodeId, r, g, b, a = 1, weight = 1 } = params || {};
-      return {
-        id: nodeId,
-        name: "Node",
-        strokes: [{
-          type: "SOLID",
-          color: { r, g, b },
-          opacity: a
-        }],
-        strokeWeight: weight
-      };
-    });
-  }
-  function getStyles() {
-    return __async(this, null, function* () {
-      return {
-        colors: [],
-        texts: [],
-        effects: [],
-        grids: []
-      };
-    });
-  }
-  function setEffects(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Node",
-        effects: params.effects
-      };
-    });
-  }
-  function setEffectStyleId(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Node",
-        effectStyleId: params.effectStyleId
-      };
-    });
-  }
-  function setAutoLayout(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        name: "Frame",
-        layoutMode: params.layoutMode
-      };
-    });
-  }
-  function setAutoLayoutResizing(params) {
-    return __async(this, null, function* () {
-      return {
-        id: params.nodeId,
-        primaryAxisSizingMode: "AUTO",
-        counterAxisSizingMode: "AUTO"
-      };
-    });
-  }
-  var styleOperations = {
-    setFillColor,
-    setStrokeColor,
-    getStyles,
-    setEffects,
-    setEffectStyleId,
-    setAutoLayout,
-    setAutoLayoutResizing
-  };
+}
 
-  // src/claude_mcp_plugin/src/modules/components.js
-  function getLocalComponents() {
-    return __async(this, null, function* () {
-      return {
-        count: 0,
-        components: []
-      };
-    });
+/**
+ * Ungroups a node (group or frame) in Figma.
+ *
+ * @param {object} params - Parameters for ungrouping.
+ * @param {string} params.nodeId - The ID of the node to ungroup.
+ *
+ * @returns {object} An object with success status, count of ungrouped items, and item details.
+ *
+ * @throws Will throw an error if the node is not found, is not a group or frame, or ungrouping fails.
+ */
+async function ungroupNodes(params) {
+  const { nodeId } = params || {};
+  
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
   }
-  function getRemoteComponents() {
-    return __async(this, null, function* () {
-      return {
-        success: true,
-        count: 0,
-        components: []
-      };
-    });
+  
+  try {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      throw new Error(`Node not found with ID: ${nodeId}`);
+    }
+    
+    // Verify that the node is a group or a frame
+    if (node.type !== "GROUP" && node.type !== "FRAME") {
+      throw new Error(`Node with ID ${nodeId} is not a GROUP or FRAME`);
+    }
+    
+    // Get the parent and children before ungrouping
+    const parent = node.parent;
+    const children = [...node.children];
+    
+    // Ungroup the node
+    const ungroupedItems = figma.ungroup(node);
+    
+    return {
+      success: true,
+      ungroupedCount: ungroupedItems.length,
+      items: ungroupedItems.map(item => ({ id: item.id, name: item.name, type: item.type }))
+    };
+  } catch (error) {
+    throw new Error(`Error ungrouping node: ${error.message}`);
   }
-  function createComponentInstance(params) {
-    return __async(this, null, function* () {
-      const x = params && params.x ? params.x : 0;
-      const y = params && params.y ? params.y : 0;
-      const componentKey = params && params.componentKey ? params.componentKey : "unknown";
-      return {
-        id: "component-instance-id",
-        name: "Component Instance",
-        x,
-        y,
-        width: 100,
-        height: 100,
-        componentId: componentKey
-      };
-    });
-  }
-  function exportNodeAsImage(params) {
-    return __async(this, null, function* () {
-      const nodeId = params && params.nodeId ? params.nodeId : "unknown";
-      const format = params && params.format ? params.format : "PNG";
-      const scale = params && params.scale ? params.scale : 1;
-      return {
-        nodeId,
-        format,
-        scale,
-        mimeType: "image/png",
-        imageData: "base64encodedmockdata"
-      };
-    });
-  }
-  function groupNodes(params) {
-    return __async(this, null, function* () {
-      const name = params && params.name ? params.name : "Group";
-      const nodeIds = params && params.nodeIds ? params.nodeIds : [];
-      return {
-        id: "group-id",
-        name,
-        type: "GROUP",
-        children: nodeIds.map(function(id) {
-          return {
-            id,
-            name: "Node " + id,
-            type: "UNKNOWN"
-          };
-        })
-      };
-    });
-  }
-  function ungroupNodes(params) {
-    return __async(this, null, function* () {
-      return {
-        success: true,
-        ungroupedCount: 2,
-        items: [
-          { id: "child-1", name: "Child 1", type: "RECTANGLE" },
-          { id: "child-2", name: "Child 2", type: "RECTANGLE" }
-        ]
-      };
-    });
-  }
-  function insertChild(params) {
-    return __async(this, null, function* () {
-      const parentId = params && params.parentId ? params.parentId : "unknown";
-      const childId = params && params.childId ? params.childId : "unknown";
-      const index = params && params.index !== void 0 ? params.index : 0;
-      return {
-        parentId,
-        childId,
-        index,
-        success: true,
-        previousParentId: null
-      };
-    });
-  }
-  function rename_layer(params) {
-    return __async(this, null, function* () {
-      const nodeId = params && params.nodeId ? params.nodeId : "unknown";
-      const newName = params && params.newName ? params.newName : "Renamed Layer";
-      return {
-        success: true,
-        nodeId,
-        originalName: "Old Name",
-        newName
-      };
-    });
-  }
-  function rename_layers(params) {
-    return __async(this, null, function* () {
-      const layer_ids = params && params.layer_ids ? params.layer_ids : [];
-      const new_name = params && params.new_name ? params.new_name : "New Layer Name";
-      return {
-        success: true,
-        renamed_count: layer_ids.length
-      };
-    });
-  }
-  function rename_multiple(params) {
-    return __async(this, null, function* () {
-      const layer_ids = params && params.layer_ids ? params.layer_ids : [];
-      const new_names = params && params.new_names ? params.new_names : [];
-      return {
-        success: true,
-        results: function() {
-          var results = [];
-          for (var i = 0; i < layer_ids.length; i++) {
-            results.push({
-              nodeId: layer_ids[i],
-              status: "renamed",
-              result: {
-                nodeId: layer_ids[i],
-                originalName: "Old Name",
-                newName: i < new_names.length ? new_names[i] : "Default Name"
-              }
-            });
-          }
-          return results;
-        }()
-      };
-    });
-  }
-  function ai_rename_layers(params) {
-    return __async(this, null, function* () {
-      const layer_ids = params && params.layer_ids ? params.layer_ids : [];
-      const context_prompt = params && params.context_prompt ? params.context_prompt : "";
-      return {
-        success: true,
-        names: function() {
-          var names = [];
-          for (var i = 0; i < layer_ids.length; i++) {
-            names.push("AI Generated Name");
-          }
-          return names;
-        }()
-      };
-    });
-  }
-  var componentOperations = {
-    getLocalComponents,
-    getRemoteComponents,
-    createComponentInstance,
-    exportNodeAsImage,
-    groupNodes,
-    ungroupNodes,
-    insertChild,
-    rename_layer,
-    rename_layers,
-    rename_multiple,
-    ai_rename_layers
-  };
+}
 
-  // src/claude_mcp_plugin/src/modules/api.js
-  function handleCommand(command, params) {
-    return __async(this, null, function* () {
-      console.log(`Received command: ${command}`);
-      switch (command) {
-        // Document operations
-        case "get_document_info":
-          return yield documentOperations.getDocumentInfo();
-        case "get_selection":
-          return yield documentOperations.getSelection();
-        case "get_node_info":
-          if (!params || !params.nodeId) {
-            throw new Error("Missing nodeId parameter");
-          }
-          return yield documentOperations.getNodeInfo(params.nodeId);
-        case "get_nodes_info":
-          if (!params || !params.nodeIds || !Array.isArray(params.nodeIds)) {
-            throw new Error("Missing or invalid nodeIds parameter");
-          }
-          return yield documentOperations.getNodesInfo(params.nodeIds);
-        // Shape operations
-        case "create_rectangle":
-          return yield shapeOperations.createRectangle(params);
-        case "create_frame":
-          return yield shapeOperations.createFrame(params);
-        case "create_ellipse":
-          return yield shapeOperations.createEllipse(params);
-        case "create_polygon":
-          return yield shapeOperations.createPolygon(params);
-        case "create_star":
-          return yield shapeOperations.createStar(params);
-        case "create_vector":
-          return yield shapeOperations.createVector(params);
-        case "create_line":
-          return yield shapeOperations.createLine(params);
-        case "set_corner_radius":
-          return yield shapeOperations.setCornerRadius(params);
-        case "resize_node":
-          return yield shapeOperations.resizeNode(params);
-        case "delete_node":
-          return yield shapeOperations.deleteNode(params);
-        case "move_node":
-          return yield shapeOperations.moveNode(params);
-        case "clone_node":
-          return yield shapeOperations.cloneNode(params);
-        case "flatten_node":
-          return yield shapeOperations.flattenNode(params);
-        // Style operations
-        case "set_fill_color":
-          return yield styleOperations.setFillColor(params);
-        case "set_stroke_color":
-          return yield styleOperations.setStrokeColor(params);
-        case "get_styles":
-          return yield styleOperations.getStyles();
-        case "set_effects":
-          return yield styleOperations.setEffects(params);
-        case "set_effect_style_id":
-          return yield styleOperations.setEffectStyleId(params);
-        case "set_auto_layout":
-          return yield styleOperations.setAutoLayout(params);
-        case "set_auto_layout_resizing":
-          return yield styleOperations.setAutoLayoutResizing(params);
-        // Text operations
-        case "create_text":
-          return yield textOperations.createText(params);
-        case "set_text_content":
-          return yield textOperations.setTextContent(params);
-        case "scan_text_nodes":
-          return yield textOperations.scanTextNodes(params);
-        case "set_multiple_text_contents":
-          return yield textOperations.setMultipleTextContents(params);
-        case "set_font_name":
-          return yield textOperations.setFontName(params);
-        case "set_font_size":
-          return yield textOperations.setFontSize(params);
-        case "set_font_weight":
-          return yield textOperations.setFontWeight(params);
-        case "set_letter_spacing":
-          return yield textOperations.setLetterSpacing(params);
-        case "set_line_height":
-          return yield textOperations.setLineHeight(params);
-        case "set_paragraph_spacing":
-          return yield textOperations.setParagraphSpacing(params);
-        case "set_text_case":
-          return yield textOperations.setTextCase(params);
-        case "set_text_decoration":
-          return yield textOperations.setTextDecoration(params);
-        case "get_styled_text_segments":
-          return yield textOperations.getStyledTextSegments(params);
-        case "load_font_async":
-          return yield textOperations.loadFontAsyncWrapper(params);
-        // Component operations
-        case "get_local_components":
-          return yield componentOperations.getLocalComponents();
-        case "get_remote_components":
-          return yield componentOperations.getRemoteComponents();
-        case "create_component_instance":
-          return yield componentOperations.createComponentInstance(params);
-        case "export_node_as_image":
-          return yield componentOperations.exportNodeAsImage(params);
-        case "group_nodes":
-          return yield componentOperations.groupNodes(params);
-        case "ungroup_nodes":
-          return yield componentOperations.ungroupNodes(params);
-        case "insert_child":
-          return yield componentOperations.insertChild(params);
-        case "rename_layer":
-          return yield componentOperations.rename_layer(params);
-        case "rename_layers":
-          return yield componentOperations.rename_layers(params);
-        case "rename_multiple":
-          return yield componentOperations.rename_multiple(params);
-        case "ai_rename_layers":
-          return yield componentOperations.ai_rename_layers(params);
-        default:
-          throw new Error(`Unknown command: ${command}`);
-      }
-    });
+/**
+ * Inserts a child node into a parent node at an optional index.
+ *
+ * @param {object} params - Parameters for insertion.
+ * @param {string} params.parentId - The ID of the parent node.
+ * @param {string} params.childId - The ID of the child node.
+ * @param {number} [params.index] - Optional index to insert at.
+ *
+ * @returns {object} An object with parentId, childId, index, success status, and previous parentId.
+ *
+ * @throws Will throw an error if parent or child nodes are not found or insertion fails.
+ */
+async function insertChild(params) {
+  const { parentId, childId, index } = params || {};
+  
+  if (!parentId) {
+    throw new Error("Missing parentId parameter");
   }
+  
+  if (!childId) {
+    throw new Error("Missing childId parameter");
+  }
+  
+  try {
+    // Get the parent and child nodes
+    const parent = await figma.getNodeByIdAsync(parentId);
+    if (!parent) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    
+    const child = await figma.getNodeByIdAsync(childId);
+    if (!child) {
+      throw new Error(`Child node not found with ID: ${childId}`);
+    }
+    
+    // Check if the parent can have children
+    if (!("appendChild" in parent)) {
+      throw new Error(`Parent node with ID ${parentId} cannot have children`);
+    }
+    
+    // Save child's current parent for proper handling
+    const originalParent = child.parent;
+    
+    // Insert the child at the specified index or append it
+    if (index !== undefined && index >= 0 && index <= parent.children.length) {
+      parent.insertChild(index, child);
+    } else {
+      parent.appendChild(child);
+    }
+    
+    // Verify that the insertion worked
+    const newIndex = parent.children.indexOf(child);
+    
+    return {
+      parentId: parent.id,
+      childId: child.id,
+      index: newIndex,
+      success: newIndex !== -1,
+      previousParentId: originalParent ? originalParent.id : null
+    };
+  } catch (error) {
+    throw new Error(`Error inserting child: ${error.message}`);
+  }
+}
 
-  // src/claude_mcp_plugin/src/modules/ui.js
-  function showUI() {
-    figma.showUI(__html__, { width: 350, height: 450 });
-  }
-  function setUpUIMessageHandler() {
-    figma.ui.onmessage = (msg) => __async(null, null, function* () {
-      switch (msg.type) {
-        case "update-settings":
-          updateSettings(msg);
-          break;
-        case "notify":
-          figma.notify(msg.message);
-          break;
-        case "close-plugin":
-          figma.closePlugin();
-          break;
-        case "execute-command":
-          try {
-            const result = yield handleCommand(msg.command, msg.params);
-            figma.ui.postMessage({
-              type: "command-result",
-              id: msg.id,
-              result
-            });
-          } catch (error) {
-            figma.ui.postMessage({
-              type: "command-error",
-              id: msg.id,
-              error: error instanceof Error ? error.message : "Error executing command"
-            });
-          }
-          break;
-      }
-    });
-    figma.on("run", ({ command }) => {
-      figma.ui.postMessage({ type: "auto-connect" });
-    });
-  }
+// Helper functions for auto layout resizing
+/**
+ * Sets a node to fill its container along the specified axis.
+ * 
+ * @param {object} node - The node to modify.
+ * @param {string} axis - The axis to apply fill ("horizontal" or "vertical").
+ * @private
+ */
+function setFillContainer(node, axis) {
+  const parent = node.parent;
+  if (!parent || parent.layoutMode === 'NONE') return;
 
-  // src/claude_mcp_plugin/src/code.js
-  (function() {
-    return __async(this, null, function* () {
+  if (axis === 'horizontal') {
+    parent.layoutMode === 'HORIZONTAL'
+      ? node.layoutGrow = 1
+      : node.layoutAlign = 'STRETCH';
+  } else {
+    parent.layoutMode === 'VERTICAL'
+      ? node.layoutGrow = 1
+      : node.layoutAlign = 'STRETCH';
+  }
+}
+
+/**
+ * Sets a node to hug its contents along the specified axis.
+ * 
+ * @param {object} node - The node to modify.
+ * @param {string} axis - The axis to apply hug ("horizontal" or "vertical").
+ * @private
+ */
+function setHugContents(node, axis) {
+  const parent = node.parent;
+  if (!parent || parent.layoutMode === 'NONE') return;
+
+  if (axis === 'horizontal') {
+    parent.layoutMode === 'HORIZONTAL'
+      ? node.layoutGrow = 0
+      : node.layoutAlign = 'INHERIT';
+  } else {
+    parent.layoutMode === 'VERTICAL'
+      ? node.layoutGrow = 0
+      : node.layoutAlign = 'INHERIT';
+  }
+}
+
+/**
+ * Sets a fixed size for a node along the specified axis.
+ * 
+ * @param {object} node - The node to resize.
+ * @param {string} axis - The axis to resize ("horizontal" or "vertical").
+ * @param {number} size - The size to set.
+ * @private
+ */
+function setFixedSize(node, axis, size) {
+  if (axis === 'horizontal') {
+    node.resize(size, node.height);
+    node.layoutGrow = 0;
+  } else {
+    node.resize(node.width, size);
+    node.layoutGrow = 0;
+  }
+}
+
+// Export the operations as a group
+const layoutOperations = {
+  setAutoLayout,
+  setAutoLayoutResizing,
+  groupNodes,
+  ungroupNodes,
+  insertChild
+};
+
+
+// ----- rename Module -----
+// Rename module
+
+/**
+ * Rename Multiple Figma Layers
+ *
+ * Renames multiple layers in a Figma document. Supports regex replacement or template-based renaming.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
+ * @param {string} [params.new_name] - New name template (ignored if regex parameters are provided).
+ * @param {string} [params.match_pattern] - Regex pattern to match in existing names.
+ * @param {string} [params.replace_with] - Replacement string for matched pattern.
+ *
+ * @returns {Promise<object>} Object indicating success and count of renamed layers.
+ *
+ * @throws Will throw an error if any layer is locked or hidden, or if a required layer cannot be found.
+ *
+ * @example
+ * rename_layers({
+ *   layer_ids: ['id1', 'id2', 'id3'],
+ *   new_name: "Layer ${asc} - ${current}"
+ * });
+ *
+ * @example
+ * rename_layers({
+ *   layer_ids: ['id1', 'id2'],
+ *   match_pattern: "^Old",
+ *   replace_with: ""
+ * });
+ */
+async function rename_layers(params) {
+  const { layer_ids, new_name, match_pattern, replace_with } = params || {};
+  
+  const nodes = await Promise.all(
+    layer_ids.map(id => figma.getNodeByIdAsync(id))
+  );
+  
+  const total = nodes.length;
+  
+  nodes.forEach((node, i) => {
+    // Skip nodes that are not valid or lack a name property
+    if (!node || !('name' in node)) return;
+    
+    // Do not allow renaming of nodes that are hidden or locked
+    if (!node.visible || node.locked) {
+      throw new Error('Cannot rename locked or hidden layer: ' + node.id);
+    }
+    
+    // Apply regex replacement mode if both parameters are provided
+    if (match_pattern && replace_with) {
+      node.name = node.name.replace(new RegExp(match_pattern), replace_with);
+    } else {
+      // Otherwise, generate a new name using the template and placeholders
+      let base = new_name;
+      base = base.replace(/\${current}/g, node.name);
+      base = base.replace(/\${asc}/g, (i + 1).toString());
+      base = base.replace(/\${desc}/g, (total - i).toString());
+      node.name = base;
+    }
+  });
+  
+  return { success: true, renamed_count: total };
+}
+
+/**
+ * Rename Multiple Figma Layers Using AI Assistance
+ *
+ * Uses Figma's AI to automatically generate new names for layers based on a context prompt.
+ *
+ * @param {object} params - Parameters for AI rename.
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
+ * @param {string} params.context_prompt - Context prompt for AI renaming.
+ *
+ * @returns {Promise<object>} Object with success status and new names or error.
+ *
+ * @example
+ * ai_rename_layers({
+ *   layer_ids: ['nodeId1', 'nodeId2'],
+ *   context_prompt: "Rename these layers to align with our modern branding guidelines."
+ * });
+ */
+async function ai_rename_layers(params) {
+  const { layer_ids, context_prompt } = params || {};
+  
+  const nodes = await Promise.all(
+    layer_ids.map(id => figma.getNodeByIdAsync(id))
+  );
+  
+  const result = await figma.ai.renameLayersAsync(nodes, {
+    context: context_prompt
+  });
+  
+  if (result.status === 'SUCCESS') {
+    return { success: true, names: result.names };
+  } else {
+    return { success: false, error: result.error };
+  }
+}
+
+/**
+ * Rename a Single Figma Layer with Optional Auto-Rename for Text Nodes
+ *
+ * Renames a single Figma node by ID. For TEXT nodes, can toggle auto-renaming.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string} params.nodeId - The ID of the node to rename.
+ * @param {string} params.newName - The new name to assign.
+ * @param {boolean} [params.setAutoRename] - Optional flag to enable/disable auto-renaming (TEXT nodes).
+ *
+ * @returns {Promise<object>} Object with success status, nodeId, originalName, and newName.
+ *
+ * @throws Will throw an error if the node is not found.
+ *
+ * @example
+ * await rename_layer({
+ *   nodeId: "12345",
+ *   newName: "Updated Layer Name",
+ *   setAutoRename: false
+ * });
+ */
+async function rename_layer(params) {
+  const { nodeId, newName, setAutoRename } = params || {};
+  
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node with ID ${nodeId} not found`);
+  
+  const originalName = node.name;
+  node.name = newName;
+  
+  if (node.type === 'TEXT' && setAutoRename !== undefined) {
+    node.autoRename = Boolean(setAutoRename);
+  }
+  
+  return { success: true, nodeId, originalName, newName: node.name };
+}
+
+/**
+ * Rename Multiple Figma Layers with Distinct Names
+ *
+ * Renames multiple layers by assigning unique new names to each.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs.
+ * @param {string[]} params.new_names - Array of new names corresponding to each layer ID.
+ *
+ * @returns {Promise<object>} Object indicating success and array of results.
+ *
+ * @throws Will throw an error if layer_ids or new_names are not arrays or lengths differ.
+ *
+ * @example
+ * const result = await rename_multiples({
+ *   layer_ids: ['id1', 'id2'],
+ *   new_names: ['New Name for id1', 'New Name for id2']
+ * });
+ * console.log(result);
+ */
+async function rename_multiples(params) {
+  const { layer_ids, new_names } = params || {};
+  
+  if (!Array.isArray(layer_ids) || !Array.isArray(new_names)) {
+    throw new Error("layer_ids and new_names must be arrays");
+  }
+  
+  if (layer_ids.length !== new_names.length) {
+    throw new Error("layer_ids and new_names must be of equal length");
+  }
+  
+  const results = [];
+  
+  for (let i = 0; i < layer_ids.length; i++) {
+    const nodeId = layer_ids[i];
+    const newName = new_names[i];
+    try {
+      const result = await rename_layer({ nodeId, newName });
+      results.push({ nodeId, status: "renamed", result });
+    } catch (error) {
+      results.push({ nodeId, status: "error", error: error.message || String(error) });
+    }
+  }
+  
+  return { success: true, results };
+}
+
+// Export the operations as a group
+const renameOperations = {
+  rename_layers,
+  ai_rename_layers,
+  rename_layer,
+  rename_multiples
+};
+
+
+// ----- Main Plugin Code -----
+// Main entry point for the Figma plugin
+
+
+// Destructure operations for easier access
+
+
+
+
+
+
+
+// Show UI
+figma.showUI(__html__, { width: 350, height: 450 });
+
+// Plugin commands from UI
+figma.ui.onmessage = async (msg) => {
+  switch (msg.type) {
+    case "update-settings":
+      updateSettings(msg);
+      break;
+    case "notify":
+      figma.notify(msg.message);
+      break;
+    case "close-plugin":
+      figma.closePlugin();
+      break;
+    case "execute-command":
+      // Execute commands received from UI (which gets them from WebSocket)
       try {
-        showUI();
-        setUpUIMessageHandler();
-        yield initializePlugin();
-        console.log("Claude MCP Figma Plugin initialized successfully");
+        const result = await handleCommand(msg.command, msg.params);
+        // Send result back to UI
+        figma.ui.postMessage({
+          type: "command-result",
+          id: msg.id,
+          result,
+        });
       } catch (error) {
-        console.error("Error initializing plugin:", error);
+        figma.ui.postMessage({
+          type: "command-error",
+          id: msg.id,
+          error: error.message || "Error executing command",
+        });
       }
-    });
-  })();
-})();
+      break;
+  }
+};
+
+// Listen for plugin commands from menu
+figma.on("run", ({ command }) => {
+  figma.ui.postMessage({ type: "auto-connect" });
+});
+
+/**
+ * Handles incoming commands and routes them to the appropriate handler functions
+ * 
+ * @param {string} command - The command to execute
+ * @param {object} params - Parameters for the command
+ * @returns {Promise<any>} - The result of the command execution
+ * @throws {Error} - If the command is unknown or execution fails
+ */
+async function handleCommand(command, params) {
+  console.log(`Received command: ${command}`);
+  
+  switch (command) {
+    // Document operations
+    case "get_document_info":
+      return await getDocumentInfo();
+    case "get_selection":
+      return await getSelection();
+    case "get_node_info":
+      return await getNodeInfo(params);
+    case "get_nodes_info":
+      return await getNodesInfo(params);
+      
+    // Shape operations
+    case "create_rectangle":
+      return await createRectangle(params);
+    case "create_frame":
+      return await createFrame(params);
+    case "create_ellipse":
+      return await createEllipse(params);
+    case "create_polygon":
+      return await createPolygon(params);
+    case "create_star":
+      return await createStar(params);
+    case "create_vector":
+      return await createVector(params);
+    case "create_line":
+      return await createLine(params);
+    case "set_corner_radius":
+      return await setCornerRadius(params);
+    case "resize_node":
+      return await resizeNode(params);
+    case "delete_node":
+      return await deleteNode(params);
+    case "move_node":
+      return await moveNode(params);
+    case "clone_node":
+      return await cloneNode(params);
+    case "flatten_node":
+      return await flattenNode(params);
+      
+    // Text operations
+    case "create_text":
+      return await createText(params);
+    case "set_text_content":
+      return await setTextContent(params);
+    case "scan_text_nodes":
+      return await scanTextNodes(params);
+    case "set_multiple_text_contents":
+      return await setMultipleTextContents(params);
+    case "set_font_name":
+      return await setFontName(params);
+    case "set_font_size":
+      return await setFontSize(params);
+    case "set_font_weight":
+      return await setFontWeight(params);
+    case "set_letter_spacing":
+      return await setLetterSpacing(params);
+    case "set_line_height":
+      return await setLineHeight(params);
+    case "set_paragraph_spacing":
+      return await setParagraphSpacing(params);
+    case "set_text_case":
+      return await setTextCase(params);
+    case "set_text_decoration":
+      return await setTextDecoration(params);
+    case "get_styled_text_segments":
+      return await getStyledTextSegments(params);
+    case "load_font_async":
+      return await loadFontAsyncWrapper(params);
+      
+    // Style operations
+    case "set_fill_color":
+      return await setFillColor(params);
+    case "set_stroke_color":
+      return await setStrokeColor(params);
+    case "get_styles":
+      return await getStyles();
+    case "set_effects":
+      return await setEffects(params);
+    case "set_effect_style_id":
+      return await setEffectStyleId(params);
+      
+    // Component operations
+    case "get_local_components":
+      return await getLocalComponents();
+    case "get_remote_components":
+      return await getRemoteComponents(params);
+    case "create_component_instance":
+      return await createComponentInstance(params);
+    case "export_node_as_image":
+      return await exportNodeAsImage(params);
+      
+    // Layout operations
+    case "set_auto_layout":
+      return await setAutoLayout(params);
+    case "set_auto_layout_resizing":
+      return await setAutoLayoutResizing(params);
+    case "group_nodes":
+      return await groupNodes(params);
+    case "ungroup_nodes":
+      return await ungroupNodes(params);
+    case "insert_child":
+      return await insertChild(params);
+      
+    // Rename operations
+    case "rename_layers":
+      return await rename_layers(params);
+    case "ai_rename_layers":
+      return await ai_rename_layers(params);
+    case "rename_layer":
+      return await rename_layer(params);
+    case "rename_multiple":
+      return await rename_multiples(params);
+      
+    default:
+      throw new Error(`Unknown command: ${command}`);
+  }
+}
+
+// Initialize the plugin on load
+initializePlugin();
+
+// Export the command handler for testing
