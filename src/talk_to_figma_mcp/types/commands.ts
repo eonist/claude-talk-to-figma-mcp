@@ -54,6 +54,7 @@ export type FigmaCommand =
   | "insert_child"
   | "rename_layer"
   | "rename_layers"
+  | "rename_multiple" 
   | "ai_rename_layers"
   | "join";
 

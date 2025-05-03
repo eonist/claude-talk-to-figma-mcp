@@ -3,6 +3,7 @@ import { FigmaClient } from "../clients/figma-client.js";
 import { registerReadCommands } from "./figma/read.js";
 import { registerCreateCommands } from "./figma/create.js";
 import { registerModifyCommands } from "./figma/modify.js";
+import { registerRenameCommands } from "./figma/rename.js";
 import { registerChannelCommand } from "./channel.js";
 import { logger } from "../utils/logger.js";
 
@@ -13,6 +14,7 @@ import { logger } from "../utils/logger.js";
  * - Read commands (get document info, selection, node info, etc.)
  * - Create commands (rectangles, frames, text, ellipses, etc.)
  * - Modify commands (move, resize, delete, style operations, etc.)
+ * - Rename commands (rename single layers, batch rename, AI rename, etc.)
  * - Channel commands (joining channels)
  * 
  * @param {McpServer} server - The MCP server instance
@@ -28,6 +30,7 @@ export function registerAllCommands(server: McpServer): void {
     registerReadCommands(server, figmaClient);
     registerCreateCommands(server, figmaClient);
     registerModifyCommands(server, figmaClient);
+    registerRenameCommands(server, figmaClient);
     registerChannelCommand(server, figmaClient);
     
     logger.info("All commands registered successfully");
