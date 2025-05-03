@@ -2,19 +2,20 @@
 import { customBase64Encode } from './utils.js';
 
 /**
- * Sets the fill color of a node in the Figma document.
+ * Sets the fill color of a specified node.
  *
- * @param {object} params - Parameters for setting fill color.
- * @param {string} params.nodeId - The ID of the node to modify.
- * @param {object} params.color - RGBA color object.
+ * Retrieves the node by its ID, validates that it supports fills, and then applies
+ * a solid fill with the provided RGBA color.
+ *
+ * @param {object} params - Parameters for setting the fill color.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {object} params.color - The RGBA color object.
  * @param {number} params.color.r - Red component (0–1).
  * @param {number} params.color.g - Green component (0–1).
  * @param {number} params.color.b - Blue component (0–1).
  * @param {number} [params.color.a=1] - Alpha component (0–1).
- *
  * @returns {object} An object containing the node's id, name, and updated fills.
- *
- * @throws Will throw an error if the node is not found or does not support fills.
+ * @throws {Error} If the nodeId is missing, the node is not found, or the node does not support fills.
  */
 export async function setFillColor(params) {
   const {
@@ -30,12 +31,11 @@ export async function setFillColor(params) {
   if (!node) {
     throw new Error(`Node not found with ID: ${nodeId}`);
   }
-
   if (!("fills" in node)) {
     throw new Error(`Node does not support fills: ${nodeId}`);
   }
 
-  // Create RGBA color
+  // Prepare RGBA color values
   const rgbColor = {
     r: parseFloat(r) || 0,
     g: parseFloat(g) || 0,
@@ -43,7 +43,7 @@ export async function setFillColor(params) {
     a: parseFloat(a) || 1,
   };
 
-  // Set fill
+  // Define a SOLID paint style with the specified color and opacity
   const paintStyle = {
     type: "SOLID",
     color: {
@@ -64,20 +64,21 @@ export async function setFillColor(params) {
 }
 
 /**
- * Sets the stroke color and weight of a node in the Figma document.
+ * Sets the stroke color and weight for a specified node.
  *
- * @param {object} params - Parameters for setting stroke.
- * @param {string} params.nodeId - The ID of the node to modify.
- * @param {object} params.color - RGBA color object.
+ * Retrieves the node by its ID, validates stroke support, and then applies
+ * the specified stroke color (RGBA) and weight.
+ *
+ * @param {object} params - Parameters for setting the stroke.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {object} params.color - The RGBA color object.
  * @param {number} params.color.r - Red component (0–1).
  * @param {number} params.color.g - Green component (0–1).
  * @param {number} params.color.b - Blue component (0–1).
  * @param {number} [params.color.a=1] - Alpha component (0–1).
  * @param {number} [params.weight=1] - Stroke weight.
- *
  * @returns {object} An object containing the node's id, name, updated strokes, and strokeWeight.
- *
- * @throws Will throw an error if the node is not found or does not support strokes.
+ * @throws {Error} If the nodeId is missing, the node is not found, or the node does not support strokes.
  */
 export async function setStrokeColor(params) {
   const {
@@ -94,12 +95,11 @@ export async function setStrokeColor(params) {
   if (!node) {
     throw new Error(`Node not found with ID: ${nodeId}`);
   }
-
   if (!("strokes" in node)) {
     throw new Error(`Node does not support strokes: ${nodeId}`);
   }
 
-  // Create RGBA color
+  // Prepare RGBA color values with defaults
   const rgbColor = {
     r: r !== undefined ? r : 0,
     g: g !== undefined ? g : 0,
@@ -107,7 +107,7 @@ export async function setStrokeColor(params) {
     a: a !== undefined ? a : 1,
   };
 
-  // Set stroke
+  // Define a SOLID paint style for strokes
   const paintStyle = {
     type: "SOLID",
     color: {
@@ -120,7 +120,7 @@ export async function setStrokeColor(params) {
 
   node.strokes = [paintStyle];
 
-  // Set stroke weight if available
+  // Apply stroke weight if supported
   if ("strokeWeight" in node) {
     node.strokeWeight = weight;
   }
@@ -134,12 +134,12 @@ export async function setStrokeColor(params) {
 }
 
 /**
- * Retrieves the local style definitions from the Figma document.
+ * Retrieves local style definitions from the Figma document.
  *
- * Collects local paint, text, effect, and grid styles and returns them in a simplified, serializable format.
+ * Collects local paint, text, effect, and grid styles then maps each style to a simplified
+ * serializable format with key properties.
  *
- * @returns {object} An object containing arrays of colors, texts, effects, and grids with their identifiers and key properties.
- *
+ * @returns {Promise<object>} An object containing arrays for colors, texts, effects, and grids.
  * @example
  * const styles = await getStyles();
  * console.log(styles.colors, styles.texts);
@@ -180,15 +180,15 @@ export async function getStyles() {
 }
 
 /**
- * Sets visual effects on a node in Figma.
+ * Applies visual effects to a specified node.
  *
- * @param {object} params - Parameters for setting effects.
- * @param {string} params.nodeId - The ID of the node to modify.
- * @param {Array} params.effects - Array of effect objects to apply.
+ * Converts incoming effects to valid Figma effects based on effect type and applies them.
  *
- * @returns {object} An object with the node's id, name, and applied effects.
- *
- * @throws Will throw an error if the node is not found, does not support effects, or if effects are invalid.
+ * @param {object} params - Parameters for applying effects.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {Array} params.effects - An array of effect objects to apply.
+ * @returns {Promise<object>} An object with the node's id, name, and applied effects.
+ * @throws {Error} If the nodeId is missing, the effects parameter is invalid, the node doesn't support effects, or an effect type is unsupported.
  */
 export async function setEffects(params) {
   const { nodeId, effects } = params || {};
@@ -211,14 +211,12 @@ export async function setEffects(params) {
   }
   
   try {
-    // Convert incoming effects to valid Figma effects
+    // Validate and map each effect to a proper Figma effect object
     const validEffects = effects.map(effect => {
-      // Ensure all effects have the required properties
       if (!effect.type) {
         throw new Error("Each effect must have a type property");
       }
       
-      // Create a clean effect object based on type
       switch (effect.type) {
         case "DROP_SHADOW":
         case "INNER_SHADOW":
@@ -243,7 +241,6 @@ export async function setEffects(params) {
       }
     });
     
-    // Apply the effects to the node
     node.effects = validEffects;
     
     return {
@@ -257,15 +254,15 @@ export async function setEffects(params) {
 }
 
 /**
- * Applies an effect style to a node in Figma.
+ * Applies an effect style to a specified node.
  *
- * @param {object} params - Parameters for setting effect style.
- * @param {string} params.nodeId - The ID of the node to modify.
+ * Finds the effect style by its ID from local styles and applies it to the node.
+ *
+ * @param {object} params - Parameters for applying the effect style.
+ * @param {string} params.nodeId - The ID of the node to update.
  * @param {string} params.effectStyleId - The ID of the effect style to apply.
- *
- * @returns {object} An object with the node's id, name, applied effectStyleId, and effects.
- *
- * @throws Will throw an error if the node is not found, does not support effect styles, or if the style is not found.
+ * @returns {Promise<object>} An object with the node's id, name, applied effectStyleId, and current effects.
+ * @throws {Error} If required parameters are missing, node not found, node does not support effect styles, or the style cannot be found.
  */
 export async function setEffectStyleId(params) {
   const { nodeId, effectStyleId } = params || {};
@@ -288,7 +285,7 @@ export async function setEffectStyleId(params) {
   }
   
   try {
-    // Try to find the effect style by ID
+    // Retrieve local effect styles and find the matching style by ID
     const effectStyles = await figma.getLocalEffectStylesAsync();
     const foundStyle = effectStyles.find(style => style.id === effectStyleId);
     
@@ -310,7 +307,7 @@ export async function setEffectStyleId(params) {
   }
 }
 
-// Export the operations as a group
+// Export all style operations as a grouped object
 export const styleOperations = {
   setFillColor,
   setStrokeColor,

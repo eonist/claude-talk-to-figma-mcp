@@ -1,26 +1,31 @@
 // Shapes module
+// This module provides helper functions for creating and manipulating various shape nodes in a Figma document.
+// It includes functions for creating rectangles, frames, ellipses, polygons, stars, vectors, and lines,
+// as well as utilities for modifying node properties such as fills, strokes, resizing, and cloning.
+
 import { customBase64Encode } from './utils.js';
 
 /**
  * Creates a new rectangle node in the Figma document.
  *
- * The function instantiates a rectangle with specified position, size, and name.
- * Optionally, if a parentId is provided, the rectangle is appended to that node; otherwise, it is added to the current page.
+ * The function instantiates a rectangle with the specified position, dimensions, and name.
+ * Optionally, if a parentId is provided, the rectangle is appended as a child of that node;
+ * otherwise, it is added to the current page.
  *
  * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - The X coordinate of the rectangle.
- * @param {number} [params.y=0] - The Y coordinate of the rectangle.
+ * @param {number} [params.x=0] - The X coordinate where the rectangle will be placed.
+ * @param {number} [params.y=0] - The Y coordinate where the rectangle will be placed.
  * @param {number} [params.width=100] - The width of the rectangle.
  * @param {number} [params.height=100] - The height of the rectangle.
- * @param {string} [params.name="Rectangle"] - The name assigned to the rectangle.
- * @param {string} [params.parentId] - The ID of the parent node to which the rectangle should be appended.
- * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
- * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
- * @param {number} [params.strokeWeight] - The stroke weight.
+ * @param {string} [params.name="Rectangle"] - The display name for the rectangle.
+ * @param {string} [params.parentId] - The ID of the node to which the rectangle should be appended.
+ * @param {object} [params.fillColor] - The fill color given as an object {r, g, b, a}.
+ * @param {object} [params.strokeColor] - The stroke color given as an object {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - The width of the stroke outline.
  *
- * @returns {object} An object with details of the created rectangle (id, name, position, size, and parent id if applicable).
+ * @returns {object} An object containing details of the created rectangle, including its id, name, position, dimensions, and parent id (if applicable).
  *
- * @throws Will throw an error if the specified parent node is not found or if it does not support children.
+ * @throws Will throw an error if the specified parent node cannot be found or does not support children.
  */
 export async function createRectangle(params) {
   const {
@@ -41,17 +46,17 @@ export async function createRectangle(params) {
   rect.resize(width, height);
   rect.name = name;
 
-  // Set fill color if provided
+  // Apply fill color if provided.
   if (fillColor) {
     setFill(rect, fillColor);
   }
 
-  // Set stroke color and weight if provided
+  // Apply stroke properties if provided.
   if (strokeColor) {
     setStroke(rect, strokeColor, strokeWeight);
   }
 
-  // If parentId is provided, append to that node, otherwise append to current page
+  // Add the rectangle to a specified parent or to the current page.
   if (parentId) {
     const parentNode = await figma.getNodeByIdAsync(parentId);
     if (!parentNode) {
@@ -79,22 +84,22 @@ export async function createRectangle(params) {
 /**
  * Creates a new frame node in the Figma document.
  *
- * The function instantiates a frame with specified position, size, and name.
- * It supports optional fillColor, strokeColor, and strokeWeight parameters.
- * If parentId is provided, the frame is appended to that node; otherwise, it is added to the current page.
+ * A frame is a container that can include other nodes. This function creates a frame with
+ * specified position, dimensions, and optional visual styles. If a parentId is provided,
+ * the frame is added as a child of the specified node; otherwise, it is added to the current page.
  *
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x=0] - The X coordinate of the frame.
  * @param {number} [params.y=0] - The Y coordinate of the frame.
- * @param {number} [params.width=100] - The width of the frame.
- * @param {number} [params.height=100] - The height of the frame.
+ * @param {number} [params.width=100] - The frame's width.
+ * @param {number} [params.height=100] - The frame's height.
  * @param {string} [params.name="Frame"] - The name assigned to the frame.
- * @param {string} [params.parentId] - The ID of the parent node to which the frame should be appended.
- * @param {object} [params.fillColor] - Optional fill color {r, g, b, a}.
- * @param {object} [params.strokeColor] - Optional stroke color {r, g, b, a}.
- * @param {number} [params.strokeWeight] - Optional stroke weight.
+ * @param {string} [params.parentId] - The ID of the parent node that will contain the frame.
+ * @param {object} [params.fillColor] - Optional fill color in the form {r, g, b, a}.
+ * @param {object} [params.strokeColor] - Optional stroke color in the form {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - Optional stroke width.
  *
- * @returns {object} An object with details of the created frame.
+ * @returns {object} An object containing the created frame's details.
  */
 export async function createFrame(params) {
   const {
@@ -115,19 +120,17 @@ export async function createFrame(params) {
   frame.resize(width, height);
   frame.name = name;
 
-  // Set fill color if provided
+  // Apply fill color if provided.
   if (fillColor) {
-    // Use our helper function
     setFill(frame, fillColor);
   }
 
-  // Set stroke color and weight if provided
+  // Apply stroke properties if provided.
   if (strokeColor) {
-    // Use our helper function
     setStroke(frame, strokeColor, strokeWeight);
   }
 
-  // If parentId is provided, append to that node, otherwise append to current page
+  // Add the frame to a specific parent or to the current page.
   if (parentId) {
     const parentNode = await figma.getNodeByIdAsync(parentId);
     if (!parentNode) {
@@ -156,20 +159,24 @@ export async function createFrame(params) {
 }
 
 /**
- * Creates a new ellipse node in the Figma document.
+ * Creates a new ellipse node.
+ *
+ * This function creates an ellipse with the given position, size, and name.
+ * Optional fill and stroke properties can be applied.
+ * If a parentId is provided, the ellipse will be appended to that node.
  *
  * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - The X coordinate of the ellipse.
- * @param {number} [params.y=0] - The Y coordinate of the ellipse.
- * @param {number} [params.width=100] - The width of the ellipse.
- * @param {number} [params.height=100] - The height of the ellipse.
- * @param {string} [params.name="Ellipse"] - The name assigned to the ellipse.
- * @param {string} [params.parentId] - The ID of the parent node to append to.
- * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
- * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
- * @param {number} [params.strokeWeight] - The stroke weight.
+ * @param {number} [params.x=0] - X coordinate for the ellipse.
+ * @param {number} [params.y=0] - Y coordinate for the ellipse.
+ * @param {number} [params.width=100] - Ellipse width.
+ * @param {number} [params.height=100] - Ellipse height.
+ * @param {string} [params.name="Ellipse"] - The ellipse's name.
+ * @param {string} [params.parentId] - ID of the parent node.
+ * @param {object} [params.fillColor] - Fill color as {r, g, b, a}.
+ * @param {object} [params.strokeColor] - Stroke color as {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - Stroke width.
  *
- * @returns {object} An object containing the ellipse's details.
+ * @returns {object} An object with the ellipse node's details.
  */
 export async function createEllipse(params) {
   const {
@@ -184,26 +191,24 @@ export async function createEllipse(params) {
     strokeWeight
   } = params || {};
 
-  // Create a new ellipse node
+  // Create and configure the ellipse.
   const ellipse = figma.createEllipse();
   ellipse.name = name;
-  
-  // Position and size the ellipse
   ellipse.x = x;
   ellipse.y = y;
   ellipse.resize(width, height);
-  
-  // Set fill color if provided
+
+  // Apply fill color if provided.
   if (fillColor) {
     setFill(ellipse, fillColor);
   }
   
-  // Set stroke color and weight if provided
+  // Apply stroke properties if provided.
   if (strokeColor) {
     setStroke(ellipse, strokeColor, strokeWeight);
   }
 
-  // If parentId is provided, append to that node, otherwise append to current page
+  // Attach the ellipse to a parent node or the current page.
   if (parentId) {
     const parentNode = await figma.getNodeByIdAsync(parentId);
     if (!parentNode) {
@@ -230,21 +235,25 @@ export async function createEllipse(params) {
 }
 
 /**
- * Creates a new polygon node in the Figma document.
+ * Creates a new polygon node.
+ *
+ * A polygon is created with the specified position and size along with a configurable number of sides (minimum 3).
+ * Optional fill and stroke settings can be applied.
+ * The polygon is appended to a parent node if a valid parentId is specified.
  *
  * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - The X coordinate of the polygon.
- * @param {number} [params.y=0] - The Y coordinate of the polygon.
- * @param {number} [params.width=100] - The width of the polygon.
- * @param {number} [params.height=100] - The height of the polygon.
- * @param {number} [params.sides=6] - The number of sides (minimum 3).
- * @param {string} [params.name="Polygon"] - The name assigned to the polygon.
- * @param {string} [params.parentId] - The ID of the parent node to append to.
- * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
- * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
- * @param {number} [params.strokeWeight] - The stroke weight.
+ * @param {number} [params.x=0] - X coordinate for the polygon.
+ * @param {number} [params.y=0] - Y coordinate for the polygon.
+ * @param {number} [params.width=100] - Polygon width.
+ * @param {number} [params.height=100] - Polygon height.
+ * @param {number} [params.sides=6] - Number of sides (must be at least 3).
+ * @param {string} [params.name="Polygon"] - The name for the polygon.
+ * @param {string} [params.parentId] - ID of the parent node.
+ * @param {object} [params.fillColor] - Fill color as {r, g, b, a}.
+ * @param {object} [params.strokeColor] - Stroke color as {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - Stroke width.
  *
- * @returns {object} An object containing the polygon's details.
+ * @returns {object} An object containing details about the polygon.
  */
 export async function createPolygon(params) {
   const {
@@ -260,29 +269,29 @@ export async function createPolygon(params) {
     strokeWeight
   } = params || {};
 
-  // Create the polygon
+  // Create and configure the polygon.
   const polygon = figma.createPolygon();
   polygon.x = x;
   polygon.y = y;
   polygon.resize(width, height);
   polygon.name = name;
   
-  // Set the number of sides
+  // Set number of sides if valid.
   if (sides >= 3) {
     polygon.pointCount = sides;
   }
 
-  // Set fill color if provided
+  // Apply fill color if provided.
   if (fillColor) {
     setFill(polygon, fillColor);
   }
 
-  // Set stroke color and weight if provided
+  // Apply stroke properties if provided.
   if (strokeColor) {
     setStroke(polygon, strokeColor, strokeWeight);
   }
 
-  // If parentId is provided, append to that node, otherwise append to current page
+  // Append the polygon to a parent node or current page.
   if (parentId) {
     const parentNode = await figma.getNodeByIdAsync(parentId);
     if (!parentNode) {
@@ -310,22 +319,26 @@ export async function createPolygon(params) {
 }
 
 /**
- * Creates a new star node in the Figma document.
+ * Creates a new star node.
+ *
+ * A star is generated with a configurable number of points and an inner radius ratio (relative to its outer radius).
+ * The star’s position, dimensions, and optional visual styles can be specified.
+ * It is appended to a parent node if a valid parentId is given.
  *
  * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - The X coordinate of the star.
- * @param {number} [params.y=0] - The Y coordinate of the star.
- * @param {number} [params.width=100] - The width of the star.
- * @param {number} [params.height=100] - The height of the star.
- * @param {number} [params.points=5] - The number of points (minimum 3).
- * @param {number} [params.innerRadius=0.5] - The inner radius ratio (0.01–0.99).
- * @param {string} [params.name="Star"] - The name assigned to the star.
- * @param {string} [params.parentId] - The ID of the parent node to append to.
- * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
- * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
- * @param {number} [params.strokeWeight] - The stroke weight.
+ * @param {number} [params.x=0] - X coordinate for the star.
+ * @param {number} [params.y=0] - Y coordinate for the star.
+ * @param {number} [params.width=100] - Star width.
+ * @param {number} [params.height=100] - Star height.
+ * @param {number} [params.points=5] - Number of points on the star (minimum 3).
+ * @param {number} [params.innerRadius=0.5] - Inner radius ratio (between 0.01 and 0.99).
+ * @param {string} [params.name="Star"] - Name for the star.
+ * @param {string} [params.parentId] - ID of the parent node.
+ * @param {object} [params.fillColor] - Fill color as {r, g, b, a}.
+ * @param {object} [params.strokeColor] - Stroke color as {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - Stroke width.
  *
- * @returns {object} An object containing the star's details.
+ * @returns {object} An object with details of the created star.
  */
 export async function createStar(params) {
   const {
@@ -334,7 +347,7 @@ export async function createStar(params) {
     width = 100,
     height = 100,
     points = 5,
-    innerRadius = 0.5, // As a proportion of the outer radius
+    innerRadius = 0.5,
     name = "Star",
     parentId,
     fillColor,
@@ -342,34 +355,34 @@ export async function createStar(params) {
     strokeWeight
   } = params || {};
 
-  // Create the star
+  // Create and configure the star.
   const star = figma.createStar();
   star.x = x;
   star.y = y;
   star.resize(width, height);
   star.name = name;
   
-  // Set the number of points
+  // Set the number of points if valid.
   if (points >= 3) {
     star.pointCount = points;
   }
 
-  // Set the inner radius ratio
+  // Set inner radius ratio if within valid range.
   if (innerRadius > 0 && innerRadius < 1) {
     star.innerRadius = innerRadius;
   }
 
-  // Set fill color if provided
+  // Apply fill color if provided.
   if (fillColor) {
     setFill(star, fillColor);
   }
 
-  // Set stroke color and weight if provided
+  // Apply stroke properties if provided.
   if (strokeColor) {
     setStroke(star, strokeColor, strokeWeight);
   }
 
-  // If parentId is provided, append to that node, otherwise append to current page
+  // Append the star to a parent node or current page.
   if (parentId) {
     const parentNode = await figma.getNodeByIdAsync(parentId);
     if (!parentNode) {
@@ -398,21 +411,25 @@ export async function createStar(params) {
 }
 
 /**
- * Creates a new vector node in the Figma document.
+ * Creates a new vector node.
+ *
+ * A vector node is rendered using SVG-like vector path data. This function creates a vector with
+ * specified dimensions, position, and an optional set of vector paths. Visual properties are optionally applied.
+ * If a parentId is provided, the vector is appended to that node; otherwise, it is added to the current page.
  *
  * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - The X coordinate of the vector.
- * @param {number} [params.y=0] - The Y coordinate of the vector.
- * @param {number} [params.width=100] - The width of the vector.
- * @param {number} [params.height=100] - The height of the vector.
- * @param {string} [params.name="Vector"] - The name assigned to the vector.
- * @param {string} [params.parentId] - The ID of the parent node to append to.
- * @param {Array} [params.vectorPaths] - The vector path definitions.
- * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
- * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
- * @param {number} [params.strokeWeight] - The stroke weight.
+ * @param {number} [params.x=0] - X coordinate for the vector.
+ * @param {number} [params.y=0] - Y coordinate for the vector.
+ * @param {number} [params.width=100] - Vector width.
+ * @param {number} [params.height=100] - Vector height.
+ * @param {string} [params.name="Vector"] - Name for the vector.
+ * @param {string} [params.parentId] - ID of the parent node.
+ * @param {Array} [params.vectorPaths] - Array of vector path definitions.
+ * @param {object} [params.fillColor] - Fill color as {r, g, b, a}.
+ * @param {object} [params.strokeColor] - Stroke color as {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - Stroke width.
  *
- * @returns {object} An object containing the vector's details.
+ * @returns {object} An object with details regarding the vector node.
  */
 export async function createVector(params) {
   const {
@@ -428,14 +445,14 @@ export async function createVector(params) {
     strokeWeight
   } = params || {};
 
-  // Create the vector
+  // Create and configure the vector node.
   const vector = figma.createVector();
   vector.x = x;
   vector.y = y;
   vector.resize(width, height);
   vector.name = name;
 
-  // Set vector paths if provided
+  // Process and assign vector path definitions if provided.
   if (vectorPaths && vectorPaths.length > 0) {
     vector.vectorPaths = vectorPaths.map(path => {
       return {
@@ -445,17 +462,17 @@ export async function createVector(params) {
     });
   }
 
-  // Set fill color if provided
+  // Apply fill color if provided.
   if (fillColor) {
     setFill(vector, fillColor);
   }
 
-  // Set stroke color and weight if provided
+  // Apply stroke properties if provided.
   if (strokeColor) {
     setStroke(vector, strokeColor, strokeWeight);
   }
 
-  // If parentId is provided, append to that node, otherwise append to current page
+  // Attach the vector to a specified parent or the current page.
   if (parentId) {
     const parentNode = await figma.getNodeByIdAsync(parentId);
     if (!parentNode) {
@@ -483,7 +500,11 @@ export async function createVector(params) {
 }
 
 /**
- * Creates a new line vector in the Figma document.
+ * Creates a new line by generating a vector node representing a straight line.
+ *
+ * The function computes the dimensions of the line based on its starting and ending coordinates.
+ * It generates SVG path data for the line and applies stroke properties.
+ * The line is attached to a parent node if a valid parentId is specified.
  *
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x1=0] - The starting X coordinate.
@@ -491,12 +512,12 @@ export async function createVector(params) {
  * @param {number} [params.x2=100] - The ending X coordinate.
  * @param {number} [params.y2=0] - The ending Y coordinate.
  * @param {string} [params.name="Line"] - The name assigned to the line.
- * @param {string} [params.parentId] - The ID of the parent node to append to.
- * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
- * @param {number} [params.strokeWeight=1] - The stroke weight.
- * @param {string} [params.strokeCap="NONE"] - The stroke cap style.
+ * @param {string} [params.parentId] - The ID of the parent node.
+ * @param {object} [params.strokeColor={r: 0, g: 0, b: 0, a: 1}] - Stroke color as {r, g, b, a}.
+ * @param {number} [params.strokeWeight=1] - Stroke width.
+ * @param {string} [params.strokeCap="NONE"] - Stroke cap style. Options: "NONE", "ROUND", "SQUARE", "ARROW_LINES", or "ARROW_EQUILATERAL".
  *
- * @returns {object} An object containing the line's details.
+ * @returns {object} An object containing details of the created line.
  */
 export async function createLine(params) {
   const {
@@ -508,54 +529,49 @@ export async function createLine(params) {
     parentId,
     strokeColor = { r: 0, g: 0, b: 0, a: 1 },
     strokeWeight = 1,
-    strokeCap = "NONE" // Can be "NONE", "ROUND", "SQUARE", "ARROW_LINES", or "ARROW_EQUILATERAL"
+    strokeCap = "NONE"
   } = params || {};
 
-  // Create a vector node to represent the line
+  // Create a vector node to represent the line.
   const line = figma.createVector();
   line.name = name;
   
-  // Position the line at the starting point
+  // Position node at the starting coordinates.
   line.x = x1;
   line.y = y1;
   
-  // Calculate the vector size
+  // Determine the dimensions of the vector based on the endpoints.
   const width = Math.abs(x2 - x1);
   const height = Math.abs(y2 - y1);
   line.resize(width > 0 ? width : 1, height > 0 ? height : 1);
   
-  // Create vector path data for a straight line
-  // SVG path data format: M (move to) starting point, L (line to) ending point
+  // Calculate relative coordinates for the SVG path data in the vector's local system.
   const dx = x2 - x1;
   const dy = y2 - y1;
-  
-  // Calculate relative endpoint coordinates in the vector's local coordinate system
   const endX = dx > 0 ? width : 0;
   const endY = dy > 0 ? height : 0;
   const startX = dx > 0 ? 0 : width;
   const startY = dy > 0 ? 0 : height;
   
-  // Generate SVG path data for the line
+  // Generate SVG path data for a straight line.
   const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
-  
-  // Set vector paths
   line.vectorPaths = [{
     windingRule: "NONZERO",
     data: pathData
   }];
   
-  // Set stroke color
+  // Apply stroke properties.
   setStroke(line, strokeColor, strokeWeight);
   
-  // Set stroke cap style if supported
+  // Set stroke cap style if it is one of the supported options.
   if (["NONE", "ROUND", "SQUARE", "ARROW_LINES", "ARROW_EQUILATERAL"].includes(strokeCap)) {
     line.strokeCap = strokeCap;
   }
   
-  // Set fill to none (transparent) as lines typically don't have fills
+  // Remove fill for the line.
   line.fills = [];
   
-  // If parentId is provided, append to that node, otherwise append to current page
+  // Append the line to a parent node or the current page.
   if (parentId) {
     const parentNode = await figma.getNodeByIdAsync(parentId);
     if (!parentNode) {
@@ -585,80 +601,87 @@ export async function createLine(params) {
 }
 
 /**
- * Sets the corner radius of a node in the Figma document.
+ * Sets the corner radius of a node.
  *
- * @param {object} params - Parameters for setting corner radius.
+ * This helper function is intended to update the corner radius of a specified node.
+ *
+ * @param {object} params - Parameters for updating the corner radius.
  * @param {string} params.nodeId - The ID of the node to modify.
- * @param {number} params.radius - The corner radius to apply.
- * @param {boolean[]} [params.corners] - Optional array of booleans [topLeft, topRight, bottomRight, bottomLeft] specifying which corners to round.
+ * @param {number} params.radius - The corner radius value.
+ * @param {boolean[]} [params.corners] - Optional boolean array specifying which corners to round: [topLeft, topRight, bottomRight, bottomLeft].
  *
- * @returns {object} An object with the node's updated corner radius values.
+ * @returns {object} An object with the node's id and updated corner radius.
  */
 export async function setCornerRadius(params) {
   return { id: params.nodeId, cornerRadius: params.radius };
 }
 
 /**
- * Resizes a node to the given width and height.
+ * Resizes a node to the specified dimensions.
  *
- * @param {object} params - Object containing resize parameters.
+ * @param {object} params - Resize parameters.
  * @param {string} params.nodeId - The ID of the node to resize.
- * @param {number} params.width - The new width to set.
- * @param {number} params.height - The new height to set.
+ * @param {number} params.width - The new width value.
+ * @param {number} params.height - The new height value.
  *
- * @returns {object} An object with the updated node's dimensions.
+ * @returns {object} An object with the node's id and its updated dimensions.
  */
 export async function resizeNode(params) {
   return { id: params.nodeId, width: params.width, height: params.height };
 }
 
 /**
- * Deletes a node from the Figma document.
+ * Deletes a specified node from the Figma document.
  *
- * @param {object} params - Parameters for deletion.
+ * @param {object} params - Deletion parameters.
  * @param {string} params.nodeId - The ID of the node to delete.
  *
- * @returns {object} An object containing the deleted node's information.
+ * @returns {object} An object indicating the node's id and that it has been deleted.
  */
 export async function deleteNode(params) {
   return { id: params.nodeId, deleted: true };
 }
 
 /**
- * Moves a node to the specified X and Y coordinates.
+ * Moves a node to a new position.
  *
- * @param {object} params - Parameters for moving the node.
+ * @param {object} params - Movement parameters.
  * @param {string} params.nodeId - The ID of the node to move.
- * @param {number} params.x - The new X position.
- * @param {number} params.y - The new Y position.
+ * @param {number} params.x - The new X coordinate.
+ * @param {number} params.y - The new Y coordinate.
  *
- * @returns {object} An object with the node's updated position.
+ * @returns {object} An object with the node's id and its updated coordinates.
  */
 export async function moveNode(params) {
   return { id: params.nodeId, x: params.x, y: params.y };
 }
 
 /**
- * Clones an existing node in the Figma document.
+ * Clones an existing node.
  *
- * @param {object} params - Parameters for cloning a node.
+ * This function simulates cloning a node by returning a new id.
+ * Optionally, new coordinates can be provided for the cloned node.
+ *
+ * @param {object} params - Parameters for cloning.
  * @param {string} params.nodeId - The ID of the node to clone.
- * @param {number} [params.x] - Optional X coordinate for the cloned node.
- * @param {number} [params.y] - Optional Y coordinate for the cloned node.
+ * @param {number} [params.x] - Optional new X coordinate for the clone.
+ * @param {number} [params.y] - Optional new Y coordinate for the clone.
  *
- * @returns {object} An object with the clone's id and reference to the original.
+ * @returns {object} An object containing the new clone's id and a reference to the original node's id.
  */
 export async function cloneNode(params) {
   return { id: "cloned-" + params.nodeId, original: params.nodeId };
 }
 
 /**
- * Flattens a vector-based node in Figma.
+ * Flattens a vector-based node.
+ *
+ * This function simulates the flattening of a vector node into a simpler shape.
  *
  * @param {object} params - Parameters for flattening.
  * @param {string} params.nodeId - The ID of the node to flatten.
  *
- * @returns {object} An object with the flattened node's information.
+ * @returns {object} An object with the node's id and a flag indicating it has been flattened.
  */
 export async function flattenNode(params) {
   return { id: params.nodeId, flattened: true };
@@ -667,10 +690,10 @@ export async function flattenNode(params) {
 // Helper functions
 
 /**
- * Sets the fill color of a node.
- * 
- * @param {object} node - The Figma node to modify.
- * @param {object} color - The fill color as {r,g,b,a}.
+ * Applies a solid fill color to a node.
+ *
+ * @param {object} node - The node to update.
+ * @param {object} color - The fill color as {r, g, b, a}.
  * @private
  */
 function setFill(node, color) {
@@ -687,11 +710,11 @@ function setFill(node, color) {
 }
 
 /**
- * Sets the stroke color and weight of a node.
- * 
- * @param {object} node - The Figma node to modify.
- * @param {object} color - The stroke color as {r,g,b,a}.
- * @param {number} [weight] - The stroke weight.
+ * Applies stroke color and stroke width to a node.
+ *
+ * @param {object} node - The node to update.
+ * @param {object} color - The stroke color as {r, g, b, a}.
+ * @param {number} [weight] - Optional stroke width.
  * @private
  */
 function setStroke(node, color, weight) {
@@ -711,7 +734,7 @@ function setStroke(node, color, weight) {
   }
 }
 
-// Export the operations as a group
+// Export the shape operations as a grouped object for external use.
 export const shapeOperations = {
   createRectangle,
   createFrame,

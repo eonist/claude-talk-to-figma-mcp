@@ -1,25 +1,27 @@
-// Plugin state
+/**
+ * Plugin state.
+ * 
+ * @type {{ serverPort: number }}
+ */
 export const state = {
   serverPort: 3055, // Default port
 };
 
 /**
- * Sends a progress update message to the plugin UI.
+ * Constructs and sends a detailed progress update to the plugin UI.
  *
- * Constructs and sends a detailed progress update object for asynchronous commands.
- * This includes status, progress percentage, counts of total and processed items,
- * descriptive messages, and optional chunking information.
+ * This function builds a progress update object including the command information,
+ * status, progress percentage, item counts, and additional payload if provided.
  *
- * @param {string} commandId - Unique identifier for the command execution.
- * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
- * @param {string} status - Current status ('started', 'in_progress', 'completed', 'error').
- * @param {number} progress - Completion percentage (0-100).
- * @param {number} totalItems - Total number of items to process.
- * @param {number} processedItems - Number of items processed so far.
- * @param {string} message - Descriptive progress message.
- * @param {object} [payload=null] - Optional additional data, including chunk info.
- *
- * @returns {object} Progress update object with timestamp.
+ * @param {string} commandId - A unique identifier for the command execution.
+ * @param {string} commandType - The type of command (e.g., 'scan_text_nodes').
+ * @param {'started'|'in_progress'|'completed'|'error'} status - The current progress status.
+ * @param {number} progress - The completion percentage (0 to 100).
+ * @param {number} totalItems - The total number of items to be processed.
+ * @param {number} processedItems - The number of items processed so far.
+ * @param {string} message - A descriptive message about the progress.
+ * @param {object|null} [payload=null] - Optional additional data (e.g., chunk info).
+ * @returns {object} The progress update object including a timestamp.
  *
  * @example
  * sendProgressUpdate(
@@ -55,7 +57,7 @@ export function sendProgressUpdate(
     timestamp: Date.now()
   };
   
-  // Add optional chunk information if present
+  // Append optional chunking information if provided
   if (payload) {
     if (payload.currentChunk !== undefined && payload.totalChunks !== undefined) {
       update.currentChunk = payload.currentChunk;
@@ -65,7 +67,7 @@ export function sendProgressUpdate(
     update.payload = payload;
   }
   
-  // Send to UI
+  // Post the update to the UI and log the progress 
   figma.ui.postMessage(update);
   console.log(`Progress update: ${status} - ${progress}% - ${message}`);
   
@@ -73,25 +75,24 @@ export function sendProgressUpdate(
 }
 
 /**
- * Initialize plugin settings on load.
- * 
- * This function retrieves stored settings from Figma's client storage and applies them.
- * It also sends the initial settings to the plugin UI.
- * 
+ * Initializes plugin settings on load.
+ *
+ * Retrieves stored settings from Figma's clientStorage and applies them to
+ * the plugin state. It then sends the initial settings to the plugin UI.
+ *
+ * @async
  * @returns {Promise<void>}
- * 
- * @throws May log errors to console if settings retrieval fails, but won't throw errors.
+ *
+ * @throws Logs errors if settings retrieval fails.
  */
 export async function initializePlugin() {
   try {
     const savedSettings = await figma.clientStorage.getAsync("settings");
-    if (savedSettings) {
-      if (savedSettings.serverPort) {
-        state.serverPort = savedSettings.serverPort;
-      }
+    if (savedSettings && savedSettings.serverPort) {
+      state.serverPort = savedSettings.serverPort;
     }
 
-    // Send initial settings to UI
+    // Send initial settings to the UI
     figma.ui.postMessage({
       type: "init-settings",
       settings: {
