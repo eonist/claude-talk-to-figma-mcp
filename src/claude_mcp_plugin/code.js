@@ -2,47 +2,67 @@
 
 // ----- Utils Module -----
 // ----- Utils/plugin.js -----
-// Plugin state and core functionality
+/**
+ * Plugin utilities for state management and core functionality
+ * @module plugin-utils
+ */
 
 /**
- * Plugin state.
+ * Plugin state management object.
+ * Maintains core configuration settings that persist across plugin sessions.
  *
- * The state holds default configuration for the plugin. Currently it includes the default
- * server port that the plugin uses to communicate with its backend.
+ * @property {number} serverPort - The port number for plugin's backend connection (default: 3055)
  */
 const state = {
-  serverPort: 3055, // Default port for the plugin's backend connection
+  serverPort: 3055,
 };
 
 /**
  * Sends a progress update message to the plugin UI.
  *
- * This function constructs a detailed progress update object containing command information,
- * current progress status, counts of processed and total items, and an optional data payload.
- * It then sends this update to the plugin's UI via `figma.ui.postMessage` and logs the update
- * to the console. The returned object includes a timestamp indicating when the update was created.
+ * This function constructs a detailed progress update object for tracking long-running
+ * operations in the plugin. It handles both simple progress updates and chunked operations
+ * where work is divided into multiple parts.
  *
  * @param {string} commandId - Unique identifier for the command execution.
- * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
- * @param {string} status - Current status of the command ('started', 'in_progress', 'completed', 'error').
- * @param {number} progress - Completion percentage (range 0-100).
+ * @param {string} commandType - Type of command being executed.
+ * @param {('started'|'in_progress'|'completed'|'error')} status - Current execution status.
+ * @param {number} progress - Completion percentage (0-100).
  * @param {number} totalItems - Total number of items to process.
  * @param {number} processedItems - Number of items processed so far.
- * @param {string} message - Descriptive message accompanying the update.
- * @param {object} [payload=null] - Optional extra data such as chunk information (e.g., currentChunk, totalChunks, chunkSize).
+ * @param {string} message - Human-readable progress message.
+ * @param {object} [payload] - Optional additional data.
+ * @param {number} [payload.currentChunk] - Current chunk being processed.
+ * @param {number} [payload.totalChunks] - Total number of chunks.
+ * @param {number} [payload.chunkSize] - Size of each chunk.
  *
- * @returns {object} The progress update object with a timestamp.
- *
+ * @returns {object} The progress update object with timestamp.
+ * 
+ * @throws {Error} If required parameters are missing or invalid.
+ * 
  * @example
- * const update = sendProgressUpdate(
- *   "cmd123",
- *   "scan_text_nodes",
- *   "in_progress",
+ * // Simple progress update
+ * sendProgressUpdate(
+ *   'cmd_123',
+ *   'scan_text_nodes',
+ *   'in_progress',
  *   50,
  *   100,
  *   50,
- *   "Halfway done scanning text nodes",
- *   { currentChunk: 1, totalChunks: 2, chunkSize: 50 }
+ *   'Processing text nodes...'
+ * );
+ * 
+ * @example
+ * // Progress update with chunked processing
+ * sendProgressUpdate(
+ *   'cmd_123',
+ *   'export_images',
+ *   'in_progress',
+ *   33,
+ *   300,
+ *   100,
+ *   'Exporting image batch 1/3',
+ *   { currentChunk: 1, totalChunks: 3, chunkSize: 100 }
  * );
  */
 function sendProgressUpdate(
@@ -55,6 +75,15 @@ function sendProgressUpdate(
   message, 
   payload = null
 ) {
+  // Validate required parameters
+  if (!commandId || !commandType || !status) {
+    throw new Error('Missing required parameters for progress update');
+  }
+
+  if (progress < 0 || progress > 100) {
+    throw new Error('Progress must be between 0 and 100');
+  }
+
   const update = {
     type: 'command_progress',
     commandId,
@@ -67,8 +96,8 @@ function sendProgressUpdate(
     timestamp: Date.now()
   };
   
-  // Add any optional chunk information if provided in the payload.
   if (payload) {
+    // Add chunk information if provided
     if (payload.currentChunk !== undefined && payload.totalChunks !== undefined) {
       update.currentChunk = payload.currentChunk;
       update.totalChunks = payload.totalChunks;
@@ -77,7 +106,6 @@ function sendProgressUpdate(
     update.payload = payload;
   }
   
-  // Send the prepared update object to the plugin UI.
   figma.ui.postMessage(update);
   console.log(`Progress update: ${status} - ${progress}% - ${message}`);
   
@@ -86,16 +114,28 @@ function sendProgressUpdate(
 
 /**
  * Initializes the plugin settings on load.
+ * 
+ * Handles the plugin initialization process by:
+ * 1. Loading saved settings from Figma client storage
+ * 2. Updating plugin state with saved values
+ * 3. Notifying UI of current settings
+ * 
+ * Error handling:
+ * - If client storage access fails, logs error but continues with defaults
+ * - If settings are corrupted, falls back to default values
+ * - Always ensures UI receives valid settings, even if using defaults
  *
- * This function attempts to retrieve previously saved settings from the Figma client storage.
- * If settings are found (for instance, a saved server port), it updates the plugin state accordingly.
- * After updating the state, it sends an initialization message with the current settings to the UI.
- *
- * @returns {Promise<void>} Resolves when initialization is complete.
- *
+ * @returns {Promise<void>} Resolves when initialization is complete
+ * 
  * @example
- * // Called when the plugin initializes.
- * await initializePlugin();
+ * // Initialize plugin with error handling
+ * try {
+ *   await initializePlugin();
+ *   console.log('Plugin initialized successfully');
+ * } catch (error) {
+ *   console.error('Plugin initialization failed:', error);
+ *   // Plugin will still function with default settings
+ * }
  */
 async function initializePlugin() {
   try {
@@ -106,7 +146,7 @@ async function initializePlugin() {
       }
     }
 
-    // Notify the UI with the initial settings.
+    // Notify the UI with the initial settings
     figma.ui.postMessage({
       type: "init-settings",
       settings: {
@@ -115,28 +155,54 @@ async function initializePlugin() {
     });
   } catch (error) {
     console.error("Error loading settings:", error);
+    // Ensure UI still gets default settings even if load fails
+    figma.ui.postMessage({
+      type: "init-settings",
+      settings: {
+        serverPort: state.serverPort,
+      },
+    });
   }
 }
 
 /**
- * Updates plugin settings by saving changes to state and persistent storage.
+ * Updates plugin settings and persists them to storage.
+ * 
+ * Updates both the in-memory state and persists settings to Figma's client storage.
+ * Settings are validated before being applied to ensure plugin stability.
  *
- * This function updates the plugin's local state with new settings and persists these settings
- * using Figma's client storage system. Currently, the server port is the main setting handled.
- *
- * @param {{ serverPort: number }} settings - The settings object containing new configuration values.
- *
+ * @param {{ serverPort: number }} settings - New settings to apply
+ * @throws {Error} If settings validation fails
+ * 
  * @example
- * updateSettings({ serverPort: 4000 });
+ * // Update server port with validation
+ * try {
+ *   updateSettings({ serverPort: 4000 });
+ * } catch (error) {
+ *   console.error('Failed to update settings:', error);
+ *   // Previous settings remain unchanged
+ * }
  */
 function updateSettings(settings) {
+  // Validate settings before applying
+  if (settings.serverPort && (
+    typeof settings.serverPort !== 'number' ||
+    settings.serverPort < 1 ||
+    settings.serverPort > 65535
+  )) {
+    throw new Error('Invalid server port. Must be a number between 1 and 65535');
+  }
+
   if (settings.serverPort) {
     state.serverPort = settings.serverPort;
   }
 
-  // Persist the updated settings to client storage.
+  // Persist the updated settings
   figma.clientStorage.setAsync("settings", {
     serverPort: state.serverPort,
+  }).catch(error => {
+    console.error('Failed to persist settings:', error);
+    // State is still updated even if persistence fails
   });
 }
 
@@ -147,56 +213,52 @@ function updateSettings(settings) {
  * 
  * Provides a manual implementation of base64 encoding for Uint8Array data.
  * This is useful for image data and other binary content that needs to be 
- * serialized for transmission.
+ * serialized for transmission, particularly for Figma plugin communication.
  *
  * @param {Uint8Array} bytes - The binary data to encode.
  * @returns {string} A base64 encoded string representation of the data.
  */
 function customBase64Encode(bytes) {
+  // Base64 character set lookup table
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   let base64 = "";
 
+  // Calculate padding requirements
   const byteLength = bytes.byteLength;
-  const byteRemainder = byteLength % 3;
-  const mainLength = byteLength - byteRemainder;
+  const byteRemainder = byteLength % 3;  // Calculate how many bytes don't fit in complete 3-byte groups
+  const mainLength = byteLength - byteRemainder;  // Length that fits in complete 3-byte groups
 
   let a, b, c, d;
   let chunk;
 
-  // Main loop deals with bytes in chunks of 3
+  // Process all complete 3-byte chunks
   for (let i = 0; i < mainLength; i = i + 3) {
-    // Combine the three bytes into a single integer
+    // Combine three bytes into a 24-bit number
     chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
 
-    // Use bitmasks to extract 6-bit segments from the triplet
-    a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
-    b = (chunk & 258048) >> 12; // 258048 = (2^6 - 1) << 12
-    c = (chunk & 4032) >> 6; // 4032 = (2^6 - 1) << 6
-    d = chunk & 63; // 63 = 2^6 - 1
+    // Extract four 6-bit segments from the 24-bit chunk using bitmasks
+    a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18 - First 6 bits
+    b = (chunk & 258048) >> 12;   // 258048 = (2^6 - 1) << 12 - Second 6 bits
+    c = (chunk & 4032) >> 6;      // 4032 = (2^6 - 1) << 6 - Third 6 bits
+    d = chunk & 63;               // 63 = 2^6 - 1 - Last 6 bits
 
-    // Convert the raw binary segments to the appropriate ASCII encoding
+    // Map each 6-bit value to the corresponding base64 character
     base64 += chars[a] + chars[b] + chars[c] + chars[d];
   }
 
-  // Deal with the remaining bytes and padding
+  // Handle remaining bytes that don't form a complete 3-byte group
   if (byteRemainder === 1) {
+    // For 1 remaining byte, pad with two '=' characters
     chunk = bytes[mainLength];
-
-    a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
-
-    // Set the 4 least significant bits to zero
-    b = (chunk & 3) << 4; // 3 = 2^2 - 1
-
+    a = (chunk & 252) >> 2;      // 252 = (2^6 - 1) << 2
+    b = (chunk & 3) << 4;        // 3 = 2^2 - 1, shift left for padding
     base64 += chars[a] + chars[b] + "==";
   } else if (byteRemainder === 2) {
+    // For 2 remaining bytes, pad with one '=' character
     chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
-
-    a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
-    b = (chunk & 1008) >> 4; // 1008 = (2^6 - 1) << 4
-
-    // Set the 2 least significant bits to zero
-    c = (chunk & 15) << 2; // 15 = 2^4 - 1
-
+    a = (chunk & 64512) >> 10;   // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008) >> 4;     // 1008 = (2^6 - 1) << 4
+    c = (chunk & 15) << 2;       // 15 = 2^4 - 1, shift left for padding
     base64 += chars[a] + chars[b] + chars[c] + "=";
   }
 
@@ -206,10 +268,26 @@ function customBase64Encode(bytes) {
 
 // ----- Utils/helpers.js -----
 /**
+ * Collection of helper utilities for the Figma plugin
+ */
+
+/**
  * Returns a promise that resolves after a specified delay.
+ * Useful for rate limiting, animations, or waiting for operations to complete.
  *
  * @param {number} ms - The delay duration in milliseconds.
  * @returns {Promise<void>} A promise that resolves after the delay.
+ * 
+ * @example
+ * // Wait for 1 second before continuing
+ * await delay(1000);
+ * 
+ * @example
+ * // Use in an animation loop
+ * for (let i = 0; i < steps; i++) {
+ *   updateProgress(i);
+ *   await delay(100); // 100ms between updates
+ * }
  */
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -219,9 +297,14 @@ function delay(ms) {
  * Generates a unique command ID string.
  * 
  * Creates a random, unique identifier prefixed with 'cmd_' that can be used
- * to track and correlate command execution across the plugin.
+ * to track and correlate command execution across the plugin. The ID combines
+ * two random base-36 strings to ensure uniqueness.
  * 
  * @returns {string} A unique command ID string.
+ * 
+ * @example
+ * const cmdId = generateCommandId();
+ * // Returns something like: "cmd_k7f9vx2y3n8m4p1q"
  */
 function generateCommandId() {
   return 'cmd_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -229,10 +312,31 @@ function generateCommandId() {
 
 /**
  * Filters an array to contain only unique values based on a property or predicate function.
+ * Similar to lodash's uniqBy but with a lighter implementation.
  * 
  * @param {Array} arr - The array to filter.
  * @param {string|Function} predicate - Either a property name or a function that returns a value to check for uniqueness.
  * @returns {Array} A new array containing only unique items.
+ * 
+ * @example
+ * // Using a property name
+ * const users = [
+ *   { id: 1, name: 'John' },
+ *   { id: 1, name: 'John' },
+ *   { id: 2, name: 'Jane' }
+ * ];
+ * const uniqueUsers = uniqBy(users, 'id');
+ * // Returns: [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }]
+ * 
+ * @example
+ * // Using a function
+ * const nodes = [
+ *   { id: 'rect1', type: 'RECTANGLE' },
+ *   { id: 'rect2', type: 'RECTANGLE' },
+ *   { id: 'text1', type: 'TEXT' }
+ * ];
+ * const uniqueByType = uniqBy(nodes, node => node.type);
+ * // Returns: [{ id: 'rect1', type: 'RECTANGLE' }, { id: 'text1', type: 'TEXT' }]
  */
 function uniqBy(arr, predicate) {
   const cb = typeof predicate === "function" 
@@ -264,6 +368,25 @@ function uniqBy(arr, predicate) {
  * @param {string} [options.fallbackFont.style="Regular"] - Fallback font style.
  * 
  * @returns {Promise<boolean>} True if characters were set successfully, false otherwise.
+ * 
+ * @example
+ * // Basic usage
+ * const success = await setCharacters(textNode, "Hello World");
+ * 
+ * @example
+ * // With custom fallback font
+ * const success = await setCharacters(textNode, "Hello World", {
+ *   fallbackFont: {
+ *     family: "Roboto",
+ *     style: "Medium"
+ *   }
+ * });
+ * 
+ * @example
+ * // Handling mixed fonts
+ * const mixedFontNode = figma.createText();
+ * // The function will automatically handle mixed font scenarios
+ * const success = await setCharacters(mixedFontNode, "Mixed font text");
  */
 async function setCharacters(node, characters, options) {
   const fallbackFont = (options && options.fallbackFont) || {

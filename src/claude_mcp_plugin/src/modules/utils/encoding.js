@@ -3,56 +3,52 @@
  * 
  * Provides a manual implementation of base64 encoding for Uint8Array data.
  * This is useful for image data and other binary content that needs to be 
- * serialized for transmission.
+ * serialized for transmission, particularly for Figma plugin communication.
  *
  * @param {Uint8Array} bytes - The binary data to encode.
  * @returns {string} A base64 encoded string representation of the data.
  */
 export function customBase64Encode(bytes) {
+  // Base64 character set lookup table
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   let base64 = "";
 
+  // Calculate padding requirements
   const byteLength = bytes.byteLength;
-  const byteRemainder = byteLength % 3;
-  const mainLength = byteLength - byteRemainder;
+  const byteRemainder = byteLength % 3;  // Calculate how many bytes don't fit in complete 3-byte groups
+  const mainLength = byteLength - byteRemainder;  // Length that fits in complete 3-byte groups
 
   let a, b, c, d;
   let chunk;
 
-  // Main loop deals with bytes in chunks of 3
+  // Process all complete 3-byte chunks
   for (let i = 0; i < mainLength; i = i + 3) {
-    // Combine the three bytes into a single integer
+    // Combine three bytes into a 24-bit number
     chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
 
-    // Use bitmasks to extract 6-bit segments from the triplet
-    a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
-    b = (chunk & 258048) >> 12; // 258048 = (2^6 - 1) << 12
-    c = (chunk & 4032) >> 6; // 4032 = (2^6 - 1) << 6
-    d = chunk & 63; // 63 = 2^6 - 1
+    // Extract four 6-bit segments from the 24-bit chunk using bitmasks
+    a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18 - First 6 bits
+    b = (chunk & 258048) >> 12;   // 258048 = (2^6 - 1) << 12 - Second 6 bits
+    c = (chunk & 4032) >> 6;      // 4032 = (2^6 - 1) << 6 - Third 6 bits
+    d = chunk & 63;               // 63 = 2^6 - 1 - Last 6 bits
 
-    // Convert the raw binary segments to the appropriate ASCII encoding
+    // Map each 6-bit value to the corresponding base64 character
     base64 += chars[a] + chars[b] + chars[c] + chars[d];
   }
 
-  // Deal with the remaining bytes and padding
+  // Handle remaining bytes that don't form a complete 3-byte group
   if (byteRemainder === 1) {
+    // For 1 remaining byte, pad with two '=' characters
     chunk = bytes[mainLength];
-
-    a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
-
-    // Set the 4 least significant bits to zero
-    b = (chunk & 3) << 4; // 3 = 2^2 - 1
-
+    a = (chunk & 252) >> 2;      // 252 = (2^6 - 1) << 2
+    b = (chunk & 3) << 4;        // 3 = 2^2 - 1, shift left for padding
     base64 += chars[a] + chars[b] + "==";
   } else if (byteRemainder === 2) {
+    // For 2 remaining bytes, pad with one '=' character
     chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
-
-    a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
-    b = (chunk & 1008) >> 4; // 1008 = (2^6 - 1) << 4
-
-    // Set the 2 least significant bits to zero
-    c = (chunk & 15) << 2; // 15 = 2^4 - 1
-
+    a = (chunk & 64512) >> 10;   // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008) >> 4;     // 1008 = (2^6 - 1) << 4
+    c = (chunk & 15) << 2;       // 15 = 2^4 - 1, shift left for padding
     base64 += chars[a] + chars[b] + chars[c] + "=";
   }
 
