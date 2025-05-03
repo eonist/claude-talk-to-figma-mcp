@@ -3604,25 +3604,27 @@ function connectToFigma(port: number = defaultPort) {
     });
 
     ws.on('error', (error) => {
+      // Log the WebSocket error detail to indicate an error occurred.
       logger.error(`Socket error: ${error}`);
-      // Don't attempt to reconnect here, let the close handler do it
+      // Note: Do not attempt reconnection here; let the close event handle reconnection.
     });
 
     ws.on('close', (code, reason) => {
+      // Clear the connection timeout in case it is still pending.
       clearTimeout(connectionTimeout);
       logger.info(`Disconnected from Figma socket server with code ${code} and reason: ${reason || 'No reason provided'}`);
       ws = null;
 
-      // Reject all pending requests
+      // Reject all pending requests since the connection is lost.
       for (const [id, request] of pendingRequests.entries()) {
         clearTimeout(request.timeout);
         request.reject(new Error(`Connection closed with code ${code}: ${reason || 'No reason provided'}`));
         pendingRequests.delete(id);
       }
 
-      // Attempt to reconnect with exponential backoff
+      // Calculate exponential backoff delay before attempting a reconnection.
       const backoff = Math.min(30000, reconnectInterval * Math.pow(1.5, Math.floor(Math.random() * 5))); // Max 30s
-      logger.info(`Attempting to reconnect in ${backoff/1000} seconds...`);
+      logger.info(`Attempting to reconnect in ${backoff / 1000} seconds...`);
       setTimeout(() => connectToFigma(port), backoff);
     });
     
