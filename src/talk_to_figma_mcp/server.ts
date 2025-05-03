@@ -641,7 +641,29 @@ server.tool(
   }
 );
 
-// Create Ellipse Tool
+/**
+ * Create Ellipse Tool
+ *
+ * Creates a new ellipse in Figma at the specified position and size.
+ *
+ * @param {object} params - Parameters for creating the ellipse.
+ * @param {number} params.x - X position of the ellipse.
+ * @param {number} params.y - Y position of the ellipse.
+ * @param {number} params.width - Width of the ellipse.
+ * @param {number} params.height - Height of the ellipse.
+ * @param {string} [params.name] - Optional name for the ellipse.
+ * @param {string} [params.parentId] - Optional parent node ID to append the ellipse to.
+ * @param {object} [params.fillColor] - Optional fill color in RGBA format.
+ * @param {object} [params.strokeColor] - Optional stroke color in RGBA format.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ *
+ * @returns {Promise<{ content: Array<{ type: string; text: string }> }>} A promise resolving to an object containing creation result text.
+ *
+ * @throws Will throw an error if the ellipse cannot be created.
+ *
+ * @example
+ * await createEllipse({ x: 10, y: 20, width: 100, height: 50, name: "MyEllipse" });
+ */
 server.tool(
   "create_ellipse",
   "Create a new ellipse in Figma",
