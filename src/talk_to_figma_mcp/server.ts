@@ -32,7 +32,27 @@ interface CommandProgressUpdate {
   timestamp: number;
 }
 
-// Custom logging functions that write to stderr instead of stdout to avoid being captured
+/**
+ * Custom logging interface for MCP server
+ * 
+ * Provides structured logging with:
+ * - Severity levels (info, debug, warn, error)
+ * - stderr output to avoid command interference
+ * - Timestamp prefixing
+ * - Error stack traces
+ * 
+ * Usage:
+ * - info: General operational messages
+ * - debug: Detailed debugging information
+ * - warn: Warning conditions
+ * - error: Error conditions
+ * - log: Raw logging without formatting
+ * 
+ * @example
+ * logger.info('Server started');
+ * logger.debug('Connection details:', details);
+ * logger.error('Failed to connect:', error);
+ */
 const logger = {
   info: (message: string) => process.stderr.write(`[INFO] ${message}\n`),
   debug: (message: string) => process.stderr.write(`[DEBUG] ${message}\n`),
