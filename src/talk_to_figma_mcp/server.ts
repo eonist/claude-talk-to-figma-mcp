@@ -2889,7 +2889,21 @@ function sendCommandToFigma(
   });
 }
 
-// Update the join_channel tool
+/**
+ * Join Channel Tool
+ *
+ * Allows joining a specific channel to communicate with Figma.
+ *
+ * @param {object} params - Parameters for joining a channel.
+ * @param {string} params.channel - The name of the channel to join.
+ *
+ * @returns {Promise<object>} An object indicating success or failure.
+ *
+ * @throws Will throw an error if the channel name is missing or joining fails.
+ *
+ * @example
+ * await server.tool("join_channel", { channel: "my-channel" });
+ */
 server.tool(
   "join_channel",
   "Join a specific channel to communicate with Figma",
@@ -2937,7 +2951,15 @@ server.tool(
   }
 );
 
-// Start the server
+/**
+ * Main entry point to start the MCP server.
+ *
+ * Connects to the Figma socket server and starts the MCP server with stdio transport.
+ *
+ * @returns {Promise<void>}
+ *
+ * @throws Will log errors and exit the process if the server fails to start.
+ */
 async function main() {
   try {
     // Try to connect to Figma socket server
