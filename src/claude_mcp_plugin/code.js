@@ -1382,6 +1382,18 @@ function customBase64Encode(bytes) {
   return base64;
 }
 
+/**
+ * Sets the corner radius of a node in the Figma document.
+ *
+ * @param {object} params - Parameters for setting corner radius.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {number} params.radius - The corner radius to apply.
+ * @param {boolean[]} [params.corners] - Optional array of booleans [topLeft, topRight, bottomRight, bottomLeft] specifying which corners to round.
+ *
+ * @returns {object} An object with the node's updated corner radius values.
+ *
+ * @throws Will throw an error if the node is not found or does not support corner radius.
+ */
 async function setCornerRadius(params) {
   const { nodeId, radius, corners } = params || {};
 
@@ -1708,6 +1720,20 @@ const setCharactersWithSmartMatchFont = async (
 };
 
 // Add the cloneNode function implementation
+/**
+ * Clones an existing node in the Figma document.
+ *
+ * Creates a duplicate of the specified node. Optionally relocates the clone to new coordinates.
+ *
+ * @param {object} params - Parameters for cloning a node.
+ * @param {string} params.nodeId - The ID of the node to clone.
+ * @param {number} [params.x] - Optional X coordinate for the cloned node.
+ * @param {number} [params.y] - Optional Y coordinate for the cloned node.
+ *
+ * @returns {object} An object with the clone's id, name, and position & size if available.
+ *
+ * @throws Will throw an error if the node is not found or does not support cloning.
+ */
 async function cloneNode(params) {
   const { nodeId, x, y } = params || {};
 
@@ -3344,7 +3370,24 @@ async function insertChild(params) {
     throw new Error(`Error inserting child: ${error.message}`);
   }
 }
-
+/**
+ * Creates a new ellipse node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the ellipse.
+ * @param {number} [params.y=0] - The Y coordinate of the ellipse.
+ * @param {number} [params.width=100] - The width of the ellipse.
+ * @param {number} [params.height=100] - The height of the ellipse.
+ * @param {string} [params.name="Ellipse"] - The name assigned to the ellipse.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the ellipse's id, name, type, position, and size.
+ *
+ * @throws Will throw an error if the parent node is not found or cannot accept children.
+ */
 async function createEllipse(params) {
   const {
     x = 0,
@@ -3424,6 +3467,25 @@ async function createEllipse(params) {
   };
 }
 
+/**
+ * Creates a new polygon node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the polygon.
+ * @param {number} [params.y=0] - The Y coordinate of the polygon.
+ * @param {number} [params.width=100] - The width of the polygon.
+ * @param {number} [params.height=100] - The height of the polygon.
+ * @param {number} [params.sides=6] - The number of sides (minimum 3).
+ * @param {string} [params.name="Polygon"] - The name assigned to the polygon.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the polygon's id, name, type, position, size, and sides.
+ *
+ * @throws Will throw an error if the parent node is not found or cannot accept children.
+ */
 async function createPolygon(params) {
   const {
     x = 0,
@@ -3513,6 +3575,26 @@ async function createPolygon(params) {
   };
 }
 
+/**
+ * Creates a new star node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the star.
+ * @param {number} [params.y=0] - The Y coordinate of the star.
+ * @param {number} [params.width=100] - The width of the star.
+ * @param {number} [params.height=100] - The height of the star.
+ * @param {number} [params.points=5] - The number of points (minimum 3).
+ * @param {number} [params.innerRadius=0.5] - The inner radius ratio (0.01–0.99).
+ * @param {string} [params.name="Star"] - The name assigned to the star.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the star's id, name, type, position, size, and points.
+ *
+ * @throws Will throw an error if the parent node is not found or cannot accept children.
+ */
 async function createStar(params) {
   const {
     x = 0,
@@ -3609,6 +3691,25 @@ async function createStar(params) {
   };
 }
 
+/**
+ * Creates a new vector node in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the vector.
+ * @param {number} [params.y=0] - The Y coordinate of the vector.
+ * @param {number} [params.width=100] - The width of the vector.
+ * @param {number} [params.height=100] - The height of the vector.
+ * @param {string} [params.name="Vector"] - The name assigned to the vector.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {Array} [params.vectorPaths] - The vector path definitions.
+ * @param {object} [params.fillColor] - The fill color as {r,g,b,a}.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight] - The stroke weight.
+ *
+ * @returns {object} An object containing the vector's id, name, type, position, size, and paths.
+ *
+ * @throws Will throw an error if the parent node is not found or cannot accept children.
+ */
 async function createVector(params) {
   const {
     x = 0,
@@ -3702,7 +3803,24 @@ async function createVector(params) {
     parentId: vector.parent ? vector.parent.id : undefined,
   };
 }
-
+/**
+ * Creates a new line vector in the Figma document.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x1=0] - The starting X coordinate.
+ * @param {number} [params.y1=0] - The starting Y coordinate.
+ * @param {number} [params.x2=100] - The ending X coordinate.
+ * @param {number} [params.y2=0] - The ending Y coordinate.
+ * @param {string} [params.name="Line"] - The name assigned to the line.
+ * @param {string} [params.parentId] - The ID of the parent node to append to.
+ * @param {object} [params.strokeColor] - The stroke color as {r,g,b,a}.
+ * @param {number} [params.strokeWeight=1] - The stroke weight.
+ * @param {string} [params.strokeCap="NONE"] - The stroke cap style.
+ *
+ * @returns {object} An object containing the line's id, name, type, position, size, strokeWeight, and cap.
+ *
+ * @throws Will throw an error if the parent node is not found or cannot accept children.
+ */
 async function createLine(params) {
   const {
     x1 = 0,
