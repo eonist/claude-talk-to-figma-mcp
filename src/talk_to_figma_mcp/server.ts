@@ -3544,7 +3544,42 @@ async function joinChannel(channelName: string): Promise<void> {
   }
 }
 
-// Function to send commands to Figma
+/**
+ * Function to send commands to Figma Plugin
+ * 
+ * Handles communication between the MCP server and Figma plugin via WebSocket.
+ * The function manages request lifecycle including:
+ * - Validating connection state
+ * - Channel verification
+ * - Request timeout handling
+ * - Message ID tracking
+ * - Progress updates
+ * 
+ * @param {FigmaCommand} command - The Figma command to execute (e.g. "create_rectangle")
+ * @param {unknown} params - Parameters for the command, structure depends on command type
+ * @param {number} timeoutMs - Timeout in milliseconds before request fails (default: 30000)
+ * 
+ * @returns {Promise<unknown>} Resolves with command result or rejects with error
+ * 
+ * @throws {Error} When:
+ * - Not connected to Figma
+ * - No channel joined (for commands requiring a channel)
+ * - Request times out
+ * - WebSocket errors occur
+ * 
+ * @example
+ * // Send a command to create a rectangle
+ * const result = await sendCommandToFigma("create_rectangle", {
+ *   x: 100,
+ *   y: 100,
+ *   width: 200,
+ *   height: 100
+ * });
+ * 
+ * @example
+ * // Join a specific channel with custom timeout
+ * await sendCommandToFigma("join", { channel: "my-channel" }, 5000);
+ */
 function sendCommandToFigma(
   command: FigmaCommand,
   params: unknown = {},
