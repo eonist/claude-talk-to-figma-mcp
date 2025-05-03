@@ -3499,7 +3499,30 @@ function connectToFigma(port: number = defaultPort) {
         ws.terminate();
       }
     }, 10000); // 10 second connection timeout
-    
+    /**
+     * WebSocket Event Handlers
+     * 
+     * Manages WebSocket lifecycle events:
+     * 
+     * Connection Events:
+     * - open: Successfully connected
+     * - close: Connection terminated
+     * - error: Connection error occurred
+     * 
+     * Message Events:
+     * - message: Received data from Figma
+     * - progress: Command execution updates
+     * 
+     * Error Recovery:
+     * - Automatic reconnection
+     * - Command requeuing
+     * - State restoration
+     * 
+     * State Management:
+     * - Tracks connection status
+     * - Maintains command queue
+     * - Handles timeout cleanup
+     */
     ws.on('open', () => {
       clearTimeout(connectionTimeout);
       logger.info('Connected to Figma socket server');
