@@ -1101,9 +1101,9 @@ async function resizeNode(params) {
 /**
  * Deletes a node from the Figma document.
  *
- * The function locates the node by its ID, retrieves its basic information for record, and then removes it.
+ * Locates a node by its ID, retrieves its basic information, and removes it from the document.
  *
- * @param {object} params - The parameters for deletion.
+ * @param {object} params - Parameters for deletion.
  * @param {string} params.nodeId - The ID of the node to delete.
  *
  * @returns {object} An object containing the deleted node's id, name, and type.
