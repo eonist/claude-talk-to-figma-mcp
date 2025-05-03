@@ -777,7 +777,25 @@ server.tool(
   }
 );
 
-// Set Fill Color Tool
+/**
+ * Set Fill Color Tool
+ *
+ * Sets the fill color of a node in Figma, which can be a TextNode or FrameNode.
+ *
+ * @param {object} params - Parameters for setting fill color.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {number} params.r - Red component (0-1).
+ * @param {number} params.g - Green component (0-1).
+ * @param {number} params.b - Blue component (0-1).
+ * @param {number} [params.a=1] - Alpha component (0-1).
+ *
+ * @returns {Promise<object>} An object containing the node's name.
+ *
+ * @throws Will throw an error if the node is not found or does not support fills.
+ *
+ * @example
+ * await server.tool("set_fill_color", { nodeId: "123", r: 1, g: 0, b: 0, a: 1 });
+ */
 server.tool(
   "set_fill_color",
   "Set the fill color of a node in Figma can be TextNode or FrameNode",
@@ -818,7 +836,26 @@ server.tool(
   }
 );
 
-// Set Stroke Color Tool
+/**
+ * Set Stroke Color Tool
+ *
+ * Sets the stroke color of a node in Figma.
+ *
+ * @param {object} params - Parameters for setting stroke color.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {number} params.r - Red component (0-1).
+ * @param {number} params.g - Green component (0-1).
+ * @param {number} params.b - Blue component (0-1).
+ * @param {number} [params.a=1] - Alpha component (0-1).
+ * @param {number} [params.weight=1] - Stroke weight.
+ *
+ * @returns {Promise<object>} An object containing the node's name.
+ *
+ * @throws Will throw an error if the node is not found or does not support strokes.
+ *
+ * @example
+ * await server.tool("set_stroke_color", { nodeId: "123", r: 0, g: 0, b: 0, a: 1, weight: 2 });
+ */
 server.tool(
   "set_stroke_color",
   "Set the stroke color of a node in Figma",
@@ -861,7 +898,23 @@ server.tool(
   }
 );
 
-// Move Node Tool
+/**
+ * Move Node Tool
+ *
+ * Moves a node to a new position in Figma.
+ *
+ * @param {object} params - Parameters for moving the node.
+ * @param {string} params.nodeId - The ID of the node to move.
+ * @param {number} params.x - The new X position.
+ * @param {number} params.y - The new Y position.
+ *
+ * @returns {Promise<object>} An object containing the node's name.
+ *
+ * @throws Will throw an error if the node is not found or does not support positioning.
+ *
+ * @example
+ * await server.tool("move_node", { nodeId: "123", x: 100, y: 200 });
+ */
 server.tool(
   "move_node",
   "Move a node to a new position in Figma",
