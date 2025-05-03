@@ -876,7 +876,21 @@ async function createText(params) {
     parentId: textNode.parent ? textNode.parent.id : undefined,
   };
 }
-// fixme: add comment
+/**
+ * Sets the fill color of a node in the Figma document.
+ *
+ * @param {object} params - Parameters for setting fill color.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {object} params.color - RGBA color object.
+ * @param {number} params.color.r - Red component (0–1).
+ * @param {number} params.color.g - Green component (0–1).
+ * @param {number} params.color.b - Blue component (0–1).
+ * @param {number} [params.color.a=1] - Alpha component (0–1).
+ *
+ * @returns {object} An object containing the node's id, name, and updated fills.
+ *
+ * @throws Will throw an error if the node is not found or does not support fills.
+ */
 async function setFillColor(params) {
   console.log("setFillColor", params);
   const {
