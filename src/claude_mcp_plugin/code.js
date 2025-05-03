@@ -1060,14 +1060,14 @@ async function moveNode(params) {
  *
  * Ensures the node supports resizing and applies the new dimensions.
  *
- * @param {object} params - Resize parameters.
- * @param {string} params.nodeId - The node's ID.
- * @param {number} params.width - The new width.
- * @param {number} params.height - The new height.
+ * @param {object} params - Object containing resize parameters.
+ * @param {string} params.nodeId - The ID of the node to resize.
+ * @param {number} params.width - The new width to set.
+ * @param {number} params.height - The new height to set.
  *
- * @returns {object} An object with the node's updated dimensions.
+ * @returns {object} An object containing the updated node's id, name, width, and height.
  *
- * @throws Will throw an error if the node is not found or cannot be resized.
+ * @throws Will throw an error if the node is not found or does not support resizing.
  */
 async function resizeNode(params) {
   const { nodeId, width, height } = params || {};
