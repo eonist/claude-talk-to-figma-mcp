@@ -2533,6 +2533,28 @@ Remember that text is never just text—it's a core design element that must wor
  *   ]
  * });
  */
+/**
+ * Set Multiple Text Contents Tool
+ *
+ * Sets multiple text contents in parallel within a node.
+ *
+ * @param {object} params - Parameters for setting multiple text contents.
+ * @param {string} params.nodeId - The ID of the node containing the text nodes to replace.
+ * @param {Array<{nodeId: string, text: string}>} params.text - Array of text node IDs and their replacement texts.
+ *
+ * @returns {Promise<object>} An object indicating the progress and results of the text replacement.
+ *
+ * @throws Will throw an error if the text replacement fails.
+ *
+ * @example
+ * await server.tool("set_multiple_text_contents", {
+ *   nodeId: "parent-node-id",
+ *   text: [
+ *     { nodeId: "text-node-1", text: "New text 1" },
+ *     { nodeId: "text-node-2", text: "New text 2" }
+ *   ]
+ * });
+ */
 server.tool(
   "set_multiple_text_contents",
   "Set multiple text contents parallelly in a node",
