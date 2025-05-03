@@ -1824,6 +1824,23 @@ server.tool(
 );
 
 // Set Line Height Tool
+/**
+ * Set Line Height Tool
+ *
+ * Sets the line height of a text node in Figma.
+ *
+ * @param {object} params - Parameters for setting line height.
+ * @param {string} params.nodeId - The ID of the text node to modify.
+ * @param {number} params.lineHeight - Line height value.
+ * @param {string} [params.unit] - Unit type ("PIXELS", "PERCENT", or "AUTO").
+ *
+ * @returns {Promise<object>} An object containing the node's name and updated line height.
+ *
+ * @throws Will throw an error if the line height cannot be set.
+ *
+ * @example
+ * await server.tool("set_line_height", { nodeId: "123", lineHeight: 20, unit: "PIXELS" });
+ */
 server.tool(
   "set_line_height",
   "Set the line height of a text node in Figma",
