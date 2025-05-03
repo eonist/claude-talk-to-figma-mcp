@@ -1234,7 +1234,23 @@ server.tool(
   }
 );
 
-// Set Corner Radius Tool
+/**
+ * Set Corner Radius Tool
+ *
+ * Sets the corner radius of a node in Figma.
+ *
+ * @param {object} params - Parameters for setting corner radius.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {number} params.radius - The corner radius value.
+ * @param {boolean[]} [params.corners] - Optional array of 4 booleans specifying which corners to round [topLeft, topRight, bottomRight, bottomLeft].
+ *
+ * @returns {Promise<object>} An object containing the node's name.
+ *
+ * @throws Will throw an error if the node is not found or does not support corner radius.
+ *
+ * @example
+ * await server.tool("set_corner_radius", { nodeId: "123", radius: 10, corners: [true, true, false, false] });
+ */
 server.tool(
   "set_corner_radius",
   "Set the corner radius of a node in Figma",
@@ -1279,7 +1295,23 @@ server.tool(
   }
 );
 
-// New resizing tool for auto layout sizing modes
+/**
+ * Set Auto Layout Resizing Tool
+ *
+ * Sets hug or fill sizing mode on an auto layout frame or child node.
+ *
+ * @param {object} params - Parameters for setting auto layout resizing.
+ * @param {string} params.nodeId - The ID of the node to modify sizing for.
+ * @param {string} params.axis - The axis to apply sizing mode ("horizontal" or "vertical").
+ * @param {string} params.mode - The sizing mode to apply ("FIXED", "HUG", or "FILL").
+ *
+ * @returns {Promise<object>} An object containing the updated sizing mode.
+ *
+ * @throws Will throw an error if the node is not found or does not support auto layout.
+ *
+ * @example
+ * await server.tool("set_auto_layout_resizing", { nodeId: "123", axis: "horizontal", mode: "FILL" });
+ */
 server.tool(
   "set_auto_layout_resizing",
   "Set hug or fill sizing mode on an auto layout frame or child node",
@@ -1312,7 +1344,31 @@ server.tool(
   }
 );
 
-// Auto Layout Tool
+/**
+ * Auto Layout Tool
+ *
+ * Configures auto layout properties for a node in Figma.
+ *
+ * @param {object} params - Parameters for auto layout configuration.
+ * @param {string} params.nodeId - The ID of the node to configure auto layout.
+ * @param {string} params.layoutMode - Layout direction ("HORIZONTAL", "VERTICAL", or "NONE").
+ * @param {number} [params.paddingTop] - Top padding in pixels.
+ * @param {number} [params.paddingBottom] - Bottom padding in pixels.
+ * @param {number} [params.paddingLeft] - Left padding in pixels.
+ * @param {number} [params.paddingRight] - Right padding in pixels.
+ * @param {number} [params.itemSpacing] - Spacing between items in pixels.
+ * @param {string} [params.primaryAxisAlignItems] - Alignment along primary axis.
+ * @param {string} [params.counterAxisAlignItems] - Alignment along counter axis.
+ * @param {string} [params.layoutWrap] - Whether items wrap to new lines.
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout calculations.
+ *
+ * @returns {Promise<object>} An object with updated auto layout properties.
+ *
+ * @throws Will throw an error if the node is not found or does not support auto layout.
+ *
+ * @example
+ * await server.tool("set_auto_layout", { nodeId: "123", layoutMode: "HORIZONTAL", paddingTop: 10 });
+ */
 server.tool(
   "set_auto_layout",
   "Configure auto layout properties for a node in Figma",
