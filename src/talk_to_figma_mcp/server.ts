@@ -2663,7 +2663,27 @@ server.tool(
   }
 );
 
-// Set Effects Tool
+/**
+ * Set Effects Tool
+ *
+ * Sets the visual effects of a node in Figma.
+ *
+ * @param {object} params - Parameters for setting effects.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {Array<object>} params.effects - Array of effects to apply.
+ *
+ * @returns {Promise<object>} An object containing the node's name and applied effects.
+ *
+ * @throws Will throw an error if the effects cannot be set.
+ *
+ * @example
+ * await server.tool("set_effects", {
+ *   nodeId: "123",
+ *   effects: [
+ *     { type: "DROP_SHADOW", color: { r: 0, g: 0, b: 0, a: 0.5 }, offset: { x: 0, y: 2 }, radius: 4 }
+ *   ]
+ * });
+ */
 server.tool(
   "set_effects",
   "Set the visual effects of a node in Figma",
