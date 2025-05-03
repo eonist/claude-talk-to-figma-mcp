@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename);
 // Define paths
 const SRC_DIR = path.join(__dirname, 'src');
 const MODULES_DIR = path.join(SRC_DIR, 'modules');
+const UTILS_DIR = path.join(MODULES_DIR, 'utils');
 const OUTPUT_FILE = path.join(__dirname, 'code.js');
 
 // Function to read a file and return its content
@@ -38,16 +39,34 @@ function buildPlugin() {
     // Start building the output content
     let output = '// Figma Plugin - Auto-generated code from build.js\n\n';
     
-    // First, include the utility functions since other modules depend on them
-    const utilsPath = path.join(SRC_DIR, 'modules/utils.js');
-    let utilsContent = readFile(utilsPath);
-    
-    // Strip out export statements and convert to regular functions/constants
-    utilsContent = utilsContent.replace(/export\s+/g, '');
-    
-    // Add utils content to output
-    output += '// ----- Utils Module -----\n';
-    output += utilsContent + '\n\n';
+    // Process utils directory first
+    if (fs.existsSync(UTILS_DIR)) {
+      // Process utils files in specific order
+      const utilsFiles = ['plugin.js', 'encoding.js', 'helpers.js'];
+      output += '// ----- Utils Module -----\n';
+      
+      for (const utilFile of utilsFiles) {
+        const utilPath = path.join(UTILS_DIR, utilFile);
+        if (fs.existsSync(utilPath)) {
+          let utilContent = readFile(utilPath);
+          // Strip out export statements and convert to regular functions/constants
+          utilContent = utilContent.replace(/export\s+/g, '');
+          utilContent = utilContent.replace(/import\s+.*from\s+['"].*['"];?\n?/g, '');
+          
+          output += `// ----- Utils/${utilFile} -----\n`;
+          output += utilContent + '\n\n';
+        }
+      }
+    } else {
+      // Fallback to old utils.js if utils directory doesn't exist
+      const utilsPath = path.join(MODULES_DIR, 'utils.js');
+      if (fs.existsSync(utilsPath)) {
+        let utilsContent = readFile(utilsPath);
+        utilsContent = utilsContent.replace(/export\s+/g, '');
+        output += '// ----- Utils Module -----\n';
+        output += utilsContent + '\n\n';
+      }
+    }
     
     // Add other module files in a specific order
     const moduleOrder = [
@@ -58,6 +77,7 @@ function buildPlugin() {
       'components.js',
       'layout.js',
       'rename.js',
+      'commands.js', // Added commands.js at the end
     ];
     
     for (const moduleFile of moduleOrder) {

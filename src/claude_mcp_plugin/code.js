@@ -1,6 +1,9 @@
 // Figma Plugin - Auto-generated code from build.js
 
 // ----- Utils Module -----
+// ----- Utils/plugin.js -----
+// Plugin state and core functionality
+
 // Plugin state
 const state = {
   serverPort: 3055, // Default port
@@ -8,10 +11,6 @@ const state = {
 
 /**
  * Sends a progress update message to the plugin UI.
- *
- * Constructs and sends a detailed progress update object for asynchronous commands.
- * This includes status, progress percentage, counts of total and processed items,
- * descriptive messages, and optional chunking information.
  *
  * @param {string} commandId - Unique identifier for the command execution.
  * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
@@ -23,18 +22,6 @@ const state = {
  * @param {object} [payload=null] - Optional additional data, including chunk info.
  *
  * @returns {object} Progress update object with timestamp.
- *
- * @example
- * sendProgressUpdate(
- *   'cmd_abc123',
- *   'scan_text_nodes',
- *   'in_progress',
- *   50,
- *   100,
- *   50,
- *   'Halfway done scanning text nodes',
- *   { currentChunk: 1, totalChunks: 2, chunkSize: 50 }
- * );
  */
 function sendProgressUpdate(
   commandId, 
@@ -78,12 +65,7 @@ function sendProgressUpdate(
 /**
  * Initialize plugin settings on load.
  * 
- * This function retrieves stored settings from Figma's client storage and applies them.
- * It also sends the initial settings to the plugin UI.
- * 
  * @returns {Promise<void>}
- * 
- * @throws May log errors to console if settings retrieval fails, but won't throw errors.
  */
 async function initializePlugin() {
   try {
@@ -121,20 +103,8 @@ function updateSettings(settings) {
   });
 }
 
-/**
- * Returns a promise that resolves after a specified delay.
- *
- * @param {number} ms - The delay duration in milliseconds.
- * @returns {Promise<void>} A promise that resolves after the delay.
- * 
- * @example
- * // Wait for 500ms
- * await delay(500);
- */
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
+// ----- Utils/encoding.js -----
 /**
  * Custom base64 encoding function for binary data.
  * 
@@ -144,10 +114,6 @@ function delay(ms) {
  *
  * @param {Uint8Array} bytes - The binary data to encode.
  * @returns {string} A base64 encoded string representation of the data.
- * 
- * @example
- * const imageBytes = await node.exportAsync({format: "PNG"});
- * const base64String = customBase64Encode(imageBytes);
  */
 function customBase64Encode(bytes) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -200,6 +166,18 @@ function customBase64Encode(bytes) {
   return base64;
 }
 
+
+// ----- Utils/helpers.js -----
+/**
+ * Returns a promise that resolves after a specified delay.
+ *
+ * @param {number} ms - The delay duration in milliseconds.
+ * @returns {Promise<void>} A promise that resolves after the delay.
+ */
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 /**
  * Generates a unique command ID string.
  * 
@@ -207,10 +185,6 @@ function customBase64Encode(bytes) {
  * to track and correlate command execution across the plugin.
  * 
  * @returns {string} A unique command ID string.
- * 
- * @example
- * const commandId = generateCommandId();
- * // commandId might be: "cmd_a7f3b9c2e5d1g6h8i0j2"
  */
 function generateCommandId() {
   return 'cmd_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -219,20 +193,9 @@ function generateCommandId() {
 /**
  * Filters an array to contain only unique values based on a property or predicate function.
  * 
- * This function removes duplicate items from an array, where uniqueness is determined
- * by a property value or a function that derives a value from each item.
- * 
  * @param {Array} arr - The array to filter.
  * @param {string|Function} predicate - Either a property name or a function that returns a value to check for uniqueness.
  * @returns {Array} A new array containing only unique items.
- * 
- * @example
- * // Filter by object property
- * const uniqueUsers = uniqBy(users, 'id');
- * 
- * @example
- * // Filter by function result
- * const uniqueByName = uniqBy(items, item => item.firstName + item.lastName);
  */
 function uniqBy(arr, predicate) {
   const cb = typeof predicate === "function" 
@@ -264,8 +227,6 @@ function uniqBy(arr, predicate) {
  * @param {string} [options.fallbackFont.style="Regular"] - Fallback font style.
  * 
  * @returns {Promise<boolean>} True if characters were set successfully, false otherwise.
- * 
- * @throws Logs warnings to console but doesn't throw errors.
  */
 async function setCharacters(node, characters, options) {
   const fallbackFont = (options && options.fallbackFont) || {
@@ -2832,20 +2793,125 @@ const renameOperations = {
 };
 
 
+// ----- commands Module -----
+// Command registry and handler
+
+// Command registry
+const commandRegistry = {};
+
+/**
+ * Registers a command function with the specified name
+ * 
+ * @param {string} name - The command name to register
+ * @param {Function} fn - The function to execute for this command
+ */
+function registerCommand(name, fn) {
+  commandRegistry[name] = fn;
+}
+
+/**
+ * Initializes all commands by registering them in the command registry
+ * This function is called once during plugin initialization
+ */
+function initializeCommands() {
+  // Document operations
+  registerCommand('get_document_info', documentOperations.getDocumentInfo);
+  registerCommand('get_selection', documentOperations.getSelection);
+  registerCommand('get_node_info', documentOperations.getNodeInfo);
+  registerCommand('get_nodes_info', documentOperations.getNodesInfo);
+  
+  // Shape operations
+  registerCommand('create_rectangle', shapeOperations.createRectangle);
+  registerCommand('create_frame', shapeOperations.createFrame);
+  registerCommand('create_ellipse', shapeOperations.createEllipse);
+  registerCommand('create_polygon', shapeOperations.createPolygon);
+  registerCommand('create_star', shapeOperations.createStar);
+  registerCommand('create_vector', shapeOperations.createVector);
+  registerCommand('create_line', shapeOperations.createLine);
+  registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
+  registerCommand('resize_node', shapeOperations.resizeNode);
+  registerCommand('delete_node', shapeOperations.deleteNode);
+  registerCommand('move_node', shapeOperations.moveNode);
+  registerCommand('clone_node', shapeOperations.cloneNode);
+  registerCommand('flatten_node', shapeOperations.flattenNode);
+  
+  // Text operations
+  registerCommand('create_text', textOperations.createText);
+  registerCommand('set_text_content', textOperations.setTextContent);
+  registerCommand('scan_text_nodes', textOperations.scanTextNodes);
+  registerCommand('set_multiple_text_contents', textOperations.setMultipleTextContents);
+  registerCommand('set_font_name', textOperations.setFontName);
+  registerCommand('set_font_size', textOperations.setFontSize);
+  registerCommand('set_font_weight', textOperations.setFontWeight);
+  registerCommand('set_letter_spacing', textOperations.setLetterSpacing);
+  registerCommand('set_line_height', textOperations.setLineHeight);
+  registerCommand('set_paragraph_spacing', textOperations.setParagraphSpacing);
+  registerCommand('set_text_case', textOperations.setTextCase);
+  registerCommand('set_text_decoration', textOperations.setTextDecoration);
+  registerCommand('get_styled_text_segments', textOperations.getStyledTextSegments);
+  registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
+  
+  // Style operations
+  registerCommand('set_fill_color', styleOperations.setFillColor);
+  registerCommand('set_stroke_color', styleOperations.setStrokeColor);
+  registerCommand('get_styles', styleOperations.getStyles);
+  registerCommand('set_effects', styleOperations.setEffects);
+  registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
+  
+  // Component operations
+  registerCommand('get_local_components', componentOperations.getLocalComponents);
+  registerCommand('get_remote_components', componentOperations.getRemoteComponents);
+  registerCommand('create_component_instance', componentOperations.createComponentInstance);
+  registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
+  
+  // Layout operations
+  registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
+  registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
+  registerCommand('group_nodes', layoutOperations.groupNodes);
+  registerCommand('ungroup_nodes', layoutOperations.ungroupNodes);
+  registerCommand('insert_child', layoutOperations.insertChild);
+  
+  // Rename operations
+  registerCommand('rename_layers', renameOperations.rename_layers);
+  registerCommand('ai_rename_layers', renameOperations.ai_rename_layers);
+  registerCommand('rename_layer', renameOperations.rename_layer);
+  registerCommand('rename_multiple', renameOperations.rename_multiples);
+}
+
+/**
+ * Handles an incoming command by routing it to the appropriate handler function
+ * 
+ * @param {string} command - The command to execute
+ * @param {object} params - Parameters for the command
+ * @returns {Promise<any>} - The result of the command execution
+ * @throws {Error} - If the command is unknown or execution fails
+ */
+async function handleCommand(command, params) {
+  console.log(`Received command: ${command}`);
+  
+  if (!commandRegistry[command]) {
+    throw new Error(`Unknown command: ${command}`);
+  }
+  
+  return await commandRegistry[command](params);
+}
+
+// Export for build compatibility
+const commandOperations = {
+  initializeCommands,
+  handleCommand
+};
+
+
 // ----- Main Plugin Code -----
 // Main entry point for the Figma plugin
 
 
-// Destructure operations for easier access
-
-
-
-
-
-
-
 // Show UI
 figma.showUI(__html__, { width: 350, height: 450 });
+
+// Initialize commands
+initializeCommands();
 
 // Plugin commands from UI
 figma.ui.onmessage = async (msg) => {
@@ -2885,136 +2951,5 @@ figma.on("run", ({ command }) => {
   figma.ui.postMessage({ type: "auto-connect" });
 });
 
-/**
- * Handles incoming commands and routes them to the appropriate handler functions
- * 
- * @param {string} command - The command to execute
- * @param {object} params - Parameters for the command
- * @returns {Promise<any>} - The result of the command execution
- * @throws {Error} - If the command is unknown or execution fails
- */
-async function handleCommand(command, params) {
-  console.log(`Received command: ${command}`);
-  
-  switch (command) {
-    // Document operations
-    case "get_document_info":
-      return await getDocumentInfo();
-    case "get_selection":
-      return await getSelection();
-    case "get_node_info":
-      return await getNodeInfo(params);
-    case "get_nodes_info":
-      return await getNodesInfo(params);
-      
-    // Shape operations
-    case "create_rectangle":
-      return await createRectangle(params);
-    case "create_frame":
-      return await createFrame(params);
-    case "create_ellipse":
-      return await createEllipse(params);
-    case "create_polygon":
-      return await createPolygon(params);
-    case "create_star":
-      return await createStar(params);
-    case "create_vector":
-      return await createVector(params);
-    case "create_line":
-      return await createLine(params);
-    case "set_corner_radius":
-      return await setCornerRadius(params);
-    case "resize_node":
-      return await resizeNode(params);
-    case "delete_node":
-      return await deleteNode(params);
-    case "move_node":
-      return await moveNode(params);
-    case "clone_node":
-      return await cloneNode(params);
-    case "flatten_node":
-      return await flattenNode(params);
-      
-    // Text operations
-    case "create_text":
-      return await createText(params);
-    case "set_text_content":
-      return await setTextContent(params);
-    case "scan_text_nodes":
-      return await scanTextNodes(params);
-    case "set_multiple_text_contents":
-      return await setMultipleTextContents(params);
-    case "set_font_name":
-      return await setFontName(params);
-    case "set_font_size":
-      return await setFontSize(params);
-    case "set_font_weight":
-      return await setFontWeight(params);
-    case "set_letter_spacing":
-      return await setLetterSpacing(params);
-    case "set_line_height":
-      return await setLineHeight(params);
-    case "set_paragraph_spacing":
-      return await setParagraphSpacing(params);
-    case "set_text_case":
-      return await setTextCase(params);
-    case "set_text_decoration":
-      return await setTextDecoration(params);
-    case "get_styled_text_segments":
-      return await getStyledTextSegments(params);
-    case "load_font_async":
-      return await loadFontAsyncWrapper(params);
-      
-    // Style operations
-    case "set_fill_color":
-      return await setFillColor(params);
-    case "set_stroke_color":
-      return await setStrokeColor(params);
-    case "get_styles":
-      return await getStyles();
-    case "set_effects":
-      return await setEffects(params);
-    case "set_effect_style_id":
-      return await setEffectStyleId(params);
-      
-    // Component operations
-    case "get_local_components":
-      return await getLocalComponents();
-    case "get_remote_components":
-      return await getRemoteComponents(params);
-    case "create_component_instance":
-      return await createComponentInstance(params);
-    case "export_node_as_image":
-      return await exportNodeAsImage(params);
-      
-    // Layout operations
-    case "set_auto_layout":
-      return await setAutoLayout(params);
-    case "set_auto_layout_resizing":
-      return await setAutoLayoutResizing(params);
-    case "group_nodes":
-      return await groupNodes(params);
-    case "ungroup_nodes":
-      return await ungroupNodes(params);
-    case "insert_child":
-      return await insertChild(params);
-      
-    // Rename operations
-    case "rename_layers":
-      return await rename_layers(params);
-    case "ai_rename_layers":
-      return await ai_rename_layers(params);
-    case "rename_layer":
-      return await rename_layer(params);
-    case "rename_multiple":
-      return await rename_multiples(params);
-      
-    default:
-      throw new Error(`Unknown command: ${command}`);
-  }
-}
-
 // Initialize the plugin on load
 initializePlugin();
-
-// Export the command handler for testing
