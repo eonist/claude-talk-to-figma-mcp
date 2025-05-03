@@ -954,6 +954,20 @@ async function moveNode(params) {
   };
 }
 // fixme: add comment
+/**
+ * Resizes a node to the given width and height.
+ *
+ * Ensures the node supports resizing and applies the new dimensions.
+ *
+ * @param {object} params - Resize parameters.
+ * @param {string} params.nodeId - The node's ID.
+ * @param {number} params.width - The new width.
+ * @param {number} params.height - The new height.
+ *
+ * @returns {object} An object with the node's updated dimensions.
+ *
+ * @throws Will throw an error if the node is not found or cannot be resized.
+ */
 async function resizeNode(params) {
   const { nodeId, width, height } = params || {};
 
@@ -983,7 +997,18 @@ async function resizeNode(params) {
     height: node.height,
   };
 }
-// fixme: add comment
+/**
+ * Deletes a node from the Figma document.
+ *
+ * The function locates the node by its ID, retrieves its basic information for record, and then removes it.
+ *
+ * @param {object} params - The parameters for deletion.
+ * @param {string} params.nodeId - The ID of the node to delete.
+ *
+ * @returns {object} An object containing the deleted node's id, name, and type.
+ *
+ * @throws Will throw an error if the node is not found.
+ */
 async function deleteNode(params) {
   const { nodeId } = params || {};
 
@@ -1007,7 +1032,13 @@ async function deleteNode(params) {
 
   return nodeInfo;
 }
-// fixme: add comment
+/**
+ * Retrieves the local style definitions from the Figma document.
+ *
+ * Collects color, text, effect, and grid styles and returns them in a simplified, serializable format.
+ *
+ * @returns {object} An object containing arrays of colors, texts, effects, and grids with their identifiers and key properties.
+ */
 async function getStyles() {
   const styles = {
     colors: await figma.getLocalPaintStylesAsync(),
