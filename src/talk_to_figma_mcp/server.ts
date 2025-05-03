@@ -70,9 +70,10 @@ server.tool(
       "get_document_info",
       "get_selection",
       "get_node_info",
-      "rename_layer",
-      "rename_layers",
-      "ai_rename_layers"
+    "rename_layer",
+    "rename_layers",
+    "ai_rename_layers",
+    "rename_multiple"
     ];
     return {
       content: [
@@ -2429,19 +2430,59 @@ server.tool(
  *   rename_layers({ layer_ids: ['id1', 'id2'], new_name: "Layer_$1", match_pattern: "Old(.*)", replace_with: "$1" });
  */
 server.tool(
-  "rename_layers",
-  "Rename specified layers by exact name or pattern replace",
+    "rename_layers",
+    "Rename specified layers by exact name or pattern replace",
+    {
+      layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
+      new_name: z.string().describe("New base name or pattern including tokens"),
+      match_pattern: z.string().optional().describe("Regex to match in existing name"),
+      replace_with: z.string().optional().describe("Text to replace matched pattern")
+    },
+    async ({ layer_ids, new_name, match_pattern, replace_with }) => {
+      const result = await sendCommandToFigma("rename_layers", { layer_ids, new_name, match_pattern, replace_with });
+      return {
+        content: [
+          { type: "text", text: JSON.stringify(result) }
+        ]
+      };
+    }
+  );
+
+// New rename_multiple tool: Rename Multiple Layers with Distinct Names
+//
+// This tool renames a collection of layers by applying a unique new name to each layer.
+// It accepts two arrays of equal length—one containing the layer IDs and the other the corresponding new names.
+// For every layer, it calls the rename_layer command individually and aggregates the results.
+// If the arrays are mismatched or if any renaming operation fails, appropriate error messages are returned for that layer.
+server.tool(
+  "rename_multiple",
+  "Rename multiple layers with distinct new names",
   {
-    layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
-    new_name: z.string().describe("New base name or pattern including tokens"),
-    match_pattern: z.string().optional().describe("Regex to match in existing name"),
-    replace_with: z.string().optional().describe("Text to replace matched pattern")
+    layer_ids: z.array(z.string()).describe("Array of layer IDs to rename"),
+    new_names: z.array(z.string()).describe("Array of new names corresponding to each layer ID")
   },
-  async ({ layer_ids, new_name, match_pattern, replace_with }) => {
-    const result = await sendCommandToFigma("rename_layers", { layer_ids, new_name, match_pattern, replace_with });
+  async ({ layer_ids, new_names }) => {
+    if (!Array.isArray(layer_ids) || !Array.isArray(new_names)) {
+      return { content: [{ type: "text", text: "layer_ids and new_names must be arrays" }] };
+    }
+    if (layer_ids.length !== new_names.length) {
+      return { content: [{ type: "text", text: "layer_ids and new_names must be of equal length" }] };
+    }
+
+    const results = [];
+    for (let i = 0; i < layer_ids.length; i++) {
+      const nodeId = layer_ids[i];
+      const newName = new_names[i];
+      try {
+        const result = await sendCommandToFigma("rename_layer", { nodeId, newName });
+        results.push({ nodeId, status: "renamed", result });
+      } catch (error) {
+        results.push({ nodeId, status: "error", error: error instanceof Error ? error.message : String(error) });
+      }
+    }
     return {
       content: [
-        { type: "text", text: JSON.stringify(result) }
+        { type: "text", text: JSON.stringify(results, null, 2) }
       ]
     };
   }

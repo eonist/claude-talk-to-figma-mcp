@@ -236,6 +236,8 @@ async function handleCommand(command, params) {
       return await rename_layers(params);
     case "ai_rename_layers":
       return await ai_rename_layers(params);
+    case "rename_multiple":
+      return await rename_multiples(params);
     case "rename_layer":
       return await rename_layer(params);
     case "create_ellipse":
@@ -413,7 +415,55 @@ async function rename_layer(params) {
   }
   return { success: true, nodeId, originalName, newName: node.name };
 }
-
+/**
+ * Rename Multiple Figma Layers with Distinct Names
+ *
+ * This function renames a collection of layers by assigning a unique new name to each layer.
+ * It accepts two arrays of equal length—one containing the layer IDs and the other the corresponding new names.
+ * For every layer, it calls the rename_layer command individually and aggregates the results.
+ *
+ * @param {object} params - The parameters for renaming.
+ * @param {string[]} params.layer_ids - An array of Figma layer IDs to rename.
+ * @param {string[]} params.new_names - An array of new names corresponding to each layer ID.
+ *
+ * @returns {Promise<object>} An object indicating success and containing an array of results.
+ * Each result includes the nodeId, status ("renamed" or "error"), and either the command result or error message.
+ *
+ * @throws Will throw an error if layer_ids or new_names are not arrays or if their lengths differ.
+ *
+ * @example
+ * const result = await rename_multiples({
+ *   layer_ids: ['id1', 'id2'],
+ *   new_names: ['New Name for id1', 'New Name for id2']
+ * });
+ * console.log(result);
+ */
+async function rename_multiples(params) {
+  const { layer_ids, new_names } = params || {};
+  
+  if (!Array.isArray(layer_ids) || !Array.isArray(new_names)) {
+    throw new Error("layer_ids and new_names must be arrays");
+  }
+  
+  if (layer_ids.length !== new_names.length) {
+    throw new Error("layer_ids and new_names must be of equal length");
+  }
+  
+  const results = [];
+  
+  for (let i = 0; i < layer_ids.length; i++) {
+    const nodeId = layer_ids[i];
+    const newName = new_names[i];
+    try {
+      const result = await handleCommand("rename_layer", { nodeId, newName });
+      results.push({ nodeId, status: "renamed", result });
+    } catch (error) {
+      results.push({ nodeId, status: "error", error: error.message || String(error) });
+    }
+  }
+  
+  return { success: true, results };
+}
 /**
  * Retrieves detailed information about the current Figma page.
  *
