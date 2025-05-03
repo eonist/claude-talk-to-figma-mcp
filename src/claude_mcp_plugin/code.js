@@ -1764,7 +1764,19 @@ async function cloneNode(params) {
     height: "height" in clone ? clone.height : undefined,
   };
 }
-// fixme: add javadoc
+/**
+ * Scans all text nodes within a specified node, optionally using chunked processing.
+ *
+ * @param {object} params - Parameters for scanning text nodes.
+ * @param {string} params.nodeId - The ID of the node to scan.
+ * @param {boolean} [params.useChunking=true] - Whether to use chunked processing.
+ * @param {number} [params.chunkSize=10] - The size of each chunk for processing.
+ * @param {string} [params.commandId] - Optional command ID for progress updates.
+ *
+ * @returns {Promise<object>} An object containing scan results and metadata.
+ *
+ * @throws Will throw an error if the node is not found or scanning fails.
+ */
 async function scanTextNodes(params) {
   console.log(`Starting to scan text nodes from node ID: ${params.nodeId}`);
   const { nodeId, useChunking = true, chunkSize = 10, commandId = generateCommandId() } = params || {};
@@ -1989,7 +2001,16 @@ async function scanTextNodes(params) {
 }
 
 // Helper function to collect all nodes that need to be processed
-// fixme: add javadoc
+/**
+ * Recursively collects all nodes to be processed starting from a given node.
+ *
+ * @param {object} node - The starting node.
+ * @param {Array<string>} [parentPath=[]] - The path of parent node names.
+ * @param {number} [depth=0] - The current depth in the node tree.
+ * @param {Array} [nodesToProcess=[]] - Accumulator array for nodes to process.
+ *
+ * @returns {Promise<void>}
+ */
 async function collectNodesToProcess(node, parentPath = [], depth = 0, nodesToProcess = []) {
   // Skip invisible nodes
   if (node.visible === false) return;
@@ -2013,7 +2034,15 @@ async function collectNodesToProcess(node, parentPath = [], depth = 0, nodesToPr
 }
 
 // Process a single text node
-// fixme: add javadoc
+/**
+ * Processes a single text node to extract relevant information.
+ *
+ * @param {object} node - The text node to process.
+ * @param {Array<string>} parentPath - The path of parent node names.
+ * @param {number} depth - The depth of the node in the tree.
+ *
+ * @returns {Promise<object|null>} A safe representation of the text node or null if not a text node.
+ */
 async function processTextNode(node, parentPath, depth) {
   if (node.type !== "TEXT") return null;
   
@@ -2078,13 +2107,27 @@ async function processTextNode(node, parentPath, depth) {
 }
 
 // A delay function that returns a promise
-// fixme: add javadoc
+/**
+ * Returns a promise that resolves after a specified delay.
+ *
+ * @param {number} ms - The delay duration in milliseconds.
+ * @returns {Promise<void>}
+ */
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Keep the original findTextNodes for backward compatibility
-// fixme: add javadoc
+/**
+ * Recursively finds all text nodes within a node.
+ *
+ * @param {object} node - The node to search.
+ * @param {Array<string>} [parentPath=[]] - The path of parent node names.
+ * @param {number} [depth=0] - The current depth in the node tree.
+ * @param {Array} [textNodes=[]] - Accumulator array for found text nodes.
+ *
+ * @returns {Promise<void>}
+ */
 async function findTextNodes(node, parentPath = [], depth = 0, textNodes = []) {
   // Skip invisible nodes
   if (node.visible === false) return;
@@ -2670,7 +2713,12 @@ async function setAutoLayoutResizing(params) {
     counterAxisSizingMode: node.counterAxisSizingMode
   };
 }
-// fixme: add javadoc
+/**
+ * Sets a node to fill its container along the specified axis.
+ *
+ * @param {object} node - The node to modify.
+ * @param {string} axis - The axis to apply fill ("horizontal" or "vertical").
+ */
 function setFillContainer(node, axis) {
   const parent = node.parent;
   if (!parent || parent.layoutMode === 'NONE') return;
@@ -2685,7 +2733,12 @@ function setFillContainer(node, axis) {
       : node.layoutAlign = 'STRETCH';
   }
 }
-// fixme: add javadoc
+/**
+ * Sets a node to hug its contents along the specified axis.
+ *
+ * @param {object} node - The node to modify.
+ * @param {string} axis - The axis to apply hug ("horizontal" or "vertical").
+ */
 function setHugContents(node, axis) {
   const parent = node.parent;
   if (!parent || parent.layoutMode === 'NONE') return;
@@ -2700,7 +2753,13 @@ function setHugContents(node, axis) {
       : node.layoutAlign = 'INHERIT';
   }
 }
-// fixme: add javadoc
+/**
+ * Sets a fixed size for a node along the specified axis.
+ *
+ * @param {object} node - The node to resize.
+ * @param {string} axis - The axis to resize ("horizontal" or "vertical").
+ * @param {number} size - The size to set.
+ */
 function setFixedSize(node, axis, size) {
   if (axis === 'horizontal') {
     node.resize(size, node.height);
@@ -2710,7 +2769,18 @@ function setFixedSize(node, axis, size) {
     node.layoutGrow = 0;
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the font family and style of a text node.
+ *
+ * @param {object} params - Parameters for setting font name.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.family - The font family name.
+ * @param {string} [params.style="Regular"] - The font style.
+ *
+ * @returns {object} An object with the node's id, name, and updated fontName.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setFontName(params) {
   const { nodeId, family, style } = params || {};
   if (!nodeId || !family) {
@@ -2738,7 +2808,17 @@ async function setFontName(params) {
     throw new Error(`Error setting font name: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the font size of a text node.
+ *
+ * @param {object} params - Parameters for setting font size.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.fontSize - The font size in pixels.
+ *
+ * @returns {object} An object with the node's id, name, and updated fontSize.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setFontSize(params) {
   const { nodeId, fontSize } = params || {};
   if (!nodeId || fontSize === undefined) {
@@ -2766,7 +2846,17 @@ async function setFontSize(params) {
     throw new Error(`Error setting font size: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the font weight of a text node.
+ *
+ * @param {object} params - Parameters for setting font weight.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.weight - The font weight (100-900).
+ *
+ * @returns {object} An object with the node's id, name, updated fontName, and weight.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setFontWeight(params) {
   const { nodeId, weight } = params || {};
   if (!nodeId || weight === undefined) {
@@ -2813,7 +2903,18 @@ async function setFontWeight(params) {
     throw new Error(`Error setting font weight: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the letter spacing of a text node.
+ *
+ * @param {object} params - Parameters for setting letter spacing.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.letterSpacing - The letter spacing value.
+ * @param {string} [params.unit="PIXELS"] - The unit of letter spacing ("PIXELS" or "PERCENT").
+ *
+ * @returns {object} An object with the node's id, name, and updated letterSpacing.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setLetterSpacing(params) {
   const { nodeId, letterSpacing, unit = "PIXELS" } = params || {};
   if (!nodeId || letterSpacing === undefined) {
@@ -2841,7 +2942,18 @@ async function setLetterSpacing(params) {
     throw new Error(`Error setting letter spacing: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the line height of a text node.
+ *
+ * @param {object} params - Parameters for setting line height.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.lineHeight - The line height value.
+ * @param {string} [params.unit="PIXELS"] - The unit of line height ("PIXELS", "PERCENT", or "AUTO").
+ *
+ * @returns {object} An object with the node's id, name, and updated lineHeight.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setLineHeight(params) {
   const { nodeId, lineHeight, unit = "PIXELS" } = params || {};
   if (!nodeId || lineHeight === undefined) {
@@ -2869,7 +2981,17 @@ async function setLineHeight(params) {
     throw new Error(`Error setting line height: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the paragraph spacing of a text node.
+ *
+ * @param {object} params - Parameters for setting paragraph spacing.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {number} params.paragraphSpacing - The paragraph spacing value in pixels.
+ *
+ * @returns {object} An object with the node's id, name, and updated paragraphSpacing.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setParagraphSpacing(params) {
   const { nodeId, paragraphSpacing } = params || {};
   if (!nodeId || paragraphSpacing === undefined) {
@@ -2897,7 +3019,17 @@ async function setParagraphSpacing(params) {
     throw new Error(`Error setting paragraph spacing: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the text case of a text node.
+ *
+ * @param {object} params - Parameters for setting text case.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.textCase - The text case type ("ORIGINAL", "UPPER", "LOWER", "TITLE").
+ *
+ * @returns {object} An object with the node's id, name, and updated textCase.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setTextCase(params) {
   const { nodeId, textCase } = params || {};
   if (!nodeId || textCase === undefined) {
@@ -2930,7 +3062,17 @@ async function setTextCase(params) {
     throw new Error(`Error setting text case: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Sets the text decoration of a text node.
+ *
+ * @param {object} params - Parameters for setting text decoration.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.textDecoration - The text decoration type ("NONE", "UNDERLINE", "STRIKETHROUGH").
+ *
+ * @returns {object} An object with the node's id, name, and updated textDecoration.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ */
 async function setTextDecoration(params) {
   const { nodeId, textDecoration } = params || {};
   if (!nodeId || textDecoration === undefined) {
@@ -2963,7 +3105,17 @@ async function setTextDecoration(params) {
     throw new Error(`Error setting text decoration: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Retrieves styled text segments for a specific property in a text node.
+ *
+ * @param {object} params - Parameters for retrieving styled text segments.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.property - The style property to analyze (e.g., "fontName", "fontSize").
+ *
+ * @returns {object} An object containing the node's id, name, property, and an array of styled segments.
+ *
+ * @throws Will throw an error if the node is not found, is not a text node, or if the property is invalid.
+ */
 async function getStyledTextSegments(params) {
   const { nodeId, property } = params || {};
   if (!nodeId || !property) {
@@ -3043,7 +3195,17 @@ async function getStyledTextSegments(params) {
     throw new Error(`Error getting styled text segments: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Loads a font asynchronously in Figma.
+ *
+ * @param {object} params - Parameters for loading font.
+ * @param {string} params.family - The font family name.
+ * @param {string} [params.style="Regular"] - The font style.
+ *
+ * @returns {object} An object indicating success and the loaded font family and style.
+ *
+ * @throws Will throw an error if the font family is missing or loading fails.
+ */
 async function loadFontAsyncWrapper(params) {
   const { family, style = "Regular" } = params || {};
   if (!family) {
@@ -3062,7 +3224,13 @@ async function loadFontAsyncWrapper(params) {
     throw new Error(`Error loading font: ${error.message}`);
   }
 }
-// fixme: add javadoc
+/**
+ * Retrieves available remote components from team libraries in Figma.
+ *
+ * @returns {object} An object containing success status, count, and an array of components with details.
+ *
+ * @throws Will return an error object if the API is unavailable or retrieval fails.
+ */
 async function getRemoteComponents() {
   try {
     // Check if figma.teamLibrary is available
@@ -3131,7 +3299,17 @@ async function getRemoteComponents() {
 }
 
 // Set Effects Tool
-// fixme: add javadoc
+/**
+ * Sets visual effects on a node in Figma.
+ *
+ * @param {object} params - Parameters for setting effects.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {Array} params.effects - Array of effect objects to apply.
+ *
+ * @returns {object} An object with the node's id, name, and applied effects.
+ *
+ * @throws Will throw an error if the node is not found, does not support effects, or if effects are invalid.
+ */
 async function setEffects(params) {
   const { nodeId, effects } = params || {};
   
@@ -3199,7 +3377,17 @@ async function setEffects(params) {
 }
 
 // Set Effect Style ID Tool
-// fixme: add javadoc
+/**
+ * Applies an effect style to a node in Figma.
+ *
+ * @param {object} params - Parameters for setting effect style.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {string} params.effectStyleId - The ID of the effect style to apply.
+ *
+ * @returns {object} An object with the node's id, name, applied effectStyleId, and effects.
+ *
+ * @throws Will throw an error if the node is not found, does not support effect styles, or if the style is not found.
+ */
 async function setEffectStyleId(params) {
   const { nodeId, effectStyleId } = params || {};
   
@@ -3244,7 +3432,17 @@ async function setEffectStyleId(params) {
 }
 
 // Function to group nodes
-// fixme: add javadoc
+/**
+ * Groups multiple nodes in Figma into a single group.
+ *
+ * @param {object} params - Parameters for grouping.
+ * @param {string[]} params.nodeIds - Array of node IDs to group.
+ * @param {string} [params.name] - Optional name for the group.
+ *
+ * @returns {object} An object with the group's id, name, type, and children details.
+ *
+ * @throws Will throw an error if nodes are missing, have different parents, or grouping fails.
+ */
 async function groupNodes(params) {
   const { nodeIds, name } = params || {};
   
@@ -3327,7 +3525,16 @@ async function ungroupNodes(params) {
 }
 
 // Function to flatten nodes (e.g., boolean operations, convert to path)
-// fixme: add javadoc
+/**
+ * Flattens a vector-based node in Figma.
+ *
+ * @param {object} params - Parameters for flattening.
+ * @param {string} params.nodeId - The ID of the node to flatten.
+ *
+ * @returns {object} An object with the flattened node's id, name, and type.
+ *
+ * @throws Will throw an error if the node is not found, cannot be flattened, or does not support flattening.
+ */
 async function flattenNode(params) {
   const { nodeId } = params || {};
   
@@ -3369,7 +3576,18 @@ async function flattenNode(params) {
 }
 
 // Function to insert a child into a parent node
-// fixme: add javadoc
+/**
+ * Inserts a child node into a parent node at an optional index.
+ *
+ * @param {object} params - Parameters for insertion.
+ * @param {string} params.parentId - The ID of the parent node.
+ * @param {string} params.childId - The ID of the child node.
+ * @param {number} [params.index] - Optional index to insert at.
+ *
+ * @returns {object} An object with parentId, childId, index, success status, and previous parentId.
+ *
+ * @throws Will throw an error if parent or child nodes are not found or insertion fails.
+ */
 async function insertChild(params) {
   const { parentId, childId, index } = params || {};
   
