@@ -1259,6 +1259,18 @@ async function createComponentInstance(params) {
   }
 }
 
+/**
+ * Exports a node as an image in the Figma document.
+ *
+ * @param {object} params - Export parameters.
+ * @param {string} params.nodeId - The ID of the node to export.
+ * @param {string} [params.format="PNG"] - The desired image format ("PNG","JPG","SVG","PDF").
+ * @param {number} [params.scale=1] - The scale factor for the export.
+ *
+ * @returns {object} An object containing nodeId, format, scale, mimeType, and base64-encoded image data.
+ *
+ * @throws Will throw an error if the node is not found, does not support exporting, or if the export fails.
+ */
 async function exportNodeAsImage(params) {
   const { nodeId, scale = 1 } = params || {};
 
