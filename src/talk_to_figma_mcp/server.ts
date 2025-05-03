@@ -60,7 +60,11 @@ const server = new McpServer({
   capabilities: { tools: {} }
 });
 
-// List all available MCP tools
+/**
+ * List all exposed MCP tools.
+ *
+ * @returns {Promise<{ content: Array<{ type: string; text: string }> }>} A promise resolving to an object containing a list of tool names.
+ */
 server.tool(
   "get_tools",
   "List all exposed MCP tools",
@@ -98,7 +102,19 @@ const reconnectInterval = reconnectArg ? parseInt(reconnectArg.split('=')[1], 10
 
 const WS_URL = serverUrl === 'localhost' ? `ws://${serverUrl}` : `wss://${serverUrl}`;
 
-// Document Info Tool
+/**
+ * Get Document Info Tool
+ *
+ * Retrieves detailed information about the current Figma document.
+ *
+ * @returns {Promise<{ content: Array<{ type: string; text: string }> }>} A promise resolving to an object containing the document info as JSON text.
+ *
+ * @throws Will throw an error if the document info cannot be retrieved.
+ *
+ * @example
+ * const docInfo = await getDocumentInfo();
+ * console.log(docInfo);
+ */
 server.tool(
   "get_document_info",
   "Get detailed information about the current Figma document",
