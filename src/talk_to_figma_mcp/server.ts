@@ -1229,6 +1229,19 @@ server.tool(
 );
 
 // Get Styles Tool
+/**
+ * Get Styles Tool
+ *
+ * Retrieves all styles from the current Figma document.
+ *
+ * @returns {Promise<object>} A promise resolving to an object containing all styles.
+ *
+ * @throws Will throw an error if styles cannot be retrieved.
+ *
+ * @example
+ * const styles = await server.tool("get_styles");
+ * console.log(styles);
+ */
 server.tool(
   "get_styles",
   "Get all styles from the current Figma document",
@@ -1259,6 +1272,19 @@ server.tool(
 );
 
 // Get Local Components Tool
+/**
+ * Get Local Components Tool
+ *
+ * Retrieves all local components from the current Figma document.
+ *
+ * @returns {Promise<object>} A promise resolving to an object containing all local components.
+ *
+ * @throws Will throw an error if local components cannot be retrieved.
+ *
+ * @example
+ * const components = await server.tool("get_local_components");
+ * console.log(components);
+ */
 server.tool(
   "get_local_components",
   "Get all local components from the Figma document",
@@ -1289,6 +1315,24 @@ server.tool(
 );
 
 // Create Component Instance Tool
+/**
+ * Create Component Instance Tool
+ *
+ * Creates an instance of a component in Figma at the specified position.
+ *
+ * @param {object} params - Parameters for creating the component instance.
+ * @param {string} params.componentKey - Key of the component to instantiate.
+ * @param {number} params.x - X position.
+ * @param {number} params.y - Y position.
+ *
+ * @returns {Promise<object>} A promise resolving to an object containing the created instance details.
+ *
+ * @throws Will throw an error if the component instance cannot be created.
+ *
+ * @example
+ * const instance = await server.tool("create_component_instance", { componentKey: "abc123", x: 10, y: 20 });
+ * console.log(instance);
+ */
 server.tool(
   "create_component_instance",
   "Create an instance of a component in Figma",
@@ -1327,6 +1371,23 @@ server.tool(
   }
 );
 
+/**
+ * Set Corner Radius Tool
+ *
+ * Sets the corner radius of a node in Figma.
+ *
+ * @param {object} params - Parameters for setting corner radius.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {number} params.radius - The corner radius value.
+ * @param {boolean[]} [params.corners] - Optional array of 4 booleans specifying which corners to round [topLeft, topRight, bottomRight, bottomLeft].
+ *
+ * @returns {Promise<object>} An object containing the node's name.
+ *
+ * @throws Will throw an error if the node is not found or does not support corner radius.
+ *
+ * @example
+ * await server.tool("set_corner_radius", { nodeId: "123", radius: 10, corners: [true, true, false, false] });
+ */
 /**
  * Set Corner Radius Tool
  *
@@ -1388,6 +1449,23 @@ server.tool(
   }
 );
 
+/**
+ * Set Auto Layout Resizing Tool
+ *
+ * Sets hug or fill sizing mode on an auto layout frame or child node.
+ *
+ * @param {object} params - Parameters for setting auto layout resizing.
+ * @param {string} params.nodeId - The ID of the node to modify sizing for.
+ * @param {string} params.axis - The axis to apply sizing mode ("horizontal" or "vertical").
+ * @param {string} params.mode - The sizing mode to apply ("FIXED", "HUG", or "FILL").
+ *
+ * @returns {Promise<object>} An object containing the updated sizing mode.
+ *
+ * @throws Will throw an error if the node is not found or does not support auto layout.
+ *
+ * @example
+ * await server.tool("set_auto_layout_resizing", { nodeId: "123", axis: "horizontal", mode: "FILL" });
+ */
 /**
  * Set Auto Layout Resizing Tool
  *
