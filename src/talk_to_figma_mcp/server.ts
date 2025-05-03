@@ -2887,7 +2887,21 @@ server.tool(
   }
 );
 
-// Flatten Node Tool
+/**
+ * Flatten Node Tool
+ *
+ * Flattens a node in Figma (e.g., for boolean operations or converting to path).
+ *
+ * @param {object} params - Parameters for flattening a node.
+ * @param {string} params.nodeId - ID of the node to flatten.
+ *
+ * @returns {Promise<object>} An object containing the new node's ID, name, and type.
+ *
+ * @throws Will throw an error if the node cannot be flattened.
+ *
+ * @example
+ * await server.tool("flatten_node", { nodeId: "123" });
+ */
 server.tool(
   "flatten_node",
   "Flatten a node in Figma (e.g., for boolean operations or converting to path)",
@@ -2925,7 +2939,23 @@ server.tool(
   }
 );
 
-// Insert Child Tool
+/**
+ * Insert Child Tool
+ *
+ * Inserts a child node inside a parent node in Figma.
+ *
+ * @param {object} params - Parameters for inserting a child node.
+ * @param {string} params.parentId - ID of the parent node where the child will be inserted.
+ * @param {string} params.childId - ID of the child node to insert.
+ * @param {number} [params.index] - Optional index where to insert the child (if not specified, it will be added at the end).
+ *
+ * @returns {Promise<object>} An object containing the parent ID, child ID, index, and success status.
+ *
+ * @throws Will throw an error if the child node cannot be inserted.
+ *
+ * @example
+ * await server.tool("insert_child", { parentId: "parent123", childId: "child456", index: 0 });
+ */
 server.tool(
   "insert_child",
   "Insert a child node inside a parent node in Figma",
