@@ -103,9 +103,56 @@ export async function createFrame(params) {
     width = 100,
     height = 100,
     name = "Frame",
+    parentId,
+    fillColor,
+    strokeColor,
+    strokeWeight,
   } = params || {};
-  
-  return { id: "frame-mock-id", name, x, y, width, height };
+
+  const frame = figma.createFrame();
+  frame.x = x;
+  frame.y = y;
+  frame.resize(width, height);
+  frame.name = name;
+
+  // Set fill color if provided
+  if (fillColor) {
+    // Use our helper function
+    setFill(frame, fillColor);
+  }
+
+  // Set stroke color and weight if provided
+  if (strokeColor) {
+    // Use our helper function
+    setStroke(frame, strokeColor, strokeWeight);
+  }
+
+  // If parentId is provided, append to that node, otherwise append to current page
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (!parentNode) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    if (!("appendChild" in parentNode)) {
+      throw new Error(`Parent node does not support children: ${parentId}`);
+    }
+    parentNode.appendChild(frame);
+  } else {
+    figma.currentPage.appendChild(frame);
+  }
+
+  return {
+    id: frame.id,
+    name: frame.name,
+    x: frame.x,
+    y: frame.y,
+    width: frame.width,
+    height: frame.height,
+    fills: frame.fills,
+    strokes: frame.strokes,
+    strokeWeight: frame.strokeWeight,
+    parentId: frame.parent ? frame.parent.id : undefined,
+  };
 }
 
 /**
@@ -125,8 +172,61 @@ export async function createFrame(params) {
  * @returns {object} An object containing the ellipse's details.
  */
 export async function createEllipse(params) {
-  const name = params && params.name ? params.name : "Ellipse";
-  return { id: "ellipse-mock-id", name: name };
+  const {
+    x = 0,
+    y = 0,
+    width = 100,
+    height = 100,
+    name = "Ellipse",
+    parentId,
+    fillColor,
+    strokeColor,
+    strokeWeight
+  } = params || {};
+
+  // Create a new ellipse node
+  const ellipse = figma.createEllipse();
+  ellipse.name = name;
+  
+  // Position and size the ellipse
+  ellipse.x = x;
+  ellipse.y = y;
+  ellipse.resize(width, height);
+  
+  // Set fill color if provided
+  if (fillColor) {
+    setFill(ellipse, fillColor);
+  }
+  
+  // Set stroke color and weight if provided
+  if (strokeColor) {
+    setStroke(ellipse, strokeColor, strokeWeight);
+  }
+
+  // If parentId is provided, append to that node, otherwise append to current page
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (!parentNode) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    if (!("appendChild" in parentNode)) {
+      throw new Error(`Parent node does not support children: ${parentId}`);
+    }
+    parentNode.appendChild(ellipse);
+  } else {
+    figma.currentPage.appendChild(ellipse);
+  }
+  
+  return {
+    id: ellipse.id,
+    name: ellipse.name,
+    type: ellipse.type,
+    x: ellipse.x,
+    y: ellipse.y,
+    width: ellipse.width,
+    height: ellipse.height,
+    parentId: ellipse.parent ? ellipse.parent.id : undefined
+  };
 }
 
 /**
@@ -147,8 +247,66 @@ export async function createEllipse(params) {
  * @returns {object} An object containing the polygon's details.
  */
 export async function createPolygon(params) {
-  const name = params && params.name ? params.name : "Polygon";
-  return { id: "polygon-mock-id", name: name };
+  const {
+    x = 0,
+    y = 0,
+    width = 100,
+    height = 100,
+    sides = 6,
+    name = "Polygon",
+    parentId,
+    fillColor,
+    strokeColor,
+    strokeWeight
+  } = params || {};
+
+  // Create the polygon
+  const polygon = figma.createPolygon();
+  polygon.x = x;
+  polygon.y = y;
+  polygon.resize(width, height);
+  polygon.name = name;
+  
+  // Set the number of sides
+  if (sides >= 3) {
+    polygon.pointCount = sides;
+  }
+
+  // Set fill color if provided
+  if (fillColor) {
+    setFill(polygon, fillColor);
+  }
+
+  // Set stroke color and weight if provided
+  if (strokeColor) {
+    setStroke(polygon, strokeColor, strokeWeight);
+  }
+
+  // If parentId is provided, append to that node, otherwise append to current page
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (!parentNode) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    if (!("appendChild" in parentNode)) {
+      throw new Error(`Parent node does not support children: ${parentId}`);
+    }
+    parentNode.appendChild(polygon);
+  } else {
+    figma.currentPage.appendChild(polygon);
+  }
+
+  return {
+    id: polygon.id,
+    name: polygon.name,
+    type: polygon.type,
+    x: polygon.x,
+    y: polygon.y,
+    width: polygon.width,
+    height: polygon.height,
+    pointCount: polygon.pointCount,
+    parentId: polygon.parent ? polygon.parent.id : undefined
+  };
 }
 
 /**
@@ -170,8 +328,73 @@ export async function createPolygon(params) {
  * @returns {object} An object containing the star's details.
  */
 export async function createStar(params) {
-  const name = params && params.name ? params.name : "Star";
-  return { id: "star-mock-id", name: name };
+  const {
+    x = 0,
+    y = 0,
+    width = 100,
+    height = 100,
+    points = 5,
+    innerRadius = 0.5, // As a proportion of the outer radius
+    name = "Star",
+    parentId,
+    fillColor,
+    strokeColor,
+    strokeWeight
+  } = params || {};
+
+  // Create the star
+  const star = figma.createStar();
+  star.x = x;
+  star.y = y;
+  star.resize(width, height);
+  star.name = name;
+  
+  // Set the number of points
+  if (points >= 3) {
+    star.pointCount = points;
+  }
+
+  // Set the inner radius ratio
+  if (innerRadius > 0 && innerRadius < 1) {
+    star.innerRadius = innerRadius;
+  }
+
+  // Set fill color if provided
+  if (fillColor) {
+    setFill(star, fillColor);
+  }
+
+  // Set stroke color and weight if provided
+  if (strokeColor) {
+    setStroke(star, strokeColor, strokeWeight);
+  }
+
+  // If parentId is provided, append to that node, otherwise append to current page
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (!parentNode) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    if (!("appendChild" in parentNode)) {
+      throw new Error(`Parent node does not support children: ${parentId}`);
+    }
+    parentNode.appendChild(star);
+  } else {
+    figma.currentPage.appendChild(star);
+  }
+
+  return {
+    id: star.id,
+    name: star.name,
+    type: star.type,
+    x: star.x,
+    y: star.y,
+    width: star.width,
+    height: star.height,
+    pointCount: star.pointCount,
+    innerRadius: star.innerRadius,
+    parentId: star.parent ? star.parent.id : undefined
+  };
 }
 
 /**
@@ -192,8 +415,71 @@ export async function createStar(params) {
  * @returns {object} An object containing the vector's details.
  */
 export async function createVector(params) {
-  const name = params && params.name ? params.name : "Vector";
-  return { id: "vector-mock-id", name: name };
+  const {
+    x = 0,
+    y = 0,
+    width = 100,
+    height = 100,
+    name = "Vector",
+    parentId,
+    vectorPaths = [],
+    fillColor,
+    strokeColor,
+    strokeWeight
+  } = params || {};
+
+  // Create the vector
+  const vector = figma.createVector();
+  vector.x = x;
+  vector.y = y;
+  vector.resize(width, height);
+  vector.name = name;
+
+  // Set vector paths if provided
+  if (vectorPaths && vectorPaths.length > 0) {
+    vector.vectorPaths = vectorPaths.map(path => {
+      return {
+        windingRule: path.windingRule || "EVENODD",
+        data: path.data || ""
+      };
+    });
+  }
+
+  // Set fill color if provided
+  if (fillColor) {
+    setFill(vector, fillColor);
+  }
+
+  // Set stroke color and weight if provided
+  if (strokeColor) {
+    setStroke(vector, strokeColor, strokeWeight);
+  }
+
+  // If parentId is provided, append to that node, otherwise append to current page
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (!parentNode) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    if (!("appendChild" in parentNode)) {
+      throw new Error(`Parent node does not support children: ${parentId}`);
+    }
+    parentNode.appendChild(vector);
+  } else {
+    figma.currentPage.appendChild(vector);
+  }
+
+  return {
+    id: vector.id,
+    name: vector.name,
+    type: vector.type,
+    x: vector.x,
+    y: vector.y,
+    width: vector.width,
+    height: vector.height,
+    vectorPaths: vector.vectorPaths,
+    parentId: vector.parent ? vector.parent.id : undefined
+  };
 }
 
 /**
@@ -213,8 +499,89 @@ export async function createVector(params) {
  * @returns {object} An object containing the line's details.
  */
 export async function createLine(params) {
-  const name = params && params.name ? params.name : "Line";
-  return { id: "line-mock-id", name: name };
+  const {
+    x1 = 0,
+    y1 = 0,
+    x2 = 100,
+    y2 = 0,
+    name = "Line",
+    parentId,
+    strokeColor = { r: 0, g: 0, b: 0, a: 1 },
+    strokeWeight = 1,
+    strokeCap = "NONE" // Can be "NONE", "ROUND", "SQUARE", "ARROW_LINES", or "ARROW_EQUILATERAL"
+  } = params || {};
+
+  // Create a vector node to represent the line
+  const line = figma.createVector();
+  line.name = name;
+  
+  // Position the line at the starting point
+  line.x = x1;
+  line.y = y1;
+  
+  // Calculate the vector size
+  const width = Math.abs(x2 - x1);
+  const height = Math.abs(y2 - y1);
+  line.resize(width > 0 ? width : 1, height > 0 ? height : 1);
+  
+  // Create vector path data for a straight line
+  // SVG path data format: M (move to) starting point, L (line to) ending point
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  
+  // Calculate relative endpoint coordinates in the vector's local coordinate system
+  const endX = dx > 0 ? width : 0;
+  const endY = dy > 0 ? height : 0;
+  const startX = dx > 0 ? 0 : width;
+  const startY = dy > 0 ? 0 : height;
+  
+  // Generate SVG path data for the line
+  const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
+  
+  // Set vector paths
+  line.vectorPaths = [{
+    windingRule: "NONZERO",
+    data: pathData
+  }];
+  
+  // Set stroke color
+  setStroke(line, strokeColor, strokeWeight);
+  
+  // Set stroke cap style if supported
+  if (["NONE", "ROUND", "SQUARE", "ARROW_LINES", "ARROW_EQUILATERAL"].includes(strokeCap)) {
+    line.strokeCap = strokeCap;
+  }
+  
+  // Set fill to none (transparent) as lines typically don't have fills
+  line.fills = [];
+  
+  // If parentId is provided, append to that node, otherwise append to current page
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (!parentNode) {
+      throw new Error(`Parent node not found with ID: ${parentId}`);
+    }
+    if (!("appendChild" in parentNode)) {
+      throw new Error(`Parent node does not support children: ${parentId}`);
+    }
+    parentNode.appendChild(line);
+  } else {
+    figma.currentPage.appendChild(line);
+  }
+  
+  return {
+    id: line.id,
+    name: line.name,
+    type: line.type,
+    x: line.x,
+    y: line.y,
+    width: line.width,
+    height: line.height,
+    strokeWeight: line.strokeWeight,
+    strokeCap: line.strokeCap,
+    vectorPaths: line.vectorPaths,
+    parentId: line.parent ? line.parent.id : undefined
+  };
 }
 
 /**
