@@ -1,26 +1,25 @@
-// Text module
+// Text module providing functions to create and modify text nodes in Figma.
+
 import { generateCommandId, setCharacters } from './utils.js';
 
 /**
- * Creates a new text node in the Figma document.
+ * Create a new text node in the Figma document.
  *
- * The function instantiates a text element with specified position, font settings, content, and name.
- * It supports optional fontSize, fontWeight, and fontColor parameters.
- * If parentId is provided, the text node is appended to that node; otherwise, it is added to the current page.
+ * This asynchronous function creates a text node at specified x,y coordinates,
+ * applies fonts and colors, and appends it to the given parent node if provided.
  *
- * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - The X coordinate of the text node.
- * @param {number} [params.y=0] - The Y coordinate of the text node.
- * @param {string} [params.text="Text"] - The initial text content.
- * @param {number} [params.fontSize=14] - The font size.
- * @param {number} [params.fontWeight=400] - The font weight.
- * @param {object} [params.fontColor={r:0,g:0,b:0,a:1}] - The font color in RGBA format.
- * @param {string} [params.name="Text"] - The name assigned to the text node.
- * @param {string} [params.parentId] - The ID of the parent node to which the text node should be appended.
+ * @param {object} params - Object containing text node configuration.
+ * @param {number} [params.x=0] - Horizontal coordinate for the text node.
+ * @param {number} [params.y=0] - Vertical coordinate for the text node.
+ * @param {string} [params.text="Text"] - The text content to display.
+ * @param {number} [params.fontSize=14] - Font size in pixels.
+ * @param {number} [params.fontWeight=400] - Numeric font weight (commonly 100-900).
+ * @param {object} [params.fontColor={r:0, g:0, b:0, a:1}] - RGBA font color.
+ * @param {string} [params.name="Text"] - Node name.
+ * @param {string} [params.parentId] - ID of the parent node for appending the text node.
  *
- * @returns {object} An object with details of the created text node (id, name, position, size, characters, fontName, fills, and parentId).
- *
- * @throws Will throw an error if the specified parent node is not found or if it does not support children.
+ * @returns {Promise<object>} Details of the created text node.
+ * @throws {Error} When the parent node is not found or cannot have child nodes.
  */
 export async function createText(params) {
   const {
@@ -34,7 +33,7 @@ export async function createText(params) {
     parentId,
   } = params || {};
 
-  // Map common font weights to Figma font styles
+  // Map given numeric font weight to corresponding string font style.
   const getFontStyle = (weight) => {
     switch (weight) {
       case 100: return "Thin";
@@ -57,6 +56,7 @@ export async function createText(params) {
     textNode.name = name;
     
     try {
+      // Load the necessary font before applying its settings.
       await figma.loadFontAsync({
         family: "Inter",
         style: getFontStyle(fontWeight),
@@ -67,9 +67,10 @@ export async function createText(params) {
       console.error("Error setting font", error);
     }
     
+    // Set text content using helper function.
     await setCharacters(textNode, text);
 
-    // Set text color
+    // Configure the fill style using the provided RGBA color values.
     const paintStyle = {
       type: "SOLID",
       color: {
@@ -79,10 +80,9 @@ export async function createText(params) {
       },
       opacity: parseFloat((fontColor.a || 1).toString()),
     };
-    
     textNode.fills = [paintStyle];
 
-    // If parentId is provided, append to that node, otherwise append to current page
+    // Append the text node to the parent node if an id is provided, or to the current page.
     if (parentId) {
       const parentNode = await figma.getNodeByIdAsync(parentId);
       if (!parentNode) {
@@ -118,15 +118,17 @@ export async function createText(params) {
 }
 
 /**
- * Sets the text content of a text node.
+ * Update the text content of an existing text node.
  *
- * @param {object} params - Parameters for setting text content.
- * @param {string} params.nodeId - The ID of the text node to modify.
- * @param {string} params.text - The new text content.
+ * This function changes the text of a specified text node after ensuring the node exists
+ * and is of type "TEXT". The font associated with the node is loaded prior to modification.
  *
- * @returns {object} An object containing the node's id, name, characters, and fontName.
+ * @param {object} params - Configuration object.
+ * @param {string} params.nodeId - ID of the target text node.
+ * @param {string} params.text - New text content.
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including id, name, and characters.
+ * @throws {Error} If the node is not found, not a text node, or if parameters are missing.
  *
  * @example
  * const result = await setTextContent({ nodeId: "12345", text: "Hello World" });
@@ -149,7 +151,7 @@ export async function setTextContent(params) {
       throw new Error(`Node not found with ID: ${nodeId}`);
     }
 
-    if ((node.type !== "TEXT")) {
+    if (node.type !== "TEXT") {
       throw new Error(`Node is not a text node: ${nodeId}`);
     }
 
@@ -169,17 +171,19 @@ export async function setTextContent(params) {
 }
 
 /**
- * Scans all text nodes within a specified node, optionally using chunked processing.
+ * Scan text nodes within a specified parent node.
  *
- * @param {object} params - Parameters for scanning text nodes.
- * @param {string} params.nodeId - The ID of the node to scan.
- * @param {boolean} [params.useChunking=true] - Whether to use chunked processing.
- * @param {number} [params.chunkSize=10] - The size of each chunk for processing.
- * @param {string} [params.commandId] - Optional command ID for progress updates.
+ * This function scans for all text nodes under the given node ID. It includes options
+ * for chunked processing for performance considerations, though currently a placeholder.
  *
- * @returns {Promise<object>} An object containing scan results and metadata.
+ * @param {object} params - Parameters for scanning.
+ * @param {string} params.nodeId - ID of the parent node to scan.
+ * @param {boolean} [params.useChunking=true] - Whether to process nodes in chunks.
+ * @param {number} [params.chunkSize=10] - Number of nodes per chunk.
+ * @param {string} [params.commandId] - Optional identifier for progress tracking.
  *
- * @throws Will throw an error if the node is not found or scanning fails.
+ * @returns {Promise<object>} Result object with metadata about the scan.
+ * @throws {Error} If scanning fails or the parent node is not found.
  */
 export async function scanTextNodes(params) {
   return {
@@ -191,16 +195,17 @@ export async function scanTextNodes(params) {
 }
 
 /**
- * Sets multiple text contents in a batch operation.
+ * Replace text content in multiple text nodes in a batch operation.
  *
- * @param {object} params - Parameters for batch text replacement.
- * @param {string} params.nodeId - The parent node ID containing text nodes to update.
+ * This function applies text replacements to multiple nodes within a parent node.
+ *
+ * @param {object} params - Batch operation parameters.
+ * @param {string} params.nodeId - ID of the parent node containing text nodes.
  * @param {Array<object>} params.text - Array of text replacement objects.
- * @param {string} [params.commandId] - Optional command ID for progress updates.
+ * @param {string} [params.commandId] - Optional command identifier for progress.
  *
- * @returns {Promise<object>} An object containing success status and results of text replacements.
- *
- * @throws Will throw an error if required parameters are missing or invalid.
+ * @returns {Promise<object>} Summary of the replacement operation.
+ * @throws {Error} If required parameters are missing or invalid.
  */
 export async function setMultipleTextContents(params) {
   return {
@@ -214,16 +219,18 @@ export async function setMultipleTextContents(params) {
 }
 
 /**
- * Sets the font family and style of a text node.
+ * Update the font family and style of a text node.
  *
- * @param {object} params - Parameters for setting font name.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {string} params.family - The font family name.
- * @param {string} [params.style="Regular"] - The font style.
+ * This function allows changing the font family and optionally the style, returning the
+ * updated font details.
  *
- * @returns {object} An object with the node's id, name, and updated fontName.
+ * @param {object} params - Configuration for font update.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {string} params.family - New font family.
+ * @param {string} [params.style="Regular"] - New font style.
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including font name.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setFontName(params) {
   return {
@@ -234,15 +241,16 @@ export async function setFontName(params) {
 }
 
 /**
- * Sets the font size of a text node.
+ * Update the font size of a text node.
  *
- * @param {object} params - Parameters for setting font size.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {number} params.fontSize - The font size in pixels.
+ * Change the font size and return the updated node information.
  *
- * @returns {object} An object with the node's id, name, and updated fontSize.
+ * @param {object} params - Configuration for font size update.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {number} params.fontSize - New font size in pixels.
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including font size.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setFontSize(params) {
   return {
@@ -253,15 +261,16 @@ export async function setFontSize(params) {
 }
 
 /**
- * Sets the font weight of a text node.
+ * Update the font weight of a text node.
  *
- * @param {object} params - Parameters for setting font weight.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {number} params.weight - The font weight (100-900).
+ * Adjust the font weight and return the updated font settings.
  *
- * @returns {object} An object with the node's id, name, updated fontName, and weight.
+ * @param {object} params - Configuration for font weight update.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {number} params.weight - New font weight (100-900).
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including new weight.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setFontWeight(params) {
   return {
@@ -272,16 +281,17 @@ export async function setFontWeight(params) {
 }
 
 /**
- * Sets the letter spacing of a text node.
+ * Update the letter spacing of a text node.
  *
- * @param {object} params - Parameters for setting letter spacing.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {number} params.letterSpacing - The letter spacing value.
- * @param {string} [params.unit="PIXELS"] - The unit of letter spacing ("PIXELS" or "PERCENT").
+ * This modifies the spacing between letters with an option to specify the unit of measure.
  *
- * @returns {object} An object with the node's id, name, and updated letterSpacing.
+ * @param {object} params - Configuration for letter spacing.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {number} params.letterSpacing - New letter spacing value.
+ * @param {string} [params.unit="PIXELS"] - Unit for letter spacing ("PIXELS" or "PERCENT").
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information with new letter spacing.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setLetterSpacing(params) {
   return {
@@ -295,16 +305,17 @@ export async function setLetterSpacing(params) {
 }
 
 /**
- * Sets the line height of a text node.
+ * Update the line height of a text node.
  *
- * @param {object} params - Parameters for setting line height.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {number} params.lineHeight - The line height value.
- * @param {string} [params.unit="PIXELS"] - The unit of line height ("PIXELS", "PERCENT", or "AUTO").
+ * This adjusts the vertical spacing of lines within the text node.
  *
- * @returns {object} An object with the node's id, name, and updated lineHeight.
+ * @param {object} params - Configuration for line height update.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {number} params.lineHeight - New line height value.
+ * @param {string} [params.unit="PIXELS"] - Unit for line height ("PIXELS", "PERCENT", or "AUTO").
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including line height.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setLineHeight(params) {
   return {
@@ -318,15 +329,16 @@ export async function setLineHeight(params) {
 }
 
 /**
- * Sets the paragraph spacing of a text node.
+ * Update the paragraph spacing of a text node.
  *
- * @param {object} params - Parameters for setting paragraph spacing.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {number} params.paragraphSpacing - The paragraph spacing value in pixels.
+ * Sets the spacing (in pixels) between paragraphs in the text node.
  *
- * @returns {object} An object with the node's id, name, and updated paragraphSpacing.
+ * @param {object} params - Configuration for paragraph spacing.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {number} params.paragraphSpacing - New paragraph spacing in pixels.
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including paragraph spacing.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setParagraphSpacing(params) {
   return {
@@ -337,15 +349,16 @@ export async function setParagraphSpacing(params) {
 }
 
 /**
- * Sets the text case of a text node.
+ * Update the text case of a text node.
  *
- * @param {object} params - Parameters for setting text case.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {string} params.textCase - The text case type ("ORIGINAL", "UPPER", "LOWER", "TITLE").
+ * Changes the case transformation applied to the text content.
  *
- * @returns {object} An object with the node's id, name, and updated textCase.
+ * @param {object} params - Configuration for text case update.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {string} params.textCase - New text case ("ORIGINAL", "UPPER", "LOWER", "TITLE").
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including text case.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setTextCase(params) {
   return {
@@ -356,15 +369,16 @@ export async function setTextCase(params) {
 }
 
 /**
- * Sets the text decoration of a text node.
+ * Update the text decoration of a text node.
  *
- * @param {object} params - Parameters for setting text decoration.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {string} params.textDecoration - The text decoration type ("NONE", "UNDERLINE", "STRIKETHROUGH").
+ * This function sets the decoration style of the text such as underline or strikethrough.
  *
- * @returns {object} An object with the node's id, name, and updated textDecoration.
+ * @param {object} params - Configuration for text decoration.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {string} params.textDecoration - Decoration style ("NONE", "UNDERLINE", "STRIKETHROUGH").
  *
- * @throws Will throw an error if the node is not found or is not a text node.
+ * @returns {Promise<object>} Updated node information including text decoration.
+ * @throws {Error} If the node is not found or not a text node.
  */
 export async function setTextDecoration(params) {
   return {
@@ -375,15 +389,17 @@ export async function setTextDecoration(params) {
 }
 
 /**
- * Retrieves styled text segments for a specific property in a text node.
+ * Retrieve styled text segments based on a specified property.
  *
- * @param {object} params - Parameters for retrieving styled text segments.
- * @param {string} params.nodeId - The ID of the text node.
- * @param {string} params.property - The style property to analyze (e.g., "fontName", "fontSize").
+ * Identifies sections of the text that share the same style (e.g., fontName or fontSize)
+ * and returns the segments for further processing.
  *
- * @returns {object} An object containing the node's id, name, property, and an array of styled segments.
+ * @param {object} params - Configuration for retrieving styled segments.
+ * @param {string} params.nodeId - ID of the text node.
+ * @param {string} params.property - Name of the property to scan (e.g., "fontName", "fontSize").
  *
- * @throws Will throw an error if the node is not found, is not a text node, or if the property is invalid.
+ * @returns {Promise<object>} Object containing the styled segments of the node.
+ * @throws {Error} If the node is not found, not a text node, or the property is invalid.
  */
 export async function getStyledTextSegments(params) {
   return {
@@ -395,15 +411,17 @@ export async function getStyledTextSegments(params) {
 }
 
 /**
- * Loads a font asynchronously in Figma.
+ * Load a font asynchronously.
  *
- * @param {object} params - Parameters for loading font.
- * @param {string} params.family - The font family name.
- * @param {string} [params.style="Regular"] - The font style.
+ * Wraps the Figma font loading functionality and returns a success message along with
+ * the loaded font details.
  *
- * @returns {object} An object indicating success and the loaded font family and style.
+ * @param {object} params - Configuration for font loading.
+ * @param {string} params.family - Font family to load.
+ * @param {string} [params.style="Regular"] - Font style to load.
  *
- * @throws Will throw an error if the font family is missing or loading fails.
+ * @returns {Promise<object>} Details about the loaded font including family and style.
+ * @throws {Error} If font loading fails.
  */
 export async function loadFontAsyncWrapper(params) {
   return {
@@ -414,7 +432,7 @@ export async function loadFontAsyncWrapper(params) {
   };
 }
 
-// Export the operations as a group
+// Group export for all text operations.
 export const textOperations = {
   createText,
   setTextContent,
