@@ -2487,12 +2487,28 @@ server.tool(
     }
   );
 
-// New rename_multiple tool: Rename Multiple Layers with Distinct Names
-//
-// This tool renames a collection of layers by applying a unique new name to each layer.
-// It accepts two arrays of equal length—one containing the layer IDs and the other the corresponding new names.
-// For every layer, it calls the rename_layer command individually and aggregates the results.
-// If the arrays are mismatched or if any renaming operation fails, appropriate error messages are returned for that layer.
+/**
+ * Rename Multiple Layers with Distinct Names
+ *
+ * Renames a collection of layers by applying a unique new name to each layer.
+ * Accepts two arrays of equal length—one with layer IDs and one with new names.
+ * Calls rename_layer for each layer and aggregates results.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - Array of layer IDs to rename.
+ * @param {string[]} params.new_names - Array of new names corresponding to each layer ID.
+ *
+ * @returns {Promise<object>} Object with success status and array of results.
+ *
+ * @throws Will throw an error if layer_ids or new_names are not arrays or lengths differ.
+ *
+ * @example
+ * const result = await rename_multiple({
+ *   layer_ids: ['id1', 'id2'],
+ *   new_names: ['New Name for id1', 'New Name for id2']
+ * });
+ * console.log(result);
+ */
 server.tool(
   "rename_multiple",
   "Rename multiple layers with distinct new names",
