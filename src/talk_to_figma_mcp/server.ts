@@ -549,7 +549,28 @@ server.tool(
   }
 );
 
-// Create Text Tool
+/**
+ * Create Text Tool
+ *
+ * Creates a new text element in Figma at the specified position with optional styling.
+ *
+ * @param {object} params - Parameters for creating the text element.
+ * @param {number} params.x - X position of the text.
+ * @param {number} params.y - Y position of the text.
+ * @param {string} params.text - Text content.
+ * @param {number} [params.fontSize=14] - Font size.
+ * @param {number} [params.fontWeight=400] - Font weight.
+ * @param {object} [params.fontColor] - Font color in RGBA format.
+ * @param {string} [params.name] - Optional name for the text node.
+ * @param {string} [params.parentId] - Optional parent node ID to append the text to.
+ *
+ * @returns {Promise<{ content: Array<{ type: string; text: string }> }>} A promise resolving to an object containing creation result text.
+ *
+ * @throws Will throw an error if the text element cannot be created.
+ *
+ * @example
+ * await createText({ x: 10, y: 20, text: "Hello World", fontSize: 16, fontWeight: 700 });
+ */
 server.tool(
   "create_text",
   "Create a new text element in Figma",
