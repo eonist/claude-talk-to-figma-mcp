@@ -1136,7 +1136,7 @@ async function deleteNode(params) {
 /**
  * Retrieves the local style definitions from the Figma document.
  *
- * Collects color, text, effect, and grid styles and returns them in a simplified, serializable format.
+ * Collects local paint, text, effect, and grid styles and returns them in a simplified, serializable format.
  *
  * @returns {object} An object containing arrays of colors, texts, effects, and grids with their identifiers and key properties.
  */
