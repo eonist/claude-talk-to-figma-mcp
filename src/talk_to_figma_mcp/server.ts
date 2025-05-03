@@ -128,7 +128,45 @@ server.tool(
   }
 );
 
-// Selection Tool
+/**
+ * Document Info Tool
+ * 
+ * Retrieves comprehensive information about the current Figma document and its structure.
+ * This tool provides a detailed snapshot of the document's hierarchy and metadata.
+ * 
+ * Returns:
+ * - document name and ID
+ * - current page details
+ * - hierarchical list of child nodes with their properties
+ * - page summary information
+ * 
+ * @example
+ * // Get document structure
+ * const docInfo = await getDocumentInfo();
+ * console.log(`Current page: ${docInfo.currentPage.name}`);
+ * console.log(`Total children: ${docInfo.currentPage.childCount}`);
+ * 
+ * // Inspect specific child node
+ * const firstChild = docInfo.children[0];
+ * console.log(`First node: ${firstChild.name} (${firstChild.type})`);
+ * 
+ * @returns {Promise<{
+*   name: string,
+*   id: string,
+*   type: string,
+*   children: Array<{id: string, name: string, type: string}>,
+*   currentPage: {
+*     id: string,
+*     name: string,
+*     childCount: number
+*   },
+*   pages: Array<{
+*     id: string,
+*     name: string,
+*     childCount: number
+*   }>
+* }>}
+*/
 server.tool(
   "get_selection",
   "Get information about the current selection in Figma",
@@ -2257,6 +2295,7 @@ server.tool(
 );
 
 // Ungroup Nodes Tool
+
 server.tool(
   "ungroup_nodes",
   "Ungroup nodes in Figma",
