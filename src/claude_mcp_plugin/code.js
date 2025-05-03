@@ -2251,6 +2251,7 @@ async function setMultipleTextContents(params) {
     );
     
     // Process replacements within a chunk in parallel
+    // fixme: add javadoc
     const chunkPromises = chunk.map(async (replacement) => {
       if (!replacement.nodeId || replacement.text === undefined) {
         console.error(`Missing nodeId or text for replacement`);
@@ -2356,6 +2357,7 @@ async function setMultipleTextContents(params) {
     });
     
     // Send chunk processing complete update with partial results
+    // fixme: add javadoc
     sendProgressUpdate(
       commandId,
       'set_multiple_text_contents',
@@ -2385,6 +2387,7 @@ async function setMultipleTextContents(params) {
   );
   
   // Send completed progress update
+  // fixme: add javadoc
   sendProgressUpdate(
     commandId,
     'set_multiple_text_contents',
@@ -2415,10 +2418,11 @@ async function setMultipleTextContents(params) {
 }
 
 // Function to generate simple UUIDs for command IDs
+// fixme: add javadoc
 function generateCommandId() {
   return 'cmd_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
-
+// fixme: add javadoc
 async function setAutoLayout(params) {
   const { 
     nodeId, 
@@ -2610,7 +2614,7 @@ async function setAutoLayoutResizing(params) {
     counterAxisSizingMode: node.counterAxisSizingMode
   };
 }
-
+// fixme: add javadoc
 function setFillContainer(node, axis) {
   const parent = node.parent;
   if (!parent || parent.layoutMode === 'NONE') return;
@@ -2625,7 +2629,7 @@ function setFillContainer(node, axis) {
       : node.layoutAlign = 'STRETCH';
   }
 }
-
+// fixme: add javadoc
 function setHugContents(node, axis) {
   const parent = node.parent;
   if (!parent || parent.layoutMode === 'NONE') return;
@@ -2640,7 +2644,7 @@ function setHugContents(node, axis) {
       : node.layoutAlign = 'INHERIT';
   }
 }
-
+// fixme: add javadoc
 function setFixedSize(node, axis, size) {
   if (axis === 'horizontal') {
     node.resize(size, node.height);
@@ -2650,9 +2654,7 @@ function setFixedSize(node, axis, size) {
     node.layoutGrow = 0;
   }
 }
-
-// Nuevas funciones para propiedades de texto
-
+// fixme: add javadoc
 async function setFontName(params) {
   const { nodeId, family, style } = params || {};
   if (!nodeId || !family) {
@@ -2680,7 +2682,7 @@ async function setFontName(params) {
     throw new Error(`Error setting font name: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function setFontSize(params) {
   const { nodeId, fontSize } = params || {};
   if (!nodeId || fontSize === undefined) {
@@ -2708,7 +2710,7 @@ async function setFontSize(params) {
     throw new Error(`Error setting font size: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function setFontWeight(params) {
   const { nodeId, weight } = params || {};
   if (!nodeId || weight === undefined) {
@@ -2755,7 +2757,7 @@ async function setFontWeight(params) {
     throw new Error(`Error setting font weight: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function setLetterSpacing(params) {
   const { nodeId, letterSpacing, unit = "PIXELS" } = params || {};
   if (!nodeId || letterSpacing === undefined) {
@@ -2783,7 +2785,7 @@ async function setLetterSpacing(params) {
     throw new Error(`Error setting letter spacing: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function setLineHeight(params) {
   const { nodeId, lineHeight, unit = "PIXELS" } = params || {};
   if (!nodeId || lineHeight === undefined) {
@@ -2811,7 +2813,7 @@ async function setLineHeight(params) {
     throw new Error(`Error setting line height: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function setParagraphSpacing(params) {
   const { nodeId, paragraphSpacing } = params || {};
   if (!nodeId || paragraphSpacing === undefined) {
@@ -2839,7 +2841,7 @@ async function setParagraphSpacing(params) {
     throw new Error(`Error setting paragraph spacing: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function setTextCase(params) {
   const { nodeId, textCase } = params || {};
   if (!nodeId || textCase === undefined) {
@@ -2872,7 +2874,7 @@ async function setTextCase(params) {
     throw new Error(`Error setting text case: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function setTextDecoration(params) {
   const { nodeId, textDecoration } = params || {};
   if (!nodeId || textDecoration === undefined) {
@@ -2905,7 +2907,7 @@ async function setTextDecoration(params) {
     throw new Error(`Error setting text decoration: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function getStyledTextSegments(params) {
   const { nodeId, property } = params || {};
   if (!nodeId || !property) {
@@ -2985,7 +2987,7 @@ async function getStyledTextSegments(params) {
     throw new Error(`Error getting styled text segments: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function loadFontAsyncWrapper(params) {
   const { family, style = "Regular" } = params || {};
   if (!family) {
@@ -3004,7 +3006,7 @@ async function loadFontAsyncWrapper(params) {
     throw new Error(`Error loading font: ${error.message}`);
   }
 }
-
+// fixme: add javadoc
 async function getRemoteComponents() {
   try {
     // Check if figma.teamLibrary is available
@@ -3073,6 +3075,7 @@ async function getRemoteComponents() {
 }
 
 // Set Effects Tool
+// fixme: add javadoc
 async function setEffects(params) {
   const { nodeId, effects } = params || {};
   
@@ -3140,6 +3143,7 @@ async function setEffects(params) {
 }
 
 // Set Effect Style ID Tool
+// fixme: add javadoc
 async function setEffectStyleId(params) {
   const { nodeId, effectStyleId } = params || {};
   
@@ -3184,6 +3188,7 @@ async function setEffectStyleId(params) {
 }
 
 // Function to group nodes
+// fixme: add javadoc
 async function groupNodes(params) {
   const { nodeIds, name } = params || {};
   
@@ -3266,6 +3271,7 @@ async function ungroupNodes(params) {
 }
 
 // Function to flatten nodes (e.g., boolean operations, convert to path)
+// fixme: add javadoc
 async function flattenNode(params) {
   const { nodeId } = params || {};
   
@@ -3307,6 +3313,7 @@ async function flattenNode(params) {
 }
 
 // Function to insert a child into a parent node
+// fixme: add javadoc
 async function insertChild(params) {
   const { parentId, childId, index } = params || {};
   
