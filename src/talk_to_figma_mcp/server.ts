@@ -1242,6 +1242,19 @@ server.tool(
  * const styles = await server.tool("get_styles");
  * console.log(styles);
  */
+/**
+ * Get Styles Tool
+ *
+ * Retrieves all styles from the current Figma document.
+ *
+ * @returns {Promise<object>} A promise resolving to an object containing all styles.
+ *
+ * @throws Will throw an error if styles cannot be retrieved.
+ *
+ * @example
+ * const styles = await server.tool("get_styles");
+ * console.log(styles);
+ */
 server.tool(
   "get_styles",
   "Get all styles from the current Figma document",
@@ -1621,6 +1634,23 @@ server.tool(
 );
 
 // Set Font Name Tool
+/**
+ * Set Font Name Tool
+ *
+ * Sets the font name and style of a text node in Figma.
+ *
+ * @param {object} params - Parameters for setting font name.
+ * @param {string} params.nodeId - The ID of the text node to modify.
+ * @param {string} params.family - Font family name.
+ * @param {string} [params.style] - Font style (e.g., "Regular", "Bold", "Italic").
+ *
+ * @returns {Promise<object>} An object containing the node's name and updated font name.
+ *
+ * @throws Will throw an error if the font name cannot be set.
+ *
+ * @example
+ * await server.tool("set_font_name", { nodeId: "123", family: "Roboto", style: "Bold" });
+ */
 server.tool(
   "set_font_name",
   "Set the font name and style of a text node in Figma",
