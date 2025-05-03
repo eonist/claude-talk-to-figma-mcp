@@ -1009,7 +1009,20 @@ async function setStrokeColor(params) {
     strokeWeight: "strokeWeight" in node ? node.strokeWeight : undefined,
   };
 }
-// fixme: add comment
+/**
+ * Moves a node to the specified X and Y coordinates.
+ *
+ * Sets the node's position to the given X and Y values.
+ *
+ * @param {object} params - Parameters for moving the node.
+ * @param {string} params.nodeId - The ID of the node to move.
+ * @param {number} params.x - The new X position.
+ * @param {number} params.y - The new Y position.
+ *
+ * @returns {object} An object with the node's updated position.
+ *
+ * @throws Will throw an error if the node is not found or does not support positioning.
+ */
 async function moveNode(params) {
   const { nodeId, x, y } = params || {};
 
@@ -1204,6 +1217,18 @@ async function getLocalComponents() {
 //   }
 // }
 
+/**
+ * Creates an instance of a component in the Figma document.
+ *
+ * @param {object} params - Parameters for creating component instance.
+ * @param {string} params.componentKey - The key of the component to import.
+ * @param {number} [params.x=0] - The X coordinate for the new instance.
+ * @param {number} [params.y=0] - The Y coordinate for the new instance.
+ *
+ * @returns {object} Details of the created instance including id, name, position, size, and componentId.
+ *
+ * @throws Will throw an error if the component cannot be imported.
+ */
 async function createComponentInstance(params) {
   const { componentKey, x = 0, y = 0 } = params || {};
 
