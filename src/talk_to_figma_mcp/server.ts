@@ -3373,7 +3373,41 @@ function processFigmaNodeResponse(result: unknown): any {
   return result;
 }
 
-// Update the connectToFigma function
+/**
+ * Connect to Figma WebSocket Server
+ * 
+ * Establishes and manages WebSocket connection to the Figma plugin.
+ * Handles connection lifecycle including automatic reconnection with exponential backoff.
+ * 
+ * Features:
+ * - Connection state management
+ * - Automatic reconnection with exponential backoff
+ * - Connection timeout handling
+ * - Event listeners for connection lifecycle
+ * - Pending request management on disconnection
+ * 
+ * @param {number} [port=defaultPort] - The port number to connect to
+ * 
+ * @throws Logs errors but doesn't throw (handles errors internally)
+ * 
+ * Connection States:
+ * 1. Initial connection attempt
+ * 2. Connected & ready
+ * 3. Connection lost (auto-reconnect)
+ * 4. Connection timeout
+ * 
+ * Error Handling:
+ * - Connection failures trigger reconnection with backoff
+ * - Pending requests are rejected on disconnect
+ * - Socket errors are logged and trigger reconnection
+ * 
+ * @example
+ * // Connect to default port
+ * connectToFigma();
+ * 
+ * // Connect to specific port
+ * connectToFigma(3000);
+ */
 function connectToFigma(port: number = defaultPort) {
   // If already connected, do nothing
   if (ws && ws.readyState === WebSocket.OPEN) {
