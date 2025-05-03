@@ -734,6 +734,72 @@ function setStroke(node, color, weight) {
   }
 }
 
+/**
+ * Creates a new vector node from an SVG string
+ * 
+ * Converts the provided SVG string into a Figma vector object and places it at the specified
+ * coordinates. If a parentId is provided, the vector is appended to that node; otherwise it's
+ * added to the current page.
+ * 
+ * @param {object} params - Configuration parameters
+ * @param {string} params.svg - SVG string content to convert to Figma vector
+ * @param {number} [params.x=0] - X position for the created node
+ * @param {number} [params.y=0] - Y position for the created node
+ * @param {string} [params.name="SVG Vector"] - Name for the created node
+ * @param {string} [params.parentId] - Optional parent node ID
+ * @returns {object} Information about the created SVG vector node
+ */
+export async function createSvgVector(params) {
+  const {
+    svg,
+    x = 0,
+    y = 0,
+    name = "SVG Vector",
+    parentId
+  } = params || {};
+
+  if (!svg) {
+    throw new Error("SVG string is required");
+  }
+
+  try {
+    // Create node from SVG
+    const node = figma.createNodeFromSvg(svg);
+    
+    // Set position and name
+    node.x = x;
+    node.y = y;
+    if (name) node.name = name;
+    
+    // Add to parent if specified, otherwise add to current page
+    if (parentId) {
+      const parentNode = await figma.getNodeByIdAsync(parentId);
+      if (!parentNode) {
+        throw new Error(`Parent node not found with ID: ${parentId}`);
+      }
+      if (!("appendChild" in parentNode)) {
+        throw new Error(`Parent node does not support children: ${parentId}`);
+      }
+      parentNode.appendChild(node);
+    } else {
+      figma.currentPage.appendChild(node);
+    }
+    
+    return {
+      id: node.id,
+      name: node.name,
+      type: node.type,
+      x: node.x,
+      y: node.y,
+      width: node.width,
+      height: node.height,
+      parentId: node.parent ? node.parent.id : undefined
+    };
+  } catch (error) {
+    throw new Error(`Failed to create SVG node: ${error.message}`);
+  }
+}
+
 // Export the shape operations as a grouped object for external use.
 export const shapeOperations = {
   createRectangle,
@@ -743,6 +809,7 @@ export const shapeOperations = {
   createStar,
   createVector,
   createLine,
+  createSvgVector,
   setCornerRadius,
   resizeNode,
   deleteNode,

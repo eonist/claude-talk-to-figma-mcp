@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../../clients/figma-client.js";
 import { logger } from "../../utils/logger.js";
+import { SvgUtils } from "../../utils/svg-utils.js";
+import path from "path";
 
 /**
  * Registers create commands for the MCP server
@@ -488,6 +490,108 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
             {
               type: "text",
               text: `Error creating component instance: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Insert SVG Vector Tool
+   * 
+   * Creates a vector node from SVG string content or file in Figma
+   */
+  server.tool(
+    "insert_svg_vector",
+    "Insert SVG content as a vector in Figma",
+    {
+      svg: z.string().optional().describe("SVG string content to convert to Figma vector"),
+      svgPath: z.string().optional().describe("Path to an SVG file to load (alternative to svg string)"),
+      x: z.number().optional().describe("X position"),
+      y: z.number().optional().describe("Y position"),
+      name: z.string().optional().describe("Optional name for the vector (defaults to filename if using svgPath)"),
+      parentId: z.string().optional().describe("Optional parent node ID to append the vector to"),
+    },
+    async ({ svg, svgPath, x, y, name, parentId }) => {
+      try {
+        let svgContent = svg;
+        let nodeName = name;
+        
+        // If svgPath is provided, load SVG from file
+        if (svgPath) {
+          try {
+            // Read SVG file
+            svgContent = await SvgUtils.readSvgFile(svgPath);
+            
+            // If no name is provided, use the filename
+            if (!nodeName) {
+              nodeName = SvgUtils.getSvgFilename(svgPath);
+            }
+            
+            logger.info(`Loaded SVG from file: ${svgPath}`);
+          } catch (error) {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: `Error reading SVG file: ${error instanceof Error ? error.message : String(error)}`
+                }
+              ]
+            };
+          }
+        }
+        
+        // Validate we have SVG content from either source
+        if (!svgContent) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "Either svg content or svgPath must be provided"
+              }
+            ]
+          };
+        }
+        
+        // Validate SVG content appears to be valid
+        if (!SvgUtils.isValidSvgContent(svgContent)) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "The provided content does not appear to be valid SVG"
+              }
+            ]
+          };
+        }
+        
+        // Create the SVG vector in Figma
+        const result = await figmaClient.insertSvgVector({
+          svg: svgContent,
+          x: x || 0,
+          y: y || 0,
+          name: nodeName || "SVG Vector",
+          parentId
+        });
+        
+        // Return success response with metadata about the source
+        const sourceInfo = svgPath ? `from file: ${path.basename(svgPath)}` : "from SVG string";
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Created SVG vector ${sourceInfo} with ID: ${result.id}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error creating SVG vector: ${error instanceof Error ? error.message : String(error)}`
             }
           ]
         };

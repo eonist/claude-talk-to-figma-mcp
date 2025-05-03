@@ -42,6 +42,7 @@ export function initializeCommands() {
   registerCommand('create_star', shapeOperations.createStar);
   registerCommand('create_vector', shapeOperations.createVector);
   registerCommand('create_line', shapeOperations.createLine);
+  registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('delete_node', shapeOperations.deleteNode);

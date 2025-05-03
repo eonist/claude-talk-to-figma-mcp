@@ -234,6 +234,31 @@ export class FigmaClient {
     });
   }
   
+  /**
+   * Inserts an SVG vector in Figma
+   * 
+   * @param {object} params - SVG vector parameters
+   * @returns {Promise<BaseFigmaNode>} The created SVG vector node
+   */
+  async insertSvgVector(params: {
+    svg: string;
+    x?: number;
+    y?: number;
+    name?: string;
+    parentId?: string;
+  }): Promise<BaseFigmaNode> {
+    // Ensure parentId is treated as a string if provided
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    
+    return this.executeCommand("insert_svg_vector", {
+      svg: params.svg,
+      x: params.x || 0,
+      y: params.y || 0,
+      name: params.name || "SVG Vector",
+      parentId: parentIdString
+    });
+  }
+  
   // Style operations
   
   /**

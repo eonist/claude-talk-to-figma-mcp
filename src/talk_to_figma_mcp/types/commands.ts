@@ -56,6 +56,7 @@ export type FigmaCommand =
   | "rename_layers"
   | "rename_multiple" 
   | "ai_rename_layers"
+  | "insert_svg_vector"
   | "join";
 
 /**
