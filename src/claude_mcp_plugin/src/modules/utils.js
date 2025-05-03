@@ -5,6 +5,33 @@ export const state = {
 
 /**
  * Sends a progress update message to the plugin UI.
+ *
+ * Constructs and sends a detailed progress update object for asynchronous commands.
+ * This includes status, progress percentage, counts of total and processed items,
+ * descriptive messages, and optional chunking information.
+ *
+ * @param {string} commandId - Unique identifier for the command execution.
+ * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
+ * @param {string} status - Current status ('started', 'in_progress', 'completed', 'error').
+ * @param {number} progress - Completion percentage (0-100).
+ * @param {number} totalItems - Total number of items to process.
+ * @param {number} processedItems - Number of items processed so far.
+ * @param {string} message - Descriptive progress message.
+ * @param {object} [payload=null] - Optional additional data, including chunk info.
+ *
+ * @returns {object} Progress update object with timestamp.
+ *
+ * @example
+ * sendProgressUpdate(
+ *   'cmd_abc123',
+ *   'scan_text_nodes',
+ *   'in_progress',
+ *   50,
+ *   100,
+ *   50,
+ *   'Halfway done scanning text nodes',
+ *   { currentChunk: 1, totalChunks: 2, chunkSize: 50 }
+ * );
  */
 export function sendProgressUpdate(
   commandId, 
@@ -47,6 +74,13 @@ export function sendProgressUpdate(
 
 /**
  * Initialize plugin settings on load.
+ * 
+ * This function retrieves stored settings from Figma's client storage and applies them.
+ * It also sends the initial settings to the plugin UI.
+ * 
+ * @returns {Promise<void>}
+ * 
+ * @throws May log errors to console if settings retrieval fails, but won't throw errors.
  */
 export async function initializePlugin() {
   try {
@@ -70,7 +104,9 @@ export async function initializePlugin() {
 }
 
 /**
- * Updates plugin settings.
+ * Updates plugin settings by saving the server port to state and client storage.
+ *
+ * @param {{ serverPort: number }} settings - Settings object containing serverPort.
  */
 export function updateSettings(settings) {
   if (settings.serverPort) {
@@ -84,6 +120,13 @@ export function updateSettings(settings) {
 
 /**
  * Returns a promise that resolves after a specified delay.
+ *
+ * @param {number} ms - The delay duration in milliseconds.
+ * @returns {Promise<void>} A promise that resolves after the delay.
+ * 
+ * @example
+ * // Wait for 500ms
+ * await delay(500);
  */
 export function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -91,6 +134,17 @@ export function delay(ms) {
 
 /**
  * Custom base64 encoding function for binary data.
+ * 
+ * Provides a manual implementation of base64 encoding for Uint8Array data.
+ * This is useful for image data and other binary content that needs to be 
+ * serialized for transmission.
+ *
+ * @param {Uint8Array} bytes - The binary data to encode.
+ * @returns {string} A base64 encoded string representation of the data.
+ * 
+ * @example
+ * const imageBytes = await node.exportAsync({format: "PNG"});
+ * const base64String = customBase64Encode(imageBytes);
  */
 export function customBase64Encode(bytes) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -145,13 +199,37 @@ export function customBase64Encode(bytes) {
 
 /**
  * Generates a unique command ID string.
+ * 
+ * Creates a random, unique identifier prefixed with 'cmd_' that can be used
+ * to track and correlate command execution across the plugin.
+ * 
+ * @returns {string} A unique command ID string.
+ * 
+ * @example
+ * const commandId = generateCommandId();
+ * // commandId might be: "cmd_a7f3b9c2e5d1g6h8i0j2"
  */
 export function generateCommandId() {
   return 'cmd_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 /**
- * Filter array by unique property value.
+ * Filters an array to contain only unique values based on a property or predicate function.
+ * 
+ * This function removes duplicate items from an array, where uniqueness is determined
+ * by a property value or a function that derives a value from each item.
+ * 
+ * @param {Array} arr - The array to filter.
+ * @param {string|Function} predicate - Either a property name or a function that returns a value to check for uniqueness.
+ * @returns {Array} A new array containing only unique items.
+ * 
+ * @example
+ * // Filter by object property
+ * const uniqueUsers = uniqBy(users, 'id');
+ * 
+ * @example
+ * // Filter by function result
+ * const uniqueByName = uniqBy(items, item => item.firstName + item.lastName);
  */
 export function uniqBy(arr, predicate) {
   const cb = typeof predicate === "function" 
@@ -170,7 +248,21 @@ export function uniqBy(arr, predicate) {
 }
 
 /**
- * Helper to safely set characters with font loading
+ * Helper to safely set characters on a text node with font loading.
+ * 
+ * This function handles the complexities of setting text content on Figma text nodes,
+ * including proper font loading and fallback handling for mixed-font nodes.
+ * 
+ * @param {SceneNode} node - The Figma text node to modify.
+ * @param {string} characters - The text content to set.
+ * @param {object} [options] - Optional configuration.
+ * @param {object} [options.fallbackFont] - Font to use as fallback if loading fails.
+ * @param {string} [options.fallbackFont.family="Inter"] - Fallback font family.
+ * @param {string} [options.fallbackFont.style="Regular"] - Fallback font style.
+ * 
+ * @returns {Promise<boolean>} True if characters were set successfully, false otherwise.
+ * 
+ * @throws Logs warnings to console but doesn't throw errors.
  */
 export async function setCharacters(node, characters, options) {
   const fallbackFont = (options && options.fallbackFont) || {
