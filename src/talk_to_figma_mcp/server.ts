@@ -393,7 +393,26 @@ server.tool(
   }
 );
 
-// Create Rectangle Tool
+/**
+ * Create Rectangle Tool
+ *
+ * Creates a new rectangle in Figma at the specified position and size.
+ *
+ * @param {object} params - Parameters for creating the rectangle.
+ * @param {number} params.x - X position of the rectangle.
+ * @param {number} params.y - Y position of the rectangle.
+ * @param {number} params.width - Width of the rectangle.
+ * @param {number} params.height - Height of the rectangle.
+ * @param {string} [params.name] - Optional name for the rectangle.
+ * @param {string} [params.parentId] - Optional parent node ID to append the rectangle to.
+ *
+ * @returns {Promise<{ content: Array<{ type: string; text: string }> }>} A promise resolving to an object containing creation result text.
+ *
+ * @throws Will throw an error if the rectangle cannot be created.
+ *
+ * @example
+ * await createRectangle({ x: 10, y: 20, width: 100, height: 50, name: "MyRect" });
+ */
 server.tool(
   "create_rectangle",
   "Create a new rectangle in Figma",
