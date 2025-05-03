@@ -212,7 +212,22 @@ server.tool(
   }
 );
 
-// Node Info Tool
+/**
+ * Get Node Info Tool
+ *
+ * Retrieves detailed information about a specific node in Figma.
+ *
+ * @param {object} params - Parameters for getting node info.
+ * @param {string} params.nodeId - The ID of the node to get information about.
+ *
+ * @returns {Promise<{ content: Array<{ type: string; text: string }> }>} A promise resolving to an object containing the filtered node info as JSON text.
+ *
+ * @throws Will throw an error if the node info cannot be retrieved.
+ *
+ * @example
+ * const nodeInfo = await getNodeInfo({ nodeId: "123" });
+ * console.log(nodeInfo);
+ */
 server.tool(
   "get_node_info",
   "Get detailed information about a specific node in Figma",
