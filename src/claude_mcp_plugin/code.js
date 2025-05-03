@@ -17,22 +17,33 @@ const state = {
 /**
  * Sends a progress update message to the plugin UI.
  *
- * This function creates a detailed progress update object encapsulating
- * the command identifier, its type, current status, progress percentage, 
- * as well as counts for total and processed items. An optional payload may 
- * include additional contextual data (e.g. chunk information). The update
- * is dispatched to the UI via figma.ui.postMessage and logged locally along
- * with a timestamp.
+ * This function constructs a detailed progress update object containing command information,
+ * current progress status, counts of processed and total items, and an optional data payload.
+ * It then sends this update to the plugin's UI via `figma.ui.postMessage` and logs the update
+ * to the console. The returned object includes a timestamp indicating when the update was created.
  *
- * @param {string} commandId - Unique identifier for the command.
- * @param {string} commandType - The command type (for example "scan_text_nodes").
- * @param {string} status - Current command status ("started", "in_progress", "completed", "error").
- * @param {number} progress - Completion percentage (0–100).
- * @param {number} totalItems - Total count of items to process.
- * @param {number} processedItems - Count of items processed so far.
- * @param {string} message - Descriptive progress message.
- * @param {Object} [payload=null] - Optional additional data (e.g. { currentChunk, totalChunks, chunkSize }).
- * @returns {Object} Progress update object with a timestamp.
+ * @param {string} commandId - Unique identifier for the command execution.
+ * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
+ * @param {string} status - Current status of the command ('started', 'in_progress', 'completed', 'error').
+ * @param {number} progress - Completion percentage (range 0-100).
+ * @param {number} totalItems - Total number of items to process.
+ * @param {number} processedItems - Number of items processed so far.
+ * @param {string} message - Descriptive message accompanying the update.
+ * @param {object} [payload=null] - Optional extra data such as chunk information (e.g., currentChunk, totalChunks, chunkSize).
+ *
+ * @returns {object} The progress update object with a timestamp.
+ *
+ * @example
+ * const update = sendProgressUpdate(
+ *   "cmd123",
+ *   "scan_text_nodes",
+ *   "in_progress",
+ *   50,
+ *   100,
+ *   50,
+ *   "Halfway done scanning text nodes",
+ *   { currentChunk: 1, totalChunks: 2, chunkSize: 50 }
+ * );
  */
 function sendProgressUpdate(
   commandId, 
