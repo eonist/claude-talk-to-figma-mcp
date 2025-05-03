@@ -2251,8 +2251,16 @@ async function setMultipleTextContents(params) {
     );
     
     // Process replacements within a chunk in parallel
-    // fixme: add javadoc
-    const chunkPromises = chunk.map(async (replacement) => {
+/**
+ * Processes a chunk of text replacements asynchronously.
+ *
+ * For each replacement, validates parameters, highlights the text node,
+ * sets new text content, and restores original fills.
+ *
+ * @param {Array} chunk - Array of replacement objects with nodeId and text.
+ * @returns {Promise<Array>} Array of results for each replacement.
+ */
+const chunkPromises = chunk.map(async (replacement) => {
       if (!replacement.nodeId || replacement.text === undefined) {
         console.error(`Missing nodeId or text for replacement`);
         return {
@@ -2357,23 +2365,33 @@ async function setMultipleTextContents(params) {
     });
     
     // Send chunk processing complete update with partial results
-    // fixme: add javadoc
-    sendProgressUpdate(
-      commandId,
-      'set_multiple_text_contents',
-      'in_progress',
-      Math.round(5 + (((chunkIndex + 1) / chunks.length) * 90)), // 5-95% for processing
-      text.length,
-      successCount + failureCount,
-      `Completed chunk ${chunkIndex + 1}/${chunks.length}. ${successCount} successful, ${failureCount} failed so far.`,
-      {
-        currentChunk: chunkIndex + 1,
-        totalChunks: chunks.length,
-        successCount,
-        failureCount,
-        chunkResults: chunkResults
-      }
-    );
+/**
+ * Sends progress update after processing a chunk of text replacements.
+ *
+ * @param {string} commandId - Unique command identifier.
+ * @param {number} chunkIndex - Current chunk index.
+ * @param {number} totalChunks - Total number of chunks.
+ * @param {number} textLength - Total number of text replacements.
+ * @param {number} successCount - Number of successful replacements so far.
+ * @param {number} failureCount - Number of failed replacements so far.
+ * @param {Array} chunkResults - Results of the current chunk.
+ */
+sendProgressUpdate(
+  commandId,
+  'set_multiple_text_contents',
+  'in_progress',
+  Math.round(5 + (((chunkIndex + 1) / chunks.length) * 90)), // 5-95% for processing
+  text.length,
+  successCount + failureCount,
+  `Completed chunk ${chunkIndex + 1}/${chunks.length}. ${successCount} successful, ${failureCount} failed so far.`,
+  {
+    currentChunk: chunkIndex + 1,
+    totalChunks: chunks.length,
+    successCount,
+    failureCount,
+    chunkResults: chunkResults
+  }
+);
     
     // Add a small delay between chunks to avoid overloading Figma
     if (chunkIndex < chunks.length - 1) {
@@ -2387,23 +2405,32 @@ async function setMultipleTextContents(params) {
   );
   
   // Send completed progress update
-  // fixme: add javadoc
-  sendProgressUpdate(
-    commandId,
-    'set_multiple_text_contents',
-    'completed',
-    100,
-    text.length,
-    successCount + failureCount,
-    `Text replacement complete: ${successCount} successful, ${failureCount} failed`,
-    {
-      totalReplacements: text.length,
-      replacementsApplied: successCount,
-      replacementsFailed: failureCount,
-      completedInChunks: chunks.length,
-      results: results
-    }
-  );
+/**
+ * Sends final progress update after completing all text replacements.
+ *
+ * @param {string} commandId - Unique command identifier.
+ * @param {number} textLength - Total number of text replacements.
+ * @param {number} successCount - Number of successful replacements.
+ * @param {number} failureCount - Number of failed replacements.
+ * @param {number} chunksLength - Total number of chunks processed.
+ * @param {Array} results - Array of all replacement results.
+ */
+sendProgressUpdate(
+  commandId,
+  'set_multiple_text_contents',
+  'completed',
+  100,
+  text.length,
+  successCount + failureCount,
+  `Text replacement complete: ${successCount} successful, ${failureCount} failed`,
+  {
+    totalReplacements: text.length,
+    replacementsApplied: successCount,
+    replacementsFailed: failureCount,
+    completedInChunks: chunks.length,
+    results: results
+  }
+);
 
   return {
     success: successCount > 0,
@@ -2418,11 +2445,36 @@ async function setMultipleTextContents(params) {
 }
 
 // Function to generate simple UUIDs for command IDs
-// fixme: add javadoc
+/**
+ * Generates a unique command ID string.
+ *
+ * @returns {string} A unique command ID.
+ */
 function generateCommandId() {
   return 'cmd_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
-// fixme: add javadoc
+/**
+ * Sets auto layout properties on a node.
+ *
+ * Configures layout mode, padding, spacing, alignment, wrapping, and stroke inclusion.
+ *
+ * @param {object} params - Auto layout configuration parameters.
+ * @param {string} params.nodeId - The ID of the node to configure.
+ * @param {string} params.layoutMode - Layout mode ("NONE", "HORIZONTAL", "VERTICAL").
+ * @param {number} [params.paddingTop] - Top padding in pixels.
+ * @param {number} [params.paddingBottom] - Bottom padding in pixels.
+ * @param {number} [params.paddingLeft] - Left padding in pixels.
+ * @param {number} [params.paddingRight] - Right padding in pixels.
+ * @param {number} [params.itemSpacing] - Spacing between items in pixels.
+ * @param {string} [params.primaryAxisAlignItems] - Alignment along primary axis.
+ * @param {string} [params.counterAxisAlignItems] - Alignment along counter axis.
+ * @param {string} [params.layoutWrap] - Layout wrap mode ("WRAP", "NO_WRAP").
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout.
+ *
+ * @returns {object} An object with updated auto layout properties.
+ *
+ * @throws Will throw an error if the node is not found or does not support auto layout.
+ */
 async function setAutoLayout(params) {
   const { 
     nodeId, 
