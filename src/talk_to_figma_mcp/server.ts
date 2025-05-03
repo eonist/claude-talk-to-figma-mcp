@@ -268,6 +268,32 @@ function rgbaToHex(color: any): string {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}${a === 255 ? '' : a.toString(16).padStart(2, '0')}`;
 }
 
+/**
+ * Filters and processes Figma node data for client consumption
+ * 
+ * Supported Node Types:
+ * - FRAME: Container nodes with layout capabilities
+ * - COMPONENT: Reusable design elements
+ * - INSTANCE: Instances of components
+ * - GROUP: Collection of nodes
+ * - RECTANGLE/ELLIPSE/TEXT: Basic shape and text nodes
+ *
+ * Filtered Attributes:
+ * - fills: Color and gradient fills
+ * - strokes: Border styles
+ * - effects: Shadows, blurs etc
+ * - cornerRadius: Corner rounding
+ * - textStyles: Font and text formatting
+ * 
+ * Special Handling:
+ * - Removes boundVariables and imageRefs
+ * - Converts colors to hex format
+ * - Cleans up gradient stops
+ * - Processes nested children recursively
+ *
+ * @param {any} node - Raw Figma node to filter
+ * @returns {any | null} Filtered node or null if node should be excluded
+ */
 function filterFigmaNode(node: any) {
   // Skip VECTOR type nodes
   if (node.type === "VECTOR") {
@@ -3347,6 +3373,28 @@ type FigmaCommand =
   | "ai_rename_layers";
 
 // Helper function to process Figma node responses
+/**
+ * Processes and filters Figma node responses for client consumption
+ * 
+ * Sanitizes and formats node data by:
+ * - Validating node structure and required properties
+ * - Logging processed node details for debugging
+ * - Filtering sensitive or internal properties
+ * - Formatting position and dimension data
+ *
+ * Node Processing:
+ * 1. Validates node has required ID property
+ * 2. Extracts key properties (name, position, dimensions)
+ * 3. Logs processing details at appropriate log levels
+ * 4. Returns cleaned node data
+ *
+ * @param {unknown} result - Raw node data from Figma API
+ * @returns {any} Processed node data with sensitive/internal data removed
+ * 
+ * @example
+ * const cleanNode = processFigmaNodeResponse(rawNodeData);
+ * console.log(cleanNode.name, cleanNode.id);
+ */
 function processFigmaNodeResponse(result: unknown): any {
   if (!result || typeof result !== "object") {
     return result;
@@ -3374,32 +3422,30 @@ function processFigmaNodeResponse(result: unknown): any {
 }
 
 /**
- * Connect to Figma WebSocket Server
+ * Connects and manages WebSocket connection to Figma plugin server
  * 
- * Establishes and manages WebSocket connection to the Figma plugin.
- * Handles connection lifecycle including automatic reconnection with exponential backoff.
- * 
- * Features:
- * - Connection state management
- * - Automatic reconnection with exponential backoff
- * - Connection timeout handling
- * - Event listeners for connection lifecycle
- * - Pending request management on disconnection
- * 
- * @param {number} [port=defaultPort] - The port number to connect to
- * 
- * @throws Logs errors but doesn't throw (handles errors internally)
- * 
- * Connection States:
+ * Handles the full WebSocket connection lifecycle including:
  * 1. Initial connection attempt
- * 2. Connected & ready
- * 3. Connection lost (auto-reconnect)
- * 4. Connection timeout
- * 
+ * 2. Connection state management 
+ * 3. Automatic reconnection with exponential backoff
+ * 4. Error handling and recovery
+ *
+ * Connection States:
+ * - CONNECTING: Initial connection attempt in progress
+ * - OPEN: Successfully connected and ready for commands
+ * - CLOSING: Connection is closing (will trigger reconnect)
+ * - CLOSED: Connection lost (will trigger reconnect)
+ *
  * Error Handling:
- * - Connection failures trigger reconnection with backoff
- * - Pending requests are rejected on disconnect
+ * - Connection failures trigger reconnection with exponential backoff (1.5^n * base interval)
+ * - Maximum backoff capped at 30 seconds
+ * - Connection timeout after 10 seconds of no response
+ * - All pending requests are rejected on disconnect
  * - Socket errors are logged and trigger reconnection
+ *
+ * @param {number} [port=defaultPort] - Port number to connect to, defaults to 3055
+ * 
+ * @throws Logs errors but handles them internally without throwing
  * 
  * @example
  * // Connect to default port
@@ -3775,6 +3821,23 @@ server.tool(
  * @returns {Promise<void>}
  *
  * @throws Will log errors and exit the process if the server fails to start.
+ */
+/**
+ * Main entry point for the MCP server
+ * 
+ * Initialization Steps:
+ * 1. Attempts initial Figma WebSocket connection
+ * 2. Creates StdioServerTransport for MCP communication
+ * 3. Connects MCP server to transport
+ * 4. Begins listening for commands
+ *
+ * Error Handling:
+ * - Logs initial connection failures but continues startup
+ * - Will attempt reconnection on first command
+ * - Exits process with error code 1 on critical failures
+ *
+ * @returns {Promise<void>} Resolves when server is running
+ * @throws Logs errors and exits process on critical failure
  */
 async function main() {
   try {
