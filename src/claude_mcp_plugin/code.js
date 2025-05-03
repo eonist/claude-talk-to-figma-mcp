@@ -1043,6 +1043,13 @@ async function getStyles() {
   };
 }
 
+/**
+ * Retrieves all local components available in the Figma document.
+ *
+ * Loads all pages and finds components by type, returning a summary including component id, name, and key.
+ *
+ * @returns {object} An object containing a count of components and an array with each component's details.
+ */
 async function getLocalComponents() {
   await figma.loadAllPagesAsync();
 
