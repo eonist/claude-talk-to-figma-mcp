@@ -1,6 +1,10 @@
-// Main entry point for the Figma plugin
+/**
+ * Main entry point for the Figma plugin that enables communication with Claude AI.
+ * This plugin acts as a bridge between Figma and the Model Context Protocol (MCP) server,
+ * allowing AI-driven manipulation of Figma documents.
+ */
 
-// Import modules
+// Import core operation modules for different Figma capabilities
 import { documentOperations } from './modules/document.js';
 import { shapeOperations } from './modules/shapes.js';
 import { textOperations } from './modules/text.js';
@@ -15,13 +19,19 @@ import {
   updateSettings 
 } from './modules/utils/plugin.js';
 
-// Show UI
+// Initialize plugin UI with a fixed size window
 figma.showUI(__html__, { width: 350, height: 450 });
 
-// Initialize commands
+// Set up command handlers for all supported operations
 initializeCommands();
 
-// Plugin commands from UI
+/**
+ * Message handler for UI events. Processes different types of messages:
+ * - update-settings: Updates plugin configuration
+ * - notify: Shows notification in Figma
+ * - close-plugin: Terminates the plugin
+ * - execute-command: Processes commands received via WebSocket from the MCP server
+ */
 figma.ui.onmessage = async (msg) => {
   switch (msg.type) {
     case "update-settings":
@@ -34,16 +44,17 @@ figma.ui.onmessage = async (msg) => {
       figma.closePlugin();
       break;
     case "execute-command":
-      // Execute commands received from UI (which gets them from WebSocket)
       try {
+        // Execute the received command and collect results
         const result = await handleCommand(msg.command, msg.params);
-        // Send result back to UI
+        // Send command execution results back to UI
         figma.ui.postMessage({
           type: "command-result",
           id: msg.id,
           result,
         });
       } catch (error) {
+        // Handle and report any errors during command execution
         figma.ui.postMessage({
           type: "command-error",
           id: msg.id,
@@ -54,10 +65,11 @@ figma.ui.onmessage = async (msg) => {
   }
 };
 
-// Listen for plugin commands from menu
+// Handle plugin activation from Figma menu
 figma.on("run", ({ command }) => {
+  // Trigger automatic WebSocket connection when plugin starts
   figma.ui.postMessage({ type: "auto-connect" });
 });
 
-// Initialize the plugin on load
+// Perform initial plugin setup and configuration
 initializePlugin();
