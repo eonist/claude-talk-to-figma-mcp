@@ -1,5 +1,6 @@
 import { filterFigmaNode } from "../utils/node-filter.js";
 import { logger } from "../utils/logger.js";
+import { ensureNodeIdIsString } from "../utils/node-utils.js";
 import { FigmaCommand } from "../types/commands.js";
 import { sendCommandToFigma, getCurrentChannel, isConnectedToFigma } from "../server/websocket.js";
 import { BaseFigmaNode, DocumentInfo, RGBAColor, SelectionInfo } from "../types/figma.js";
@@ -78,7 +79,11 @@ export class FigmaClient {
    * @returns {Promise<BaseFigmaNode>} The node information
    */
   async getNodeInfo(nodeId: string): Promise<BaseFigmaNode> {
-    const result = await this.executeCommand("get_node_info", { nodeId });
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(nodeId);
+    logger.debug(`Getting node info for ID: ${nodeIdString}`);
+    
+    const result = await this.executeCommand("get_node_info", { nodeId: nodeIdString });
     return filterFigmaNode(result);
   }
   
@@ -89,7 +94,11 @@ export class FigmaClient {
    * @returns {Promise<BaseFigmaNode[]>} The node information
    */
   async getNodesInfo(nodeIds: string[]): Promise<BaseFigmaNode[]> {
-    const result = await this.executeCommand("get_nodes_info", { nodeIds });
+    // Ensure all nodeIds are treated as strings and validate they're not objects
+    const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
+    logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
+    
+    const result = await this.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings });
     return result.map(filterFigmaNode);
   }
   
@@ -112,13 +121,16 @@ export class FigmaClient {
     strokeColor?: RGBAColor;
     strokeWeight?: number;
   }): Promise<BaseFigmaNode> {
+    // Ensure parentId is treated as a string if provided
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    
     return this.executeCommand("create_rectangle", {
       x: params.x,
       y: params.y,
       width: params.width,
       height: params.height,
       name: params.name || "Rectangle",
-      parentId: params.parentId,
+      parentId: parentIdString,
       fillColor: params.fillColor,
       strokeColor: params.strokeColor,
       strokeWeight: params.strokeWeight
@@ -142,13 +154,16 @@ export class FigmaClient {
     strokeColor?: RGBAColor;
     strokeWeight?: number;
   }): Promise<BaseFigmaNode> {
+    // Ensure parentId is treated as a string if provided
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    
     return this.executeCommand("create_frame", {
       x: params.x,
       y: params.y,
       width: params.width,
       height: params.height,
       name: params.name || "Frame",
-      parentId: params.parentId,
+      parentId: parentIdString,
       fillColor: params.fillColor || { r: 1, g: 1, b: 1, a: 1 },
       strokeColor: params.strokeColor,
       strokeWeight: params.strokeWeight
@@ -171,6 +186,9 @@ export class FigmaClient {
     name?: string;
     parentId?: string;
   }): Promise<BaseFigmaNode> {
+    // Ensure parentId is treated as a string if provided
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    
     return this.executeCommand("create_text", {
       x: params.x,
       y: params.y,
@@ -179,7 +197,7 @@ export class FigmaClient {
       fontWeight: params.fontWeight || 400,
       fontColor: params.fontColor || { r: 0, g: 0, b: 0, a: 1 },
       name: params.name || "Text",
-      parentId: params.parentId
+      parentId: parentIdString
     });
   }
   
@@ -200,13 +218,16 @@ export class FigmaClient {
     strokeColor?: RGBAColor;
     strokeWeight?: number;
   }): Promise<BaseFigmaNode> {
+    // Ensure parentId is treated as a string if provided
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    
     return this.executeCommand("create_ellipse", {
       x: params.x,
       y: params.y,
       width: params.width,
       height: params.height,
       name: params.name || "Ellipse",
-      parentId: params.parentId,
+      parentId: parentIdString,
       fillColor: params.fillColor,
       strokeColor: params.strokeColor,
       strokeWeight: params.strokeWeight
@@ -228,8 +249,11 @@ export class FigmaClient {
     b: number;
     a?: number;
   }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
     return this.executeCommand("set_fill_color", {
-      nodeId: params.nodeId,
+      nodeId: nodeIdString,
       color: {
         r: params.r,
         g: params.g,
@@ -253,8 +277,11 @@ export class FigmaClient {
     a?: number;
     weight?: number;
   }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
     return this.executeCommand("set_stroke_color", {
-      nodeId: params.nodeId,
+      nodeId: nodeIdString,
       color: {
         r: params.r,
         g: params.g,
@@ -278,7 +305,14 @@ export class FigmaClient {
     x: number;
     y: number;
   }): Promise<any> {
-    return this.executeCommand("move_node", params);
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("move_node", {
+      nodeId: nodeIdString,
+      x: params.x,
+      y: params.y
+    });
   }
   
   /**
@@ -292,7 +326,14 @@ export class FigmaClient {
     x?: number;
     y?: number;
   }): Promise<BaseFigmaNode> {
-    return this.executeCommand("clone_node", params);
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("clone_node", {
+      nodeId: nodeIdString,
+      x: params.x,
+      y: params.y
+    });
   }
   
   /**
@@ -306,7 +347,14 @@ export class FigmaClient {
     width: number;
     height: number;
   }): Promise<any> {
-    return this.executeCommand("resize_node", params);
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("resize_node", {
+      nodeId: nodeIdString,
+      width: params.width,
+      height: params.height
+    });
   }
   
   /**
@@ -316,7 +364,11 @@ export class FigmaClient {
    * @returns {Promise<any>} Operation result
    */
   async deleteNode(nodeId: string): Promise<any> {
-    return this.executeCommand("delete_node", { nodeId });
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(nodeId);
+    logger.debug(`Deleting node with ID: ${nodeIdString}`);
+    
+    return this.executeCommand("delete_node", { nodeId: nodeIdString });
   }
   
   /**
@@ -329,7 +381,13 @@ export class FigmaClient {
     nodeId: string;
     text: string;
   }): Promise<any> {
-    return this.executeCommand("set_text_content", params);
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_text_content", {
+      nodeId: nodeIdString,
+      text: params.text
+    });
   }
   
   /**
@@ -342,7 +400,19 @@ export class FigmaClient {
     nodeId: string;
     text: Array<{ nodeId: string; text: string }>;
   }): Promise<any> {
-    return this.executeCommand("set_multiple_text_contents", params);
+    // Ensure parent nodeId is treated as a string and validate it's not an object
+    const parentNodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    // Also validate all node IDs in the text array
+    const validatedTextNodes = params.text.map(item => ({
+      nodeId: ensureNodeIdIsString(item.nodeId),
+      text: item.text
+    }));
+    
+    return this.executeCommand("set_multiple_text_contents", {
+      nodeId: parentNodeIdString,
+      text: validatedTextNodes
+    });
   }
   
   /**
@@ -356,8 +426,11 @@ export class FigmaClient {
     format?: "PNG" | "JPG" | "SVG" | "PDF";
     scale?: number;
   }): Promise<{imageData: string, mimeType: string}> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
     return this.executeCommand("export_node_as_image", {
-      nodeId: params.nodeId,
+      nodeId: nodeIdString,
       format: params.format || "PNG",
       scale: params.scale || 1
     });

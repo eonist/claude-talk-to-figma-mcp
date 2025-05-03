@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../../clients/figma-client.js";
 import { logger } from "../../utils/logger.js";
+import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 
 /**
  * Registers modify commands for the MCP server
@@ -38,8 +39,12 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, r, g, b, a }) => {
       try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting fill color for node ID: ${nodeIdString}`);
+        
         const result = await figmaClient.setFillColor({
-          nodeId,
+          nodeId: nodeIdString,
           r,
           g,
           b,
@@ -85,8 +90,12 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, r, g, b, a, weight }) => {
       try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting stroke color for node ID: ${nodeIdString}`);
+        
         const result = await figmaClient.setStrokeColor({
-          nodeId,
+          nodeId: nodeIdString,
           r,
           g,
           b,
@@ -130,7 +139,15 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, x, y }) => {
       try {
-        const result = await figmaClient.moveNode({ nodeId, x, y });
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Moving node with ID: ${nodeIdString} to position (${x}, ${y})`);
+        
+        const result = await figmaClient.moveNode({ 
+          nodeId: nodeIdString, 
+          x, 
+          y 
+        });
         return {
           content: [
             {
@@ -167,7 +184,15 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, x, y }) => {
       try {
-        const result = await figmaClient.cloneNode({ nodeId, x, y });
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Cloning node with ID: ${nodeIdString}${x !== undefined && y !== undefined ? ` to position (${x}, ${y})` : ''}`);
+        
+        const result = await figmaClient.cloneNode({ 
+          nodeId: nodeIdString, 
+          x, 
+          y 
+        });
         return {
           content: [
             {
@@ -204,7 +229,15 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, width, height }) => {
       try {
-        const result = await figmaClient.resizeNode({ nodeId, width, height });
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Resizing node with ID: ${nodeIdString} to width ${width} and height ${height}`);
+        
+        const result = await figmaClient.resizeNode({ 
+          nodeId: nodeIdString, 
+          width, 
+          height 
+        });
         return {
           content: [
             {
@@ -239,12 +272,16 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId }) => {
       try {
-        await figmaClient.deleteNode(nodeId);
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Deleting node with ID: ${nodeIdString}`);
+        
+        await figmaClient.deleteNode(nodeIdString);
         return {
           content: [
             {
               type: "text",
-              text: `Deleted node with ID: ${nodeId}`,
+              text: `Deleted node with ID: ${nodeIdString}`,
             },
           ],
         };
@@ -275,7 +312,14 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, text }) => {
       try {
-        const result = await figmaClient.setTextContent({ nodeId, text });
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting text content for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setTextContent({ 
+          nodeId: nodeIdString, 
+          text 
+        });
         return {
           content: [
             {
@@ -337,12 +381,25 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
           text: `Starting text replacement for ${text.length} nodes. This will be processed in batches of 5...`,
         };
 
+        // Ensure parent nodeId is treated as a string and validate it's not an object
+        const parentNodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting multiple text contents for parent node ID: ${parentNodeIdString}`);
+        
+        // Also validate all node IDs in the text array
+        const validatedTextNodes = text.map(item => ({
+          nodeId: ensureNodeIdIsString(item.nodeId),
+          text: item.text
+        }));
+        
         // Track overall progress
         let totalProcessed = 0;
-        const totalToProcess = text.length;
+        const totalToProcess = validatedTextNodes.length;
 
         // Use the plugin's set_multiple_text_contents function with chunking
-        const result = await figmaClient.setMultipleTextContents({ nodeId, text });
+        const result = await figmaClient.setMultipleTextContents({ 
+          nodeId: parentNodeIdString, 
+          text: validatedTextNodes 
+        });
 
         // Format the results for display
         const success = result.replacementsApplied && result.replacementsApplied > 0;
@@ -417,8 +474,12 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, radius, corners }) => {
       try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting corner radius for node ID: ${nodeIdString}`);
+        
         const result = await figmaClient.executeCommand("set_corner_radius", {
-          nodeId,
+          nodeId: nodeIdString,
           radius,
           corners: corners || [true, true, true, true],
         });
@@ -462,8 +523,12 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId, format, scale }) => {
       try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Exporting node ID: ${nodeIdString} as image`);
+        
         const result = await figmaClient.exportNodeAsImage({
-          nodeId,
+          nodeId: nodeIdString,
           format,
           scale
         });
@@ -504,8 +569,12 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeIds, name }) => {
       try {
+        // Ensure all nodeIds are treated as strings and validate they're not objects
+        const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
+        logger.debug(`Grouping ${nodeIdStrings.length} nodes`);
+        
         const result = await figmaClient.executeCommand("group_nodes", { 
-          nodeIds, 
+          nodeIds: nodeIdStrings, 
           name 
         });
         
@@ -543,7 +612,11 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId }) => {
       try {
-        const result = await figmaClient.executeCommand("ungroup_nodes", { nodeId });
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Ungrouping node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.executeCommand("ungroup_nodes", { nodeId: nodeIdString });
         
         return {
           content: [
@@ -579,7 +652,11 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ nodeId }) => {
       try {
-        const result = await figmaClient.executeCommand("flatten_node", { nodeId });
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Flattening node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.executeCommand("flatten_node", { nodeId: nodeIdString });
         
         return {
           content: [
@@ -617,9 +694,14 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     },
     async ({ parentId, childId, index }) => {
       try {
+        // Ensure parentId and childId are treated as strings and validate they're not objects
+        const parentIdString = ensureNodeIdIsString(parentId);
+        const childIdString = ensureNodeIdIsString(childId);
+        logger.debug(`Inserting child node ID: ${childIdString} into parent node ID: ${parentIdString}`);
+        
         const result = await figmaClient.executeCommand("insert_child", { 
-          parentId, 
-          childId,
+          parentId: parentIdString, 
+          childId: childIdString,
           index 
         });
         

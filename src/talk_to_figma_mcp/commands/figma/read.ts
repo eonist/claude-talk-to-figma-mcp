@@ -3,6 +3,7 @@ import { z } from "zod";
 import { FigmaClient } from "../../clients/figma-client.js";
 import { logger } from "../../utils/logger.js";
 import { filterFigmaNode } from "../../utils/node-filter.js";
+import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 
 /**
  * Registers read commands for the MCP server
@@ -97,7 +98,11 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     },
     async ({ nodeId }) => {
       try {
-        const result = await figmaClient.executeCommand("get_node_info", { nodeId });
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Getting node info for ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.executeCommand("get_node_info", { nodeId: nodeIdString });
         return {
           content: [
             {
@@ -132,7 +137,11 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     },
     async ({ nodeIds }) => {
       try {
-        const results = await figmaClient.getNodesInfo(nodeIds);
+        // Ensure all nodeIds are treated as strings and validate they're not objects
+        const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
+        logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
+        
+        const results = await figmaClient.getNodesInfo(nodeIdStrings);
         return {
           content: [
             {
@@ -278,8 +287,12 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     },
     async ({ nodeId, property }) => {
       try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Getting styled text segments for node ID: ${nodeIdString}`);
+        
         const result = await figmaClient.executeCommand("get_styled_text_segments", {
-          nodeId,
+          nodeId: nodeIdString,
           property
         });
         
@@ -323,9 +336,13 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
           text: "Starting text node scanning. This may take a moment for large designs...",
         };
 
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Scanning text nodes for node ID: ${nodeIdString}`);
+        
         // Use the plugin's scan_text_nodes function with chunking flag
         const result = await figmaClient.executeCommand("scan_text_nodes", {
-          nodeId,
+          nodeId: nodeIdString,
           useChunking: true,  // Enable chunking on the plugin side
           chunkSize: 10       // Process 10 nodes at a time
         });

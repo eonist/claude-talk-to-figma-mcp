@@ -3,6 +3,27 @@
 // including page details, selection state, and node information.
 
 /**
+ * Safely converts a node ID to a string.
+ * Guards against passing objects as node IDs, which would result in "[object Object]"
+ * 
+ * @param {any} nodeId - The node ID to convert to a string
+ * @returns {string} The node ID as a string
+ * @throws {Error} If the node ID is an object (not null) or undefined
+ */
+export function ensureNodeIdIsString(nodeId) {
+  if (nodeId === null || nodeId === undefined) {
+    throw new Error("Node ID cannot be null or undefined");
+  }
+  
+  // Check if nodeId is an object but not a string (strings are also objects in JS)
+  if (typeof nodeId === 'object' && nodeId !== null) {
+    throw new Error(`Invalid node ID: Received an object instead of a string ID. Use the node's 'id' property instead of passing the whole node object.`);
+  }
+  
+  return String(nodeId);
+}
+
+/**
  * Retrieves detailed information about the current Figma page and its contents.
  * 
  * @returns {Promise<{
@@ -105,7 +126,8 @@ export async function getSelection() {
  * Attempts to export the node in JSON_REST_V1 format, falling back to basic
  * properties if export is not supported for the node type.
  *
- * @param {string} nodeId - The unique identifier of the node to retrieve
+ * @param {string|Object} nodeIdOrParams - The unique identifier of the node to retrieve,
+ *   an object containing an id property, or an MCP params object with nodeId property
  * @returns {Promise<Object>} The node's exported document data or basic properties:
  *   - If export succeeds: Complete node data in JSON_REST_V1 format
  *   - If export fails: Basic node properties (id, name, type)
@@ -120,11 +142,32 @@ export async function getSelection() {
  *   console.error('Node not found:', error.message);
  * }
  */
-export async function getNodeInfo(nodeId) {
-  const node = await figma.getNodeByIdAsync(nodeId);
+export async function getNodeInfo(nodeIdOrParams) {
+  let id;
+  
+  // Handle both direct nodeId strings and MCP parameter objects
+  if (typeof nodeIdOrParams === 'object' && nodeIdOrParams !== null) {
+    // If this is the params object from MCP with nodeId property
+    if (nodeIdOrParams.nodeId !== undefined) {
+      id = ensureNodeIdIsString(nodeIdOrParams.nodeId);
+    }
+    // Otherwise if it's an object with id property (for backward compatibility)
+    else if (nodeIdOrParams.id !== undefined) {
+      id = ensureNodeIdIsString(nodeIdOrParams.id);
+    }
+    else {
+      throw new Error("Invalid node ID: Received an object without nodeId or id property");
+    }
+  } else {
+    // If it's already a string or primitive
+    id = ensureNodeIdIsString(nodeIdOrParams);
+  }
+
+  console.log('Getting node info for ID:', id);
+  const node = await figma.getNodeByIdAsync(id);
 
   if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
+    throw new Error(`Node not found with ID: ${id}`);
   }
 
   try {
@@ -147,7 +190,8 @@ export async function getNodeInfo(nodeId) {
  * Retrieves information for multiple nodes simultaneously using parallel processing.
  * Nodes that cannot be found are automatically filtered out of the results.
  *
- * @param {string[]} nodeIds - Array of node IDs to retrieve information for
+ * @param {Array<string|Object>|Object} nodeIdsOrParams - Array of node IDs or objects containing id properties,
+ *   or an MCP params object with nodeIds property
  * @returns {Promise<Array<{
  *   nodeId: string,
  *   document: Object
@@ -166,11 +210,35 @@ export async function getNodeInfo(nodeId) {
  *   console.error('Failed to process nodes:', error.message);
  * }
  */
-export async function getNodesInfo(nodeIds) {
+export async function getNodesInfo(nodeIdsOrParams) {
   try {
+    let idsToProcess;
+    
+    // Handle both direct nodeIds array and MCP parameter objects
+    if (typeof nodeIdsOrParams === 'object' && nodeIdsOrParams !== null && !Array.isArray(nodeIdsOrParams)) {
+      // If this is the params object from MCP with nodeIds property
+      if (nodeIdsOrParams.nodeIds !== undefined) {
+        idsToProcess = nodeIdsOrParams.nodeIds;
+      } else {
+        throw new Error("Invalid parameter: Expected an array of node IDs or an object with a nodeIds property");
+      }
+    } else {
+      // If it's already an array
+      idsToProcess = nodeIdsOrParams;
+    }
+    
+    if (!Array.isArray(idsToProcess)) {
+      throw new Error(`Expected an array of node IDs, but got: ${typeof idsToProcess}`);
+    }
+
+    // Use the ensureNodeIdIsString function for each ID in the array
+    const processedIds = idsToProcess.map(id => ensureNodeIdIsString(id));
+    
+    console.log('Getting info for nodes:', processedIds);
+    
     // Load all nodes in parallel
     const nodes = await Promise.all(
-      nodeIds.map((id) => figma.getNodeByIdAsync(id))
+      processedIds.map((id) => figma.getNodeByIdAsync(id))
     );
 
     // Filter out any null values (nodes that weren't found)
@@ -213,5 +281,6 @@ export const documentOperations = {
   getDocumentInfo,
   getSelection,
   getNodeInfo,
-  getNodesInfo
+  getNodesInfo,
+  ensureNodeIdIsString
 };
