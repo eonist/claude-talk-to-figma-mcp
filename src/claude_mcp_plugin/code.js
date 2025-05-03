@@ -9,22 +9,20 @@ const state = {
 /**
  * Sends a progress update message to the plugin UI.
  *
- * This helper function constructs a progress update object with detailed information about 
- * the state of an asynchronous command, sends it to the UI via figma.ui.postMessage, and logs 
- * the update to the console.
+ * Constructs and sends a detailed progress update object for asynchronous commands.
+ * This includes status, progress percentage, counts of total and processed items,
+ * descriptive messages, and optional chunking information.
  *
- * @param {string} commandId - A unique identifier for the command execution.
- * @param {string} commandType - The type of command (e.g., 'scan_text_nodes', 'set_multiple_text_contents').
- * @param {string} status - The current status of the command (e.g., 'started', 'in_progress', 'completed', 'error').
- * @param {number} progress - Completion percentage represented as a number (0 to 100).
- * @param {number} totalItems - The total number of items to be processed.
- * @param {number} processedItems - The number of items that have been processed so far.
- * @param {string} message - A descriptive message providing context or progress details.
- * @param {object} [payload=null] - Optional additional data. If provided and contains properties 
- *                                  `currentChunk`, `totalChunks`, and `chunkSize`, these will be included 
- *                                  in the update.
+ * @param {string} commandId - Unique identifier for the command execution.
+ * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
+ * @param {string} status - Current status ('started', 'in_progress', 'completed', 'error').
+ * @param {number} progress - Completion percentage (0-100).
+ * @param {number} totalItems - Total number of items to process.
+ * @param {number} processedItems - Number of items processed so far.
+ * @param {string} message - Descriptive progress message.
+ * @param {object} [payload=null] - Optional additional data, including chunk info.
  *
- * @returns {object} The progress update object containing all provided parameters along with a timestamp.
+ * @returns {object} Progress update object with timestamp.
  *
  * @example
  * sendProgressUpdate(
@@ -109,7 +107,11 @@ figma.on("run", ({ command }) => {
   figma.ui.postMessage({ type: "auto-connect" });
 });
 
-// Update plugin settings
+/**
+ * Updates plugin settings by saving the server port to state and client storage.
+ *
+ * @param {{ serverPort: number }} settings - Settings object containing serverPort.
+ */
 function updateSettings(settings) {
   if (settings.serverPort) {
     state.serverPort = settings.serverPort;
@@ -1053,7 +1055,6 @@ async function moveNode(params) {
     y: node.y,
   };
 }
-// fixme: add comment
 /**
  * Resizes a node to the given width and height.
  *
