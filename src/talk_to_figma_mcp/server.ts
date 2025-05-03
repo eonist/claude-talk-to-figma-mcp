@@ -2983,6 +2983,21 @@ server.tool(
  * Example Usage:
  *   - To rename a node while maintaining its TextNode auto-renaming, pass true for setAutoRename.
  */
+/**
+ * Rename Layer Tool
+ *
+ * Renames a specified Figma node.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string} params.nodeId - The ID of the node to rename.
+ * @param {string} params.newName - The new name for the node.
+ * @param {boolean} [params.setAutoRename] - Whether to preserve TextNode autoRename.
+ *
+ * @returns {Promise<object>} An object containing the result of the rename operation.
+ *
+ * @example
+ * await server.tool("rename_layer", { nodeId: "123", newName: "New Name", setAutoRename: true });
+ */
 server.tool(
   "rename_layer",
   "Rename a single node with optional TextNode autoRename",
@@ -3021,6 +3036,23 @@ server.tool(
  *
  *   // Pattern-based renaming:
  *   rename_layers({ layer_ids: ['id1', 'id2'], new_name: "Layer_$1", match_pattern: "Old(.*)", replace_with: "$1" });
+ */
+/**
+ * Rename Layers Tool
+ *
+ * Renames multiple Figma layers either by assigning a new base name or through a
+ * regex pattern-based replacement.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - IDs of layers to rename.
+ * @param {string} params.new_name - New base name or pattern including tokens.
+ * @param {string} [params.match_pattern] - Regex to match in existing name.
+ * @param {string} [params.replace_with] - Text to replace matched pattern.
+ *
+ * @returns {Promise<object>} An object containing the result of the rename operation.
+ *
+ * @example
+ * await server.tool("rename_layers", { layer_ids: ["id1", "id2"], new_name: "NewName" });
  */
 server.tool(
     "rename_layers",
@@ -3062,6 +3094,25 @@ server.tool(
  *   new_names: ['New Name for id1', 'New Name for id2']
  * });
  * console.log(result);
+ */
+/**
+ * Rename Multiple Layers Tool
+ *
+ * Renames multiple layers with distinct new names.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - Array of layer IDs to rename.
+ * @param {string[]} params.new_names - Array of new names corresponding to each layer ID.
+ *
+ * @returns {Promise<object>} An object containing the results of the rename operations.
+ *
+ * @throws Will throw an error if layer_ids and new_names are not arrays or lengths differ.
+ *
+ * @example
+ * await server.tool("rename_multiple", {
+ *   layer_ids: ["id1", "id2"],
+ *   new_names: ["New Name 1", "New Name 2"]
+ * });
  */
 server.tool(
   "rename_multiple",
