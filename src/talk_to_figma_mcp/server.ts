@@ -3084,6 +3084,23 @@ server.tool(
  * @example
  * await server.tool("rename_layers", { layer_ids: ["id1", "id2"], new_name: "NewName" });
  */
+/**
+ * Rename Layers Tool
+ *
+ * Renames multiple Figma layers either by assigning a new base name or through a
+ * regex pattern-based replacement.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - IDs of layers to rename.
+ * @param {string} params.new_name - New base name or pattern including tokens.
+ * @param {string} [params.match_pattern] - Regex to match in existing name.
+ * @param {string} [params.replace_with] - Text to replace matched pattern.
+ *
+ * @returns {Promise<object>} An object containing the result of the rename operation.
+ *
+ * @example
+ * await server.tool("rename_layers", { layer_ids: ["id1", "id2"], new_name: "NewName" });
+ */
 server.tool(
     "rename_layers",
     "Rename specified layers by exact name or pattern replace",
@@ -3213,6 +3230,23 @@ server.tool(
  *     layer_ids: ['id1', 'id2'],
  *     context_prompt: "Rename these layers according to our branding guidelines."
  *   });
+ */
+/**
+ * AI-Powered Rename Layers Tool
+ *
+ * Leverages artificial intelligence to intelligently rename multiple Figma layers.
+ *
+ * @param {object} params - Parameters for AI renaming.
+ * @param {string[]} params.layer_ids - IDs of layers to rename.
+ * @param {string} [params.context_prompt] - Optional prompt for AI renaming.
+ *
+ * @returns {Promise<object>} An object containing the AI-generated renaming results.
+ *
+ * @example
+ * await server.tool("ai_rename_layers", {
+ *   layer_ids: ["id1", "id2"],
+ *   context_prompt: "Rename these layers according to our branding guidelines."
+ * });
  */
 /**
  * AI-Powered Rename Layers Tool
@@ -3560,6 +3594,21 @@ function sendCommandToFigma(
   });
 }
 
+/**
+ * Join Channel Tool
+ *
+ * Allows joining a specific channel to communicate with Figma.
+ *
+ * @param {object} params - Parameters for joining a channel.
+ * @param {string} params.channel - The name of the channel to join.
+ *
+ * @returns {Promise<object>} An object indicating success or failure.
+ *
+ * @throws Will throw an error if the channel name is missing or joining fails.
+ *
+ * @example
+ * await server.tool("join_channel", { channel: "my-channel" });
+ */
 /**
  * Join Channel Tool
  *
