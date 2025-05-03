@@ -1,41 +1,52 @@
-// Build script for Figma Plugin
-// This script bundles modular code into a single file ("code.js") that can be loaded by Figma
+/**
+ * Build script for Figma Plugin
+ * 
+ * This script combines modular JavaScript code into a single file (code.js) that Figma can load.
+ * The build process concatenates files in a specific order, removes ES module syntax,
+ * and ensures proper dependency inclusion.
+ */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Resolve the current file's directory using ESM-compatible methods.
+// Convert ESM module URL to filesystem path for __dirname support in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define key directories and output file path.
-const SRC_DIR = path.join(__dirname, 'src');               // Source directory containing plugin code
-const MODULES_DIR = path.join(SRC_DIR, 'modules');           // Modules folder for different plugin parts
-const UTILS_DIR = path.join(MODULES_DIR, 'utils');           // Utility functions (e.g., plugin, encoding, helpers)
-const OUTPUT_FILE = path.join(__dirname, 'code.js');         // Output file that will contain bundled code
+// Directory structure configuration
+const SRC_DIR = path.join(__dirname, 'src');         // Root source directory for plugin code
+const MODULES_DIR = path.join(SRC_DIR, 'modules');   // Contains feature-specific modules (shapes, text, etc.)
+const UTILS_DIR = path.join(MODULES_DIR, 'utils');   // Common utilities and helper functions
+const OUTPUT_FILE = path.join(__dirname, 'code.js'); // Final bundled output file for Figma
 
 /**
- * Reads a file synchronously and returns its content as a string.
- *
- * @param {string} filePath - The full path to the file to be read.
- * @returns {string} The file content.
+ * Reads a file's contents synchronously
+ * 
+ * @param {string} filePath - Absolute path to the file
+ * @returns {string} Raw file contents as UTF-8 string
+ * @throws {Error} If file reading fails
  */
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');
 }
 
 /**
- * Builds the Figma plugin by concatenating modular code into a single output file.
- *
- * The build process involves:
- * - Checking that the required directories exist.
- * - Processing the utils directory (if available) in a specific order.
- * - Stripping out ES module import/export statements from each file.
- * - Processing other module files in a defined order.
- * - Finally, appending the main index.js content (with necessary modifications).
- *
- * If any step fails (e.g., a required directory is missing), the build script logs an error and exits.
+ * Builds the Figma plugin by combining all source files into a single bundle
+ * 
+ * Build process stages:
+ * 1. Validation - Checks if required directories exist
+ * 2. Utils Processing - Processes utility functions first (plugin.js, encoding.js, helpers.js)
+ * 3. Module Processing - Processes feature modules in specific order
+ * 4. Index Processing - Processes main plugin entry point (index.js)
+ * 
+ * For each file processed:
+ * - Removes ES module import/export syntax
+ * - Removes module operation exports
+ * - Preserves the actual implementation code
+ * - Adds section headers for better code organization
+ * 
+ * @throws {Error} If any critical build step fails
  */
 function buildPlugin() {
   console.log('Building Figma plugin...');
@@ -146,5 +157,5 @@ function buildPlugin() {
   }
 }
 
-// Execute the build process.
+// Initiate the build process
 buildPlugin();
