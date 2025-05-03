@@ -152,6 +152,7 @@ Talk to Figma, channel {channel-ID}
 | `create_star`            | Create a star shape                       | `x`, `y`, `width`, `height`, `points`, `innerRadius`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_vector`          | Create a vector shape                     | `x`, `y`, `width`, `height`, `name`, `parentId`, `vectorPaths`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_line`            | Create a line shape                       | `x1`, `y1`, `x2`, `y2`, `name`, `parentId`, `strokeColor`, `strokeWeight`, `strokeCap` |
+| `insert_svg_vector`      | Insert SVG content as vector in Figma     | `svg` (SVG string content), `svgPath` (path to SVG file), `x`, `y`, `name`, `parentId` |
 | `create_frame`           | Create a frame                           | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_rectangle`       | Create a rectangle shape                  | `x`, `y`, `width`, `height`, `name`, `parentId` |
 | `delete_node`            | Remove a Figma node                      | `nodeId`                         |
