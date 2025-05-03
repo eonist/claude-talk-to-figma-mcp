@@ -259,43 +259,25 @@ async function handleCommand(command, params) {
 /**
  * Rename Multiple Figma Layers
  *
- * This function renames multiple layers in a Figma document. It operates in one of two modes:
+ * Renames multiple layers in a Figma document. Supports regex replacement or template-based renaming.
  *
- * 1. **Regex Replacement Mode**: If both `match_pattern` and `replace_with` are provided,
- *    the function will apply a regular expression replacement on each layer's current name.
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
+ * @param {string} [params.new_name] - New name template (ignored if regex parameters are provided).
+ * @param {string} [params.match_pattern] - Regex pattern to match in existing names.
+ * @param {string} [params.replace_with] - Replacement string for matched pattern.
  *
- * 2. **Template-Based Renaming Mode**: Otherwise, it uses the supplied `new_name` as a template.
- *    The template supports the following placeholders:
- *      - ${current}: Substitutes the layer's original name.
- *      - ${asc}: Inserts an ascending sequence number (starting at 1).
- *      - ${desc}: Inserts a descending sequence number (based on the total count).
- *
- * For each layer, the function retrieves the node asynchronously, checks for visibility and lock status,
- * and then applies the appropriate renaming logic. If a node is locked or hidden, the function throws an error.
- *
- * @param {object} params - The parameters for renaming.
- * @param {string[]} params.layer_ids - An array of Figma layer IDs to rename.
- * @param {string} [params.new_name] - The new name template to use (ignored if regex parameters are provided).
- * @param {string} [params.match_pattern] - A regex pattern to match parts of the existing name.
- * @param {string} [params.replace_with] - The replacement string for the matched pattern.
- *
- * @returns {Promise<object>} An object indicating success and the number of layers renamed, e.g.:
- * {
- *   success: true,
- *   renamed_count: <number>
- * }
+ * @returns {Promise<object>} Object indicating success and count of renamed layers.
  *
  * @throws Will throw an error if any layer is locked or hidden, or if a required layer cannot be found.
  *
  * @example
- * // Example 1: Rename layers using a template with placeholders.
  * rename_layers({
  *   layer_ids: ['id1', 'id2', 'id3'],
  *   new_name: "Layer ${asc} - ${current}"
  * });
  *
  * @example
- * // Example 2: Rename layers using regex replacement (e.g., remove "Old" prefix).
  * rename_layers({
  *   layer_ids: ['id1', 'id2'],
  *   match_pattern: "^Old",
@@ -332,25 +314,13 @@ async function rename_layers(params) {
 /**
  * Rename Multiple Figma Layers Using AI Assistance
  *
- * This function leverages Figma's built-in AI renaming capabilities to automatically generate new
- * names for a set of layers. It accepts an array of layer IDs and a context prompt that informs the AI
- * about the desired naming convention or style.
+ * Uses Figma's AI to automatically generate new names for layers based on a context prompt.
  *
- * Workflow:
- *   1. The function retrieves all nodes corresponding to the provided layer IDs using asynchronous calls.
- *   2. It then invokes the Figma AI renaming API (figma.ai.renameLayersAsync) with the retrieved nodes and
- *      passes the given context prompt as guidance for generating new names.
- *   3. Based on the API response:
- *        - If the status is 'SUCCESS', it returns a success object containing the array of new names.
- *        - Otherwise, it returns an error object with the error message.
+ * @param {object} params - Parameters for AI rename.
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
+ * @param {string} params.context_prompt - Context prompt for AI renaming.
  *
- * @param {object} params - The parameters for the AI rename operation.
- * @param {string[]} params.layer_ids - An array of Figma layer IDs to rename.
- * @param {string} params.context_prompt - A context prompt to guide the AI in generating new names.
- *
- * @returns {Promise<object>} A promise that resolves to an object:
- *   - On success: { success: true, names: [<new name>, ...] }
- *   - On error:   { success: false, error: <error message> }
+ * @returns {Promise<object>} Object with success status and new names or error.
  *
  * @example
  * ai_rename_layers({
@@ -375,31 +345,18 @@ async function ai_rename_layers(params) {
 /**
  * Rename a Single Figma Layer with Optional Auto-Rename for Text Nodes
  *
- * This function renames a single Figma node identified by its nodeId. In the case of a TEXT node,
- * it also allows you to toggle the auto-renaming feature by setting the "setAutoRename" flag.
+ * Renames a single Figma node by ID. For TEXT nodes, can toggle auto-renaming.
  *
- * Workflow:
- *   1. Retrieve the node asynchronously using the provided nodeId.
- *   2. If the node is not found, throw an error.
- *   3. Save the node’s original name.
- *   4. Set the node’s name to the newName provided.
- *   5. If the node type is TEXT and the "setAutoRename" parameter is defined, update the node’s autoRename property accordingly.
+ * @param {object} params - Parameters for renaming.
+ * @param {string} params.nodeId - The ID of the node to rename.
+ * @param {string} params.newName - The new name to assign.
+ * @param {boolean} [params.setAutoRename] - Optional flag to enable/disable auto-renaming (TEXT nodes).
  *
- * @param {object} params - Parameters for renaming the node.
- * @param {string} params.nodeId - The unique identifier of the node to rename.
- * @param {string} params.newName - The new name to be assigned to the node.
- * @param {boolean} [params.setAutoRename] - Optional flag to enable or disable auto-renaming (for TEXT nodes).
+ * @returns {Promise<object>} Object with success status, nodeId, originalName, and newName.
  *
- * @returns {Promise<object>} An object containing:
- *   - success: {boolean} indicating if the operation was successful.
- *   - nodeId: {string} the ID of the renamed node.
- *   - originalName: {string} the original name of the node before renaming.
- *   - newName: {string} the updated name of the node.
- *
- * @throws Will throw an error if the node with the provided nodeId is not found.
+ * @throws Will throw an error if the node is not found.
  *
  * @example
- * // Rename a node and disable its auto-renaming feature (applicable for TEXT nodes)
  * await rename_layer({
  *   nodeId: "12345",
  *   newName: "Updated Layer Name",
@@ -420,18 +377,15 @@ async function rename_layer(params) {
 /**
  * Rename Multiple Figma Layers with Distinct Names
  *
- * This function renames a collection of layers by assigning a unique new name to each layer.
- * It accepts two arrays of equal length—one containing the layer IDs and the other the corresponding new names.
- * For every layer, it calls the rename_layer command individually and aggregates the results.
+ * Renames multiple layers by assigning unique new names to each.
  *
- * @param {object} params - The parameters for renaming.
- * @param {string[]} params.layer_ids - An array of Figma layer IDs to rename.
- * @param {string[]} params.new_names - An array of new names corresponding to each layer ID.
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs.
+ * @param {string[]} params.new_names - Array of new names corresponding to each layer ID.
  *
- * @returns {Promise<object>} An object indicating success and containing an array of results.
- * Each result includes the nodeId, status ("renamed" or "error"), and either the command result or error message.
+ * @returns {Promise<object>} Object indicating success and array of results.
  *
- * @throws Will throw an error if layer_ids or new_names are not arrays or if their lengths differ.
+ * @throws Will throw an error if layer_ids or new_names are not arrays or lengths differ.
  *
  * @example
  * const result = await rename_multiples({
@@ -1139,6 +1093,10 @@ async function deleteNode(params) {
  * Collects local paint, text, effect, and grid styles and returns them in a simplified, serializable format.
  *
  * @returns {object} An object containing arrays of colors, texts, effects, and grids with their identifiers and key properties.
+ *
+ * @example
+ * const styles = await getStyles();
+ * console.log(styles.colors, styles.texts);
  */
 async function getStyles() {
   const styles = {
@@ -1181,6 +1139,10 @@ async function getStyles() {
  * Loads all pages and finds components by type, returning a summary including component id, name, and key.
  *
  * @returns {object} An object containing a count of components and an array with each component's details.
+ *
+ * @example
+ * const components = await getLocalComponents();
+ * console.log(components.count, components.components);
  */
 async function getLocalComponents() {
   await figma.loadAllPagesAsync();
@@ -1229,6 +1191,10 @@ async function getLocalComponents() {
  * @returns {object} Details of the created instance including id, name, position, size, and componentId.
  *
  * @throws Will throw an error if the component cannot be imported.
+ *
+ * @example
+ * const instance = await createComponentInstance({ componentKey: "abc123", x: 10, y: 20 });
+ * console.log(instance.id, instance.name);
  */
 async function createComponentInstance(params) {
   const { componentKey, x = 0, y = 0 } = params || {};
@@ -1271,6 +1237,10 @@ async function createComponentInstance(params) {
  * @returns {object} An object containing nodeId, format, scale, mimeType, and base64-encoded image data.
  *
  * @throws Will throw an error if the node is not found, does not support exporting, or if the export fails.
+ *
+ * @example
+ * const image = await exportNodeAsImage({ nodeId: "12345", format: "PNG", scale: 2 });
+ * console.log(image.mimeType, image.imageData);
  */
 async function exportNodeAsImage(params) {
   const { nodeId, scale = 1 } = params || {};
@@ -1394,6 +1364,10 @@ function customBase64Encode(bytes) {
  * @returns {object} An object with the node's updated corner radius values.
  *
  * @throws Will throw an error if the node is not found or does not support corner radius.
+ *
+ * @example
+ * const result = await setCornerRadius({ nodeId: "12345", radius: 10, corners: [true, true, false, false] });
+ * console.log(result.cornerRadius);
  */
 async function setCornerRadius(params) {
   const { nodeId, radius, corners } = params || {};
@@ -1446,6 +1420,21 @@ async function setCornerRadius(params) {
   };
 }
 
+/**
+ * Sets the text content of a text node.
+ *
+ * @param {object} params - Parameters for setting text content.
+ * @param {string} params.nodeId - The ID of the text node to modify.
+ * @param {string} params.text - The new text content.
+ *
+ * @returns {object} An object containing the node's id, name, characters, and fontName.
+ *
+ * @throws Will throw an error if the node is not found or is not a text node.
+ *
+ * @example
+ * const result = await setTextContent({ nodeId: "12345", text: "Hello World" });
+ * console.log(result.characters);
+ */
 async function setTextContent(params) {
   const { nodeId, text } = params || {};
 
