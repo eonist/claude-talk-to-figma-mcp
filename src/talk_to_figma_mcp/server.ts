@@ -3114,6 +3114,25 @@ server.tool(
  *   new_names: ["New Name 1", "New Name 2"]
  * });
  */
+/**
+ * Rename Multiple Layers Tool
+ *
+ * Renames multiple layers with distinct new names.
+ *
+ * @param {object} params - Parameters for renaming.
+ * @param {string[]} params.layer_ids - Array of layer IDs to rename.
+ * @param {string[]} params.new_names - Array of new names corresponding to each layer ID.
+ *
+ * @returns {Promise<object>} An object containing the results of the rename operations.
+ *
+ * @throws Will throw an error if layer_ids and new_names are not arrays or lengths differ.
+ *
+ * @example
+ * await server.tool("rename_multiple", {
+ *   layer_ids: ["id1", "id2"],
+ *   new_names: ["New Name 1", "New Name 2"]
+ * });
+ */
 server.tool(
   "rename_multiple",
   "Rename multiple layers with distinct new names",
@@ -3164,6 +3183,23 @@ server.tool(
  *     layer_ids: ['id1', 'id2'],
  *     context_prompt: "Rename these layers according to our branding guidelines."
  *   });
+ */
+/**
+ * AI-Powered Rename Layers Tool
+ *
+ * Leverages artificial intelligence to intelligently rename multiple Figma layers.
+ *
+ * @param {object} params - Parameters for AI renaming.
+ * @param {string[]} params.layer_ids - IDs of layers to rename.
+ * @param {string} [params.context_prompt] - Optional prompt for AI renaming.
+ *
+ * @returns {Promise<object>} An object containing the AI-generated renaming results.
+ *
+ * @example
+ * await server.tool("ai_rename_layers", {
+ *   layer_ids: ["id1", "id2"],
+ *   context_prompt: "Rename these layers according to our branding guidelines."
+ * });
  */
 server.tool(
   "ai_rename_layers",
@@ -3494,6 +3530,21 @@ function sendCommandToFigma(
   });
 }
 
+/**
+ * Join Channel Tool
+ *
+ * Allows joining a specific channel to communicate with Figma.
+ *
+ * @param {object} params - Parameters for joining a channel.
+ * @param {string} params.channel - The name of the channel to join.
+ *
+ * @returns {Promise<object>} An object indicating success or failure.
+ *
+ * @throws Will throw an error if the channel name is missing or joining fails.
+ *
+ * @example
+ * await server.tool("join_channel", { channel: "my-channel" });
+ */
 /**
  * Join Channel Tool
  *
