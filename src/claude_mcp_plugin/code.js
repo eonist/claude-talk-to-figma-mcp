@@ -940,7 +940,22 @@ async function setFillColor(params) {
     fills: [paintStyle],
   };
 }
-// fixme: add comment
+/**
+ * Sets the stroke color and weight of a node in the Figma document.
+ *
+ * @param {object} params - Parameters for setting stroke.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {object} params.color - RGBA color object.
+ * @param {number} params.color.r - Red component (0–1).
+ * @param {number} params.color.g - Green component (0–1).
+ * @param {number} params.color.b - Blue component (0–1).
+ * @param {number} [params.color.a=1] - Alpha component (0–1).
+ * @param {number} [params.weight=1] - Stroke weight.
+ *
+ * @returns {object} An object containing the node's id, name, updated strokes, and strokeWeight.
+ *
+ * @throws Will throw an error if the node is not found or does not support strokes.
+ */
 async function setStrokeColor(params) {
   const {
     nodeId,
