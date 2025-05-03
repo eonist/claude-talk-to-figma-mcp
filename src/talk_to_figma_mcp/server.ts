@@ -2739,7 +2739,22 @@ server.tool(
   }
 );
 
-// Set Effect Style ID Tool
+/**
+ * Set Effect Style ID Tool
+ *
+ * Applies an effect style to a node in Figma.
+ *
+ * @param {object} params - Parameters for setting effect style.
+ * @param {string} params.nodeId - The ID of the node to modify.
+ * @param {string} params.effectStyleId - The ID of the effect style to apply.
+ *
+ * @returns {Promise<object>} An object containing the node's name and applied effect style ID.
+ *
+ * @throws Will throw an error if the effect style cannot be applied.
+ *
+ * @example
+ * await server.tool("set_effect_style_id", { nodeId: "123", effectStyleId: "abc123" });
+ */
 server.tool(
   "set_effect_style_id",
   "Apply an effect style to a node in Figma",
@@ -2820,8 +2835,21 @@ server.tool(
   }
 );
 
-// Ungroup Nodes Tool
-
+/**
+ * Ungroup Nodes Tool
+ *
+ * Ungroups nodes in Figma.
+ *
+ * @param {object} params - Parameters for ungrouping nodes.
+ * @param {string} params.nodeId - ID of the node (group or frame) to ungroup.
+ *
+ * @returns {Promise<object>} An object containing the success status, count of ungrouped elements, and released items.
+ *
+ * @throws Will throw an error if the node cannot be ungrouped.
+ *
+ * @example
+ * await server.tool("ungroup_nodes", { nodeId: "123" });
+ */
 server.tool(
   "ungroup_nodes",
   "Ungroup nodes in Figma",
