@@ -1160,7 +1160,7 @@ async function getLocalComponents() {
     })),
   };
 }
-
+// - FIXME: out of order?
 // async function getTeamComponents() {
 //   try {
 //     const teamComponents =
@@ -1764,7 +1764,7 @@ async function cloneNode(params) {
     height: "height" in clone ? clone.height : undefined,
   };
 }
-
+// fixme: add javadoc
 async function scanTextNodes(params) {
   console.log(`Starting to scan text nodes from node ID: ${params.nodeId}`);
   const { nodeId, useChunking = true, chunkSize = 10, commandId = generateCommandId() } = params || {};
@@ -1989,6 +1989,7 @@ async function scanTextNodes(params) {
 }
 
 // Helper function to collect all nodes that need to be processed
+// fixme: add javadoc
 async function collectNodesToProcess(node, parentPath = [], depth = 0, nodesToProcess = []) {
   // Skip invisible nodes
   if (node.visible === false) return;
@@ -2012,6 +2013,7 @@ async function collectNodesToProcess(node, parentPath = [], depth = 0, nodesToPr
 }
 
 // Process a single text node
+// fixme: add javadoc
 async function processTextNode(node, parentPath, depth) {
   if (node.type !== "TEXT") return null;
   
@@ -2076,11 +2078,13 @@ async function processTextNode(node, parentPath, depth) {
 }
 
 // A delay function that returns a promise
+// fixme: add javadoc
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Keep the original findTextNodes for backward compatibility
+// fixme: add javadoc
 async function findTextNodes(node, parentPath = [], depth = 0, textNodes = []) {
   // Skip invisible nodes
   if (node.visible === false) return;
