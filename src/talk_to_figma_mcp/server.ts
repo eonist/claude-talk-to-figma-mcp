@@ -1682,7 +1682,22 @@ server.tool(
   }
 );
 
-// Set Text Decoration Tool
+/**
+ * Set Text Decoration Tool
+ *
+ * Sets the text decoration of a text node in Figma.
+ *
+ * @param {object} params - Parameters for setting text decoration.
+ * @param {string} params.nodeId - The ID of the text node to modify.
+ * @param {string} params.textDecoration - Text decoration type ("NONE", "UNDERLINE", or "STRIKETHROUGH").
+ *
+ * @returns {Promise<object>} An object containing the node's name and applied text decoration.
+ *
+ * @throws Will throw an error if the node is not found or does not support text decoration.
+ *
+ * @example
+ * await server.tool("set_text_decoration", { nodeId: "123", textDecoration: "UNDERLINE" });
+ */
 server.tool(
   "set_text_decoration",
   "Set the text decoration of a text node in Figma",
@@ -1718,7 +1733,24 @@ server.tool(
   }
 );
 
-// Get Styled Text Segments Tool
+/**
+ * Get Styled Text Segments Tool
+ *
+ * Retrieves text segments with specific styling in a text node.
+ *
+ * @param {object} params - Parameters for getting styled text segments.
+ * @param {string} params.nodeId - The ID of the text node to analyze.
+ * @param {string} params.property - The style property to analyze segments by.
+ *   One of: "fillStyleId", "fontName", "fontSize", "textCase", "textDecoration",
+ *   "textStyleId", "fills", "letterSpacing", "lineHeight", "fontWeight".
+ *
+ * @returns {Promise<object>} An object containing the styled text segments.
+ *
+ * @throws Will throw an error if the node is not found or does not support the property.
+ *
+ * @example
+ * await server.tool("get_styled_text_segments", { nodeId: "123", property: "fontName" });
+ */
 server.tool(
   "get_styled_text_segments",
   "Get text segments with specific styling in a text node",
@@ -1765,7 +1797,22 @@ server.tool(
   }
 );
 
-// Load Font Async Tool
+/**
+ * Load Font Async Tool
+ *
+ * Loads a font asynchronously in Figma.
+ *
+ * @param {object} params - Parameters for loading font.
+ * @param {string} params.family - Font family name.
+ * @param {string} [params.style="Regular"] - Font style (e.g., "Regular", "Bold", "Italic").
+ *
+ * @returns {Promise<object>} An object indicating success and message.
+ *
+ * @throws Will throw an error if the font cannot be loaded.
+ *
+ * @example
+ * await server.tool("load_font_async", { family: "Roboto", style: "Bold" });
+ */
 server.tool(
   "load_font_async",
   "Load a font asynchronously in Figma",
