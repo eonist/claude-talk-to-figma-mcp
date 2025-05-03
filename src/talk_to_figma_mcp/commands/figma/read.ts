@@ -384,43 +384,4 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     }
   );
 
-  /**
-   * List all exposed MCP tools.
-   */
-  server.tool(
-    "get_tools",
-    "List all exposed MCP tools",
-    async () => {
-      const toolNames = [
-        "get_tools",
-        "get_document_info",
-        "get_selection",
-        "get_node_info",
-        "get_nodes_info",
-        "create_rectangle",
-        "create_frame",
-        "create_text",
-        "create_ellipse",
-        "create_polygon",
-        "create_star",
-        "set_fill_color",
-        "set_stroke_color",
-        "move_node",
-        "resize_node",
-        "delete_node",
-        "set_text_content",
-        "scan_text_nodes",
-        "set_multiple_text_contents",
-        // Include all other registered tools
-      ];
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(toolNames, null, 2)
-          }
-        ]
-      };
-    }
-  );
 }

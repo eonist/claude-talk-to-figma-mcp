@@ -145,7 +145,6 @@ Talk to Figma, channel {channel-ID}
 |--------------------------|------------------------------------------|-----------------------------------|
 | `rename_layer`           | Rename a single layer in Figma           | `nodeId`, `newName`, `setAutoRename` |
 | `rename_layers`          | Rename multiple layers in Figma          | `layer_ids`, `new_name`, `match_pattern`, `replace_with` |
-| `get_tools`              | Read available tools in the MCP          | None                              |
 | `clone_node`             | Clone a Figma node                       | `nodeId`, `x`, `y`                |
 | `create_component_instance` | Create an instance of a component        | `componentKey`, `x`, `y`         |
 | `create_ellipse`         | Create an ellipse shape                   | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
