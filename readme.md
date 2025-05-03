@@ -1,8 +1,9 @@
 # Claude Talk to Figma MCP
 
 [![version](https://img.shields.io/badge/version-0.4.2-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-A Model Context Protocol (MCP) plugin that enables Cline via VSCode to directly interact with Figma for AI-assisted design.
+A Figma plugin enabling seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP). This tool allows you to design and modify Figma elements through natural language commands processed by Claude.
 
 <img width="640" alt="img" src="https://s4.gifyu.com/images/bLldl.gif">
 
