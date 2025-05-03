@@ -414,8 +414,21 @@ async function rename_layer(params) {
   return { success: true, nodeId, originalName, newName: node.name };
 }
 
-// Command implementations
-
+/**
+ * Retrieves detailed information about the current Figma page.
+ *
+ * This function loads the current page asynchronously and extracts key properties including:
+ * - The page's name, ID, and type.
+ * - An array of child nodes with their ID, name, and type.
+ * - Summary information for the current page.
+ * - A simplified pages list (currently based solely on the current page).
+ *
+ * @returns {Promise<Object>} An object containing document info.
+ *
+ * @example
+ * const info = await getDocumentInfo();
+ * console.log(info.name, info.currentPage.childCount);
+ */
 async function getDocumentInfo() {
   await figma.currentPage.loadAsync();
   const page = figma.currentPage;
@@ -442,7 +455,19 @@ async function getDocumentInfo() {
     ],
   };
 }
-
+/**
+ * Retrieves information about the current selection on the Figma page.
+ *
+ * Returns an object that contains:
+ * - The number of nodes selected.
+ * - An array of selected nodes with their ID, name, type, and visibility status.
+ *
+ * @returns {Promise<Object>} An object containing selection count and details.
+ *
+ * @example
+ * const selection = await getSelection();
+ * console.log(`You have selected ${selection.selectionCount} nodes`);
+ */
 async function getSelection() {
   return {
     selectionCount: figma.currentPage.selection.length,
@@ -455,6 +480,20 @@ async function getSelection() {
   };
 }
 
+/**
+ * Retrieves exported information for a specified node.
+ *
+ * This function locates a node by its ID, exports its data using the "JSON_REST_V1" format,
+ * and returns the resulting document.
+ *
+ * @param {string} nodeId - The unique identifier of the node.
+ * @returns {Promise<Object>} The node's exported document.
+ *
+ * @throws Will throw an error if the node cannot be found.
+ *
+ * @example
+ * const nodeData = await getNodeInfo("123456");
+ */
 async function getNodeInfo(nodeId) {
   const node = await figma.getNodeByIdAsync(nodeId);
 
@@ -468,7 +507,21 @@ async function getNodeInfo(nodeId) {
 
   return response.document;
 }
-
+/**
+ * Retrieves exported information for multiple nodes.
+ *
+ * This function accepts an array of node IDs, loads each node asynchronously,
+ * filters out nodes that cannot be found, and exports the information for each valid node.
+ *
+ * @param {string[]} nodeIds - An array of node IDs to process.
+ * @returns {Promise<Array>} An array of objects, each containing a node's ID and its exported document.
+ *
+ * @throws Will throw an error if any error occurs during processing.
+ *
+ * @example
+ * const nodesInfo = await getNodesInfo(["id1", "id2", "id3"]);
+ * console.log(nodesInfo);
+ */
 async function getNodesInfo(nodeIds) {
   try {
     // Load all nodes in parallel
@@ -497,7 +550,7 @@ async function getNodesInfo(nodeIds) {
     throw new Error(`Error getting nodes info: ${error.message}`);
   }
 }
-
+// fixme: add comment
 async function createRectangle(params) {
   const {
     x = 0,
@@ -538,7 +591,7 @@ async function createRectangle(params) {
     parentId: rect.parent ? rect.parent.id : undefined,
   };
 }
-
+// fixme: add comment
 async function createFrame(params) {
   const {
     x = 0,
@@ -618,7 +671,7 @@ async function createFrame(params) {
     parentId: frame.parent ? frame.parent.id : undefined,
   };
 }
-
+// fixme: add comment
 async function createText(params) {
   const {
     x = 0,
@@ -715,7 +768,7 @@ async function createText(params) {
     parentId: textNode.parent ? textNode.parent.id : undefined,
   };
 }
-
+// fixme: add comment
 async function setFillColor(params) {
   console.log("setFillColor", params);
   const {
@@ -765,7 +818,7 @@ async function setFillColor(params) {
     fills: [paintStyle],
   };
 }
-
+// fixme: add comment
 async function setStrokeColor(params) {
   const {
     nodeId,
@@ -819,7 +872,7 @@ async function setStrokeColor(params) {
     strokeWeight: "strokeWeight" in node ? node.strokeWeight : undefined,
   };
 }
-
+// fixme: add comment
 async function moveNode(params) {
   const { nodeId, x, y } = params || {};
 
@@ -850,7 +903,7 @@ async function moveNode(params) {
     y: node.y,
   };
 }
-
+// fixme: add comment
 async function resizeNode(params) {
   const { nodeId, width, height } = params || {};
 
@@ -880,7 +933,7 @@ async function resizeNode(params) {
     height: node.height,
   };
 }
-
+// fixme: add comment
 async function deleteNode(params) {
   const { nodeId } = params || {};
 
@@ -904,7 +957,7 @@ async function deleteNode(params) {
 
   return nodeInfo;
 }
-
+// fixme: add comment
 async function getStyles() {
   const styles = {
     colors: await figma.getLocalPaintStylesAsync(),
