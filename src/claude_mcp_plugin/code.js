@@ -600,7 +600,24 @@ async function getNodesInfo(nodeIds) {
     throw new Error(`Error getting nodes info: ${error.message}`);
   }
 }
-// fixme: add comment
+/**
+ * Creates a new rectangle node in the Figma document.
+ *
+ * The function instantiates a rectangle with specified position, size, and name.
+ * Optionally, if a parentId is provided, the rectangle is appended to that node; otherwise, it is added to the current page.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the rectangle.
+ * @param {number} [params.y=0] - The Y coordinate of the rectangle.
+ * @param {number} [params.width=100] - The width of the rectangle.
+ * @param {number} [params.height=100] - The height of the rectangle.
+ * @param {string} [params.name="Rectangle"] - The name assigned to the rectangle.
+ * @param {string} [params.parentId] - The ID of the parent node to which the rectangle should be appended.
+ *
+ * @returns {object} An object with details of the created rectangle (id, name, position, size, and parent id if applicable).
+ *
+ * @throws Will throw an error if the specified parent node is not found or if it does not support children.
+ */
 async function createRectangle(params) {
   const {
     x = 0,
@@ -641,7 +658,28 @@ async function createRectangle(params) {
     parentId: rect.parent ? rect.parent.id : undefined,
   };
 }
-// fixme: add comment
+/**
+ * Creates a new frame node in the Figma document.
+ *
+ * The function instantiates a frame with specified position, size, and name.
+ * It supports optional fillColor, strokeColor, and strokeWeight parameters.
+ * If parentId is provided, the frame is appended to that node; otherwise, it is added to the current page.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the frame.
+ * @param {number} [params.y=0] - The Y coordinate of the frame.
+ * @param {number} [params.width=100] - The width of the frame.
+ * @param {number} [params.height=100] - The height of the frame.
+ * @param {string} [params.name="Frame"] - The name assigned to the frame.
+ * @param {string} [params.parentId] - The ID of the parent node to which the frame should be appended.
+ * @param {object} [params.fillColor] - Optional fill color {r, g, b, a}.
+ * @param {object} [params.strokeColor] - Optional stroke color {r, g, b, a}.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ *
+ * @returns {object} An object with details of the created frame (id, name, position, size, fills, strokes, strokeWeight, and parentId).
+ *
+ * @throws Will throw an error if the specified parent node is not found or if it does not support children.
+ */
 async function createFrame(params) {
   const {
     x = 0,
@@ -721,7 +759,27 @@ async function createFrame(params) {
     parentId: frame.parent ? frame.parent.id : undefined,
   };
 }
-// fixme: add comment
+/**
+ * Creates a new text node in the Figma document.
+ *
+ * The function instantiates a text element with specified position, font settings, content, and name.
+ * It supports optional fontSize, fontWeight, and fontColor parameters.
+ * If parentId is provided, the text node is appended to that node; otherwise, it is added to the current page.
+ *
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - The X coordinate of the text node.
+ * @param {number} [params.y=0] - The Y coordinate of the text node.
+ * @param {string} [params.text="Text"] - The initial text content.
+ * @param {number} [params.fontSize=14] - The font size.
+ * @param {number} [params.fontWeight=400] - The font weight.
+ * @param {object} [params.fontColor={r:0,g:0,b:0,a:1}] - The font color in RGBA format.
+ * @param {string} [params.name="Text"] - The name assigned to the text node.
+ * @param {string} [params.parentId] - The ID of the parent node to which the text node should be appended.
+ *
+ * @returns {object} An object with details of the created text node (id, name, position, size, characters, fontName, fills, and parentId).
+ *
+ * @throws Will throw an error if the specified parent node is not found or if it does not support children.
+ */
 async function createText(params) {
   const {
     x = 0,
