@@ -62,6 +62,13 @@ const logger = {
 };
 
 // WebSocket connection and request tracking
+// pendingRequests stores outstanding command requests. Each entry is keyed by a unique command ID,
+// and the value contains:
+// - resolve: Function to resolve the command promise upon receiving a valid response.
+// - reject: Function to reject the command promise in case of errors.
+// - timeout: Timeout identifier for this pending request.
+// - lastActivity: Timestamp representing the last time data was received for this request.
+
 let ws: WebSocket | null = null;
 const pendingRequests = new Map<string, {
   resolve: (value: unknown) => void;
