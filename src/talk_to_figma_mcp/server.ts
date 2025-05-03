@@ -259,6 +259,20 @@ server.tool(
   }
 );
 
+/**
+ * Converts RGBA color values to hexadecimal string format.
+ * 
+ * @param {Object} color - RGBA color object
+ * @param {number} color.r - Red channel (0-1)
+ * @param {number} color.g - Green channel (0-1)
+ * @param {number} color.b - Blue channel (0-1) 
+ * @param {number} color.a - Alpha channel (0-1)
+ * @returns {string} Hex color string (e.g. "#ff0000" or "#ff0000ff")
+ * 
+ * @example
+ * rgbaToHex({r: 1, g: 0, b: 0, a: 1}) // Returns "#ff0000"
+ * rgbaToHex({r: 1, g: 0, b: 0, a: 0.5}) // Returns "#ff000080"
+ */
 function rgbaToHex(color: any): string {
   const r = Math.round(color.r * 255);
   const g = Math.round(color.g * 255);
@@ -293,6 +307,30 @@ function rgbaToHex(color: any): string {
  *
  * @param {any} node - Raw Figma node to filter
  * @returns {any | null} Filtered node or null if node should be excluded
+ */
+/**
+ * Filters and processes Figma node data for client consumption.
+ * 
+ * @param {FigmaNode} node - Raw Figma node to filter
+ * @returns {FilteredNode | null} Filtered node data or null if node should be excluded
+ * 
+ * @typedef {Object} FigmaNode
+ * @property {string} id - Node ID
+ * @property {string} name - Node name
+ * @property {string} type - Node type (FRAME, COMPONENT, GROUP etc)
+ * @property {Array<FigmaNode>} [children] - Child nodes
+ * @property {Array<Object>} [fills] - Fill styles
+ * @property {Array<Object>} [strokes] - Stroke styles
+ * @property {Object} [style] - Text styling properties
+ * 
+ * @typedef {Object} FilteredNode
+ * @property {string} id - Node ID
+ * @property {string} name - Node name 
+ * @property {string} type - Node type
+ * @property {Array<FilteredNode>} [children] - Filtered child nodes
+ * @property {Array<Object>} [fills] - Processed fill styles with hex colors
+ * @property {Array<Object>} [strokes] - Processed stroke styles
+ * @property {Object} [style] - Cleaned text style properties
  */
 function filterFigmaNode(node: any) {
   // Skip VECTOR type nodes
@@ -2526,51 +2564,6 @@ Remember that text is never just text—it's a core design element that must wor
   }
 );
 
-// Set Multiple Text Contents Tool
-/**
- * Set Multiple Text Contents Tool
- *
- * Sets multiple text contents in parallel within a node.
- *
- * @param {object} params - Parameters for setting multiple text contents.
- * @param {string} params.nodeId - The ID of the node containing the text nodes to replace.
- * @param {Array<{nodeId: string, text: string}>} params.text - Array of text node IDs and their replacement texts.
- *
- * @returns {Promise<object>} An object indicating the progress and results of the text replacement.
- *
- * @throws Will throw an error if the text replacement fails.
- *
- * @example
- * await server.tool("set_multiple_text_contents", {
- *   nodeId: "parent-node-id",
- *   text: [
- *     { nodeId: "text-node-1", text: "New text 1" },
- *     { nodeId: "text-node-2", text: "New text 2" }
- *   ]
- * });
- */
-/**
- * Set Multiple Text Contents Tool
- *
- * Sets multiple text contents in parallel within a node.
- *
- * @param {object} params - Parameters for setting multiple text contents.
- * @param {string} params.nodeId - The ID of the node containing the text nodes to replace.
- * @param {Array<{nodeId: string, text: string}>} params.text - Array of text node IDs and their replacement texts.
- *
- * @returns {Promise<object>} An object indicating the progress and results of the text replacement.
- *
- * @throws Will throw an error if the text replacement fails.
- *
- * @example
- * await server.tool("set_multiple_text_contents", {
- *   nodeId: "parent-node-id",
- *   text: [
- *     { nodeId: "text-node-1", text: "New text 1" },
- *     { nodeId: "text-node-2", text: "New text 2" }
- *   ]
- * });
- */
 /**
  * Set Multiple Text Contents Tool
  *
@@ -3609,6 +3602,23 @@ function connectToFigma(port: number = defaultPort) {
 }
 
 // Function to join a channel
+/**
+ * Joins a specific Figma communication channel.
+ * 
+ * Establishes a dedicated channel for communicating with the Figma plugin.
+ * The channel is required for most commands except the initial join.
+ *
+ * @param {string} channelName - Name of the channel to join
+ * @returns {Promise<void>} Resolves when channel is joined successfully
+ * 
+ * @throws {Error} If:
+ * - Not connected to Figma
+ * - Channel join fails
+ * - Invalid channel name provided
+ * 
+ * @example
+ * await joinChannel("my-design-doc");
+ */
 async function joinChannel(channelName: string): Promise<void> {
   if (!ws || ws.readyState !== WebSocket.OPEN) {
     throw new Error("Not connected to Figma");
@@ -3623,42 +3633,42 @@ async function joinChannel(channelName: string): Promise<void> {
     throw error;
   }
 }
-
 /**
- * Function to send commands to Figma Plugin
+ * Sends commands to Figma Plugin via WebSocket
  * 
- * Handles communication between the MCP server and Figma plugin via WebSocket.
- * The function manages request lifecycle including:
- * - Validating connection state
- * - Channel verification
- * - Request timeout handling
- * - Message ID tracking
- * - Progress updates
+ * Handles the full command lifecycle including:
+ * 1. Connection validation and auto-reconnect
+ * 2. Command queuing and execution
+ * 3. Response handling and timeout management
+ * 4. Progress tracking and updates
  * 
- * @param {FigmaCommand} command - The Figma command to execute (e.g. "create_rectangle")
- * @param {unknown} params - Parameters for the command, structure depends on command type
- * @param {number} timeoutMs - Timeout in milliseconds before request fails (default: 30000)
+ * Command Flow:
+ * 1. Validates connection state
+ * 2. Verifies channel requirements
+ * 3. Generates unique command ID
+ * 4. Sets up timeout and tracking
+ * 5. Sends command and awaits response
  * 
- * @returns {Promise<unknown>} Resolves with command result or rejects with error
+ * Error Handling:
+ * - Auto-reconnects if disconnected
+ * - Rejects on timeout (default 30s)
+ * - Handles progress updates
+ * - Cleans up on connection loss
+ * 
+ * @param {FigmaCommand} command - Command to execute
+ * @param {unknown} params - Command parameters
+ * @param {number} timeoutMs - Timeout in milliseconds
+ * @returns {Promise<unknown>} Command result
  * 
  * @throws {Error} When:
- * - Not connected to Figma
- * - No channel joined (for commands requiring a channel)
- * - Request times out
- * - WebSocket errors occur
+ * - Connection fails
+ * - Command times out
+ * - Channel requirements not met
  * 
  * @example
- * // Send a command to create a rectangle
  * const result = await sendCommandToFigma("create_rectangle", {
- *   x: 100,
- *   y: 100,
- *   width: 200,
- *   height: 100
+ *   x: 100, y: 100, width: 200, height: 100
  * });
- * 
- * @example
- * // Join a specific channel with custom timeout
- * await sendCommandToFigma("join", { channel: "my-channel" }, 5000);
  */
 function sendCommandToFigma(
   command: FigmaCommand,
@@ -3814,30 +3824,34 @@ server.tool(
 );
 
 /**
- * Main entry point to start the MCP server.
- *
- * Connects to the Figma socket server and starts the MCP server with stdio transport.
- *
- * @returns {Promise<void>}
- *
- * @throws Will log errors and exit the process if the server fails to start.
- */
-/**
  * Main entry point for the MCP server
  * 
- * Initialization Steps:
- * 1. Attempts initial Figma WebSocket connection
- * 2. Creates StdioServerTransport for MCP communication
- * 3. Connects MCP server to transport
- * 4. Begins listening for commands
- *
- * Error Handling:
- * - Logs initial connection failures but continues startup
- * - Will attempt reconnection on first command
- * - Exits process with error code 1 on critical failures
- *
- * @returns {Promise<void>} Resolves when server is running
- * @throws Logs errors and exits process on critical failure
+ * Initialization Process:
+ * 1. Validates environment and arguments
+ * 2. Initializes logging system
+ * 3. Establishes Figma connection
+ * 4. Creates and configures MCP server
+ * 5. Starts listening for commands
+ * 
+ * Server Configuration:
+ * - Uses stdio for transport
+ * - Maintains persistent Figma connection
+ * - Handles reconnection automatically
+ * 
+ * Error Recovery:
+ * - Logs startup failures
+ * - Attempts reconnection on command
+ * - Exits with status code on fatal errors
+ * 
+ * @returns {Promise<void>} Resolves when server is ready
+ * 
+ * @throws {Error} Exits process on fatal initialization errors
+ * 
+ * @example
+ * main().catch(error => {
+ *   logger.error(`Fatal error: ${error.message}`);
+ *   process.exit(1);
+ * });
  */
 async function main() {
   try {
