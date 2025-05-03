@@ -3739,7 +3739,7 @@ function sendCommandToFigma(
       },
     };
 
-    // Set timeout for request
+    // Set a timeout for the request. If no activity occurs within timeoutMs, the promise is rejected.
     const timeout = setTimeout(() => {
       if (pendingRequests.has(id)) {
         pendingRequests.delete(id);
@@ -3748,7 +3748,7 @@ function sendCommandToFigma(
       }
     }, timeoutMs);
 
-    // Store the promise callbacks to resolve/reject later
+    // Store the request callbacks along with the timeout and current time to allow timeout management.
     pendingRequests.set(id, {
       resolve,
       reject,
