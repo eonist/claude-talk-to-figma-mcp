@@ -1,32 +1,43 @@
-// Rename module
+// Rename module - Collection of functions for renaming Figma layers with various strategies
 
 /**
  * Rename Multiple Figma Layers
+ * 
+ * Renames multiple layers in a Figma document using either template-based naming or regex pattern replacement.
+ * Template naming supports special placeholders:
+ * - ${current}: The current name of the layer
+ * - ${asc}: Ascending number (1, 2, 3...)
+ * - ${desc}: Descending number (total, total-1...)
  *
- * Renames multiple layers in a Figma document. Supports regex replacement or template-based renaming.
+ * @param {object} params - Parameters for renaming operation
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename
+ * @param {string} [params.new_name] - Template string for new names. Uses placeholders ${current}, ${asc}, ${desc}
+ * @param {string} [params.match_pattern] - Regex pattern to find in existing names. Used with replace_with
+ * @param {string} [params.replace_with] - Replacement string for regex matches. Used with match_pattern
  *
- * @param {object} params - Parameters for renaming.
- * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
- * @param {string} [params.new_name] - New name template (ignored if regex parameters are provided).
- * @param {string} [params.match_pattern] - Regex pattern to match in existing names.
- * @param {string} [params.replace_with] - Replacement string for matched pattern.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating if operation completed
+ *   - renamed_count: number of layers successfully renamed
  *
- * @returns {Promise<object>} Object indicating success and count of renamed layers.
+ * @throws {Error} When:
+ *   - Any target layer is locked or hidden
+ *   - A layer ID cannot be found
+ *   - A layer lacks the name property
  *
- * @throws Will throw an error if any layer is locked or hidden, or if a required layer cannot be found.
- *
- * @example
- * rename_layers({
+ * @example Template-based renaming:
+ * await rename_layers({
  *   layer_ids: ['id1', 'id2', 'id3'],
- *   new_name: "Layer ${asc} - ${current}"
+ *   new_name: "Component ${asc} - ${current}"
  * });
+ * // Results: "Component 1 - Original", "Component 2 - Original2"...
  *
- * @example
- * rename_layers({
+ * @example Regex-based renaming:
+ * await rename_layers({
  *   layer_ids: ['id1', 'id2'],
- *   match_pattern: "^Old",
- *   replace_with: ""
+ *   match_pattern: "Button\\s*-\\s*",
+ *   replace_with: "btn_"
  * });
+ * // "Button - Save" becomes "btn_Save"
  */
 export async function rename_layers(params) {
   const { layer_ids, new_name, match_pattern, replace_with } = params || {};
@@ -65,18 +76,31 @@ export async function rename_layers(params) {
 /**
  * Rename Multiple Figma Layers Using AI Assistance
  *
- * Uses Figma's AI to automatically generate new names for layers based on a context prompt.
+ * Leverages Figma's AI capabilities to intelligently rename layers based on their content
+ * and context. Useful for batch renaming layers to follow naming conventions or improve clarity.
  *
- * @param {object} params - Parameters for AI rename.
- * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
- * @param {string} params.context_prompt - Context prompt for AI renaming.
+ * @param {object} params - Parameters for AI-assisted renaming
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename
+ * @param {string} params.context_prompt - Instructions for AI renaming. Can include:
+ *   - Naming conventions to follow
+ *   - Style guidelines
+ *   - Specific terminology preferences
  *
- * @returns {Promise<object>} Object with success status and new names or error.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating if operation succeeded
+ *   - names: array of new names (if successful)
+ *   - error: error message (if failed)
  *
- * @example
- * ai_rename_layers({
+ * @example Using specific naming conventions:
+ * await ai_rename_layers({
  *   layer_ids: ['nodeId1', 'nodeId2'],
- *   context_prompt: "Rename these layers to align with our modern branding guidelines."
+ *   context_prompt: "Rename components using atomic design principles (atoms, molecules, organisms)"
+ * });
+ *
+ * @example Improving descriptiveness:
+ * await ai_rename_layers({
+ *   layer_ids: ['nodeId1', 'nodeId2'],
+ *   context_prompt: "Make layer names more descriptive based on their visual appearance and function"
  * });
  */
 export async function ai_rename_layers(params) {
@@ -98,23 +122,33 @@ export async function ai_rename_layers(params) {
 }
 
 /**
- * Rename a Single Figma Layer with Optional Auto-Rename for Text Nodes
+ * Rename a Single Figma Layer
  *
- * Renames a single Figma node by ID. For TEXT nodes, can toggle auto-renaming.
+ * Renames an individual Figma node with special handling for text nodes.
+ * For text nodes, offers control over the auto-rename feature which automatically
+ * updates the layer name when text content changes.
  *
- * @param {object} params - Parameters for renaming.
- * @param {string} params.nodeId - The ID of the node to rename.
- * @param {string} params.newName - The new name to assign.
- * @param {boolean} [params.setAutoRename] - Optional flag to enable/disable auto-renaming (TEXT nodes).
+ * @param {object} params - Parameters for renaming
+ * @param {string} params.nodeId - ID of the Figma node to rename
+ * @param {string} params.newName - New name to assign to the node
+ * @param {boolean} [params.setAutoRename] - For TEXT nodes only:
+ *   - true: layer name updates automatically with text content
+ *   - false: layer name remains fixed regardless of content changes
  *
- * @returns {Promise<object>} Object with success status, nodeId, originalName, and newName.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating success
+ *   - nodeId: ID of the renamed node
+ *   - originalName: previous name of the node
+ *   - newName: updated name of the node
  *
- * @throws Will throw an error if the node is not found.
+ * @throws {Error} When:
+ *   - Node with given ID cannot be found
+ *   - Node is locked or hidden
  *
- * @example
+ * @example Renaming with auto-rename disabled:
  * await rename_layer({
- *   nodeId: "12345",
- *   newName: "Updated Layer Name",
+ *   nodeId: "123:456",
+ *   newName: "Header Text",
  *   setAutoRename: false
  * });
  */
@@ -135,24 +169,32 @@ export async function rename_layer(params) {
 }
 
 /**
- * Rename Multiple Figma Layers with Distinct Names
+ * Rename Multiple Figma Layers with Individual Names
  *
- * Renames multiple layers by assigning unique new names to each.
+ * Assigns specific names to multiple layers in a single operation.
+ * Useful when each layer needs a unique, predetermined name.
  *
- * @param {object} params - Parameters for renaming.
- * @param {string[]} params.layer_ids - Array of Figma layer IDs.
- * @param {string[]} params.new_names - Array of new names corresponding to each layer ID.
+ * @param {object} params - Parameters for batch renaming
+ * @param {string[]} params.layer_ids - Array of layer IDs to rename
+ * @param {string[]} params.new_names - Array of new names to assign
+ *   Must match layer_ids array in length and order
  *
- * @returns {Promise<object>} Object indicating success and array of results.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating overall success
+ *   - results: array of objects with:
+ *     - nodeId: ID of the processed node
+ *     - status: "renamed" or "error"
+ *     - result: details of rename operation or error message
  *
- * @throws Will throw an error if layer_ids or new_names are not arrays or lengths differ.
+ * @throws {Error} When:
+ *   - layer_ids or new_names are not arrays
+ *   - Arrays have different lengths
  *
- * @example
- * const result = await rename_multiples({
+ * @example Renaming multiple layers:
+ * await rename_multiples({
  *   layer_ids: ['id1', 'id2'],
- *   new_names: ['New Name for id1', 'New Name for id2']
+ *   new_names: ['Header Section', 'Navigation Menu']
  * });
- * console.log(result);
  */
 export async function rename_multiples(params) {
   const { layer_ids, new_names } = params || {};
@@ -181,7 +223,7 @@ export async function rename_multiples(params) {
   return { success: true, results };
 }
 
-// Export the operations as a group
+// Export all rename operations as a grouped object for convenience
 export const renameOperations = {
   rename_layers,
   ai_rename_layers,

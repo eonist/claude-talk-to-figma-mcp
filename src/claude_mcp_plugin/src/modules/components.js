@@ -1,16 +1,24 @@
-// Components module
+// Components module - Provides functionality for working with Figma components
+// including local components, team library components, and component instances
 import { customBase64Encode } from './utils.js';
 
 /**
- * Retrieves all local components available in the Figma document.
+ * Retrieves all local components available in the Figma document. 
+ * 
+ * First loads all pages in the document to ensure complete component discovery,
+ * then searches for all components using Figma's node traversal API.
  *
- * Loads all pages and finds components by type, returning a summary including component id, name, and key.
- *
- * @returns {Promise<object>} An object containing a count of components and an array with each component's details.
+ * @returns {Promise<object>} Component data object
+ * @property {number} count - Total number of local components found
+ * @property {Array<object>} components - Array of component details
+ * @property {string} components[].id - Unique Figma node ID of the component
+ * @property {string} components[].name - Display name of the component
+ * @property {string|null} components[].key - Component's key for team library usage, null if not available
  *
  * @example
- * const components = await getLocalComponents();
- * console.log(components.count, components.components);
+ * const { count, components } = await getLocalComponents();
+ * console.log(`Found ${count} components:`);
+ * components.forEach(c => console.log(`- ${c.name} (${c.id})`));
  */
 export async function getLocalComponents() {
   await figma.loadAllPagesAsync();
@@ -30,11 +38,25 @@ export async function getLocalComponents() {
 }
 
 /**
- * Retrieves available remote components from team libraries in Figma.
+ * Retrieves available components from all team libraries accessible to the current user. 
+ * 
+ * Performs API availability checks and implements timeout protection against potential
+ * deadlocks when fetching remote components.
  *
- * @returns {Promise<object>} An object containing success status, count, and an array of components with details.
+ * @returns {Promise<object>} Response object with component data or error information
+ * @property {boolean} success - Whether the operation was successful
+ * @property {number} [count] - Number of components found (only if successful)
+ * @property {Array<object>} [components] - Array of component details (only if successful)
+ * @property {string} components[].key - Unique key of the component in the team library
+ * @property {string} components[].name - Display name of the component
+ * @property {string} components[].description - Component description from the library
+ * @property {string} components[].libraryName - Name of the team library containing the component
+ * @property {boolean} [error] - Whether an error occurred
+ * @property {string} [message] - Error message if applicable
+ * @property {boolean} [apiAvailable] - Whether the team library API is available
+ * @property {string} [stack] - Error stack trace if available
  *
- * @throws Will return an error object if the API is unavailable or retrieval fails.
+ * @throws Returns error object instead of throwing if API is unavailable or retrieval fails
  */
 export async function getRemoteComponents() {
   try {
@@ -104,20 +126,27 @@ export async function getRemoteComponents() {
 }
 
 /**
- * Creates an instance of a component in the Figma document.
+ * Creates an instance of a component from either local components or team libraries. 
+ * 
+ * First imports the component by its key, then creates an instance at the specified
+ * coordinates. The instance is automatically added to the current page.
  *
- * @param {object} params - Parameters for creating component instance.
- * @param {string} params.componentKey - The key of the component to import.
- * @param {number} [params.x=0] - The X coordinate for the new instance.
- * @param {number} [params.y=0] - The Y coordinate for the new instance.
+ * @param {object} params - Instance creation parameters
+ * @param {string} params.componentKey - Unique key identifying the component to instantiate
+ * @param {number} [params.x=0] - X coordinate for placement in the current page
+ * @param {number} [params.y=0] - Y coordinate for placement in the current page
  *
- * @returns {Promise<object>} Details of the created instance including id, name, position, size, and componentId.
+ * @returns {Promise<object>} Created instance details
+ * @property {string} id - Unique node ID of the created instance
+ * @property {string} name - Name of the instance (inherited from component)
+ * @property {number} x - Final X coordinate of the instance
+ * @property {number} y - Final Y coordinate of the instance
+ * @property {number} width - Width of the instance
+ * @property {number} height - Height of the instance
+ * @property {string} componentId - ID of the master component this is an instance of
  *
- * @throws Will throw an error if the component cannot be imported.
- *
- * @example
- * const instance = await createComponentInstance({ componentKey: "abc123", x: 10, y: 20 });
- * console.log(instance.id, instance.name);
+ * @throws {Error} If componentKey is missing or component import fails
+ * @throws {Error} If instance creation or placement fails
  */
 export async function createComponentInstance(params) {
   const { componentKey, x = 0, y = 0 } = params || {};
@@ -150,20 +179,26 @@ export async function createComponentInstance(params) {
 }
 
 /**
- * Exports a node as an image in the Figma document.
+ * Exports a Figma node (frame, component, instance, etc.) as an image. 
+ * 
+ * Supports multiple export formats and custom scaling. The image data is returned
+ * as a base64-encoded string suitable for data URLs or further processing.
  *
- * @param {object} params - Export parameters.
- * @param {string} params.nodeId - The ID of the node to export.
- * @param {string} [params.format="PNG"] - The desired image format ("PNG","JPG","SVG","PDF").
- * @param {number} [params.scale=1] - The scale factor for the export.
+ * @param {object} params - Export configuration
+ * @param {string} params.nodeId - ID of the node to export
+ * @param {('PNG'|'JPG'|'SVG'|'PDF')} [params.format='PNG'] - Output format
+ * @param {number} [params.scale=1] - Export scale factor (1 = 100%)
  *
- * @returns {Promise<object>} An object containing nodeId, format, scale, mimeType, and base64-encoded image data.
+ * @returns {Promise<object>} Export result
+ * @property {string} nodeId - ID of the exported node
+ * @property {string} format - Format used for the export
+ * @property {number} scale - Scale factor used
+ * @property {string} mimeType - MIME type of the exported data
+ * @property {string} imageData - Base64-encoded image data
  *
- * @throws Will throw an error if the node is not found, does not support exporting, or if the export fails.
- *
- * @example
- * const image = await exportNodeAsImage({ nodeId: "12345", format: "PNG", scale: 2 });
- * console.log(image.mimeType, image.imageData);
+ * @throws {Error} If node is not found
+ * @throws {Error} If node doesn't support exporting
+ * @throws {Error} If export operation fails
  */
 export async function exportNodeAsImage(params) {
   const { nodeId, scale = 1 } = params || {};
@@ -223,7 +258,10 @@ export async function exportNodeAsImage(params) {
   }
 }
 
-// Export the operations as a group
+/**
+ * Collection of all component-related operations exposed by this module.
+ * Use this object to access the component manipulation functions.
+ */
 export const componentOperations = {
   getLocalComponents,
   getRemoteComponents,

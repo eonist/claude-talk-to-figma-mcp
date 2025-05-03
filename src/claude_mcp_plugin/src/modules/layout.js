@@ -1,26 +1,58 @@
-// Layout module
+/**
+ * Layout module for configuring Figma node layouts and grouping operations.
+ * This module provides functionality for auto-layout configuration, resizing,
+ * and node grouping/ungrouping operations.
+ */
 
 /**
- * Sets auto layout properties on a node.
+ * Sets auto layout properties on a node in Figma.
+ * Auto layout allows for automatic arrangement and spacing of child elements
+ * within a parent frame or group.
  *
- * Configures layout mode, padding, spacing, alignment, wrapping, and stroke inclusion.
+ * @param {object} params - Auto layout configuration parameters
+ * @param {string} params.nodeId - The ID of the node to configure
+ * @param {('NONE'|'HORIZONTAL'|'VERTICAL')} params.layoutMode - Layout direction:
+ *   - NONE: Disables auto layout
+ *   - HORIZONTAL: Arranges items in a row
+ *   - VERTICAL: Arranges items in a column
+ * @param {number} [params.paddingTop] - Top padding in pixels
+ * @param {number} [params.paddingBottom] - Bottom padding in pixels
+ * @param {number} [params.paddingLeft] - Left padding in pixels
+ * @param {number} [params.paddingRight] - Right padding in pixels
+ * @param {number} [params.itemSpacing] - Spacing between items in pixels
+ * @param {('MIN'|'CENTER'|'MAX'|'SPACE_BETWEEN')} [params.primaryAxisAlignItems] - Primary axis alignment:
+ *   - MIN: Aligns to start
+ *   - CENTER: Centers items
+ *   - MAX: Aligns to end
+ *   - SPACE_BETWEEN: Distributes space between items
+ * @param {('MIN'|'CENTER'|'MAX')} [params.counterAxisAlignItems] - Counter axis alignment:
+ *   - MIN: Aligns to start
+ *   - CENTER: Centers items
+ *   - MAX: Aligns to end
+ * @param {('WRAP'|'NO_WRAP')} [params.layoutWrap] - Whether items should wrap to new lines
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes affect layout spacing
  *
- * @param {object} params - Auto layout configuration parameters.
- * @param {string} params.nodeId - The ID of the node to configure.
- * @param {string} params.layoutMode - Layout mode ("NONE", "HORIZONTAL", "VERTICAL").
- * @param {number} [params.paddingTop] - Top padding in pixels.
- * @param {number} [params.paddingBottom] - Bottom padding in pixels.
- * @param {number} [params.paddingLeft] - Left padding in pixels.
- * @param {number} [params.paddingRight] - Right padding in pixels.
- * @param {number} [params.itemSpacing] - Spacing between items in pixels.
- * @param {string} [params.primaryAxisAlignItems] - Alignment along primary axis.
- * @param {string} [params.counterAxisAlignItems] - Alignment along counter axis.
- * @param {string} [params.layoutWrap] - Layout wrap mode ("WRAP", "NO_WRAP").
- * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout.
+ * @returns {object} Updated auto layout properties including:
+ *   - id: Node ID
+ *   - name: Node name
+ *   - layoutMode: Current layout mode
+ *   - padding values
+ *   - itemSpacing
+ *   - alignment settings
+ *   - wrap mode
+ *   - stroke inclusion setting
  *
- * @returns {object} An object with updated auto layout properties.
- *
- * @throws Will throw an error if the node is not found or does not support auto layout.
+ * @throws {Error} If node is not found or doesn't support auto layout
+ * 
+ * @example
+ * // Configure horizontal auto layout with padding and spacing
+ * await setAutoLayout({
+ *   nodeId: "123:456",
+ *   layoutMode: "HORIZONTAL",
+ *   paddingAll: 16,
+ *   itemSpacing: 8,
+ *   primaryAxisAlignItems: "SPACE_BETWEEN"
+ * });
  */
 export async function setAutoLayout(params) {
   const { 
@@ -108,20 +140,33 @@ export async function setAutoLayout(params) {
 }
 
 /**
- * Adjust Auto-Layout Resizing of a Node
+ * Adjusts auto-layout resizing behavior for a node along a specified axis.
+ * This function controls how a node and its children resize within an auto-layout container.
  *
- * This function adjusts the sizing mode along a specified axis (horizontal or vertical)
- * for a given node that supports auto layout. When using the "FILL" mode, the function
- * also sets the layoutGrow property on each child element so that they expand to fill the space.
+ * @param {object} params - Resizing configuration parameters
+ * @param {string} params.nodeId - The node's unique identifier
+ * @param {('horizontal'|'vertical')} params.axis - The axis to configure:
+ *   - horizontal: Affects width/horizontal layout
+ *   - vertical: Affects height/vertical layout
+ * @param {('HUG'|'FIXED'|'FILL')} params.mode - The sizing behavior:
+ *   - HUG: Node sizes to fit its content
+ *   - FIXED: Node maintains a specific size
+ *   - FILL: Node expands to fill available space
  *
- * @param {object} params - Parameters for adjusting auto layout resizing.
- * @param {string} params.nodeId - The unique identifier of the node to update.
- * @param {string} params.axis - The axis along which to adjust the resizing ("horizontal" or "vertical").
- * @param {string} params.mode - The sizing mode to set for the specified axis ("HUG", "FIXED", "FILL").
+ * @returns {object} Current sizing configuration:
+ *   - id: Node ID
+ *   - primaryAxisSizingMode: Primary axis sizing behavior
+ *   - counterAxisSizingMode: Counter axis sizing behavior
  *
- * @returns {object} An object containing the node's ID and current sizing modes.
- *
- * @throws Will throw an error if required parameters are missing or invalid, or if the node doesn't support auto layout.
+ * @throws {Error} If node not found or parameters invalid
+ * 
+ * @example
+ * // Make a node fill available horizontal space
+ * await setAutoLayoutResizing({
+ *   nodeId: "123:456",
+ *   axis: "horizontal",
+ *   mode: "FILL"
+ * });
  */
 export async function setAutoLayoutResizing(params) {
   const { nodeId, axis, mode } = params || {};
@@ -199,15 +244,31 @@ export async function setAutoLayoutResizing(params) {
 }
 
 /**
- * Groups multiple nodes in Figma into a single group.
+ * Groups multiple Figma nodes into a single group.
+ * Grouped nodes maintain their relative positions but can be moved and manipulated together.
  *
- * @param {object} params - Parameters for grouping.
- * @param {string[]} params.nodeIds - Array of node IDs to group.
- * @param {string} [params.name] - Optional name for the group.
+ * @param {object} params - Grouping parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to group
+ * @param {string} [params.name] - Optional name for the new group
  *
- * @returns {object} An object with the group's id, name, type, and children details.
+ * @returns {object} New group details:
+ *   - id: Group node ID
+ *   - name: Group name
+ *   - type: Node type (always "GROUP")
+ *   - children: Array of grouped node details
  *
- * @throws Will throw an error if nodes are missing, have different parents, or grouping fails.
+ * @throws {Error} If:
+ *   - Fewer than 2 nodes provided
+ *   - Any node not found
+ *   - Nodes have different parents
+ *   - Grouping operation fails
+ * 
+ * @example
+ * // Group three nodes together
+ * await groupNodes({
+ *   nodeIds: ["123:456", "123:457", "123:458"],
+ *   name: "Button Group"
+ * });
  */
 export async function groupNodes(params) {
   const { nodeIds, name } = params || {};
@@ -255,14 +316,27 @@ export async function groupNodes(params) {
 }
 
 /**
- * Ungroups a node (group or frame) in Figma.
+ * Ungroups a Figma group or frame, promoting its children to the parent level.
+ * This is the reverse of the groupNodes operation.
  *
- * @param {object} params - Parameters for ungrouping.
- * @param {string} params.nodeId - The ID of the node to ungroup.
+ * @param {object} params - Ungrouping parameters
+ * @param {string} params.nodeId - ID of group/frame to ungroup
  *
- * @returns {object} An object with success status, count of ungrouped items, and item details.
+ * @returns {object} Ungrouping results:
+ *   - success: Operation success status
+ *   - ungroupedCount: Number of items ungrouped
+ *   - items: Array of ungrouped node details
  *
- * @throws Will throw an error if the node is not found, is not a group or frame, or ungrouping fails.
+ * @throws {Error} If:
+ *   - Node not found
+ *   - Node is not a group or frame
+ *   - Ungrouping operation fails
+ * 
+ * @example
+ * // Ungroup a group of elements
+ * await ungroupNodes({
+ *   nodeId: "123:456"
+ * });
  */
 export async function ungroupNodes(params) {
   const { nodeId } = params || {};
@@ -300,16 +374,33 @@ export async function ungroupNodes(params) {
 }
 
 /**
- * Inserts a child node into a parent node at an optional index.
+ * Inserts a child node into a parent node at an optional index position.
+ * This allows for precise control over node hierarchy and ordering.
  *
- * @param {object} params - Parameters for insertion.
- * @param {string} params.parentId - The ID of the parent node.
- * @param {string} params.childId - The ID of the child node.
- * @param {number} [params.index] - Optional index to insert at.
+ * @param {object} params - Insertion parameters
+ * @param {string} params.parentId - ID of the parent node
+ * @param {string} params.childId - ID of the child node to insert
+ * @param {number} [params.index] - Optional insertion index (0-based)
  *
- * @returns {object} An object with parentId, childId, index, success status, and previous parentId.
+ * @returns {object} Insertion results:
+ *   - parentId: Parent node ID
+ *   - childId: Child node ID
+ *   - index: Final insertion index
+ *   - success: Operation success status
+ *   - previousParentId: Previous parent's ID (if node was moved)
  *
- * @throws Will throw an error if parent or child nodes are not found or insertion fails.
+ * @throws {Error} If:
+ *   - Parent/child not found
+ *   - Parent cannot accept children
+ *   - Insertion operation fails
+ * 
+ * @example
+ * // Insert a node as the first child
+ * await insertChild({
+ *   parentId: "123:456",
+ *   childId: "123:457",
+ *   index: 0
+ * });
  */
 export async function insertChild(params) {
   const { parentId, childId, index } = params || {};

@@ -1,19 +1,40 @@
 // Document operations module
+// This module provides functions for retrieving information about the Figma document,
+// including page details, selection state, and node information.
 
 /**
- * Retrieves detailed information about the current Figma page.
- *
- * This function loads the current page asynchronously and extracts key properties including:
- * - The page's name, ID, and type.
- * - An array of child nodes with their ID, name, and type.
- * - Summary information for the current page.
- * - A simplified pages list (currently based solely on the current page).
- *
- * @returns {Promise<Object>} An object containing document info.
- *
+ * Retrieves detailed information about the current Figma page and its contents.
+ * 
+ * @returns {Promise<{
+ *   name: string,
+ *   id: string,
+ *   type: string,
+ *   children: Array<{
+ *     id: string,
+ *     name: string,
+ *     type: string
+ *   }>,
+ *   currentPage: {
+ *     id: string,
+ *     name: string,
+ *     childCount: number
+ *   },
+ *   pages: Array<{
+ *     id: string,
+ *     name: string,
+ *     childCount: number
+ *   }>
+ * }>} Object containing:
+ *   - name: The page's name
+ *   - id: The page's unique identifier
+ *   - type: Always "PAGE"
+ *   - children: Array of all top-level nodes on the page
+ *   - currentPage: Detailed information about the current page
+ *   - pages: Array containing the current page's information
+ * 
  * @example
  * const info = await getDocumentInfo();
- * console.log(info.name, info.currentPage.childCount);
+ * console.log(`Current page "${info.name}" has ${info.currentPage.childCount} children`);
  */
 export async function getDocumentInfo() {
   const page = figma.currentPage;
@@ -42,17 +63,28 @@ export async function getDocumentInfo() {
 }
 
 /**
- * Retrieves information about the current selection on the Figma page.
+ * Retrieves information about the currently selected nodes on the active Figma page.
+ * If no nodes are selected, returns an empty selection array.
  *
- * Returns an object that contains:
- * - The number of nodes selected.
- * - An array of selected nodes with their ID, name, type, and visibility status.
- *
- * @returns {Promise<Object>} An object containing selection count and details.
+ * @returns {Promise<{
+ *   selectionCount: number,
+ *   selection: Array<{
+ *     id: string,
+ *     name: string,
+ *     type: string,
+ *     visible: boolean
+ *   }>
+ * }>} Object containing:
+ *   - selectionCount: Number of selected nodes
+ *   - selection: Array of selected nodes with their properties
  *
  * @example
  * const selection = await getSelection();
- * console.log(`You have selected ${selection.selectionCount} nodes`);
+ * if (selection.selectionCount > 0) {
+ *   console.log(`Selected ${selection.selectionCount} nodes`);
+ * } else {
+ *   console.log('Nothing is selected');
+ * }
  */
 export async function getSelection() {
   // Getting the selection from figma.currentPage.selection if available
@@ -69,18 +101,24 @@ export async function getSelection() {
 }
 
 /**
- * Retrieves exported information for a specified node.
+ * Retrieves detailed information about a specific node in the Figma document.
+ * Attempts to export the node in JSON_REST_V1 format, falling back to basic
+ * properties if export is not supported for the node type.
  *
- * This function locates a node by its ID, exports its data using the "JSON_REST_V1" format,
- * and returns the resulting document.
+ * @param {string} nodeId - The unique identifier of the node to retrieve
+ * @returns {Promise<Object>} The node's exported document data or basic properties:
+ *   - If export succeeds: Complete node data in JSON_REST_V1 format
+ *   - If export fails: Basic node properties (id, name, type)
  *
- * @param {string} nodeId - The unique identifier of the node.
- * @returns {Promise<Object>} The node's exported document.
- *
- * @throws Will throw an error if the node cannot be found.
+ * @throws {Error} If the node with the specified ID cannot be found
  *
  * @example
- * const nodeData = await getNodeInfo("123456");
+ * try {
+ *   const nodeData = await getNodeInfo("123:456");
+ *   console.log(`Retrieved data for node "${nodeData.name}"`);
+ * } catch (error) {
+ *   console.error('Node not found:', error.message);
+ * }
  */
 export async function getNodeInfo(nodeId) {
   const node = await figma.getNodeByIdAsync(nodeId);
@@ -106,19 +144,27 @@ export async function getNodeInfo(nodeId) {
 }
 
 /**
- * Retrieves exported information for multiple nodes.
+ * Retrieves information for multiple nodes simultaneously using parallel processing.
+ * Nodes that cannot be found are automatically filtered out of the results.
  *
- * This function accepts an array of node IDs, loads each node asynchronously,
- * filters out nodes that cannot be found, and exports the information for each valid node.
+ * @param {string[]} nodeIds - Array of node IDs to retrieve information for
+ * @returns {Promise<Array<{
+ *   nodeId: string,
+ *   document: Object
+ * }>>} Array of objects, each containing:
+ *   - nodeId: The ID of the processed node
+ *   - document: Either the full JSON_REST_V1 export data or basic node properties
+ *     if export is not supported
  *
- * @param {string[]} nodeIds - An array of node IDs to process.
- * @returns {Promise<Array>} An array of objects, each containing a node's ID and its exported document.
- *
- * @throws Will throw an error if any error occurs during processing.
+ * @throws {Error} If a critical error occurs during the batch processing
  *
  * @example
- * const nodesInfo = await getNodesInfo(["id1", "id2", "id3"]);
- * console.log(nodesInfo);
+ * try {
+ *   const nodesInfo = await getNodesInfo(["123:456", "789:012"]);
+ *   console.log(`Successfully processed ${nodesInfo.length} nodes`);
+ * } catch (error) {
+ *   console.error('Failed to process nodes:', error.message);
+ * }
  */
 export async function getNodesInfo(nodeIds) {
   try {
@@ -162,7 +208,7 @@ export async function getNodesInfo(nodeIds) {
   }
 }
 
-// Export the operations as a group
+// Export all document operations as a named group for convenient importing
 export const documentOperations = {
   getDocumentInfo,
   getSelection,

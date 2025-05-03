@@ -1,30 +1,40 @@
-// Command registry and handler
+/**
+ * Command Registry and Handler Module
+ * 
+ * This module manages the registration and execution of all available commands in the Figma plugin.
+ * It provides a centralized system for registering command handlers and routing incoming commands
+ * to their appropriate implementations.
+ */
 
-// Command registry
+// Internal registry to store command handlers
 const commandRegistry = {};
 
 /**
- * Registers a command function with the specified name
+ * Registers a command function with the specified name in the command registry
  * 
- * @param {string} name - The command name to register
- * @param {Function} fn - The function to execute for this command
+ * @param {string} name - The command name to register (e.g., 'create_rectangle', 'set_text_content')
+ * @param {Function} fn - The handler function to execute for this command
+ * @throws {Error} If the command name is already registered
  */
 function registerCommand(name, fn) {
   commandRegistry[name] = fn;
 }
 
 /**
- * Initializes all commands by registering them in the command registry
- * This function is called once during plugin initialization
+ * Initializes and registers all available commands in the plugin
+ * This function is called once during plugin initialization to set up the command system
+ * Commands are organized by functional categories for better maintainability
  */
 export function initializeCommands() {
-  // Document operations
+  // Document Operations
+  // Handles document-level operations like getting document info and selection state
   registerCommand('get_document_info', documentOperations.getDocumentInfo);
   registerCommand('get_selection', documentOperations.getSelection);
   registerCommand('get_node_info', documentOperations.getNodeInfo);
   registerCommand('get_nodes_info', documentOperations.getNodesInfo);
   
-  // Shape operations
+  // Shape Operations
+  // Manages creation and modification of basic geometric shapes and vectors
   registerCommand('create_rectangle', shapeOperations.createRectangle);
   registerCommand('create_frame', shapeOperations.createFrame);
   registerCommand('create_ellipse', shapeOperations.createEllipse);
@@ -39,7 +49,8 @@ export function initializeCommands() {
   registerCommand('clone_node', shapeOperations.cloneNode);
   registerCommand('flatten_node', shapeOperations.flattenNode);
   
-  // Text operations
+  // Text Operations
+  // Handles text creation, styling, and manipulation operations
   registerCommand('create_text', textOperations.createText);
   registerCommand('set_text_content', textOperations.setTextContent);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);
@@ -55,27 +66,31 @@ export function initializeCommands() {
   registerCommand('get_styled_text_segments', textOperations.getStyledTextSegments);
   registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
   
-  // Style operations
+  // Style Operations
+  // Controls visual styling like fills, strokes, and effects
   registerCommand('set_fill_color', styleOperations.setFillColor);
   registerCommand('set_stroke_color', styleOperations.setStrokeColor);
   registerCommand('get_styles', styleOperations.getStyles);
   registerCommand('set_effects', styleOperations.setEffects);
   registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
   
-  // Component operations
+  // Component Operations
+  // Manages Figma components and their instances
   registerCommand('get_local_components', componentOperations.getLocalComponents);
   registerCommand('get_remote_components', componentOperations.getRemoteComponents);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
   
-  // Layout operations
+  // Layout Operations
+  // Controls layout properties, grouping, and hierarchy
   registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
   registerCommand('group_nodes', layoutOperations.groupNodes);
   registerCommand('ungroup_nodes', layoutOperations.ungroupNodes);
   registerCommand('insert_child', layoutOperations.insertChild);
   
-  // Rename operations
+  // Rename Operations
+  // Handles layer naming and batch renaming functionality
   registerCommand('rename_layers', renameOperations.rename_layers);
   registerCommand('ai_rename_layers', renameOperations.ai_rename_layers);
   registerCommand('rename_layer', renameOperations.rename_layer);
@@ -83,12 +98,16 @@ export function initializeCommands() {
 }
 
 /**
- * Handles an incoming command by routing it to the appropriate handler function
+ * Handles an incoming command by routing it to the appropriate registered handler function
  * 
- * @param {string} command - The command to execute
- * @param {object} params - Parameters for the command
- * @returns {Promise<any>} - The result of the command execution
- * @throws {Error} - If the command is unknown or execution fails
+ * @param {string} command - The name of the command to execute
+ * @param {object} params - Parameters object containing command-specific arguments
+ * @returns {Promise<any>} Result of the command execution
+ * @throws {Error} If the command is not registered or execution fails
+ * 
+ * @example
+ * // Example usage:
+ * await handleCommand('create_rectangle', { x: 0, y: 0, width: 100, height: 100 });
  */
 export async function handleCommand(command, params) {
   console.log(`Received command: ${command}`);
@@ -100,7 +119,13 @@ export async function handleCommand(command, params) {
   return await commandRegistry[command](params);
 }
 
-// Export for build compatibility
+/**
+ * @typedef {Object} CommandOperations
+ * @property {Function} initializeCommands - Initializes all available commands
+ * @property {Function} handleCommand - Handles execution of a specific command
+ */
+
+/** @type {CommandOperations} */
 export const commandOperations = {
   initializeCommands,
   handleCommand

@@ -303,21 +303,42 @@ async function setCharacters(node, characters, options) {
 
 // ----- document Module -----
 // Document operations module
+// This module provides functions for retrieving information about the Figma document,
+// including page details, selection state, and node information.
 
 /**
- * Retrieves detailed information about the current Figma page.
- *
- * This function loads the current page asynchronously and extracts key properties including:
- * - The page's name, ID, and type.
- * - An array of child nodes with their ID, name, and type.
- * - Summary information for the current page.
- * - A simplified pages list (currently based solely on the current page).
- *
- * @returns {Promise<Object>} An object containing document info.
- *
+ * Retrieves detailed information about the current Figma page and its contents.
+ * 
+ * @returns {Promise<{
+ *   name: string,
+ *   id: string,
+ *   type: string,
+ *   children: Array<{
+ *     id: string,
+ *     name: string,
+ *     type: string
+ *   }>,
+ *   currentPage: {
+ *     id: string,
+ *     name: string,
+ *     childCount: number
+ *   },
+ *   pages: Array<{
+ *     id: string,
+ *     name: string,
+ *     childCount: number
+ *   }>
+ * }>} Object containing:
+ *   - name: The page's name
+ *   - id: The page's unique identifier
+ *   - type: Always "PAGE"
+ *   - children: Array of all top-level nodes on the page
+ *   - currentPage: Detailed information about the current page
+ *   - pages: Array containing the current page's information
+ * 
  * @example
  * const info = await getDocumentInfo();
- * console.log(info.name, info.currentPage.childCount);
+ * console.log(`Current page "${info.name}" has ${info.currentPage.childCount} children`);
  */
 async function getDocumentInfo() {
   const page = figma.currentPage;
@@ -346,17 +367,28 @@ async function getDocumentInfo() {
 }
 
 /**
- * Retrieves information about the current selection on the Figma page.
+ * Retrieves information about the currently selected nodes on the active Figma page.
+ * If no nodes are selected, returns an empty selection array.
  *
- * Returns an object that contains:
- * - The number of nodes selected.
- * - An array of selected nodes with their ID, name, type, and visibility status.
- *
- * @returns {Promise<Object>} An object containing selection count and details.
+ * @returns {Promise<{
+ *   selectionCount: number,
+ *   selection: Array<{
+ *     id: string,
+ *     name: string,
+ *     type: string,
+ *     visible: boolean
+ *   }>
+ * }>} Object containing:
+ *   - selectionCount: Number of selected nodes
+ *   - selection: Array of selected nodes with their properties
  *
  * @example
  * const selection = await getSelection();
- * console.log(`You have selected ${selection.selectionCount} nodes`);
+ * if (selection.selectionCount > 0) {
+ *   console.log(`Selected ${selection.selectionCount} nodes`);
+ * } else {
+ *   console.log('Nothing is selected');
+ * }
  */
 async function getSelection() {
   // Getting the selection from figma.currentPage.selection if available
@@ -373,18 +405,24 @@ async function getSelection() {
 }
 
 /**
- * Retrieves exported information for a specified node.
+ * Retrieves detailed information about a specific node in the Figma document.
+ * Attempts to the node in JSON_REST_V1 format, falling back to basic
+ * properties if is not supported for the node type.
  *
- * This function locates a node by its ID, exports its data using the "JSON_REST_V1" format,
- * and returns the resulting document.
+ * @param {string} nodeId - The unique identifier of the node to retrieve
+ * @returns {Promise<Object>} The node's exported document data or basic properties:
+ *   - If succeeds: Complete node data in JSON_REST_V1 format
+ *   - If fails: Basic node properties (id, name, type)
  *
- * @param {string} nodeId - The unique identifier of the node.
- * @returns {Promise<Object>} The node's exported document.
- *
- * @throws Will throw an error if the node cannot be found.
+ * @throws {Error} If the node with the specified ID cannot be found
  *
  * @example
- * const nodeData = await getNodeInfo("123456");
+ * try {
+ *   const nodeData = await getNodeInfo("123:456");
+ *   console.log(`Retrieved data for node "${nodeData.name}"`);
+ * } catch (error) {
+ *   console.error('Node not found:', error.message);
+ * }
  */
 async function getNodeInfo(nodeId) {
   const node = await figma.getNodeByIdAsync(nodeId);
@@ -410,19 +448,27 @@ async function getNodeInfo(nodeId) {
 }
 
 /**
- * Retrieves exported information for multiple nodes.
+ * Retrieves information for multiple nodes simultaneously using parallel processing.
+ * Nodes that cannot be found are automatically filtered out of the results.
  *
- * This function accepts an array of node IDs, loads each node asynchronously,
- * filters out nodes that cannot be found, and exports the information for each valid node.
+ * @param {string[]} nodeIds - Array of node IDs to retrieve information for
+ * @returns {Promise<Array<{
+ *   nodeId: string,
+ *   document: Object
+ * }>>} Array of objects, each containing:
+ *   - nodeId: The ID of the processed node
+ *   - document: Either the full JSON_REST_V1 data or basic node properties
+ *     if is not supported
  *
- * @param {string[]} nodeIds - An array of node IDs to process.
- * @returns {Promise<Array>} An array of objects, each containing a node's ID and its exported document.
- *
- * @throws Will throw an error if any error occurs during processing.
+ * @throws {Error} If a critical error occurs during the batch processing
  *
  * @example
- * const nodesInfo = await getNodesInfo(["id1", "id2", "id3"]);
- * console.log(nodesInfo);
+ * try {
+ *   const nodesInfo = await getNodesInfo(["123:456", "789:012"]);
+ *   console.log(`Successfully processed ${nodesInfo.length} nodes`);
+ * } catch (error) {
+ *   console.error('Failed to process nodes:', error.message);
+ * }
  */
 async function getNodesInfo(nodeIds) {
   try {
@@ -466,7 +512,7 @@ async function getNodesInfo(nodeIds) {
   }
 }
 
-// Export the operations as a group
+// Export all document operations as a named group for convenient importing
 const documentOperations = {
   getDocumentInfo,
   getSelection,
@@ -2002,18 +2048,26 @@ const styleOperations = {
 
 
 // ----- components Module -----
-// Components module
+// Components module - Provides functionality for working with Figma components
+// including local components, team library components, and component instances
 
 /**
- * Retrieves all local components available in the Figma document.
+ * Retrieves all local components available in the Figma document. 
+ * 
+ * First loads all pages in the document to ensure complete component discovery,
+ * then searches for all components using Figma's node traversal API.
  *
- * Loads all pages and finds components by type, returning a summary including component id, name, and key.
- *
- * @returns {Promise<object>} An object containing a count of components and an array with each component's details.
+ * @returns {Promise<object>} Component data object
+ * @property {number} count - Total number of local components found
+ * @property {Array<object>} components - Array of component details
+ * @property {string} components[].id - Unique Figma node ID of the component
+ * @property {string} components[].name - Display name of the component
+ * @property {string|null} components[].key - Component's key for team library usage, null if not available
  *
  * @example
- * const components = await getLocalComponents();
- * console.log(components.count, components.components);
+ * const { count, components } = await getLocalComponents();
+ * console.log(`Found ${count} components:`);
+ * components.forEach(c => console.log(`- ${c.name} (${c.id})`));
  */
 async function getLocalComponents() {
   await figma.loadAllPagesAsync();
@@ -2033,11 +2087,25 @@ async function getLocalComponents() {
 }
 
 /**
- * Retrieves available remote components from team libraries in Figma.
+ * Retrieves available components from all team libraries accessible to the current user. 
+ * 
+ * Performs API availability checks and implements timeout protection against potential
+ * deadlocks when fetching remote components.
  *
- * @returns {Promise<object>} An object containing success status, count, and an array of components with details.
+ * @returns {Promise<object>} Response object with component data or error information
+ * @property {boolean} success - Whether the operation was successful
+ * @property {number} [count] - Number of components found (only if successful)
+ * @property {Array<object>} [components] - Array of component details (only if successful)
+ * @property {string} components[].key - Unique key of the component in the team library
+ * @property {string} components[].name - Display name of the component
+ * @property {string} components[].description - Component description from the library
+ * @property {string} components[].libraryName - Name of the team library containing the component
+ * @property {boolean} [error] - Whether an error occurred
+ * @property {string} [message] - Error message if applicable
+ * @property {boolean} [apiAvailable] - Whether the team library API is available
+ * @property {string} [stack] - Error stack trace if available
  *
- * @throws Will return an error object if the API is unavailable or retrieval fails.
+ * @throws Returns error object instead of throwing if API is unavailable or retrieval fails
  */
 async function getRemoteComponents() {
   try {
@@ -2107,20 +2175,27 @@ async function getRemoteComponents() {
 }
 
 /**
- * Creates an instance of a component in the Figma document.
+ * Creates an instance of a component from either local components or team libraries. 
+ * 
+ * First imports the component by its key, then creates an instance at the specified
+ * coordinates. The instance is automatically added to the current page.
  *
- * @param {object} params - Parameters for creating component instance.
- * @param {string} params.componentKey - The key of the component to import.
- * @param {number} [params.x=0] - The X coordinate for the new instance.
- * @param {number} [params.y=0] - The Y coordinate for the new instance.
+ * @param {object} params - Instance creation parameters
+ * @param {string} params.componentKey - Unique key identifying the component to instantiate
+ * @param {number} [params.x=0] - X coordinate for placement in the current page
+ * @param {number} [params.y=0] - Y coordinate for placement in the current page
  *
- * @returns {Promise<object>} Details of the created instance including id, name, position, size, and componentId.
+ * @returns {Promise<object>} Created instance details
+ * @property {string} id - Unique node ID of the created instance
+ * @property {string} name - Name of the instance (inherited from component)
+ * @property {number} x - Final X coordinate of the instance
+ * @property {number} y - Final Y coordinate of the instance
+ * @property {number} width - Width of the instance
+ * @property {number} height - Height of the instance
+ * @property {string} componentId - ID of the master component this is an instance of
  *
- * @throws Will throw an error if the component cannot be imported.
- *
- * @example
- * const instance = await createComponentInstance({ componentKey: "abc123", x: 10, y: 20 });
- * console.log(instance.id, instance.name);
+ * @throws {Error} If componentKey is missing or component import fails
+ * @throws {Error} If instance creation or placement fails
  */
 async function createComponentInstance(params) {
   const { componentKey, x = 0, y = 0 } = params || {};
@@ -2153,20 +2228,24 @@ async function createComponentInstance(params) {
 }
 
 /**
- * Exports a node as an image in the Figma document.
+ * Exports a Figma node (frame, component, instance, etc.) as an image. 
+ * 
+ * Supports multiple formats and custom scaling. The image data is returned
+ * as a base64-encoded string suitable for data URLs or further processing.
  *
- * @param {object} params - Export parameters.
- * @param {string} params.nodeId - The ID of the node to export.
- * @param {string} [params.format="PNG"] - The desired image format ("PNG","JPG","SVG","PDF").
- * @param {number} [params.scale=1] - The scale factor for the export.
+ * @param {object} params - Export configuration
+ * @param {string} params.nodeId - ID of the node to * @param {('PNG'|'JPG'|'SVG'|'PDF')} [params.format='PNG'] - Output format
+ * @param {number} [params.scale=1] - Export scale factor (1 = 100%)
  *
- * @returns {Promise<object>} An object containing nodeId, format, scale, mimeType, and base64-encoded image data.
+ * @returns {Promise<object>} Export result
+ * @property {string} nodeId - ID of the exported node
+ * @property {string} format - Format used for the * @property {number} scale - Scale factor used
+ * @property {string} mimeType - MIME type of the exported data
+ * @property {string} imageData - Base64-encoded image data
  *
- * @throws Will throw an error if the node is not found, does not support exporting, or if the fails.
- *
- * @example
- * const image = await exportNodeAsImage({ nodeId: "12345", format: "PNG", scale: 2 });
- * console.log(image.mimeType, image.imageData);
+ * @throws {Error} If node is not found
+ * @throws {Error} If node doesn't support exporting
+ * @throws {Error} If operation fails
  */
 async function exportNodeAsImage(params) {
   const { nodeId, scale = 1 } = params || {};
@@ -2226,7 +2305,10 @@ async function exportNodeAsImage(params) {
   }
 }
 
-// Export the operations as a group
+/**
+ * Collection of all component-related operations exposed by this module.
+ * Use this object to access the component manipulation functions.
+ */
 const componentOperations = {
   getLocalComponents,
   getRemoteComponents,
@@ -2236,29 +2318,61 @@ const componentOperations = {
 
 
 // ----- layout Module -----
-// Layout module
+/**
+ * Layout module for configuring Figma node layouts and grouping operations.
+ * This module provides functionality for auto-layout configuration, resizing,
+ * and node grouping/ungrouping operations.
+ */
 
 /**
- * Sets auto layout properties on a node.
+ * Sets auto layout properties on a node in Figma.
+ * Auto layout allows for automatic arrangement and spacing of child elements
+ * within a parent frame or group.
  *
- * Configures layout mode, padding, spacing, alignment, wrapping, and stroke inclusion.
+ * @param {object} params - Auto layout configuration parameters
+ * @param {string} params.nodeId - The ID of the node to configure
+ * @param {('NONE'|'HORIZONTAL'|'VERTICAL')} params.layoutMode - Layout direction:
+ *   - NONE: Disables auto layout
+ *   - HORIZONTAL: Arranges items in a row
+ *   - VERTICAL: Arranges items in a column
+ * @param {number} [params.paddingTop] - Top padding in pixels
+ * @param {number} [params.paddingBottom] - Bottom padding in pixels
+ * @param {number} [params.paddingLeft] - Left padding in pixels
+ * @param {number} [params.paddingRight] - Right padding in pixels
+ * @param {number} [params.itemSpacing] - Spacing between items in pixels
+ * @param {('MIN'|'CENTER'|'MAX'|'SPACE_BETWEEN')} [params.primaryAxisAlignItems] - Primary axis alignment:
+ *   - MIN: Aligns to start
+ *   - CENTER: Centers items
+ *   - MAX: Aligns to end
+ *   - SPACE_BETWEEN: Distributes space between items
+ * @param {('MIN'|'CENTER'|'MAX')} [params.counterAxisAlignItems] - Counter axis alignment:
+ *   - MIN: Aligns to start
+ *   - CENTER: Centers items
+ *   - MAX: Aligns to end
+ * @param {('WRAP'|'NO_WRAP')} [params.layoutWrap] - Whether items should wrap to new lines
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes affect layout spacing
  *
- * @param {object} params - Auto layout configuration parameters.
- * @param {string} params.nodeId - The ID of the node to configure.
- * @param {string} params.layoutMode - Layout mode ("NONE", "HORIZONTAL", "VERTICAL").
- * @param {number} [params.paddingTop] - Top padding in pixels.
- * @param {number} [params.paddingBottom] - Bottom padding in pixels.
- * @param {number} [params.paddingLeft] - Left padding in pixels.
- * @param {number} [params.paddingRight] - Right padding in pixels.
- * @param {number} [params.itemSpacing] - Spacing between items in pixels.
- * @param {string} [params.primaryAxisAlignItems] - Alignment along primary axis.
- * @param {string} [params.counterAxisAlignItems] - Alignment along counter axis.
- * @param {string} [params.layoutWrap] - Layout wrap mode ("WRAP", "NO_WRAP").
- * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout.
+ * @returns {object} Updated auto layout properties including:
+ *   - id: Node ID
+ *   - name: Node name
+ *   - layoutMode: Current layout mode
+ *   - padding values
+ *   - itemSpacing
+ *   - alignment settings
+ *   - wrap mode
+ *   - stroke inclusion setting
  *
- * @returns {object} An object with updated auto layout properties.
- *
- * @throws Will throw an error if the node is not found or does not support auto layout.
+ * @throws {Error} If node is not found or doesn't support auto layout
+ * 
+ * @example
+ * // Configure horizontal auto layout with padding and spacing
+ * await setAutoLayout({
+ *   nodeId: "123:456",
+ *   layoutMode: "HORIZONTAL",
+ *   paddingAll: 16,
+ *   itemSpacing: 8,
+ *   primaryAxisAlignItems: "SPACE_BETWEEN"
+ * });
  */
 async function setAutoLayout(params) {
   const { 
@@ -2346,20 +2460,33 @@ async function setAutoLayout(params) {
 }
 
 /**
- * Adjust Auto-Layout Resizing of a Node
+ * Adjusts auto-layout resizing behavior for a node along a specified axis.
+ * This function controls how a node and its children resize within an auto-layout container.
  *
- * This function adjusts the sizing mode along a specified axis (horizontal or vertical)
- * for a given node that supports auto layout. When using the "FILL" mode, the function
- * also sets the layoutGrow property on each child element so that they expand to fill the space.
+ * @param {object} params - Resizing configuration parameters
+ * @param {string} params.nodeId - The node's unique identifier
+ * @param {('horizontal'|'vertical')} params.axis - The axis to configure:
+ *   - horizontal: Affects width/horizontal layout
+ *   - vertical: Affects height/vertical layout
+ * @param {('HUG'|'FIXED'|'FILL')} params.mode - The sizing behavior:
+ *   - HUG: Node sizes to fit its content
+ *   - FIXED: Node maintains a specific size
+ *   - FILL: Node expands to fill available space
  *
- * @param {object} params - Parameters for adjusting auto layout resizing.
- * @param {string} params.nodeId - The unique identifier of the node to update.
- * @param {string} params.axis - The axis along which to adjust the resizing ("horizontal" or "vertical").
- * @param {string} params.mode - The sizing mode to set for the specified axis ("HUG", "FIXED", "FILL").
+ * @returns {object} Current sizing configuration:
+ *   - id: Node ID
+ *   - primaryAxisSizingMode: Primary axis sizing behavior
+ *   - counterAxisSizingMode: Counter axis sizing behavior
  *
- * @returns {object} An object containing the node's ID and current sizing modes.
- *
- * @throws Will throw an error if required parameters are missing or invalid, or if the node doesn't support auto layout.
+ * @throws {Error} If node not found or parameters invalid
+ * 
+ * @example
+ * // Make a node fill available horizontal space
+ * await setAutoLayoutResizing({
+ *   nodeId: "123:456",
+ *   axis: "horizontal",
+ *   mode: "FILL"
+ * });
  */
 async function setAutoLayoutResizing(params) {
   const { nodeId, axis, mode } = params || {};
@@ -2437,15 +2564,31 @@ async function setAutoLayoutResizing(params) {
 }
 
 /**
- * Groups multiple nodes in Figma into a single group.
+ * Groups multiple Figma nodes into a single group.
+ * Grouped nodes maintain their relative positions but can be moved and manipulated together.
  *
- * @param {object} params - Parameters for grouping.
- * @param {string[]} params.nodeIds - Array of node IDs to group.
- * @param {string} [params.name] - Optional name for the group.
+ * @param {object} params - Grouping parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to group
+ * @param {string} [params.name] - Optional name for the new group
  *
- * @returns {object} An object with the group's id, name, type, and children details.
+ * @returns {object} New group details:
+ *   - id: Group node ID
+ *   - name: Group name
+ *   - type: Node type (always "GROUP")
+ *   - children: Array of grouped node details
  *
- * @throws Will throw an error if nodes are missing, have different parents, or grouping fails.
+ * @throws {Error} If:
+ *   - Fewer than 2 nodes provided
+ *   - Any node not found
+ *   - Nodes have different parents
+ *   - Grouping operation fails
+ * 
+ * @example
+ * // Group three nodes together
+ * await groupNodes({
+ *   nodeIds: ["123:456", "123:457", "123:458"],
+ *   name: "Button Group"
+ * });
  */
 async function groupNodes(params) {
   const { nodeIds, name } = params || {};
@@ -2493,14 +2636,27 @@ async function groupNodes(params) {
 }
 
 /**
- * Ungroups a node (group or frame) in Figma.
+ * Ungroups a Figma group or frame, promoting its children to the parent level.
+ * This is the reverse of the groupNodes operation.
  *
- * @param {object} params - Parameters for ungrouping.
- * @param {string} params.nodeId - The ID of the node to ungroup.
+ * @param {object} params - Ungrouping parameters
+ * @param {string} params.nodeId - ID of group/frame to ungroup
  *
- * @returns {object} An object with success status, count of ungrouped items, and item details.
+ * @returns {object} Ungrouping results:
+ *   - success: Operation success status
+ *   - ungroupedCount: Number of items ungrouped
+ *   - items: Array of ungrouped node details
  *
- * @throws Will throw an error if the node is not found, is not a group or frame, or ungrouping fails.
+ * @throws {Error} If:
+ *   - Node not found
+ *   - Node is not a group or frame
+ *   - Ungrouping operation fails
+ * 
+ * @example
+ * // Ungroup a group of elements
+ * await ungroupNodes({
+ *   nodeId: "123:456"
+ * });
  */
 async function ungroupNodes(params) {
   const { nodeId } = params || {};
@@ -2538,16 +2694,33 @@ async function ungroupNodes(params) {
 }
 
 /**
- * Inserts a child node into a parent node at an optional index.
+ * Inserts a child node into a parent node at an optional index position.
+ * This allows for precise control over node hierarchy and ordering.
  *
- * @param {object} params - Parameters for insertion.
- * @param {string} params.parentId - The ID of the parent node.
- * @param {string} params.childId - The ID of the child node.
- * @param {number} [params.index] - Optional index to insert at.
+ * @param {object} params - Insertion parameters
+ * @param {string} params.parentId - ID of the parent node
+ * @param {string} params.childId - ID of the child node to insert
+ * @param {number} [params.index] - Optional insertion index (0-based)
  *
- * @returns {object} An object with parentId, childId, index, success status, and previous parentId.
+ * @returns {object} Insertion results:
+ *   - parentId: Parent node ID
+ *   - childId: Child node ID
+ *   - index: Final insertion index
+ *   - success: Operation success status
+ *   - previousParentId: Previous parent's ID (if node was moved)
  *
- * @throws Will throw an error if parent or child nodes are not found or insertion fails.
+ * @throws {Error} If:
+ *   - Parent/child not found
+ *   - Parent cannot accept children
+ *   - Insertion operation fails
+ * 
+ * @example
+ * // Insert a node as the first child
+ * await insertChild({
+ *   parentId: "123:456",
+ *   childId: "123:457",
+ *   index: 0
+ * });
  */
 async function insertChild(params) {
   const { parentId, childId, index } = params || {};
@@ -2676,35 +2849,46 @@ const layoutOperations = {
 
 
 // ----- rename Module -----
-// Rename module
+// Rename module - Collection of functions for renaming Figma layers with various strategies
 
 /**
  * Rename Multiple Figma Layers
+ * 
+ * Renames multiple layers in a Figma document using either template-based naming or regex pattern replacement.
+ * Template naming supports special placeholders:
+ * - ${current}: The current name of the layer
+ * - ${asc}: Ascending number (1, 2, 3...)
+ * - ${desc}: Descending number (total, total-1...)
  *
- * Renames multiple layers in a Figma document. Supports regex replacement or template-based renaming.
+ * @param {object} params - Parameters for renaming operation
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename
+ * @param {string} [params.new_name] - Template string for new names. Uses placeholders ${current}, ${asc}, ${desc}
+ * @param {string} [params.match_pattern] - Regex pattern to find in existing names. Used with replace_with
+ * @param {string} [params.replace_with] - Replacement string for regex matches. Used with match_pattern
  *
- * @param {object} params - Parameters for renaming.
- * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
- * @param {string} [params.new_name] - New name template (ignored if regex parameters are provided).
- * @param {string} [params.match_pattern] - Regex pattern to match in existing names.
- * @param {string} [params.replace_with] - Replacement string for matched pattern.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating if operation completed
+ *   - renamed_count: number of layers successfully renamed
  *
- * @returns {Promise<object>} Object indicating success and count of renamed layers.
+ * @throws {Error} When:
+ *   - Any target layer is locked or hidden
+ *   - A layer ID cannot be found
+ *   - A layer lacks the name property
  *
- * @throws Will throw an error if any layer is locked or hidden, or if a required layer cannot be found.
- *
- * @example
- * rename_layers({
+ * @example Template-based renaming:
+ * await rename_layers({
  *   layer_ids: ['id1', 'id2', 'id3'],
- *   new_name: "Layer ${asc} - ${current}"
+ *   new_name: "Component ${asc} - ${current}"
  * });
+ * // Results: "Component 1 - Original", "Component 2 - Original2"...
  *
- * @example
- * rename_layers({
+ * @example Regex-based renaming:
+ * await rename_layers({
  *   layer_ids: ['id1', 'id2'],
- *   match_pattern: "^Old",
- *   replace_with: ""
+ *   match_pattern: "Button\\s*-\\s*",
+ *   replace_with: "btn_"
  * });
+ * // "Button - Save" becomes "btn_Save"
  */
 async function rename_layers(params) {
   const { layer_ids, new_name, match_pattern, replace_with } = params || {};
@@ -2743,18 +2927,31 @@ async function rename_layers(params) {
 /**
  * Rename Multiple Figma Layers Using AI Assistance
  *
- * Uses Figma's AI to automatically generate new names for layers based on a context prompt.
+ * Leverages Figma's AI capabilities to intelligently rename layers based on their content
+ * and context. Useful for batch renaming layers to follow naming conventions or improve clarity.
  *
- * @param {object} params - Parameters for AI rename.
- * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename.
- * @param {string} params.context_prompt - Context prompt for AI renaming.
+ * @param {object} params - Parameters for AI-assisted renaming
+ * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename
+ * @param {string} params.context_prompt - Instructions for AI renaming. Can include:
+ *   - Naming conventions to follow
+ *   - Style guidelines
+ *   - Specific terminology preferences
  *
- * @returns {Promise<object>} Object with success status and new names or error.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating if operation succeeded
+ *   - names: array of new names (if successful)
+ *   - error: error message (if failed)
  *
- * @example
- * ai_rename_layers({
+ * @example Using specific naming conventions:
+ * await ai_rename_layers({
  *   layer_ids: ['nodeId1', 'nodeId2'],
- *   context_prompt: "Rename these layers to align with our modern branding guidelines."
+ *   context_prompt: "Rename components using atomic design principles (atoms, molecules, organisms)"
+ * });
+ *
+ * @example Improving descriptiveness:
+ * await ai_rename_layers({
+ *   layer_ids: ['nodeId1', 'nodeId2'],
+ *   context_prompt: "Make layer names more descriptive based on their visual appearance and function"
  * });
  */
 async function ai_rename_layers(params) {
@@ -2776,23 +2973,33 @@ async function ai_rename_layers(params) {
 }
 
 /**
- * Rename a Single Figma Layer with Optional Auto-Rename for Text Nodes
+ * Rename a Single Figma Layer
  *
- * Renames a single Figma node by ID. For TEXT nodes, can toggle auto-renaming.
+ * Renames an individual Figma node with special handling for text nodes.
+ * For text nodes, offers control over the auto-rename feature which automatically
+ * updates the layer name when text content changes.
  *
- * @param {object} params - Parameters for renaming.
- * @param {string} params.nodeId - The ID of the node to rename.
- * @param {string} params.newName - The new name to assign.
- * @param {boolean} [params.setAutoRename] - Optional flag to enable/disable auto-renaming (TEXT nodes).
+ * @param {object} params - Parameters for renaming
+ * @param {string} params.nodeId - ID of the Figma node to rename
+ * @param {string} params.newName - New name to assign to the node
+ * @param {boolean} [params.setAutoRename] - For TEXT nodes only:
+ *   - true: layer name updates automatically with text content
+ *   - false: layer name remains fixed regardless of content changes
  *
- * @returns {Promise<object>} Object with success status, nodeId, originalName, and newName.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating success
+ *   - nodeId: ID of the renamed node
+ *   - originalName: previous name of the node
+ *   - newName: updated name of the node
  *
- * @throws Will throw an error if the node is not found.
+ * @throws {Error} When:
+ *   - Node with given ID cannot be found
+ *   - Node is locked or hidden
  *
- * @example
+ * @example Renaming with auto-rename disabled:
  * await rename_layer({
- *   nodeId: "12345",
- *   newName: "Updated Layer Name",
+ *   nodeId: "123:456",
+ *   newName: "Header Text",
  *   setAutoRename: false
  * });
  */
@@ -2813,24 +3020,32 @@ async function rename_layer(params) {
 }
 
 /**
- * Rename Multiple Figma Layers with Distinct Names
+ * Rename Multiple Figma Layers with Individual Names
  *
- * Renames multiple layers by assigning unique new names to each.
+ * Assigns specific names to multiple layers in a single operation.
+ * Useful when each layer needs a unique, predetermined name.
  *
- * @param {object} params - Parameters for renaming.
- * @param {string[]} params.layer_ids - Array of Figma layer IDs.
- * @param {string[]} params.new_names - Array of new names corresponding to each layer ID.
+ * @param {object} params - Parameters for batch renaming
+ * @param {string[]} params.layer_ids - Array of layer IDs to rename
+ * @param {string[]} params.new_names - Array of new names to assign
+ *   Must match layer_ids array in length and order
  *
- * @returns {Promise<object>} Object indicating success and array of results.
+ * @returns {Promise<object>} Object containing:
+ *   - success: boolean indicating overall success
+ *   - results: array of objects with:
+ *     - nodeId: ID of the processed node
+ *     - status: "renamed" or "error"
+ *     - result: details of rename operation or error message
  *
- * @throws Will throw an error if layer_ids or new_names are not arrays or lengths differ.
+ * @throws {Error} When:
+ *   - layer_ids or new_names are not arrays
+ *   - Arrays have different lengths
  *
- * @example
- * const result = await rename_multiples({
+ * @example Renaming multiple layers:
+ * await rename_multiples({
  *   layer_ids: ['id1', 'id2'],
- *   new_names: ['New Name for id1', 'New Name for id2']
+ *   new_names: ['Header Section', 'Navigation Menu']
  * });
- * console.log(result);
  */
 async function rename_multiples(params) {
   const { layer_ids, new_names } = params || {};
@@ -2859,7 +3074,7 @@ async function rename_multiples(params) {
   return { success: true, results };
 }
 
-// Export the operations as a group
+// Export all rename operations as a grouped object for convenience
 const renameOperations = {
   rename_layers,
   ai_rename_layers,
@@ -2869,33 +3084,43 @@ const renameOperations = {
 
 
 // ----- commands Module -----
-// Command registry and handler
+/**
+ * Command Registry and Handler Module
+ * 
+ * This module manages the registration and execution of all available commands in the Figma plugin.
+ * It provides a centralized system for registering command handlers and routing incoming commands
+ * to their appropriate implementations.
+ */
 
-// Command registry
+// Internal registry to store command handlers
 const commandRegistry = {};
 
 /**
- * Registers a command function with the specified name
+ * Registers a command function with the specified name in the command registry
  * 
- * @param {string} name - The command name to register
- * @param {Function} fn - The function to execute for this command
+ * @param {string} name - The command name to register (e.g., 'create_rectangle', 'set_text_content')
+ * @param {Function} fn - The handler function to execute for this command
+ * @throws {Error} If the command name is already registered
  */
 function registerCommand(name, fn) {
   commandRegistry[name] = fn;
 }
 
 /**
- * Initializes all commands by registering them in the command registry
- * This function is called once during plugin initialization
+ * Initializes and registers all available commands in the plugin
+ * This function is called once during plugin initialization to set up the command system
+ * Commands are organized by functional categories for better maintainability
  */
 function initializeCommands() {
-  // Document operations
+  // Document Operations
+  // Handles document-level operations like getting document info and selection state
   registerCommand('get_document_info', documentOperations.getDocumentInfo);
   registerCommand('get_selection', documentOperations.getSelection);
   registerCommand('get_node_info', documentOperations.getNodeInfo);
   registerCommand('get_nodes_info', documentOperations.getNodesInfo);
   
-  // Shape operations
+  // Shape Operations
+  // Manages creation and modification of basic geometric shapes and vectors
   registerCommand('create_rectangle', shapeOperations.createRectangle);
   registerCommand('create_frame', shapeOperations.createFrame);
   registerCommand('create_ellipse', shapeOperations.createEllipse);
@@ -2910,7 +3135,8 @@ function initializeCommands() {
   registerCommand('clone_node', shapeOperations.cloneNode);
   registerCommand('flatten_node', shapeOperations.flattenNode);
   
-  // Text operations
+  // Text Operations
+  // Handles text creation, styling, and manipulation operations
   registerCommand('create_text', textOperations.createText);
   registerCommand('set_text_content', textOperations.setTextContent);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);
@@ -2926,27 +3152,31 @@ function initializeCommands() {
   registerCommand('get_styled_text_segments', textOperations.getStyledTextSegments);
   registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
   
-  // Style operations
+  // Style Operations
+  // Controls visual styling like fills, strokes, and effects
   registerCommand('set_fill_color', styleOperations.setFillColor);
   registerCommand('set_stroke_color', styleOperations.setStrokeColor);
   registerCommand('get_styles', styleOperations.getStyles);
   registerCommand('set_effects', styleOperations.setEffects);
   registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
   
-  // Component operations
+  // Component Operations
+  // Manages Figma components and their instances
   registerCommand('get_local_components', componentOperations.getLocalComponents);
   registerCommand('get_remote_components', componentOperations.getRemoteComponents);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
   
-  // Layout operations
+  // Layout Operations
+  // Controls layout properties, grouping, and hierarchy
   registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
   registerCommand('group_nodes', layoutOperations.groupNodes);
   registerCommand('ungroup_nodes', layoutOperations.ungroupNodes);
   registerCommand('insert_child', layoutOperations.insertChild);
   
-  // Rename operations
+  // Rename Operations
+  // Handles layer naming and batch renaming functionality
   registerCommand('rename_layers', renameOperations.rename_layers);
   registerCommand('ai_rename_layers', renameOperations.ai_rename_layers);
   registerCommand('rename_layer', renameOperations.rename_layer);
@@ -2954,12 +3184,16 @@ function initializeCommands() {
 }
 
 /**
- * Handles an incoming command by routing it to the appropriate handler function
+ * Handles an incoming command by routing it to the appropriate registered handler function
  * 
- * @param {string} command - The command to execute
- * @param {object} params - Parameters for the command
- * @returns {Promise<any>} - The result of the command execution
- * @throws {Error} - If the command is unknown or execution fails
+ * @param {string} command - The name of the command to execute
+ * @param {object} params - Parameters object containing command-specific arguments
+ * @returns {Promise<any>} Result of the command execution
+ * @throws {Error} If the command is not registered or execution fails
+ * 
+ * @example
+ * // Example usage:
+ * await handleCommand('create_rectangle', { x: 0, y: 0, width: 100, height: 100 });
  */
 async function handleCommand(command, params) {
   console.log(`Received command: ${command}`);
@@ -2971,7 +3205,13 @@ async function handleCommand(command, params) {
   return await commandRegistry[command](params);
 }
 
-// Export for build compatibility
+/**
+ * @typedef {Object} CommandOperations
+ * @property {Function} initializeCommands - Initializes all available commands
+ * @property {Function} handleCommand - Handles execution of a specific command
+ */
+
+/** @type {CommandOperations} */
 const commandOperations = {
   initializeCommands,
   handleCommand
