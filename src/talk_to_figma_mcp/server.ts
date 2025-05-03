@@ -1540,6 +1540,31 @@ server.tool(
  * @example
  * await server.tool("set_auto_layout", { nodeId: "123", layoutMode: "HORIZONTAL", paddingTop: 10 });
  */
+/**
+ * Auto Layout Tool
+ *
+ * Configures auto layout properties for a node in Figma.
+ *
+ * @param {object} params - Parameters for auto layout configuration.
+ * @param {string} params.nodeId - The ID of the node to configure auto layout.
+ * @param {string} params.layoutMode - Layout direction ("HORIZONTAL", "VERTICAL", or "NONE").
+ * @param {number} [params.paddingTop] - Top padding in pixels.
+ * @param {number} [params.paddingBottom] - Bottom padding in pixels.
+ * @param {number} [params.paddingLeft] - Left padding in pixels.
+ * @param {number} [params.paddingRight] - Right padding in pixels.
+ * @param {number} [params.itemSpacing] - Spacing between items in pixels.
+ * @param {string} [params.primaryAxisAlignItems] - Alignment along primary axis.
+ * @param {string} [params.counterAxisAlignItems] - Alignment along counter axis.
+ * @param {string} [params.layoutWrap] - Whether items wrap to new lines.
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout calculations.
+ *
+ * @returns {Promise<object>} An object with updated auto layout properties.
+ *
+ * @throws Will throw an error if the node is not found or does not support auto layout.
+ *
+ * @example
+ * await server.tool("set_auto_layout", { nodeId: "123", layoutMode: "HORIZONTAL", paddingTop: 10 });
+ */
 server.tool(
   "set_auto_layout",
   "Configure auto layout properties for a node in Figma",
