@@ -461,5 +461,127 @@ export class FigmaClient {
     });
   }
   
+  // Text styling operations
+  
+  /**
+   * Sets the font name of a text node
+   * 
+   * @param {object} params - Font name parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setFontName(params: {
+    nodeId: string;
+    family: string;
+    style?: string;
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_font_name", {
+      nodeId: nodeIdString,
+      family: params.family,
+      style: params.style
+    });
+  }
+  
+  /**
+   * Sets the font size of a text node
+   * 
+   * @param {object} params - Font size parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setFontSize(params: {
+    nodeId: string;
+    fontSize: number;
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_font_size", {
+      nodeId: nodeIdString,
+      fontSize: params.fontSize
+    });
+  }
+  
+  /**
+   * Sets the font weight of a text node
+   * 
+   * @param {object} params - Font weight parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setFontWeight(params: {
+    nodeId: string;
+    weight: number;
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_font_weight", {
+      nodeId: nodeIdString,
+      weight: params.weight
+    });
+  }
+  
+  /**
+   * Sets the letter spacing of a text node
+   * 
+   * @param {object} params - Letter spacing parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setLetterSpacing(params: {
+    nodeId: string;
+    letterSpacing: number;
+    unit?: "PIXELS" | "PERCENT";
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_letter_spacing", {
+      nodeId: nodeIdString,
+      letterSpacing: params.letterSpacing,
+      unit: params.unit || "PIXELS"
+    });
+  }
+  
+  /**
+   * Sets the line height of a text node
+   * 
+   * @param {object} params - Line height parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setLineHeight(params: {
+    nodeId: string;
+    lineHeight: number;
+    unit?: "PIXELS" | "PERCENT" | "AUTO";
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_line_height", {
+      nodeId: nodeIdString,
+      lineHeight: params.lineHeight,
+      unit: params.unit || "PIXELS"
+    });
+  }
+  
+  /**
+   * Sets the paragraph spacing of a text node
+   * 
+   * @param {object} params - Paragraph spacing parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setParagraphSpacing(params: {
+    nodeId: string;
+    paragraphSpacing: number;
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_paragraph_spacing", {
+      nodeId: nodeIdString,
+      paragraphSpacing: params.paragraphSpacing
+    });
+  }
+  
   // Other Figma commands can be added in their respective categories
 }

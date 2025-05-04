@@ -556,6 +556,276 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
   );
 
   /**
+   * Set Font Name Tool
+   *
+   * Sets the font name and style of a text node in Figma.
+   */
+  server.tool(
+    "set_font_name",
+    "Set the font name and style of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      family: z.string().describe("Font family name"),
+      style: z.string().optional().describe("Font style (e.g., 'Regular', 'Bold', 'Italic')"),
+    },
+    async ({ nodeId, family, style }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting font name for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setFontName({
+          nodeId: nodeIdString,
+          family,
+          style
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated font of node "${result.name}" to ${result.fontName.family} ${result.fontName.style}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting font name: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Font Size Tool
+   *
+   * Sets the font size of a text node in Figma.
+   */
+  server.tool(
+    "set_font_size",
+    "Set the font size of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      fontSize: z.number().positive().describe("Font size in pixels"),
+    },
+    async ({ nodeId, fontSize }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting font size for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setFontSize({
+          nodeId: nodeIdString,
+          fontSize
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated font size of node "${result.name}" to ${result.fontSize}px`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting font size: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Font Weight Tool
+   *
+   * Sets the font weight of a text node in Figma.
+   */
+  server.tool(
+    "set_font_weight",
+    "Set the font weight of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      weight: z.number().describe("Font weight (100, 200, 300, 400, 500, 600, 700, 800, 900)"),
+    },
+    async ({ nodeId, weight }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting font weight for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setFontWeight({
+          nodeId: nodeIdString,
+          weight
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated font weight of node "${result.name}" to ${weight} (${result.fontName.style})`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting font weight: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Letter Spacing Tool
+   *
+   * Sets the letter spacing of a text node in Figma.
+   */
+  server.tool(
+    "set_letter_spacing",
+    "Set the letter spacing of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      letterSpacing: z.number().describe("Letter spacing value"),
+      unit: z.enum(["PIXELS", "PERCENT"]).optional().describe("Unit type (PIXELS or PERCENT)"),
+    },
+    async ({ nodeId, letterSpacing, unit }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting letter spacing for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setLetterSpacing({
+          nodeId: nodeIdString,
+          letterSpacing,
+          unit: unit || "PIXELS"
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated letter spacing of node "${result.name}" to ${result.letterSpacing.value} ${result.letterSpacing.unit}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting letter spacing: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Line Height Tool
+   *
+   * Sets the line height of a text node in Figma.
+   */
+  server.tool(
+    "set_line_height",
+    "Set the line height of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      lineHeight: z.number().describe("Line height value"),
+      unit: z.enum(["PIXELS", "PERCENT", "AUTO"]).optional().describe("Unit type (PIXELS, PERCENT, or AUTO)"),
+    },
+    async ({ nodeId, lineHeight, unit }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting line height for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setLineHeight({
+          nodeId: nodeIdString,
+          lineHeight,
+          unit: unit || "PIXELS"
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated line height of node "${result.name}" to ${result.lineHeight.value} ${result.lineHeight.unit}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting line height: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Paragraph Spacing Tool
+   *
+   * Sets the paragraph spacing of a text node in Figma.
+   */
+  server.tool(
+    "set_paragraph_spacing",
+    "Set the paragraph spacing of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      paragraphSpacing: z.number().describe("Paragraph spacing value in pixels"),
+    },
+    async ({ nodeId, paragraphSpacing }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting paragraph spacing for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setParagraphSpacing({
+          nodeId: nodeIdString,
+          paragraphSpacing
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated paragraph spacing of node "${result.name}" to ${paragraphSpacing}px`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting paragraph spacing: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
    * Group Nodes Tool
    * 
    * Groups nodes in Figma.
