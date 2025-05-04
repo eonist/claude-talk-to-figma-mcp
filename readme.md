@@ -92,7 +92,7 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
     - Navigate to **Menu > Plugins > Development > New Plugin**.
     - Select "Import plugin from manifest" and choose the manifest at:
       ```
-      src/claude_mcp_plugin/src/claude_mcp_plugin/manifest.json
+      src/claude_mcp_plugin/manifest.json
       ```
 
 ---

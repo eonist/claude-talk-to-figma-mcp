@@ -28,7 +28,7 @@ The Talk to Figma MCP Server connects to a Figma document and listens for comman
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/en/) (v14 or later)
+- [Bun](https://bun.sh) (latest version)
 - A Figma account for testing
 - Internet connectivity (for accessing Figma APIs and WebSocket services)
 
@@ -36,7 +36,7 @@ The Talk to Figma MCP Server connects to a Figma document and listens for comman
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/claude-talk-to-figma-mcp.git
+    git clone https://github.com/anthropics/claude-talk-to-figma-mcp.git
     ```
 
 2. Navigate to the project directory:
@@ -46,7 +46,7 @@ The Talk to Figma MCP Server connects to a Figma document and listens for comman
 
 3. Install dependencies:
     ```bash
-    npm install
+    bun install
     ```
 
 ## Configuration
@@ -67,16 +67,33 @@ node src/talk_to_figma_mcp/server.ts --server=localhost --port=3055 --reconnect-
 Once your environment is set up and the dependencies are installed, you can start the server:
 
 ```bash
-npm start
-```
-
-Or run directly with Node:
-
-```bash
-node src/talk_to_figma_mcp/server.ts
+bun socket
 ```
 
 The server will attempt to connect to Figma and log messages to the console. Errors and connection statuses are handled automatically.
+
+## Build
+
+Build TypeScript files to JavaScript in the dist folder:
+
+```bash
+bun install
+bun run build
+bun socket
+```
+
+If you want to continuously rebuild as you make changes to the TypeScript files, you can use:
+
+```bash
+bun run build:watch
+```
+
+And if you need to build both the TypeScript server and the Figma plugin:
+
+```bash
+bun run build:all
+```
+
 
 ## Commands
 
