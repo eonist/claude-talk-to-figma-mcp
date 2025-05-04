@@ -66,6 +66,7 @@ export function initializeCommands() {
   registerCommand('set_text_decoration', textOperations.setTextDecoration);
   registerCommand('get_styled_text_segments', textOperations.getStyledTextSegments);
   registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
+  registerCommand('set_bulk_font', textOperations.setBulkFont);
   
   // Style Operations
   // Controls visual styling like fills, strokes, and effects

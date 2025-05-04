@@ -740,6 +740,28 @@ export class FigmaClient {
       mode: params.mode
     });
   }
+
+  /**
+   * Apply font settings to multiple text nodes at once
+   * 
+   * @param {object} params - Font settings to apply
+   * @param {Array<{nodeIds?: string[], parentId?: string, font: object}>} params.targets - Array of target configurations
+   * @returns {Promise<any>} Operation result
+   */
+  async setBulkFont(params: {
+    targets: Array<{
+      nodeIds?: string[];
+      parentId?: string;
+      font: {
+        family?: string;
+        style?: string;
+        size?: number;
+        weight?: number;
+      }
+    }>;
+  }): Promise<any> {
+    return this.executeCommand("set_bulk_font", params);
+  }
   
   // Other Figma commands can be added in their respective categories
 }

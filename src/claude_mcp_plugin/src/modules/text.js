@@ -1465,6 +1465,181 @@ export async function loadFontAsyncWrapper(params) {
   }
 }
 
+/**
+ * Apply font settings to multiple text nodes at once
+ *
+ * @param {object} params - Configuration for bulk font update
+ * @param {Array<{nodeIds?: string[], parentId?: string, font: object}>} params.targets - Array of target configurations
+ * @param {string} [params.commandId] - Optional command identifier for progress tracking
+ * 
+ * @returns {Promise<object>} Summary of the bulk update operation
+ */
+export async function setBulkFont(params) {
+  const { targets, commandId = generateCommandId() } = params;
+
+  if (!targets || !Array.isArray(targets)) {
+    throw new Error("targets parameter must be an array");
+  }
+
+  // Process each target configuration
+  const results = [];
+  let totalSuccessCount = 0;
+  let totalFailureCount = 0;
+  let totalNodes = 0;
+
+  // Send initial progress update
+  sendProgressUpdate(commandId, 'set_bulk_font', 'started', 0, 0, 0, 
+    `Starting bulk font update for multiple configurations`, { totalConfigs: targets.length });
+
+  for (let targetIndex = 0; targetIndex < targets.length; targetIndex++) {
+    const target = targets[targetIndex];
+    let targetNodeIds = target.nodeIds || [];
+
+    // If parentId is provided, scan for text nodes
+    if (target.parentId) {
+      const parent = await figma.getNodeByIdAsync(target.parentId);
+      if (!parent) {
+        results.push({
+          success: false,
+          error: `Parent node not found with ID: ${target.parentId}`,
+          config: targetIndex
+        });
+        continue;
+      }
+      
+      const scanResult = await scanTextNodes({ nodeId: target.parentId });
+      targetNodeIds = scanResult.textNodes.map(node => node.id);
+    }
+
+    if (!targetNodeIds.length) {
+      results.push({
+        success: false,
+        error: "No target nodes specified or found",
+        config: targetIndex
+      });
+      continue;
+    }
+
+    // Initialize progress tracking for this target
+    let successCount = 0;
+    let failureCount = 0;
+    const configTotal = targetNodeIds.length;
+    totalNodes += configTotal;
+
+    // Process in chunks to avoid overwhelming Figma
+    const CHUNK_SIZE = 5;
+    const chunks = [];
+    for (let i = 0; i < targetNodeIds.length; i += CHUNK_SIZE) {
+      chunks.push(targetNodeIds.slice(i, i + CHUNK_SIZE));
+    }
+
+    // Process each chunk
+    for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+      const chunk = chunks[chunkIndex];
+      const chunkPromises = chunk.map(async nodeId => {
+        try {
+          const node = await figma.getNodeByIdAsync(nodeId);
+          if (!node || node.type !== "TEXT") {
+            return { success: false, nodeId, error: "Not a valid text node" };
+          }
+
+          // Load and apply font settings
+          if (target.font.family || target.font.style) {
+            const newFont = {
+              family: target.font.family || node.fontName.family,
+              style: target.font.style || node.fontName.style
+            };
+            await figma.loadFontAsync(newFont);
+            node.fontName = newFont;
+          }
+
+          if (target.font.size) {
+            node.fontSize = target.font.size;
+          }
+
+          if (target.font.weight) {
+            const style = getFontStyle(target.font.weight);
+            const newFont = {
+              family: node.fontName.family,
+              style: style
+            };
+            await figma.loadFontAsync(newFont);
+            node.fontName = newFont;
+          }
+
+          return {
+            success: true,
+            nodeId,
+            changes: {
+              family: target.font.family,
+              style: target.font.style,
+              size: target.font.size,
+              weight: target.font.weight
+            }
+          };
+
+        } catch (error) {
+          return { success: false, nodeId, error: error.message };
+        }
+      });
+
+      const chunkResults = await Promise.all(chunkPromises);
+      chunkResults.forEach(result => {
+        if (result.success) {
+          successCount++;
+          totalSuccessCount++;
+        } else {
+          failureCount++;
+          totalFailureCount++;
+        }
+        results.push({
+          success: result.success,
+          nodeId: result.nodeId,
+          changes: result.changes,
+          error: result.error,
+          config: targetIndex
+        });
+      });
+
+      // Update progress for current configuration
+      sendProgressUpdate(commandId, 'set_bulk_font', 'in_progress',
+        Math.round(((targetIndex * 100 + (chunkIndex + 1) / chunks.length * 100)) / targets.length),
+        totalNodes,
+        totalSuccessCount + totalFailureCount,
+        `Processing configuration ${targetIndex + 1}/${targets.length}: ${successCount + failureCount} of ${configTotal} nodes`,
+        { 
+          totalSuccessCount,
+          totalFailureCount,
+          currentConfig: targetIndex + 1,
+          totalConfigs: targets.length,
+          currentChunk: chunkIndex + 1,
+          totalChunks: chunks.length
+        }
+      );
+
+      // Add delay between chunks
+      if (chunkIndex < chunks.length - 1) {
+        await delay(100);
+      }
+    }
+  }
+
+  // Send completion update
+  sendProgressUpdate(commandId, 'set_bulk_font', 'completed', 100,
+    totalNodes, totalSuccessCount + totalFailureCount,
+    `Completed bulk font update across ${targets.length} configurations: ${totalSuccessCount} successful, ${totalFailureCount} failed`,
+    { totalSuccessCount, totalFailureCount, totalNodes }
+  );
+
+  return {
+    success: totalSuccessCount > 0,
+    totalNodes,
+    successCount: totalSuccessCount,
+    failureCount: totalFailureCount,
+    results
+  };
+}
+
 // Group export for all text operations.
 export const textOperations = {
   createText,
@@ -1480,5 +1655,6 @@ export const textOperations = {
   setTextCase,
   setTextDecoration,
   getStyledTextSegments,
-  loadFontAsyncWrapper
+  loadFontAsyncWrapper,
+  setBulkFont
 };

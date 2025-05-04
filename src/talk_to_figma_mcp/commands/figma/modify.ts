@@ -1340,4 +1340,62 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
       }
     }
   );
+
+  /**
+   * Set Bulk Font Tool
+   *
+   * Apply font settings to multiple text nodes at once.
+   */
+  server.tool(
+    "set_bulk_font",
+    "Apply font settings to multiple text nodes at once",
+    {
+      targets: z.array(z.object({
+        nodeIds: z.array(z.string()).optional()
+          .describe("Array of node IDs to update"),
+        parentId: z.string().optional()
+          .describe("Optional parent node ID to scan for text nodes"),
+        font: z.object({
+          family: z.string().optional()
+            .describe("Font family name"),
+          style: z.string().optional()
+            .describe("Font style (e.g., 'Regular', 'Bold', 'Italic')"),
+          size: z.number().optional()
+            .describe("Font size in pixels"),
+          weight: z.number().optional()
+            .describe("Font weight (100-900)")
+        }).describe("Font settings to apply")
+      })).describe("Array of target configurations for font updates")
+    },
+    async ({ targets }) => {
+      try {
+        // Convert node IDs to strings
+        const processedTargets = targets.map(target => ({
+          ...target,
+          nodeIds: target.nodeIds?.map(id => ensureNodeIdIsString(id)),
+          parentId: target.parentId ? ensureNodeIdIsString(target.parentId) : undefined
+        }));
+
+        const result = await figmaClient.setBulkFont({ targets: processedTargets });
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Bulk font update complete: ${result.successCount} of ${result.totalNodes} nodes updated successfully across ${targets.length} configurations${result.failureCount > 0 ? `, ${result.failureCount} failed` : ''}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error applying bulk font update: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
 }
