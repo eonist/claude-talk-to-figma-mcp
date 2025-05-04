@@ -826,6 +826,351 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
   );
 
   /**
+   * Set Text Case Tool
+   *
+   * Sets the text case of a text node in Figma.
+   */
+  server.tool(
+    "set_text_case",
+    "Set the text case of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      textCase: z.enum(["ORIGINAL", "UPPER", "LOWER", "TITLE"]).describe("Text case type"),
+    },
+    async ({ nodeId, textCase }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting text case for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setTextCase({
+          nodeId: nodeIdString,
+          textCase
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated text case of node "${result.name}" to ${textCase}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting text case: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Text Decoration Tool
+   *
+   * Sets the text decoration of a text node in Figma.
+   */
+  server.tool(
+    "set_text_decoration",
+    "Set the text decoration of a text node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the text node to modify"),
+      textDecoration: z.enum(["NONE", "UNDERLINE", "STRIKETHROUGH"]).describe("Text decoration type"),
+    },
+    async ({ nodeId, textDecoration }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting text decoration for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setTextDecoration({
+          nodeId: nodeIdString,
+          textDecoration
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Updated text decoration of node "${result.name}" to ${textDecoration}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting text decoration: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Load Font Async Tool
+   *
+   * Loads a font asynchronously in Figma.
+   */
+  server.tool(
+    "load_font_async",
+    "Load a font asynchronously in Figma",
+    {
+      family: z.string().describe("Font family name"),
+      style: z.string().optional().describe("Font style (e.g., 'Regular', 'Bold', 'Italic')"),
+    },
+    async ({ family, style }) => {
+      try {
+        logger.debug(`Loading font ${family} ${style || 'Regular'}`);
+        
+        const result = await figmaClient.loadFontAsync({
+          family,
+          style
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: result.message || `Loaded font ${family} ${style || "Regular"}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error loading font: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Effects Tool
+   *
+   * Sets the visual effects of a node in Figma.
+   */
+  server.tool(
+    "set_effects",
+    "Set the visual effects of a node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the node to modify"),
+      effects: z.array(
+        z.object({
+          type: z.enum(["DROP_SHADOW", "INNER_SHADOW", "LAYER_BLUR", "BACKGROUND_BLUR"]).describe("Effect type"),
+          color: z.object({
+            r: z.number().min(0).max(1).describe("Red (0-1)"),
+            g: z.number().min(0).max(1).describe("Green (0-1)"),
+            b: z.number().min(0).max(1).describe("Blue (0-1)"),
+            a: z.number().min(0).max(1).describe("Alpha (0-1)")
+          }).optional().describe("Effect color (for shadows)"),
+          offset: z.object({
+            x: z.number().describe("X offset"),
+            y: z.number().describe("Y offset")
+          }).optional().describe("Offset (for shadows)"),
+          radius: z.number().optional().describe("Effect radius"),
+          spread: z.number().optional().describe("Shadow spread (for shadows)"),
+          visible: z.boolean().optional().describe("Whether the effect is visible"),
+          blendMode: z.string().optional().describe("Blend mode")
+        })
+      ).describe("Array of effects to apply")
+    },
+    async ({ nodeId, effects }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting effects for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setEffects({
+          nodeId: nodeIdString,
+          effects
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Successfully applied ${effects.length} effect(s) to node "${result.name}"`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting effects: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Effect Style ID Tool
+   *
+   * Applies an effect style to a node in Figma.
+   */
+  server.tool(
+    "set_effect_style_id",
+    "Apply an effect style to a node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the node to modify"),
+      effectStyleId: z.string().describe("The ID of the effect style to apply")
+    },
+    async ({ nodeId, effectStyleId }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting effect style for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setEffectStyleId({
+          nodeId: nodeIdString,
+          effectStyleId
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Successfully applied effect style to node "${result.name}"`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting effect style: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Auto Layout Tool
+   *
+   * Configure auto layout properties for a node in Figma.
+   */
+  server.tool(
+    "set_auto_layout",
+    "Configure auto layout properties for a node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the node to configure auto layout"),
+      layoutMode: z.enum(["HORIZONTAL", "VERTICAL", "NONE"]).describe("Layout direction"),
+      paddingTop: z.number().optional().describe("Top padding in pixels"),
+      paddingBottom: z.number().optional().describe("Bottom padding in pixels"),
+      paddingLeft: z.number().optional().describe("Left padding in pixels"),
+      paddingRight: z.number().optional().describe("Right padding in pixels"),
+      itemSpacing: z.number().optional().describe("Spacing between items in pixels"),
+      primaryAxisAlignItems: z.enum(["MIN", "CENTER", "MAX", "SPACE_BETWEEN"]).optional().describe("Alignment along primary axis"),
+      counterAxisAlignItems: z.enum(["MIN", "CENTER", "MAX"]).optional().describe("Alignment along counter axis"),
+      layoutWrap: z.enum(["WRAP", "NO_WRAP"]).optional().describe("Whether items wrap to new lines"),
+      strokesIncludedInLayout: z.boolean().optional().describe("Whether strokes are included in layout calculations")
+    },
+    async ({ nodeId, layoutMode, paddingTop, paddingBottom, paddingLeft, paddingRight, 
+             itemSpacing, primaryAxisAlignItems, counterAxisAlignItems, layoutWrap, strokesIncludedInLayout }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting auto layout for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setAutoLayout({ 
+          nodeId: nodeIdString, 
+          layoutMode, 
+          paddingTop, 
+          paddingBottom, 
+          paddingLeft, 
+          paddingRight, 
+          itemSpacing, 
+          primaryAxisAlignItems, 
+          counterAxisAlignItems, 
+          layoutWrap, 
+          strokesIncludedInLayout 
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Applied auto layout to node "${result.name}" with mode: ${layoutMode}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting auto layout: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Set Auto Layout Resizing Tool
+   *
+   * Set hug or fill sizing mode on an auto layout frame or child node.
+   */
+  server.tool(
+    "set_auto_layout_resizing",
+    "Set hug or fill sizing mode on an auto layout frame or child node",
+    {
+      nodeId: z.string().describe("The ID of the node to modify sizing for"),
+      axis: z.enum(["horizontal", "vertical"]).describe("Which axis to apply sizing mode"),
+      mode: z.enum(["FIXED", "HUG", "FILL"]).describe("Sizing mode to apply")
+    },
+    async ({ nodeId, axis, mode }) => {
+      try {
+        // Ensure nodeId is treated as a string and validate it's not an object
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting auto layout resizing for node ID: ${nodeIdString}`);
+        
+        const result = await figmaClient.setAutoLayoutResizing({
+          nodeId: nodeIdString,
+          axis,
+          mode
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Set ${axis} sizing mode of node "${result.name}" to ${mode}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting resizing mode: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
    * Group Nodes Tool
    * 
    * Groups nodes in Figma.

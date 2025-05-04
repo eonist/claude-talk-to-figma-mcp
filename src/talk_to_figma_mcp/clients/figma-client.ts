@@ -583,5 +583,163 @@ export class FigmaClient {
     });
   }
   
+  /**
+   * Sets the text case of a text node
+   * 
+   * @param {object} params - Text case parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setTextCase(params: {
+    nodeId: string;
+    textCase: "ORIGINAL" | "UPPER" | "LOWER" | "TITLE";
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_text_case", {
+      nodeId: nodeIdString,
+      textCase: params.textCase
+    });
+  }
+  
+  /**
+   * Sets the text decoration of a text node
+   * 
+   * @param {object} params - Text decoration parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setTextDecoration(params: {
+    nodeId: string;
+    textDecoration: "NONE" | "UNDERLINE" | "STRIKETHROUGH";
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_text_decoration", {
+      nodeId: nodeIdString,
+      textDecoration: params.textDecoration
+    });
+  }
+  
+  /**
+   * Loads a font asynchronously in Figma
+   * 
+   * @param {object} params - Font loading parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async loadFontAsync(params: {
+    family: string;
+    style?: string;
+  }): Promise<any> {
+    return this.executeCommand("load_font_async", {
+      family: params.family,
+      style: params.style || "Regular"
+    });
+  }
+  
+  /**
+   * Sets visual effects (shadows, blurs) on a node
+   * 
+   * @param {object} params - Effect parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setEffects(params: {
+    nodeId: string;
+    effects: Array<{
+      type: "DROP_SHADOW" | "INNER_SHADOW" | "LAYER_BLUR" | "BACKGROUND_BLUR";
+      color?: { r: number; g: number; b: number; a: number };
+      offset?: { x: number; y: number };
+      radius?: number;
+      spread?: number;
+      visible?: boolean;
+      blendMode?: string;
+    }>;
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_effects", {
+      nodeId: nodeIdString,
+      effects: params.effects
+    });
+  }
+  
+  /**
+   * Sets the effect style ID for a node
+   * 
+   * @param {object} params - Effect style parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setEffectStyleId(params: {
+    nodeId: string;
+    effectStyleId: string;
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_effect_style_id", {
+      nodeId: nodeIdString,
+      effectStyleId: params.effectStyleId
+    });
+  }
+  
+  /**
+   * Sets auto layout properties for a node
+   * 
+   * @param {object} params - Auto layout parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setAutoLayout(params: {
+    nodeId: string;
+    layoutMode: "HORIZONTAL" | "VERTICAL" | "NONE";
+    paddingTop?: number;
+    paddingBottom?: number;
+    paddingLeft?: number;
+    paddingRight?: number;
+    itemSpacing?: number;
+    primaryAxisAlignItems?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
+    counterAxisAlignItems?: "MIN" | "CENTER" | "MAX";
+    layoutWrap?: "WRAP" | "NO_WRAP";
+    strokesIncludedInLayout?: boolean;
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_auto_layout", {
+      nodeId: nodeIdString,
+      layoutMode: params.layoutMode,
+      paddingTop: params.paddingTop,
+      paddingBottom: params.paddingBottom,
+      paddingLeft: params.paddingLeft,
+      paddingRight: params.paddingRight,
+      itemSpacing: params.itemSpacing,
+      primaryAxisAlignItems: params.primaryAxisAlignItems,
+      counterAxisAlignItems: params.counterAxisAlignItems,
+      layoutWrap: params.layoutWrap,
+      strokesIncludedInLayout: params.strokesIncludedInLayout
+    });
+  }
+  
+  /**
+   * Sets auto layout resizing mode for a node
+   * 
+   * @param {object} params - Auto layout resizing parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setAutoLayoutResizing(params: {
+    nodeId: string;
+    axis: "horizontal" | "vertical";
+    mode: "FIXED" | "HUG" | "FILL";
+  }): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_auto_layout_resizing", {
+      nodeId: nodeIdString,
+      axis: params.axis,
+      mode: params.mode
+    });
+  }
+  
   // Other Figma commands can be added in their respective categories
 }

@@ -498,6 +498,143 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
   );
 
   /**
+   * Create Vector Tool
+   *
+   * Creates a new vector node in Figma.
+   */
+  server.tool(
+    "create_vector",
+    "Create a new vector in Figma",
+    {
+      x: z.number().describe("X position"),
+      y: z.number().describe("Y position"),
+      width: z.number().describe("Width of the vector"),
+      height: z.number().describe("Height of the vector"),
+      vectorPaths: z.array(
+        z.object({
+          windingRule: z.enum(["EVENODD", "NONZERO"]).optional().describe("Path winding rule"),
+          data: z.string().describe("SVG path data")
+        })
+      ).describe("Array of vector paths"),
+      name: z.string().optional().describe("Optional name for the vector"),
+      parentId: z.string().optional().describe("Optional parent node ID to append the vector to"),
+      fillColor: z
+        .object({
+          r: z.number().min(0).max(1).describe("Red component (0-1)"),
+          g: z.number().min(0).max(1).describe("Green component (0-1)"),
+          b: z.number().min(0).max(1).describe("Blue component (0-1)"),
+          a: z.number().min(0).max(1).optional().describe("Alpha component (0-1)"),
+        })
+        .optional()
+        .describe("Fill color in RGBA format"),
+      strokeColor: z
+        .object({
+          r: z.number().min(0).max(1).describe("Red component (0-1)"),
+          g: z.number().min(0).max(1).describe("Green component (0-1)"),
+          b: z.number().min(0).max(1).describe("Blue component (0-1)"),
+          a: z.number().min(0).max(1).optional().describe("Alpha component (0-1)"),
+        })
+        .optional()
+        .describe("Stroke color in RGBA format"),
+      strokeWeight: z.number().positive().optional().describe("Stroke weight"),
+    },
+    async ({ x, y, width, height, vectorPaths, name, parentId, fillColor, strokeColor, strokeWeight }) => {
+      try {
+        const result = await figmaClient.executeCommand("create_vector", {
+          x,
+          y,
+          width,
+          height,
+          vectorPaths,
+          name: name || "Vector",
+          parentId,
+          fillColor,
+          strokeColor,
+          strokeWeight,
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Created vector with ID: ${result.id}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error creating vector: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
+   * Create Line Tool
+   *
+   * Creates a new line in Figma.
+   */
+  server.tool(
+    "create_line",
+    "Create a new line in Figma",
+    {
+      x: z.number().describe("Starting X position"),
+      y: z.number().describe("Starting Y position"),
+      x2: z.number().describe("Ending X position"),
+      y2: z.number().describe("Ending Y position"),
+      name: z.string().optional().describe("Optional name for the line"),
+      parentId: z.string().optional().describe("Optional parent node ID to append the line to"),
+      strokeColor: z
+        .object({
+          r: z.number().min(0).max(1).describe("Red component (0-1)"),
+          g: z.number().min(0).max(1).describe("Green component (0-1)"),
+          b: z.number().min(0).max(1).describe("Blue component (0-1)"),
+          a: z.number().min(0).max(1).optional().describe("Alpha component (0-1)"),
+        })
+        .optional()
+        .describe("Stroke color in RGBA format"),
+      strokeWeight: z.number().positive().optional().describe("Stroke weight"),
+    },
+    async ({ x, y, x2, y2, name, parentId, strokeColor, strokeWeight }) => {
+      try {
+        const result = await figmaClient.executeCommand("create_line", {
+          x,
+          y,
+          x2,
+          y2,
+          name: name || "Line",
+          parentId,
+          strokeColor: strokeColor || { r: 0, g: 0, b: 0, a: 1 },
+          strokeWeight: strokeWeight || 1,
+        });
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Created line with ID: ${result.id}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error creating line: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  /**
    * Insert SVG Vector Tool
    * 
    * Creates a vector node from SVG string content or file in Figma
