@@ -3397,6 +3397,20 @@ async function setStyle(params) {
   };
 }
 
+/**
+ * Apply styles to multiple nodes in one call.
+ *
+ * @param {Array} entries - Array of objects { nodeId, fillProps?, strokeProps? }
+ */
+async function setStyles(entries) {
+  const results = [];
+  for (const entry of entries) {
+    const res = await setStyle(entry);
+    results.push(res);
+  }
+  return results;
+}
+
 async function getStyles() {
   const styles = {
     colors: await figma.getLocalPaintStylesAsync(),
@@ -4685,6 +4699,8 @@ function initializeCommands() {
   registerCommand('get_styles', styleOperations.getStyles);
   registerCommand('set_effects', styleOperations.setEffects);
   registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
+  registerCommand('set_style', styleOperations.setStyle);
+  registerCommand('set_styles', styleOperations.setStyles);
   
   // Component Operations
   // Manages Figma components and their instances

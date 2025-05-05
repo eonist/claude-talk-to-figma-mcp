@@ -75,6 +75,8 @@ export function initializeCommands() {
   registerCommand('get_styles', styleOperations.getStyles);
   registerCommand('set_effects', styleOperations.setEffects);
   registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
+  registerCommand('set_style', styleOperations.setStyle);
+  registerCommand('set_styles', styleOperations.setStyles);
   
   // Component Operations
   // Manages Figma components and their instances

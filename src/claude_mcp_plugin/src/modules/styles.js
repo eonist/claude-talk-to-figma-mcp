@@ -183,6 +183,20 @@ export async function setStyle(params) {
   };
 }
 
+/**
+ * Apply styles to multiple nodes in one call.
+ *
+ * @param {Array} entries - Array of objects { nodeId, fillProps?, strokeProps? }
+ */
+export async function setStyles(entries) {
+  const results = [];
+  for (const entry of entries) {
+    const res = await setStyle(entry);
+    results.push(res);
+  }
+  return results;
+}
+
 export async function getStyles() {
   const styles = {
     colors: await figma.getLocalPaintStylesAsync(),

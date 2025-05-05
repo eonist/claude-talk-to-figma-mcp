@@ -134,40 +134,46 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     "Set both fill and stroke properties for a Figma node in a single command",
     {
       nodeId: z.string().describe("The ID of the node to modify"),
-      fillProps: z.object({
-        color: z
-          .tuple([
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-          ])
-          .optional()
-          .describe("RGBA fill color"),
-        visible: z.boolean().optional().describe("Whether fill is visible"),
-        opacity: z.number().min(0).max(1).optional().describe("Fill opacity"),
-        gradient: z.any().optional().describe("Optional gradient settings"),
-      }).describe("Fill properties"),
-      strokeProps: z.object({
-        color: z
-          .tuple([
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-          ])
-          .optional()
-          .describe("RGBA stroke color"),
-        weight: z.number().positive().optional().describe("Stroke weight"),
-        align: z
-          .enum(["INSIDE", "CENTER", "OUTSIDE"])
-          .optional()
-          .describe("Stroke alignment"),
-        dashes: z.array(z.number()).optional().describe("Dash pattern"),
-        visible: z.boolean().optional().describe("Whether stroke is visible"),
-      }).describe("Stroke properties"),
+      fillProps: z
+        .object({
+          color: z
+            .tuple([
+              z.number().min(0).max(1),
+              z.number().min(0).max(1),
+              z.number().min(0).max(1),
+              z.number().min(0).max(1),
+            ])
+            .optional()
+            .describe("RGBA fill color"),
+          visible: z.boolean().optional().describe("Whether fill is visible"),
+          opacity: z.number().min(0).max(1).optional().describe("Fill opacity"),
+          gradient: z.any().optional().describe("Optional gradient settings"),
+        })
+        .optional()
+        .describe("Fill properties"),
+      strokeProps: z
+        .object({
+          color: z
+            .tuple([
+              z.number().min(0).max(1),
+              z.number().min(0).max(1),
+              z.number().min(0).max(1),
+              z.number().min(0).max(1),
+            ])
+            .optional()
+            .describe("RGBA stroke color"),
+          weight: z.number().positive().optional().describe("Stroke weight"),
+          align: z
+            .enum(["INSIDE", "CENTER", "OUTSIDE"])
+            .optional()
+            .describe("Stroke alignment"),
+          dashes: z.array(z.number()).optional().describe("Dash pattern"),
+          visible: z.boolean().optional().describe("Whether stroke is visible"),
+        })
+        .optional()
+        .describe("Stroke properties"),
     },
-    async ({ nodeId, fillProps, strokeProps }) => {
+    async ({ nodeId, fillProps, strokeProps }, extra) => {
       try {
         const nodeIdString = ensureNodeIdIsString(nodeId);
         logger.debug(`Setting style for node ID: ${nodeIdString}`);
@@ -180,10 +186,9 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
             b: color?.[2] ?? 0,
             a: color?.[3] ?? 1,
           });
-          // Optionally handle visible, opacity, gradient via client if needed
         }
         if (strokeProps) {
-          const { color, weight, align, dashes, visible } = strokeProps;
+          const { color, weight } = strokeProps;
           await figmaClient.setStrokeColor({
             nodeId: nodeIdString,
             r: color?.[0] ?? 0,
@@ -192,7 +197,6 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
             a: color?.[3] ?? 1,
             weight,
           });
-          // Optionally handle align, dashes, visible via client if needed
         }
         return {
           content: [
@@ -201,19 +205,82 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
               text: `Set style of node "${nodeIdString}" successfully.`,
             },
           ],
+          _meta: { nodeId: nodeIdString },
         };
       } catch (error) {
         return {
           content: [
             {
               type: "text",
-              text: `Error setting style: ${
-                error instanceof Error ? error.message : String(error)
-              }`,
+              text: `Error setting style: ${error instanceof Error ? error.message : String(error)}`,
             },
           ],
+          isError: true,
         };
       }
+    }
+  );
+
+  /**
+   * Set Styles Tool
+   *
+   * Apply fill and/or stroke styles to multiple nodes in one command
+   */
+  server.tool(
+    "set_styles",
+    "Apply fill and/or stroke styles to multiple nodes",
+    {
+      entries: z
+        .array(
+          z.object({
+            nodeId: z.string().describe("The ID of the node to modify"),
+            fillProps: z
+              .object({
+                color: z
+                  .tuple([z.number().min(0).max(1), z.number().min(0).max(1), z.number().min(0).max(1), z.number().min(0).max(1)])
+                  .optional()
+                  .describe("RGBA fill color"),
+                visible: z.boolean().optional().describe("Whether fill is visible"),
+                opacity: z.number().min(0).max(1).optional().describe("Fill opacity"),
+                gradient: z.any().optional().describe("Optional gradient settings"),
+              })
+              .optional()
+              .describe("Fill properties"),
+            strokeProps: z
+              .object({
+                color: z
+                  .tuple([z.number().min(0).max(1), z.number().min(0).max(1), z.number().min(0).max(1), z.number().min(0).max(1)])
+                  .optional()
+                  .describe("RGBA stroke color"),
+                weight: z.number().positive().optional().describe("Stroke weight"),
+                align: z
+                  .enum(["INSIDE", "CENTER", "OUTSIDE"])
+                  .optional()
+                  .describe("Stroke alignment"),
+                dashes: z.array(z.number()).optional().describe("Dash pattern"),
+                visible: z.boolean().optional().describe("Whether stroke is visible"),
+              })
+              .optional()
+              .describe("Stroke properties"),
+          })
+        )
+        .describe("Array of node style entries"),
+    },
+    async ({ entries }, extra) => {
+      const results = [];
+      for (const entry of entries) {
+        const res = await figmaClient.setStyle(entry);
+        results.push(res);
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Applied styles to ${results.length} nodes successfully.`,
+          },
+        ],
+        _meta: { results },
+      };
     }
   );
 

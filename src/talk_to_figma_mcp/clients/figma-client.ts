@@ -342,6 +342,32 @@ export class FigmaClient {
     }): Promise<any> {
       return this.executeCommand("set_style", params);
     }
+
+    /**
+     * Apply fill and/or stroke styles to multiple nodes in a single call
+     *
+     * @param params.entries - Array of style configurations per node
+     */
+    async setStyles(params: {
+      entries: Array<{
+        nodeId: string;
+        fillProps?: {
+          color?: [number, number, number, number];
+          visible?: boolean;
+          opacity?: number;
+          gradient?: any;
+        };
+        strokeProps?: {
+          color?: [number, number, number, number];
+          weight?: number;
+          align?: "INSIDE" | "CENTER" | "OUTSIDE";
+          dashes?: number[];
+          visible?: boolean;
+        };
+      }>;
+    }): Promise<any> {
+      return this.executeCommand("set_styles", params);
+    }
   
   // Node operations
   

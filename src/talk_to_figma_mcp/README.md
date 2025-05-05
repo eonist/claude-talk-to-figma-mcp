@@ -102,6 +102,7 @@ The server supports multiple commands which are registered on startup. These inc
 - **Document Inspection:** Retrieve detailed document structure and node information.
 - **Element Creation:** Create and modify elements within a Figma document.
 - **Settings Update:** Persist and update settings such as server port.
+- **Bulk Styling:** Apply fill and/or stroke styles to multiple nodes (`set_styles(entries)`).
 
 For detailed command information, check the `src/talk_to_figma_mcp/commands/` directory.
 
