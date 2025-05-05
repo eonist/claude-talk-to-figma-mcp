@@ -263,6 +263,8 @@ See [TESTING.md](TESTING.md) for more details.
 4. Push to your branch.  
 5. Open a Pull Request.  
 
+See MCP protocol design best pratice: https://gist.github.com/eonist/eb8d5628aad07fc57ce339e518158c20
+
 ---
 
 ## License
