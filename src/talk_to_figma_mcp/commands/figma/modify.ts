@@ -456,6 +456,110 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Resize Multiple Nodes Tool
+  server.tool(
+    "resize_nodes",
+    "Resize multiple nodes in Figma",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to resize"),
+      dimensions: z
+        .array(
+          z
+            .object({
+              width: z.number().positive().describe("Width for node"),
+              height: z.number().positive().describe("Height for node"),
+            })
+        )
+        .optional()
+        .describe("Specific dimensions per node"),
+      targetSize: z
+        .object({
+          width: z.number().positive().describe("Target width"),
+          height: z.number().positive().describe("Target height"),
+        })
+        .optional()
+        .describe("Target size for all nodes"),
+      scalePercent: z.number().positive().optional().describe("Scale by percentage"),
+      maintainAspectRatio: z.boolean().optional().describe("Whether to preserve aspect ratio"),
+      resizeMode: z.enum(["exact", "fit", "longest"]).optional().describe("Resize strategy"),
+    },
+    async ({ nodeIds, dimensions, targetSize, scalePercent, maintainAspectRatio, resizeMode }) => {
+      const results: Array<{
+        nodeId: string;
+        success: boolean;
+        error?: string;
+        newWidth?: number;
+        newHeight?: number;
+      }> = [];
+      for (let i = 0; i < nodeIds.length; i++) {
+        const rawId = nodeIds[i];
+        const nodeId = ensureNodeIdIsString(rawId);
+        try {
+          const current = await figmaClient.getNodeInfo(nodeId);
+          const originalWidth = (current as any).width;
+          const originalHeight = (current as any).height;
+          const aspectRatio = originalWidth / originalHeight;
+          let newWidth: number, newHeight: number;
+          const dim = dimensions?.[i] || dimensions?.[0];
+          if (resizeMode === "exact" && dim) {
+            newWidth = dim.width;
+            newHeight = dim.height;
+          } else if (resizeMode === "fit" && targetSize) {
+            const tw = targetSize.width;
+            const th = targetSize.height;
+            if (maintainAspectRatio !== false) {
+              if (originalWidth / tw > originalHeight / th) {
+                newWidth = tw;
+                newHeight = tw / aspectRatio;
+              } else {
+                newHeight = th;
+                newWidth = th * aspectRatio;
+              }
+            } else {
+              newWidth = tw;
+              newHeight = th;
+            }
+          } else if (resizeMode === "longest" && targetSize) {
+            const t = Math.max(targetSize.width, targetSize.height);
+            if (originalWidth >= originalHeight) {
+              newWidth = t;
+              newHeight = maintainAspectRatio !== false ? t / aspectRatio : originalHeight;
+            } else {
+              newHeight = t;
+              newWidth = maintainAspectRatio !== false ? t * aspectRatio : originalWidth;
+            }
+          } else if (scalePercent) {
+            const s = scalePercent / 100;
+            newWidth = originalWidth * s;
+            newHeight = originalHeight * s;
+          } else if (dim) {
+            newWidth = dim.width;
+            newHeight = dim.height;
+          } else {
+            throw new Error("No valid resize parameters provided");
+          }
+          await figmaClient.resizeNode({ nodeId, width: newWidth, height: newHeight });
+          results.push({ nodeId, success: true, newWidth, newHeight });
+        } catch (error) {
+          results.push({
+            nodeId,
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Resized ${results.filter(r => r.success).length}/${results.length} nodes successfully.`,
+          },
+        ],
+        _meta: { results },
+      };
+    }
+  );
+
   /**
    * Delete Node Tool
    * 

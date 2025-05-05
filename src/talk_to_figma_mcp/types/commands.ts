@@ -23,6 +23,7 @@ export type FigmaCommand =
   | "move_node"
   | "move_nodes"
   | "resize_node"
+  | "resize_nodes"
   | "delete_node"
   | "export_node_as_image"
   | "set_text_content"
