@@ -329,6 +329,43 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Move Multiple Nodes Tool
+  server.tool(
+    "move_nodes",
+    "Move multiple nodes to a new absolute position in Figma",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to move"),
+      x: z.number().describe("New X position"),
+      y: z.number().describe("New Y position"),
+    },
+    async ({ nodeIds, x, y }) => {
+      try {
+        const nodeIdStrings = nodeIds.map(id => ensureNodeIdIsString(id));
+        logger.debug(`Moving ${nodeIdStrings.length} nodes to position (${x}, ${y})`);
+        
+        const result = await figmaClient.moveNodes({ nodeIds: nodeIdStrings, x, y });
+        const count = result.count ?? nodeIdStrings.length;
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Moved ${count} nodes to position (${x}, ${y})`,
+            },
+          ],
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error moving nodes: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ],
+        };
+      }
+    }
+  );
+
   /**
    * Clone Node Tool
    * 

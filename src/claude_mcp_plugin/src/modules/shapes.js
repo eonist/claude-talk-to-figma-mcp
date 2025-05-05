@@ -656,6 +656,28 @@ export async function moveNode(params) {
   return { id: params.nodeId, x: params.x, y: params.y };
 }
 
+ /**
+  * Moves multiple nodes to a new absolute position in Figma.
+  *
+  * @param {object} params - Movement parameters.
+  * @param {string[]} params.nodeIds - Array of node IDs to move.
+  * @param {number} params.x - The new X coordinate for all nodes.
+  * @param {number} params.y - The new Y coordinate for all nodes.
+  *
+  * @returns {object} An object indicating how many nodes were moved.
+  */
+export async function moveNodes(params) {
+  const { nodeIds = [], x, y } = params || {};
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node => node != null);
+  for (const node of nodes) {
+    node.x = x;
+    node.y = y;
+  }
+  return { count: nodes.length };
+}
+
 /**
  * Clones an existing node.
  *
@@ -814,6 +836,5 @@ export const shapeOperations = {
   resizeNode,
   deleteNode,
   moveNode,
-  cloneNode,
   flattenNode
 };

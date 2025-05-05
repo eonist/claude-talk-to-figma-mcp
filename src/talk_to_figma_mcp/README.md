@@ -103,6 +103,7 @@ The server supports multiple commands which are registered on startup. These inc
 - **Element Creation:** Create and modify elements within a Figma document.
 - **Settings Update:** Persist and update settings such as server port.
 - **Bulk Styling:** Apply fill and/or stroke styles to multiple nodes (`set_styles(entries)`).
+- **Move Nodes:** Reposition multiple nodes simultaneously (`move_nodes(nodeIds, x, y)`).
 
 For detailed command information, check the `src/talk_to_figma_mcp/commands/` directory.
 

@@ -391,6 +391,26 @@ export class FigmaClient {
       y: params.y
     });
   }
+
+  /**
+   * Moves multiple nodes to a new position
+   *
+   * @param {object} params - Parameters including an array of node IDs and target coordinates
+   * @returns {Promise<any>} Operation result
+   */
+  async moveNodes(params: {
+    nodeIds: string[];
+    x: number;
+    y: number;
+  }): Promise<any> {
+    // Ensure all nodeIds are treated as strings and validate they're not objects
+    const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
+    return this.executeCommand("move_nodes", {
+      nodeIds: nodeIdStrings,
+      x: params.x,
+      y: params.y
+    });
+  }
   
   /**
    * Clones a node

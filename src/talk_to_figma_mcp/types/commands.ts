@@ -21,6 +21,7 @@ export type FigmaCommand =
   | "set_fill_color"
   | "set_stroke_color"
   | "move_node"
+  | "move_nodes"
   | "resize_node"
   | "delete_node"
   | "export_node_as_image"
