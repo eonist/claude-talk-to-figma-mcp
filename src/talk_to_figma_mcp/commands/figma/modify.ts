@@ -600,6 +600,43 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
   );
 
   /**
+   * Delete Nodes Tool
+   * 
+   * Deletes multiple nodes from Figma.
+   */
+  server.tool(
+    "delete_nodes",
+    "Delete multiple nodes from Figma",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to delete"),
+    },
+    async ({ nodeIds }) => {
+      try {
+        const { success, failed } = await figmaClient.deleteNodes(nodeIds);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Deleted ${success.length} nodes successfully; ${failed.length} failed.`,
+            },
+          ],
+          _meta: { success, failed },
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error deleting nodes: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
+  );
+
+  /**
    * Set Text Content Tool
    * 
    * Sets the text content of an existing text node in Figma.

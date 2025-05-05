@@ -25,6 +25,7 @@ export type FigmaCommand =
   | "resize_node"
   | "resize_nodes"
   | "delete_node"
+  | "delete_nodes"
   | "export_node_as_image"
   | "set_text_content"
   | "get_styles"

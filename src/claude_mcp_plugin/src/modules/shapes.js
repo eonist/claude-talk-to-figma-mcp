@@ -642,6 +642,26 @@ export async function deleteNode(params) {
   return { id: params.nodeId, deleted: true };
 }
 
+export async function deleteNodes(params) {
+  const { nodeIds = [] } = params;
+  const success = [];
+  const failed = [];
+  for (const id of nodeIds) {
+    try {
+      const node = await figma.getNodeByIdAsync(id);
+      if (node && typeof node.remove === "function") {
+        node.remove();
+        success.push(id);
+      } else {
+        failed.push(id);
+      }
+    } catch (error) {
+      failed.push(id);
+    }
+  }
+  return { success, failed };
+}
+
 /**
  * Moves a node to a new position.
  *
@@ -835,6 +855,7 @@ export const shapeOperations = {
   setCornerRadius,
   resizeNode,
   deleteNode,
+  deleteNodes,
   moveNode,
   flattenNode
 };

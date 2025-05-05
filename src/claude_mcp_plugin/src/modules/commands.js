@@ -46,6 +46,7 @@ export function initializeCommands() {
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('delete_node', shapeOperations.deleteNode);
+  registerCommand('delete_nodes', shapeOperations.deleteNodes);
   registerCommand('move_node', shapeOperations.moveNode);
   registerCommand('flatten_node', shapeOperations.flattenNode);
   registerCommand('clone_node', shapeOperations.cloneNode);

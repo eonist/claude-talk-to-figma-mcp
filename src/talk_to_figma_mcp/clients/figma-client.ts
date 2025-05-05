@@ -467,6 +467,20 @@ export class FigmaClient {
     
     return this.executeCommand("delete_node", { nodeId: nodeIdString });
   }
+
+  /**
+   * Deletes multiple nodes
+   *
+   * @param {string[]} nodeIds - Array of node IDs to delete
+   * @returns {Promise<{success: string[]; failed: string[]}>} Operation results
+   */
+  async deleteNodes(nodeIds: string[]): Promise<{ success: string[]; failed: string[] }> {
+    const idStrings = nodeIds.map(id => ensureNodeIdIsString(id));
+    logger.debug(`Deleting multiple nodes: ${idStrings.join(", ")}`);
+    
+    const result = await this.executeCommand("delete_nodes", { nodeIds: idStrings });
+    return result as { success: string[]; failed: string[] };
+  }
   
   /**
    * Sets the text content of a node

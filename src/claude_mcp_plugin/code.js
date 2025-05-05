@@ -1357,6 +1357,26 @@ async function deleteNode(params) {
   return { id: params.nodeId, deleted: true };
 }
 
+async function deleteNodes(params) {
+  const { nodeIds = [] } = params;
+  const success = [];
+  const failed = [];
+  for (const id of nodeIds) {
+    try {
+      const node = await figma.getNodeByIdAsync(id);
+      if (node && typeof node.remove === "function") {
+        node.remove();
+        success.push(id);
+      } else {
+        failed.push(id);
+      }
+    } catch (error) {
+      failed.push(id);
+    }
+  }
+  return { success, failed };
+}
+
 /**
  * Moves a node to a new position.
  *
@@ -4691,6 +4711,7 @@ function initializeCommands() {
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('delete_node', shapeOperations.deleteNode);
+  registerCommand('delete_nodes', shapeOperations.deleteNodes);
   registerCommand('move_node', shapeOperations.moveNode);
   registerCommand('flatten_node', shapeOperations.flattenNode);
   registerCommand('clone_node', shapeOperations.cloneNode);
