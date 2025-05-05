@@ -246,13 +246,13 @@ Please resize all selected elements so their longest side is 20px.
 
 ## Changelog
 
-### 0.4.6
+### 0.4.6 (2025-05-06)
 - Batch SVG insertion via `insert_svg_vectors`
 - Batch line creation via `create_lines`
 - Bulk clone nodes via `clone_nodes`
 - Create component instances via `create_component_instances`
 
-### 0.4.5
+### 0.4.5 (2025-05-05)
 - Batch rectangle creation via `create_rectangles`
 - Single line creation via `create_line`
 - Batch line creation via `create_lines`
@@ -264,7 +264,7 @@ Please resize all selected elements so their longest side is 20px.
 - Set single node style via `set_style`
 - Set multiple node styles via `set_styles`
 
-### 0.4.4
+### 0.4.4 (2025-05-05)
 - Bulk font application across text nodes (`set_bulk_font`)
 - Insert SVG content as vector (`insert_svg_vector`)
 - Rename a single layer (`rename_layer`)
@@ -274,11 +274,11 @@ Please resize all selected elements so their longest side is 20px.
 ### 0.4.3
 - Autolayout "hug content" and "fill container" feature
 
-### 0.4.2
+### 0.4.2 (2025-05-02)
 - Ability to rename layers
 - Ability to read available tools
 
-### 0.4.0
+### 0.4.0 (2025-04-11)
 - New tools for advanced shape creation.
 - Enhanced text and font manipulation.
 - Improved error handling and timeout management.
