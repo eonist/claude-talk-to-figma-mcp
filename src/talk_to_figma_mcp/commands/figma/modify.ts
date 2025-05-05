@@ -1734,4 +1734,50 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
       }
     }
   );
+
+  /**
+   * Clone Nodes Tool
+   *
+   * Clones multiple nodes in Figma.
+   */
+  server.tool(
+    "clone_nodes",
+    "Clone multiple nodes in Figma",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to clone"),
+      positions: z
+        .array(z.object({ x: z.number(), y: z.number() }))
+        .optional()
+        .describe("Optional explicit positions for each clone"),
+      offsetX: z.number().optional().describe("Uniform X offset"),
+      offsetY: z.number().optional().describe("Uniform Y offset"),
+    },
+    async ({ nodeIds, positions, offsetX = 0, offsetY = 0 }) => {
+      const clonedIds: string[] = [];
+      for (let i = 0; i < nodeIds.length; i++) {
+        const rawId = nodeIds[i];
+        const nodeIdStr = ensureNodeIdIsString(rawId);
+        let x: number;
+        let y: number;
+        if (positions && positions[i]) {
+          x = positions[i].x;
+          y = positions[i].y;
+        } else {
+          x = offsetX * (i + 1);
+          y = offsetY * (i + 1);
+        }
+        const result = await figmaClient.cloneNode({ nodeId: nodeIdStr, x, y });
+        clonedIds.push(result.id);
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Cloned ${clonedIds.length} nodes successfully.`,
+          },
+        ],
+        _meta: { clonedIds },
+      };
+    }
+  );
 }

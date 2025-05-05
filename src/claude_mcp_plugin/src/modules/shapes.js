@@ -727,6 +727,35 @@ export async function cloneNode(params) {
 }
 
 /**
+ * Clones multiple nodes in Figma.
+ *
+ * @param {object} params - Clone parameters.
+ * @param {string[]} params.nodeIds - Array of node IDs to clone.
+ * @param {{x:number,y:number}[]} [params.positions] - Optional explicit positions.
+ * @param {number} [params.offsetX] - Uniform X offset.
+ * @param {number} [params.offsetY] - Uniform Y offset.
+ * @returns {object} An object containing array of cloned IDs.
+ */
+export async function cloneNodes(params) {
+  const { nodeIds = [], positions, offsetX = 0, offsetY = 0 } = params || {};
+  const clonedIds = [];
+  for (let i = 0; i < nodeIds.length; i++) {
+    const id = nodeIds[i];
+    let x, y;
+    if (positions && positions[i]) {
+      x = positions[i].x;
+      y = positions[i].y;
+    } else {
+      x = offsetX * (i + 1);
+      y = offsetY * (i + 1);
+    }
+    const result = await cloneNode({ nodeId: id, x, y });
+    clonedIds.push(result.id);
+  }
+  return { clonedIds };
+}
+
+/**
  * Flattens a vector-based node.
  *
  * This function simulates the flattening of a vector node into a simpler shape.

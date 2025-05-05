@@ -62,6 +62,8 @@ export function initializeCommands() {
   registerCommand('move_nodes', shapeOperations.moveNodes);
   registerCommand('flatten_node', shapeOperations.flattenNode);
   registerCommand('clone_node', shapeOperations.cloneNode);
+  // Clone multiple nodes
+  registerCommand('clone_nodes', shapeOperations.cloneNodes);
   
   // Text Operations
   // Handles text creation, styling, and manipulation operations

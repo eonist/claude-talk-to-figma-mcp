@@ -157,6 +157,7 @@ Talk to Figma, channel {channel-ID}
 | `rename_layers`                   | Rename multiple layers in Figma          | `layer_ids`, `new_name`, `match_pattern`, `replace_with`                                                 |
 | `rename_multiple`                 | Rename multiple layers with distinct names | `layer_ids`, `new_names`                                                                               |
 | `clone_node`                      | Clone a Figma node                       | `nodeId`, `x`, `y`                                                                                       |
+| `clone_nodes`                     | Clone multiple nodes simultaneously      | `nodeIds`, `positions?`, `offsetX?`, `offsetY?`                                                         |
 | `create_component_instance`       | Create an instance of a component        | `componentKey`, `x`, `y`                                                                                 |
 | `create_ellipse`                  | Create an ellipse shape                  | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight`             |
 | `create_polygon`                  | Create a polygon shape                   | `x`, `y`, `width`, `height`, `sides`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight`     |

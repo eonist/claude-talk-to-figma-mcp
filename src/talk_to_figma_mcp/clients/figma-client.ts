@@ -432,6 +432,22 @@ export class FigmaClient {
       y: params.y
     });
   }
+
+  /**
+   * Clone Nodes Tool
+   *
+   * Clones multiple nodes in Figma.
+   */
+  async cloneNodes(params: {
+    nodeIds: string[];
+    positions?: { x: number; y: number }[];
+    offsetX?: number;
+    offsetY?: number;
+    parentId?: string;
+  }): Promise<any> {
+    // Forward to the server-side clone_nodes tool
+    return this.executeCommand("clone_nodes", params);
+  }
   
   /**
    * Resizes a node

@@ -35,6 +35,7 @@ export type FigmaCommand =
   | "create_component_instance"
   | "set_corner_radius"
   | "clone_node"
+  | "clone_nodes"
   | "scan_text_nodes"
   | "set_multiple_text_contents"
   | "set_auto_layout"
