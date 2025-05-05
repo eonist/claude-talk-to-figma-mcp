@@ -172,6 +172,7 @@ Talk to Figma, channel {channel-ID}
 | `create_polygon`            | Create a polygon                                     | `x`, `y`, `width`, `height`, `sides`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_star`               | Create a star                                        | `x`, `y`, `width`, `height`, `points`, `innerRadius`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_vector`             | Create a vector                                      | `x`, `y`, `width`, `height`, `vectorPaths`, `name?`, `parentId?`, `fillColor?`, `strokeColor?`, `strokeWeight?` |
+| `create_vectors`            | Create multiple vectors                              | `vectors`: array of `{ x, y, width, height, name?, parentId?, vectorPaths, fillColor?, strokeColor?, strokeWeight? }` |
 | `insert_svg_vector`         | Insert SVG as vector                                 | `svg`, `svgPath`, `x`, `y`, `name?`, `parentId?`                                     |
 | `create_line`               | Create a line                                        | `x1`, `y1`, `x2`, `y2`, `parentId?`, `strokeColor?`, `strokeWeight?`                 |
 | `create_lines`              | Create multiple lines                                | `lines`: array of `{ x1, y1, x2, y2, parentId?, strokeColor?, strokeWeight? }`        |

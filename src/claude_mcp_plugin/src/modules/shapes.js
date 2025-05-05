@@ -783,6 +783,21 @@ export async function createLines(params) {
   return { ids };
 }
 
+// Batch vectors
+export async function createVectors(params) {
+  const { vectors = [] } = params || {};
+  const ids = [];
+  for (const cfg of vectors) {
+    try {
+      const result = await createVector(cfg);
+      ids.push(result.id);
+    } catch (error) {
+      // continue on error
+    }
+  }
+  return { ids };
+}
+
 // Helper functions
 
 /**

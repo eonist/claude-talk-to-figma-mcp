@@ -18,6 +18,7 @@ export type FigmaCommand =
   | "create_polygon"
   | "create_star"
   | "create_vector"
+  | "create_vectors"
   | "create_line"
   | "create_lines"
   | "set_fill_color"

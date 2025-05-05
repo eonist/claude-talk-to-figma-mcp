@@ -53,6 +53,7 @@ export function initializeCommands() {
   registerCommand('create_line', shapeOperations.createLine);
   registerCommand('create_lines', shapeOperations.createLines);
   registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
+  registerCommand('create_vectors', shapeOperations.createVectors);
   registerCommand('create_rectangles', shapeOperations.createRectangles);
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);

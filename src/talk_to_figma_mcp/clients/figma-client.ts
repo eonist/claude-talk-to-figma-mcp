@@ -262,6 +262,39 @@ export class FigmaClient {
   }
 
   /**
+   * Creates a new vector node in Figma
+   *
+   * @param {object} params - Vector parameters
+   * @returns {Promise<BaseFigmaNode>} The created vector node
+   */
+  async createVector(params: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    name?: string;
+    parentId?: string;
+    vectorPaths?: Array<{ windingRule?: string; data: string }>;
+    fillColor?: RGBAColor;
+    strokeColor?: RGBAColor;
+    strokeWeight?: number;
+  }): Promise<BaseFigmaNode> {
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    return this.executeCommand("create_vector", {
+      x: params.x,
+      y: params.y,
+      width: params.width,
+      height: params.height,
+      name: params.name || "Vector",
+      parentId: parentIdString,
+      vectorPaths: params.vectorPaths,
+      fillColor: params.fillColor,
+      strokeColor: params.strokeColor,
+      strokeWeight: params.strokeWeight
+    });
+  }
+
+  /**
    * Inserts an SVG vector in Figma
    * 
    * @param {object} params - SVG vector parameters

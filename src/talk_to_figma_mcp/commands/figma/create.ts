@@ -84,6 +84,76 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Single vector
+  server.tool(
+    "create_vector",
+    "Create a new vector in Figma",
+    {
+      x: z.number().describe("X position"),
+      y: z.number().describe("Y position"),
+      width: z.number().describe("Width"),
+      height: z.number().describe("Height"),
+      name: z.string().optional().describe("Name"),
+      parentId: z.string().optional().describe("Parent ID"),
+      vectorPaths: z.array(
+        z.object({
+          windingRule: z.string().optional().describe("Winding rule"),
+          data: z.string().describe("SVG path data")
+        })
+      ).describe("Array of vector path definitions"),
+      fillColor: z.any().optional().describe("Fill color"),
+      strokeColor: z.any().optional().describe("Stroke color"),
+      strokeWeight: z.number().optional().describe("Stroke weight")
+    },
+    async ({ x, y, width, height, name, parentId, vectorPaths, fillColor, strokeColor, strokeWeight }) => {
+      try {
+        const node = await figmaClient.createVector({ x, y, width, height, name, parentId, vectorPaths, fillColor, strokeColor, strokeWeight });
+        return { content: [{ type: "text", text: `Created vector ID: ${node.id}` }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${String(err)}` }] };
+      }
+    }
+  );
+
+  // Batch vectors
+  server.tool(
+    "create_vectors",
+    "Create multiple vectors in Figma",
+    {
+      vectors: z.array(
+        z.object({
+          x: z.number(),
+          y: z.number(),
+          width: z.number(),
+          height: z.number(),
+          name: z.string().optional(),
+          parentId: z.string().optional(),
+          vectorPaths: z.array(
+            z.object({
+              windingRule: z.string().optional(),
+              data: z.string()
+            })
+          ),
+          fillColor: z.any().optional(),
+          strokeColor: z.any().optional(),
+          strokeWeight: z.number().optional()
+        })
+      ).describe("Array of vector configurations")
+    },
+    async ({ vectors }) => {
+      const ids: string[] = [];
+      for (const cfg of vectors) {
+        try {
+          const node = await figmaClient.createVector(cfg);
+          ids.push(node.id);
+        } catch {
+          // continue on error
+        }
+      }
+      return { content: [{ type: "text", text: `Created vector IDs: ${ids.join(", ")}` }] };
+    }
+  );
+
   // Create Component Instances Tool
   server.tool(
     "create_component_instances",
