@@ -140,72 +140,89 @@ Talk to Figma, channel {channel-ID}
 
 ### Read commands
 
-| Command                                | Description                              | Parameters           |
-|----------------------------------------|------------------------------------------|----------------------|
-| `get_document_info`                    | Retrieve Figma document details          | None                 |
-| `get_local_components`                 | List local components                    | None                 |
-| `get_node_info` / `get_nodes_info`     | Get detailed node information            | `nodeId` / `nodeIds` |
-| `get_selection`                        | Get the current selection                | None                 |
-| `get_styles`                           | Retrieve all styles                      | None                 |
-| `scan_text_nodes`                      | Discover text nodes                      | `nodeId`             |
+| Command                   | Description                                          | Parameters              |
+|---------------------------|------------------------------------------------------|-------------------------|
+| `get_document_info`       | Retrieve Figma document details                      | None                    |
+| `get_selection`           | Retrieve current selection                           | None                    |
+| `get_node_info`           | Retrieve detailed info for a specific node           | `nodeId`                |
+| `get_nodes_info`          | Retrieve detailed info for multiple nodes            | `nodeIds`               |
+| `get_styles`              | Retrieve all styles                                  | None                    |
+| `get_local_components`    | Retrieve all local components                        | None                    |
+| `get_remote_components`   | Retrieve team library components                     | None                    |
+| `get_styled_text_segments`| Retrieve styled text segments based on a property     | `nodeId`, `property`    |
+| `scan_text_nodes`         | Scan all text nodes under a node                     | `nodeId`                |
 
 ### Write commands
 
-| Command                           | Description                              | Parameters                                                                                               |
-|-----------------------------------|------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| `rename_layer`                    | Rename a single layer in Figma           | `nodeId`, `newName`, `setAutoRename`                                                                     |
-| `rename_layers`                   | Rename multiple layers in Figma          | `layer_ids`, `new_name`, `match_pattern`, `replace_with`                                                 |
-| `rename_multiple`                 | Rename multiple layers with distinct names | `layer_ids`, `new_names`                                                                               |
-| `clone_node`                      | Clone a Figma node                       | `nodeId`, `x`, `y`                                                                                       |
-| `clone_nodes`                     | Clone multiple nodes simultaneously      | `nodeIds`, `positions?`, `offsetX?`, `offsetY?`                                                         |
-| `create_component_instance`       | Create an instance of a component        | `componentKey`, `x`, `y`                                                                                 |
-| `create_ellipse`                  | Create an ellipse shape                  | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight`             |
-| `create_polygon`                  | Create a polygon shape                   | `x`, `y`, `width`, `height`, `sides`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight`     |
-| `create_star`                     | Create a star shape                      | `x`, `y`, `width`, `height`, `points`, `innerRadius`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
-| `create_vector`                   | Create a vector shape                    | `x`, `y`, `width`, `height`, `name`, `parentId`, `vectorPaths`, `fillColor`, `strokeColor`, `strokeWeight` |
-| `create_line`                     | Create a line shape                      | `x1`, `y1`, `x2`, `y2`, `name`, `parentId`, `strokeColor`, `strokeWeight`, `strokeCap`                   |
-| `insert_svg_vector`               | Insert SVG content as vector             | `svg`, `svgPath`, `x`, `y`, `name`, `parentId`                                                           |
-| `create_frame`                    | Create a frame                           | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight`             |
-| `create_frames`                   | Create multiple frames                   | `frames`: array of objects `{ x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight? }` |
-| `create_rectangle`                | Create a rectangle shape                 | `x`, `y`, `width`, `height`, `name`, `parentId`                                                          |
-| `delete_node`                     | Remove a Figma node                      | `nodeId`                                                                                                 |
-| `move_node`                       | Reposition a node                        | `nodeId`, `x`, `y`                                                                                       |
-| `resize_node`                     | Alter node dimensions                    | `nodeId`, `width`, `height`                                                                              |
-| `set_corner_radius`               | Adjust node corner radii                 | `nodeId`, `radius`, `corners`                                                                            |
-| `set_fill_color`                  | Modify node fill color                   | `nodeId`, `color`                                                                                        |
-| `set_stroke_color`                | Modify node stroke color and weight      | `nodeId`, `color`, `weight`                                                                              |
-| `set_style`                       | Set both fill and stroke properties for a Figma node in a single command | `nodeId`, `fillProps`, `strokeProps`                                                                   |
-| `set_multiple_text_contents`      | Update multiple text elements            | `nodeId`, `text`                                                                                         |
-| `set_auto_layout`                 | Configure auto layout                    | `nodeId`, `layoutMode`, `paddingTop`, `paddingBottom`, `paddingLeft`, `paddingRight`, `itemSpacing`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `layoutWrap`, `strokesIncludedInLayout` |
-| `set_auto_layout_resizing`        | Set hug or fill sizing mode on an auto layout frame or child node | `nodeId`, `axis`, `mode` |
-| `set_text_content`                | Change text within a node                | `nodeId`, `text`                                                                                         |
+| Command                     | Description                                          | Parameters                                                                         |
+|-----------------------------|------------------------------------------------------|------------------------------------------------------------------------------------|
+| `rename_layer`              | Rename a single layer                                | `nodeId`, `newName`, `setAutoRename`                                               |
+| `rename_layers`             | Rename multiple layers by pattern                    | `layer_ids`, `new_name`, `match_pattern`, `replace_with`                           |
+| `rename_multiple`           | Rename multiple layers with distinct names           | `layer_ids`, `new_names`                                                           |
+| `ai_rename_layers`          | AI-assisted rename of layers                         | `layer_ids`, `context_prompt`                                                      |
+| `clone_node`                | Clone a node                                         | `nodeId`, `x`, `y`                                                                 |
+| `clone_nodes`               | Clone multiple nodes                                 | `nodeIds`, `x`, `y`                                                                |
+| `create_component_instance` | Create a component instance                          | `componentKey`, `x`, `y`                                                           |
+| `create_rectangle`          | Create a rectangle                                   | `x`, `y`, `width`, `height`, `name`, `parentId`                                    |
+| `create_rectangles`         | Create multiple rectangles                           | `rectangles`: array of `{ x, y, width, height, name?, parentId? }`                 |
+| `create_frame`              | Create a frame                                       | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_frames`             | Create multiple frames                               | `frames`: array of `{ x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight? }` |
+| `create_ellipse`            | Create an ellipse                                    | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_polygon`            | Create a polygon                                     | `x`, `y`, `width`, `height`, `sides`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_star`               | Create a star                                        | `x`, `y`, `width`, `height`, `points`, `innerRadius`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_vector`             | Create a vector                                      | `x`, `y`, `width`, `height`, `vectorPaths`, `name?`, `parentId?`, `fillColor?`, `strokeColor?`, `strokeWeight?` |
+| `insert_svg_vector`         | Insert SVG as vector                                 | `svg`, `svgPath`, `x`, `y`, `name?`, `parentId?`                                     |
+| `create_line`               | Create a line                                        | `x`, `y`, `x2`, `y2`, `name?`, `parentId?`, `strokeColor?`, `strokeWeight?`, `strokeCap?` |
+| `delete_node`               | Delete a node                                        | `nodeId`                                                                           |
+| `delete_nodes`              | Delete multiple nodes                                | `nodeIds`                                                                          |
+| `move_node`                 | Move a node                                          | `nodeId`, `x`, `y`                                                                 |
+| `move_nodes`                | Move multiple nodes                                  | `nodeIds`, `x`, `y`                                                                |
+| `resize_node`               | Resize a node                                        | `nodeId`, `width`, `height`                                                        |
+| `resize_nodes`              | Resize multiple nodes                                | `nodeIds`, `dimensions?`, `targetSize?`, `scalePercent?`, `maintainAspectRatio?`, `resizeMode?` |
+| `set_corner_radius`         | Adjust corner radius                                 | `nodeId`, `radius`, `corners?`                                                     |
+| `set_fill_color`            | Set fill color                                       | `nodeId`, `r`, `g`, `b`, `a?`                                                      |
+| `set_stroke_color`          | Set stroke color and weight                          | `nodeId`, `r`, `g`, `b`, `a?`, `weight?`                                           |
+| `set_style`                 | Set fill & stroke in one command                     | `nodeId`, `fillProps`, `strokeProps`                                               |
+| `set_styles`                | Set styles on multiple nodes                         | `entries`                                                                          |
+| `set_text_content`          | Update text in a node                                | `nodeId`, `text`                                                                   |
+| `set_multiple_text_contents`| Update multiple text nodes                           | `nodeId`, `text`: array of `{ nodeId, text }`                                      |
+| `set_auto_layout`           | Configure auto layout                                | `nodeId`, `layoutMode`, `paddingTop`, `paddingBottom`, `paddingLeft`, `paddingRight`, `itemSpacing`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `layoutWrap`, `strokesIncludedInLayout` |
+| `set_auto_layout_resizing`  | Set auto layout sizing                               | `nodeId`, `axis`, `mode`                                                           |
+| `set_bulk_font`             | Bulk apply font settings                             | `targets`                                                                          |
 
 ### Misc commands
 
-| Command               | Description                              | Parameters        |
-|-----------------------|------------------------------------------|-------------------|
-| `export_node_as_image`| Export a node as an image                | `nodeId`, `scale` |
-| `join_channel`        | Join a communication channel             | `channel`         |
+| Command                 | Description                                 | Parameters                         |
+|-------------------------|---------------------------------------------|------------------------------------|
+| `export_node_as_image`  | Export a node as an image                   | `nodeId`, `format?`, `scale?`      |
+| `join_channel`          | Join a WebSocket communication channel      | `channel`                          |
+| `group_nodes`           | Group multiple nodes in Figma               | `nodeIds`, `name?`                 |
+| `ungroup_nodes`         | Ungroup a node group                        | `nodeId`                           |
+| `flatten_node`          | Flatten complex node into vector path       | `nodeId`                           |
+| `insert_child`          | Insert a child into a parent node           | `parentId`, `childId`, `index?`    |
 
-**Text and Font Commands:**
-Here's the table with the description column moved next to the command column:
+### Effect commands
 
-**Text and Font Commands:**
+| Command                 | Description                                 | Parameters                       |
+|-------------------------|---------------------------------------------|----------------------------------|
+| `set_effects`           | Apply visual effects to a node              | `nodeId`, `effects`              |
+| `set_effect_style_id`   | Apply an effect style by style ID           | `nodeId`, `effectStyleId`        |
 
-| Command               | Description                                         | Parameters                   |
-|-----------------------|-----------------------------------------------------|------------------------------|
-| `set_font_name`       | Set text font and style                             | `nodeId`, `family`, `style` |
-| `set_font_size`       | Change text size                                    | `nodeId`, `fontSize`         |
-| `set_font_weight`     | Adjust font weight                                  | `nodeId`, `weight`           |
-| `set_letter_spacing`  | Modify spacing between letters                      | `nodeId`, `letterSpacing`, `unit` |
-| `set_line_height`     | Adjust the text line height                         | `nodeId`, `lineHeight`, `unit` |
-| `set_bulk_font`       | Bulk apply font settings to multiple text nodes     | `targets`                    |
-| `set_paragraph_spacing`| Set the spacing between paragraphs                 | `nodeId`, `paragraphSpacing` |
-| `set_text_case`       | Change text case (ORIGINAL, UPPER, LOWER, TITLE)    | `nodeId`, `textCase`         |
-| `set_text_decoration` | Add text decorations (e.g., underline)              | `nodeId`, `textDecoration`   |
-| `get_styled_text_segments`| Retrieve styled segments                        | `nodeId`, `property`         |
-| `load_font_async`     | Load a font asynchronously                          | `family`, `style`            |
+### Text & Font commands
 
+| Command                     | Description                                  | Parameters                                |
+|-----------------------------|----------------------------------------------|-------------------------------------------|
+| `set_font_name`             | Set the font family and style of text nodes  | `nodeId`, `family`, `style`              |
+| `set_font_size`             | Set the font size of text nodes              | `nodeId`, `fontSize`                      |
+| `set_font_weight`           | Set the font weight of text nodes            | `nodeId`, `weight`                        |
+| `set_letter_spacing`        | Set letter spacing between characters        | `nodeId`, `letterSpacing`, `unit`         |
+| `set_line_height`           | Set the line height of text nodes            | `nodeId`, `lineHeight`, `unit`            |
+| `set_paragraph_spacing`     | Set spacing between paragraphs               | `nodeId`, `paragraphSpacing`              |
+| `set_text_case`             | Change text casing (ORIGINAL, UPPER, LOWER, TITLE) | `nodeId`, `textCase`              |
+| `set_text_decoration`       | Add text decoration (underline, strikethrough)| `nodeId`, `textDecoration`               |
+| `get_styled_text_segments`  | Retrieve styled text segments based on property | `nodeId`, `property`                  |
+| `load_font_async`           | Load a font asynchronously                   | `family`, `style`                         |
+| `set_bulk_font`             | Bulk apply font settings to multiple nodes   | `targets`                                 |
 ---
 
 ## Example prompts: 
