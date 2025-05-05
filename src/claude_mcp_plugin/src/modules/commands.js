@@ -45,9 +45,11 @@ export function initializeCommands() {
   registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);
+  registerCommand('resize_nodes', shapeOperations.resizeNodes);
   registerCommand('delete_node', shapeOperations.deleteNode);
   registerCommand('delete_nodes', shapeOperations.deleteNodes);
   registerCommand('move_node', shapeOperations.moveNode);
+  registerCommand('move_nodes', shapeOperations.moveNodes);
   registerCommand('flatten_node', shapeOperations.flattenNode);
   registerCommand('clone_node', shapeOperations.cloneNode);
   
