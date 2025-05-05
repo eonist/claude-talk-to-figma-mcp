@@ -1484,6 +1484,20 @@ async function flattenNode(params) {
   return { id: params.nodeId, flattened: true };
 }
 
+async function createLines(params) {
+  const { lines = [] } = params || {};
+  const ids = [];
+  for (const cfg of lines) {
+    try {
+      const result = await createLine(cfg);
+      ids.push(result.id);
+    } catch (error) {
+      // continue on error
+    }
+  }
+  return { ids };
+}
+
 // Helper functions
 
 /**
@@ -1620,6 +1634,7 @@ const shapeOperations = {
   createStar,
   createVector,
   createLine,
+  createLines,
   createSvgVector,
   setCornerRadius,
   resizeNode,
@@ -4764,6 +4779,7 @@ function initializeCommands() {
   registerCommand('create_star', shapeOperations.createStar);
   registerCommand('create_vector', shapeOperations.createVector);
   registerCommand('create_line', shapeOperations.createLine);
+  registerCommand('create_lines', shapeOperations.createLines);
   registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
   registerCommand('create_rectangles', shapeOperations.createRectangles);
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);

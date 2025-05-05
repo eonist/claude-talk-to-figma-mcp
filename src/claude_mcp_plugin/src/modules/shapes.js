@@ -769,6 +769,20 @@ export async function flattenNode(params) {
   return { id: params.nodeId, flattened: true };
 }
 
+export async function createLines(params) {
+  const { lines = [] } = params || {};
+  const ids = [];
+  for (const cfg of lines) {
+    try {
+      const result = await createLine(cfg);
+      ids.push(result.id);
+    } catch (error) {
+      // continue on error
+    }
+  }
+  return { ids };
+}
+
 // Helper functions
 
 /**
@@ -905,6 +919,7 @@ export const shapeOperations = {
   createStar,
   createVector,
   createLine,
+  createLines,
   createSvgVector,
   setCornerRadius,
   resizeNode,
