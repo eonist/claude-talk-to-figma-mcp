@@ -1498,6 +1498,21 @@ async function createLines(params) {
   return { ids };
 }
 
+// Batch vectors
+async function createVectors(params) {
+  const { vectors = [] } = params || {};
+  const ids = [];
+  for (const cfg of vectors) {
+    try {
+      const result = await createVector(cfg);
+      ids.push(result.id);
+    } catch (error) {
+      // continue on error
+    }
+  }
+  return { ids };
+}
+
 // Helper functions
 
 /**
@@ -1611,6 +1626,20 @@ async function createSvgVector(params) {
   }
 }
 
+async function createSvgVectors(params) {
+  const { vectors = [] } = params || {};
+  const ids = [];
+  for (const cfg of vectors) {
+    try {
+      const result = await createSvgVector(cfg);
+      ids.push(result.id);
+    } catch (e) {
+      // continue on error
+    }
+  }
+  return { nodeIds: ids };
+}
+
 // Export the shape operations as a grouped object for external use.
 async function createRectangles(params) {
   const { rectangles = [] } = params || {};
@@ -1636,6 +1665,7 @@ const shapeOperations = {
   createLine,
   createLines,
   createSvgVector,
+  createSvgVectors,
   setCornerRadius,
   resizeNode,
   deleteNode,
@@ -4795,17 +4825,27 @@ function initializeCommands() {
   registerCommand('create_line', shapeOperations.createLine);
   registerCommand('create_lines', shapeOperations.createLines);
   registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
+  registerCommand('insert_svg_vectors', shapeOperations.createSvgVectors);
+
+  // Batch vectors
+  registerCommand('create_vectors', shapeOperations.createVectors);
+  // Batch rectangles
   registerCommand('create_rectangles', shapeOperations.createRectangles);
+  // Corner radius
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
+  // Resize operations
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('resize_nodes', shapeOperations.resizeNodes);
+  // Delete operations
   registerCommand('delete_node', shapeOperations.deleteNode);
   registerCommand('delete_nodes', shapeOperations.deleteNodes);
+  // Move operations
   registerCommand('move_node', shapeOperations.moveNode);
   registerCommand('move_nodes', shapeOperations.moveNodes);
+  // Flatten
   registerCommand('flatten_node', shapeOperations.flattenNode);
+  // Clone operations
   registerCommand('clone_node', shapeOperations.cloneNode);
-  // Clone multiple nodes
   registerCommand('clone_nodes', shapeOperations.cloneNodes);
   
   // Text Operations

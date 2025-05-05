@@ -65,6 +65,7 @@ export type FigmaCommand =
   | "rename_multiple" 
   | "ai_rename_layers"
   | "insert_svg_vector"
+  | "insert_svg_vectors"
   | "create_rectangles"
   | "set_bulk_font"
   | "set_style"

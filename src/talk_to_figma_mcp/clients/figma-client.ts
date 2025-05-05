@@ -319,6 +319,27 @@ export class FigmaClient {
     });
   }
   
+  // Batch SVG insertion
+  /**
+   * Inserts multiple SVGs as vectors in Figma
+   *
+   * @param {object} params - Batch SVG parameters
+   * @param {Array<{ svg: string; x?: number; y?: number; name?: string; parentId?: string }>} params.vectors
+   * @returns {Promise<string[]>} Array of created node IDs
+   */
+  async insertSvgVectors(params: {
+    vectors: Array<{
+      svg: string;
+      x?: number;
+      y?: number;
+      name?: string;
+      parentId?: string;
+    }>;
+  }): Promise<string[]> {
+    const result = await this.executeCommand("insert_svg_vectors", { vectors: params.vectors });
+    return Array.isArray(result.nodeIds) ? result.nodeIds : [];
+  }
+
   // Style operations
   
   /**

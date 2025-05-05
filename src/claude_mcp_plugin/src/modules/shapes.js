@@ -911,6 +911,20 @@ export async function createSvgVector(params) {
   }
 }
 
+export async function createSvgVectors(params) {
+  const { vectors = [] } = params || {};
+  const ids = [];
+  for (const cfg of vectors) {
+    try {
+      const result = await createSvgVector(cfg);
+      ids.push(result.id);
+    } catch (e) {
+      // continue on error
+    }
+  }
+  return { nodeIds: ids };
+}
+
 // Export the shape operations as a grouped object for external use.
 export async function createRectangles(params) {
   const { rectangles = [] } = params || {};
@@ -936,6 +950,7 @@ export const shapeOperations = {
   createLine,
   createLines,
   createSvgVector,
+  createSvgVectors,
   setCornerRadius,
   resizeNode,
   deleteNode,
