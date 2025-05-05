@@ -1,6 +1,6 @@
 # Claude Talk to Figma MCP
 
-[![version](https://img.shields.io/badge/version-0.4.4-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)  
+[![version](https://img.shields.io/badge/version-0.4.5-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)  
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 A Figma plugin enabling seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP). This tool allows you to design and modify Figma elements through natural language commands processed by Claude.
@@ -32,6 +32,7 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
 - **Bidirectional Communication**: Uses a real-time WebSocket channel.  
 - **Text Scanning**: Identify and edit text nodes.  
 - **Remote Components**: Access team library components.  
+- **Batch Rectangle Creation**: Create multiple rectangles in one call via `create_rectangles`.  
 
 ---
 
@@ -220,6 +221,8 @@ Please resize all selected elements so their longest side is 20px.
 
 ## Changelog
 
+### 0.4.5
+- Batch rectangle creation feature (`create_rectangles`)
 ### 0.4.4
 - Bulk font application across text nodes (`set_bulk_font`)
 - Insert SVG content as vector (`insert_svg_vector`)
