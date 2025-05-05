@@ -1,6 +1,6 @@
 # Claude Talk to Figma MCP
 
-[![version](https://img.shields.io/badge/version-0.4.2-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
+[![version](https://img.shields.io/badge/version-0.4.4-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 A Figma plugin enabling seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP). This tool allows you to design and modify Figma elements through natural language commands processed by Claude.
@@ -32,6 +32,11 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
 - **Bidirectional Communication**: Uses a real-time WebSocket channel.
 - **Text Scanning**: Identify and edit text nodes.
 - **Remote Components**: Access team library components.
+- **Bulk Font Application**: Apply fonts across multiple text nodes (`set_bulk_font`).
+- **Insert SVG Content**: Insert SVG as vector (`insert_svg_vector`).
+- **Rename Layer**: Rename a single layer (`rename_layer`).
+- **Rename Multiple Layers**: Rename multiple layers in bulk (`rename_layers`).
+- **Rename Multiple with Distinct Names**: Assign distinct names to multiple layers (`rename_multiple`).
 
 ---
 
@@ -192,6 +197,13 @@ Talk to Figma, channel {channel-ID}
 ---
 
 ## Changelog
+
+### 0.4.4
+- Bulk font application across text nodes (`set_bulk_font`)
+- Insert SVG content as vector (`insert_svg_vector`)
+- Rename a single layer (`rename_layer`)
+- Rename multiple layers (`rename_layers`)
+- Rename multiple layers with distinct names (`rename_multiple`)
 
 ### 0.4.3
 - Autolayout "hug content" and "fill container" feature
