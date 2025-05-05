@@ -34,7 +34,8 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
 - **Remote Components**: Access team library components.  
 - **Batch Rectangle Creation**: Create multiple rectangles in one call via `create_rectangles`.  
 - **Batch SVG Insertion**: Insert multiple SVGs as vectors in one operation via `insert_svg_vectors`.  
-- **Batch Polygon Creation**: Create multiple polygons in one call via `create_polygons`.  
+- **Batch Polygon Creation**: Create multiple polygons in one call via `create_polygons`.
+- **Batch Ellipse Creation**: Create multiple ellipses in one call via `create_ellipses`.
 
 ---
 

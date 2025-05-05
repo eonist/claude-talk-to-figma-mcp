@@ -103,6 +103,7 @@ The server supports multiple commands which are registered on startup. These inc
 - **Element Creation:** Create and modify elements within a Figma document.
 - **Settings Update:** Persist and update settings such as server port.
 - **Bulk Styling:** Apply fill and/or stroke styles to multiple nodes (`set_styles(entries)`).
+- **Bulk Ellipse Creation:** Create multiple ellipses in Figma (`create_ellipses(ellipses)`).
 - **Bulk Resize:** Resize multiple nodes with various options (`resize_nodes(nodeIds, dimensions?, targetSize?, scalePercent?, maintainAspectRatio?, resizeMode?)`).
 - **Move Nodes:** Reposition multiple nodes simultaneously (`move_nodes(nodeIds, x, y)`).
 

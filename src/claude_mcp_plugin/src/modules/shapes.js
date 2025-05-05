@@ -818,6 +818,21 @@ export async function createPolygons(params) {
   return { ids };
 }
 
+// Batch ellipses
+export async function createEllipses(params) {
+  const { ellipses = [] } = params || {};
+  const ids = [];
+  for (const cfg of ellipses) {
+    try {
+      const result = await createEllipse(cfg);
+      ids.push(result.id);
+    } catch (err) {
+      // continue on error
+    }
+  }
+  return { ids };
+}
+
 // Helper functions
 
 /**
@@ -964,6 +979,7 @@ export const shapeOperations = {
   createRectangles,
   createFrame,
   createEllipse,
+  createEllipses,
   createPolygon,
   createStar,
   createVector,

@@ -59,6 +59,8 @@ export function initializeCommands() {
   registerCommand('create_vectors', shapeOperations.createVectors);
   // Batch rectangles
   registerCommand('create_rectangles', shapeOperations.createRectangles);
+  // Batch ellipses
+  registerCommand('create_ellipses', shapeOperations.createEllipses);
   // Corner radius
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   // Resize operations

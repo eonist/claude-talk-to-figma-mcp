@@ -52,6 +52,7 @@ The plugin supports various commands organized into categories:
 
 - **Document**: Get document info, selection, node info
 - **Shapes**: Create and manipulate shapes (rectangle, ellipse, etc.)
+- **Batch Ellipses**: Create multiple ellipses (`create_ellipses`)
 - **Text**: Create and modify text elements
 - **Style**: Apply styles, fills, strokes, effects
 - **Components**: Work with components, groups, and assets

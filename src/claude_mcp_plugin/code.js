@@ -1066,6 +1066,16 @@ async function createPolygon(params) {
  *
  * @returns {object} An object with details of the created star.
  */
+async function createPolygons(params) {
+  const { polygons = [] } = params || {};
+  const ids = [];
+  for (const cfg of polygons) {
+    const node = await createPolygon(cfg);
+    ids.push(node.id);
+  }
+  return { ids };
+}
+
 async function createStar(params) {
   const {
     x = 0,
@@ -1513,6 +1523,31 @@ async function createVectors(params) {
   return { ids };
 }
 
+async function createPolygons(params) {
+  const { polygons = [] } = params || {};
+  const ids = [];
+  for (const cfg of polygons) {
+    const node = await createPolygon(cfg);
+    ids.push(node.id);
+  }
+  return { ids };
+}
+
+// Batch ellipses
+async function createEllipses(params) {
+  const { ellipses = [] } = params || {};
+  const ids = [];
+  for (const cfg of ellipses) {
+    try {
+      const result = await createEllipse(cfg);
+      ids.push(result.id);
+    } catch (err) {
+      // continue on error
+    }
+  }
+  return { ids };
+}
+
 // Helper functions
 
 /**
@@ -1659,6 +1694,7 @@ const shapeOperations = {
   createRectangles,
   createFrame,
   createEllipse,
+  createEllipses,
   createPolygon,
   createStar,
   createVector,
@@ -4831,6 +4867,8 @@ function initializeCommands() {
   registerCommand('create_vectors', shapeOperations.createVectors);
   // Batch rectangles
   registerCommand('create_rectangles', shapeOperations.createRectangles);
+  // Batch ellipses
+  registerCommand('create_ellipses', shapeOperations.createEllipses);
   // Corner radius
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   // Resize operations
