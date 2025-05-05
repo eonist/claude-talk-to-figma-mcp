@@ -173,6 +173,7 @@ Talk to Figma, channel {channel-ID}
 | `set_stroke_color`                | Modify node stroke color and weight      | `nodeId`, `color`, `weight`                                                                              |
 | `set_multiple_text_contents`      | Update multiple text elements            | `nodeId`, `text`                                                                                         |
 | `set_auto_layout`                 | Configure auto layout                    | `nodeId`, `layoutMode`, `paddingTop`, `paddingBottom`, `paddingLeft`, `paddingRight`, `itemSpacing`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `layoutWrap`, `strokesIncludedInLayout` |
+| `set_auto_layout_resizing`        | Set hug or fill sizing mode on an auto layout frame or child node | `nodeId`, `axis`, `mode` |
 | `set_text_content`                | Change text within a node                | `nodeId`, `text`                                                                                         |
 
 ### Misc commands
@@ -183,20 +184,25 @@ Talk to Figma, channel {channel-ID}
 | `join_channel`        | Join a communication channel             | `channel`         |
 
 **Text and Font Commands:**
+Here's the table with the description column moved next to the command column:
 
-| Command               | Parameters                   | Description                                         |
-|-----------------------|------------------------------|-----------------------------------------------------|
-| `set_font_name`       | `nodeId`, `family`, `style` | Set text font and style                             |
-| `set_font_size`       | `nodeId`, `fontSize`         | Change text size                                    |
-| `set_font_weight`     | `nodeId`, `weight`           | Adjust font weight                                  |
-| `set_letter_spacing`  | `nodeId`, `letterSpacing`, `unit` | Modify spacing between letters                   |
-| `set_line_height`     | `nodeId`, `lineHeight`, `unit` | Adjust the text line height                        |
-| `set_bulk_font`       | Bulk apply font settings to multiple text nodes | `targets`                                                                                          |
-| `set_paragraph_spacing`| `nodeId`, `paragraphSpacing` | Set the spacing between paragraphs                 |
-| `set_text_case`       | `nodeId`, `textCase`         | Change text case (ORIGINAL, UPPER, LOWER, TITLE)    |
-| `set_text_decoration` | `nodeId`, `textDecoration`   | Add text decorations (e.g., underline)              |
-| `get_styled_text_segments`| `nodeId`, `property`     | Retrieve styled segments                            |
-| `load_font_async`     | `family`, `style`            | Load a font asynchronously                          |
+**Text and Font Commands:**
+
+| Command               | Description                                         | Parameters                   |
+|-----------------------|-----------------------------------------------------|------------------------------|
+| `set_font_name`       | Set text font and style                             | `nodeId`, `family`, `style` |
+| `set_font_size`       | Change text size                                    | `nodeId`, `fontSize`         |
+| `set_font_weight`     | Adjust font weight                                  | `nodeId`, `weight`           |
+| `set_letter_spacing`  | Modify spacing between letters                      | `nodeId`, `letterSpacing`, `unit` |
+| `set_line_height`     | Adjust the text line height                         | `nodeId`, `lineHeight`, `unit` |
+| `set_bulk_font`       | Bulk apply font settings to multiple text nodes     | `targets`                    |
+| `set_paragraph_spacing`| Set the spacing between paragraphs                 | `nodeId`, `paragraphSpacing` |
+| `set_text_case`       | Change text case (ORIGINAL, UPPER, LOWER, TITLE)    | `nodeId`, `textCase`         |
+| `set_text_decoration` | Add text decorations (e.g., underline)              | `nodeId`, `textDecoration`   |
+| `get_styled_text_segments`| Retrieve styled segments                        | `nodeId`, `property`         |
+| `load_font_async`     | Load a font asynchronously                          | `family`, `style`            |
+
+Sources
 
 ---
 
