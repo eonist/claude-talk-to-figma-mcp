@@ -233,7 +233,34 @@ export class FigmaClient {
       strokeWeight: params.strokeWeight
     });
   }
-  
+
+  /**
+   * Creates a line in Figma
+   *
+   * @param {object} params - Line parameters
+   * @returns {Promise<BaseFigmaNode>} The created line node
+   */
+  async createLine(params: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    parentId?: string;
+    strokeColor?: RGBAColor;
+    strokeWeight?: number;
+  }): Promise<BaseFigmaNode> {
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    return this.executeCommand("create_line", {
+      x1: params.x1,
+      y1: params.y1,
+      x2: params.x2,
+      y2: params.y2,
+      parentId: parentIdString,
+      strokeColor: params.strokeColor,
+      strokeWeight: params.strokeWeight
+    });
+  }
+
   /**
    * Inserts an SVG vector in Figma
    * 

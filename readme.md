@@ -172,6 +172,8 @@ Talk to Figma, channel {channel-ID}
 | `create_star`               | Create a star                                        | `x`, `y`, `width`, `height`, `points`, `innerRadius`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_vector`             | Create a vector                                      | `x`, `y`, `width`, `height`, `vectorPaths`, `name?`, `parentId?`, `fillColor?`, `strokeColor?`, `strokeWeight?` |
 | `insert_svg_vector`         | Insert SVG as vector                                 | `svg`, `svgPath`, `x`, `y`, `name?`, `parentId?`                                     |
+| `create_line`               | Create a line                                        | `x1`, `y1`, `x2`, `y2`, `parentId?`, `strokeColor?`, `strokeWeight?`                 |
+| `create_lines`              | Create multiple lines                                | `lines`: array of `{ x1, y1, x2, y2, parentId?, strokeColor?, strokeWeight? }`        |
 | `create_line`               | Create a line                                        | `x`, `y`, `x2`, `y2`, `name?`, `parentId?`, `strokeColor?`, `strokeWeight?`, `strokeCap?` |
 | `delete_node`               | Delete a node                                        | `nodeId`                                                                           |
 | `delete_nodes`              | Delete multiple nodes                                | `nodeIds`                                                                          |
@@ -241,6 +243,8 @@ Please resize all selected elements so their longest side is 20px.
 
 ### 0.4.5
 - Batch rectangle creation via `create_rectangles`
+- Single line creation via `create_line`
+- Batch line creation via `create_lines`
 - Batch frames creation via `create_frames`
 - Bulk font and text updates via `set_bulk_font` and `set_multiple_text_contents`
 - Delete multiple nodes via `delete_nodes`

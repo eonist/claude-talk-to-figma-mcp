@@ -3,9 +3,11 @@ import { z } from "zod";
 import { FigmaClient } from "../../clients/figma-client.js";
 
 /**
- * Registers rectangle creation commands for the MCP server:
+ * Registers creation commands for the MCP server:
  * - create_rectangle
  * - create_rectangles (batch)
+ * - create_line
+ * - create_lines (batch)
  */
 export function registerCreateCommands(server: McpServer, figmaClient: FigmaClient) {
 
@@ -77,6 +79,69 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
       return {
         content: [
           { type: "text", text: `Created rectangle IDs: ${ids.join(", ")}` }
+        ]
+      };
+    }
+  );
+
+  // Single line
+  server.tool(
+    "create_line",
+    "Create a new line in Figma",
+    {
+      x1: z.number().describe("Start X position"),
+      y1: z.number().describe("Start Y position"),
+      x2: z.number().describe("End X position"),
+      y2: z.number().describe("End Y position"),
+      parentId: z.string().optional().describe("Parent ID"),
+      strokeColor: z.any().optional().describe("Stroke color"),
+      strokeWeight: z.number().optional().describe("Stroke weight")
+    },
+    async ({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight }) => {
+      try {
+        const node = await figmaClient.createLine({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight });
+        return { content: [{ type: "text", text: `Created line ID: ${node.id}` }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${String(err)}` }] };
+      }
+    }
+  );
+
+  // Batch lines
+  server.tool(
+    "create_lines",
+    "Create multiple lines in Figma",
+    {
+      lines: z
+        .array(
+          z.object({
+            x1: z.number(),
+            y1: z.number(),
+            x2: z.number(),
+            y2: z.number(),
+            parentId: z.string().optional(),
+            strokeColor: z.any().optional(),
+            strokeWeight: z.number().optional()
+          })
+        )
+        .describe("Array of line parameters")
+    },
+    async ({ lines }) => {
+      if (!lines || lines.length === 0) {
+        throw new Error("No lines provided");
+      }
+      const ids: string[] = [];
+      for (const cfg of lines) {
+        try {
+          const node = await figmaClient.createLine(cfg);
+          ids.push(node.id);
+        } catch {
+          // continue on error
+        }
+      }
+      return {
+        content: [
+          { type: "text", text: `Created line IDs: ${ids.join(", ")}` }
         ]
       };
     }

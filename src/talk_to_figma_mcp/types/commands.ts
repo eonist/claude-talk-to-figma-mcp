@@ -19,6 +19,7 @@ export type FigmaCommand =
   | "create_star"
   | "create_vector"
   | "create_line"
+  | "create_lines"
   | "set_fill_color"
   | "set_stroke_color"
   | "move_node"
