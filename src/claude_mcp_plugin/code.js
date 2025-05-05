@@ -1569,8 +1569,22 @@ async function createSvgVector(params) {
 }
 
 // Export the shape operations as a grouped object for external use.
+async function createRectangles(params) {
+  const { rectangles = [] } = params || {};
+  const created = [];
+  for (const cfg of rectangles) {
+    const rectNode = await createRectangle(cfg);
+    if (cfg.cornerRadius !== undefined) {
+      await setCornerRadius({ nodeId: rectNode.id, radius: cfg.cornerRadius });
+    }
+    created.push(rectNode.id);
+  }
+  return { ids: created };
+}
+
 const shapeOperations = {
   createRectangle,
+  createRectangles,
   createFrame,
   createEllipse,
   createPolygon,
@@ -4683,6 +4697,7 @@ const renameOperations = {
  * to their appropriate implementations.
  */
 
+
 // Internal registry to store command handlers
 const commandRegistry = {};
 
@@ -4721,6 +4736,7 @@ function initializeCommands() {
   registerCommand('create_vector', shapeOperations.createVector);
   registerCommand('create_line', shapeOperations.createLine);
   registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
+  registerCommand('create_rectangles', shapeOperations.createRectangles);
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('resize_nodes', shapeOperations.resizeNodes);

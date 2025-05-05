@@ -6,6 +6,14 @@
  * to their appropriate implementations.
  */
 
+import * as documentOperations from './document.js';
+import * as shapeOperations from './shapes.js';
+import * as textOperations from './text.js';
+import * as styleOperations from './styles.js';
+import * as componentOperations from './components.js';
+import * as layoutOperations from './layout.js';
+import * as renameOperations from './rename.js';
+
 // Internal registry to store command handlers
 const commandRegistry = {};
 
@@ -44,6 +52,7 @@ export function initializeCommands() {
   registerCommand('create_vector', shapeOperations.createVector);
   registerCommand('create_line', shapeOperations.createLine);
   registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
+  registerCommand('create_rectangles', shapeOperations.createRectangles);
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('resize_nodes', shapeOperations.resizeNodes);

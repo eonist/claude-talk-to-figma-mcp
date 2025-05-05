@@ -854,8 +854,22 @@ export async function createSvgVector(params) {
 }
 
 // Export the shape operations as a grouped object for external use.
+export async function createRectangles(params) {
+  const { rectangles = [] } = params || {};
+  const created = [];
+  for (const cfg of rectangles) {
+    const rectNode = await createRectangle(cfg);
+    if (cfg.cornerRadius !== undefined) {
+      await setCornerRadius({ nodeId: rectNode.id, radius: cfg.cornerRadius });
+    }
+    created.push(rectNode.id);
+  }
+  return { ids: created };
+}
+
 export const shapeOperations = {
   createRectangle,
+  createRectangles,
   createFrame,
   createEllipse,
   createPolygon,
