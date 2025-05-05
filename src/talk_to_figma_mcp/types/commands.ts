@@ -58,6 +58,7 @@ export type FigmaCommand =
   | "ai_rename_layers"
   | "insert_svg_vector"
   | "set_bulk_font"
+  | "set_style"
   | "join";
 
 /**

@@ -171,6 +171,7 @@ Talk to Figma, channel {channel-ID}
 | `set_corner_radius`               | Adjust node corner radii                 | `nodeId`, `radius`, `corners`                                                                            |
 | `set_fill_color`                  | Modify node fill color                   | `nodeId`, `color`                                                                                        |
 | `set_stroke_color`                | Modify node stroke color and weight      | `nodeId`, `color`, `weight`                                                                              |
+| `set_style`                       | Set both fill and stroke properties for a Figma node in a single command | `nodeId`, `fillProps`, `strokeProps`                                                                   |
 | `set_multiple_text_contents`      | Update multiple text elements            | `nodeId`, `text`                                                                                         |
 | `set_auto_layout`                 | Configure auto layout                    | `nodeId`, `layoutMode`, `paddingTop`, `paddingBottom`, `paddingLeft`, `paddingRight`, `itemSpacing`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `layoutWrap`, `strokesIncludedInLayout` |
 | `set_auto_layout_resizing`        | Set hug or fill sizing mode on an auto layout frame or child node | `nodeId`, `axis`, `mode` |

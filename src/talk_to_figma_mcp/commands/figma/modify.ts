@@ -123,6 +123,99 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
       }
     }
   );
+  
+  /**
+   * Set Style Tool
+   *
+   * Set both fill and stroke properties for a Figma node in a single command
+   */
+  server.tool(
+    "set_style",
+    "Set both fill and stroke properties for a Figma node in a single command",
+    {
+      nodeId: z.string().describe("The ID of the node to modify"),
+      fillProps: z.object({
+        color: z
+          .tuple([
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+          ])
+          .optional()
+          .describe("RGBA fill color"),
+        visible: z.boolean().optional().describe("Whether fill is visible"),
+        opacity: z.number().min(0).max(1).optional().describe("Fill opacity"),
+        gradient: z.any().optional().describe("Optional gradient settings"),
+      }).describe("Fill properties"),
+      strokeProps: z.object({
+        color: z
+          .tuple([
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+          ])
+          .optional()
+          .describe("RGBA stroke color"),
+        weight: z.number().positive().optional().describe("Stroke weight"),
+        align: z
+          .enum(["INSIDE", "CENTER", "OUTSIDE"])
+          .optional()
+          .describe("Stroke alignment"),
+        dashes: z.array(z.number()).optional().describe("Dash pattern"),
+        visible: z.boolean().optional().describe("Whether stroke is visible"),
+      }).describe("Stroke properties"),
+    },
+    async ({ nodeId, fillProps, strokeProps }) => {
+      try {
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Setting style for node ID: ${nodeIdString}`);
+        if (fillProps) {
+          const { color, visible, opacity, gradient } = fillProps;
+          await figmaClient.setFillColor({
+            nodeId: nodeIdString,
+            r: color?.[0] ?? 0,
+            g: color?.[1] ?? 0,
+            b: color?.[2] ?? 0,
+            a: color?.[3] ?? 1,
+          });
+          // Optionally handle visible, opacity, gradient via client if needed
+        }
+        if (strokeProps) {
+          const { color, weight, align, dashes, visible } = strokeProps;
+          await figmaClient.setStrokeColor({
+            nodeId: nodeIdString,
+            r: color?.[0] ?? 0,
+            g: color?.[1] ?? 0,
+            b: color?.[2] ?? 0,
+            a: color?.[3] ?? 1,
+            weight,
+          });
+          // Optionally handle align, dashes, visible via client if needed
+        }
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Set style of node "${nodeIdString}" successfully.`,
+            },
+          ],
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error setting style: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            },
+          ],
+        };
+      }
+    }
+  );
 
   /**
    * Move Node Tool

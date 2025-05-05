@@ -144,6 +144,45 @@ export async function setStrokeColor(params) {
  * const styles = await getStyles();
  * console.log(styles.colors, styles.texts);
  */
+export async function setStyle(params) {
+  const { nodeId, fillProps, strokeProps } = params || {};
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+  // Apply fill properties if provided
+  if (fillProps) {
+    await setFillColor({
+      nodeId,
+      color: {
+        r: Array.isArray(fillProps.color) ? fillProps.color[0] : 0,
+        g: Array.isArray(fillProps.color) ? fillProps.color[1] : 0,
+        b: Array.isArray(fillProps.color) ? fillProps.color[2] : 0,
+        a: Array.isArray(fillProps.color) ? fillProps.color[3] : 1
+      }
+    });
+  }
+  // Apply stroke properties if provided
+  if (strokeProps) {
+    await setStrokeColor({
+      nodeId,
+      color: {
+        r: Array.isArray(strokeProps.color) ? strokeProps.color[0] : 0,
+        g: Array.isArray(strokeProps.color) ? strokeProps.color[1] : 0,
+        b: Array.isArray(strokeProps.color) ? strokeProps.color[2] : 0,
+        a: Array.isArray(strokeProps.color) ? strokeProps.color[3] : 1
+      },
+      weight: strokeProps.weight != null ? strokeProps.weight : 1
+    });
+  }
+  const node = await figma.getNodeByIdAsync(nodeId);
+  return {
+    id: node.id,
+    name: node.name,
+    fills: node.fills,
+    strokes: node.strokes
+  };
+}
+
 export async function getStyles() {
   const styles = {
     colors: await figma.getLocalPaintStylesAsync(),
@@ -309,6 +348,7 @@ export async function setEffectStyleId(params) {
 
 // Export all style operations as a grouped object
 export const styleOperations = {
+  setStyle,
   setFillColor,
   setStrokeColor,
   getStyles,

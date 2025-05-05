@@ -305,17 +305,43 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_stroke_color", {
-      nodeId: nodeIdString,
-      color: {
-        r: params.r,
-        g: params.g,
-        b: params.b,
-        a: params.a || 1
-      },
-      weight: params.weight || 1
-    });
-  }
+      return this.executeCommand("set_stroke_color", {
+        nodeId: nodeIdString,
+        color: {
+          r: params.r,
+          g: params.g,
+          b: params.b,
+          a: params.a || 1
+        },
+        weight: params.weight || 1
+      });
+    }
+
+    /**
+     * Sets both fill and stroke properties on a node in a single call
+     *
+     * @param params.nodeId - The node ID to style
+     * @param params.fillProps - Optional fill properties
+     * @param params.strokeProps - Optional stroke properties
+     */
+    async setStyle(params: {
+      nodeId: string;
+      fillProps?: {
+        color?: [number, number, number, number];
+        visible?: boolean;
+        opacity?: number;
+        gradient?: any;
+      };
+      strokeProps?: {
+        color?: [number, number, number, number];
+        weight?: number;
+        align?: "INSIDE" | "CENTER" | "OUTSIDE";
+        dashes?: number[];
+        visible?: boolean;
+      };
+    }): Promise<any> {
+      return this.executeCommand("set_style", params);
+    }
   
   // Node operations
   
