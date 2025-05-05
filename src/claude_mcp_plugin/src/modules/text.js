@@ -1469,7 +1469,7 @@ export async function loadFontAsyncWrapper(params) {
  * Apply font settings to multiple text nodes at once
  *
  * @param {object} params - Configuration for bulk font update
- * @param {Array<{nodeIds?: string[], parentId?: string, font: object}>} params.targets - Array of target configurations
+ * @param {Array<{nodeIds?: string[], parentId?: string, inherit?: boolean, font: object}>} params.targets - Array of target configurations
  * @param {string} [params.commandId] - Optional command identifier for progress tracking
  * 
  * @returns {Promise<object>} Summary of the bulk update operation
@@ -1507,8 +1507,24 @@ export async function setBulkFont(params) {
         continue;
       }
       
-      const scanResult = await scanTextNodes({ nodeId: target.parentId });
-      targetNodeIds = scanResult.textNodes.map(node => node.id);
+      // Determine whether to include all descendant nodes or only direct children
+      const inherit = target.inherit !== undefined ? target.inherit : true;
+      
+      if (inherit) {
+        // If inherit is true (default), scan all descendants (existing behavior)
+        const scanResult = await scanTextNodes({ nodeId: target.parentId });
+        targetNodeIds = scanResult.textNodes.map(node => node.id);
+      } else {
+        // If inherit is false, only include direct children that are text nodes
+        if ("children" in parent) {
+          // Find only direct children that are text nodes
+          for (const child of parent.children) {
+            if (child.type === "TEXT" && child.visible !== false) {
+              targetNodeIds.push(child.id);
+            }
+          }
+        }
+      }
     }
 
     if (!targetNodeIds.length) {

@@ -1355,6 +1355,8 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
           .describe("Array of node IDs to update"),
         parentId: z.string().optional()
           .describe("Optional parent node ID to scan for text nodes"),
+        inherit: z.boolean().optional().default(true)
+          .describe("Whether to cascade font changes to all descendant text nodes (default: true)"),
         font: z.object({
           family: z.string().optional()
             .describe("Font family name"),
