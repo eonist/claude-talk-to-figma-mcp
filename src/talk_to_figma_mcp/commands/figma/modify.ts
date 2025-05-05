@@ -267,11 +267,7 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
         .describe("Array of node style entries"),
     },
     async ({ entries }, extra) => {
-      const results = [];
-      for (const entry of entries) {
-        const res = await figmaClient.setStyle(entry);
-        results.push(res);
-      }
+      const results = await figmaClient.setStyles({ entries });
       return {
         content: [
           {
