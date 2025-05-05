@@ -203,9 +203,19 @@ Here's the table with the description column moved next to the command column:
 | `get_styled_text_segments`| Retrieve styled segments                        | `nodeId`, `property`         |
 | `load_font_async`     | Load a font asynchronously                          | `family`, `style`            |
 
-Sources
-
 ---
+
+## Example prompts: 
+
+```markdown
+Talk to Figma, channel {channel-ID}
+Please resize all selected elements to fit within a 200x200px frame while maintaining their aspect ratios.
+```
+
+```markdown
+Talk to Figma, channel {channel-ID}
+Please resize all selected elements so their longest side is 20px.
+```
 
 ## Changelog
 
