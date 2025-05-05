@@ -262,9 +262,23 @@ export async function exportNodeAsImage(params) {
  * Collection of all component-related operations exposed by this module.
  * Use this object to access the component manipulation functions.
  */
+export async function createComponentInstances(params) {
+  const { instances } = params || {};
+  if (!instances || !Array.isArray(instances)) {
+    throw new Error("Missing instances array");
+  }
+  const instanceResults = [];
+  for (const instanceData of instances) {
+    const result = await createComponentInstance(instanceData);
+    instanceResults.push(result);
+  }
+  return { instances: instanceResults };
+}
+
 export const componentOperations = {
   getLocalComponents,
   getRemoteComponents,
   createComponentInstance,
+  createComponentInstances,
   exportNodeAsImage
 };

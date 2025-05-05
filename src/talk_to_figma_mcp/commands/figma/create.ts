@@ -84,6 +84,38 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Create Component Instances Tool
+  server.tool(
+    "create_component_instances",
+    "Create multiple component instances in Figma",
+    {
+      instances: z
+        .array(
+          z.object({
+            componentKey: z.string().describe("Key of the component to instantiate"),
+            x: z.number().describe("X position"),
+            y: z.number().describe("Y position"),
+            name: z.string().optional().describe("Instance name"),
+            parentId: z.string().optional().describe("Parent ID"),
+            scaleX: z.number().optional().describe("Scale X"),
+            scaleY: z.number().optional().describe("Scale Y")
+          })
+        )
+        .describe("Array of component instance specs")
+    },
+    async ({ instances }) => {
+      try {
+        const result = await figmaClient.executeCommand("create_component_instances", { instances });
+        const ids = Array.isArray(result.instances)
+          ? result.instances.map((inst: { id: string }) => inst.id)
+          : [];
+        return { content: [{ type: "text", text: `Created component instance IDs: ${ids.join(", ")}` }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error creating component instances: ${String(err)}` }] };
+      }
+    }
+  );
+
   // Single line
   server.tool(
     "create_line",

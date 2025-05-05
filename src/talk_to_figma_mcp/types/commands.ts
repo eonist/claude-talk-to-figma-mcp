@@ -34,6 +34,7 @@ export type FigmaCommand =
   | "get_local_components"
   | "get_team_components"
   | "create_component_instance"
+  | "create_component_instances"
   | "set_corner_radius"
   | "clone_node"
   | "clone_nodes"

@@ -99,6 +99,7 @@ export function initializeCommands() {
   registerCommand('get_local_components', componentOperations.getLocalComponents);
   registerCommand('get_remote_components', componentOperations.getRemoteComponents);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
++  registerCommand('create_component_instances', componentOperations.createComponentInstances);
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
   
   // Layout Operations
