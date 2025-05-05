@@ -234,6 +234,8 @@ export class FigmaClient {
     });
   }
 
+  // Batch SVG insertion
+
   /**
    * Creates a line in Figma
    *
@@ -319,6 +321,39 @@ export class FigmaClient {
     });
   }
   
+  /**
+   * Creates a new polygon
+   * 
+   * @param {object} params - Polygon parameters
+   * @returns {Promise<BaseFigmaNode>} The created polygon
+   */
+  async createPolygon(params: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    sides?: number;
+    name?: string;
+    parentId?: string;
+    fillColor?: RGBAColor;
+    strokeColor?: RGBAColor;
+    strokeWeight?: number;
+  }): Promise<BaseFigmaNode> {
+    const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    return this.executeCommand("create_polygon", {
+      x: params.x,
+      y: params.y,
+      width: params.width,
+      height: params.height,
+      sides: params.sides,
+      name: params.name,
+      parentId: parentIdString,
+      fillColor: params.fillColor,
+      strokeColor: params.strokeColor,
+      strokeWeight: params.strokeWeight
+    });
+  }
+
   // Batch SVG insertion
   /**
    * Inserts multiple SVGs as vectors in Figma

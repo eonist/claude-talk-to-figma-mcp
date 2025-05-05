@@ -154,6 +154,40 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Batch polygons
+  server.tool(
+    "create_polygons",
+    "Create multiple polygons in Figma",
+    {
+      polygons: z.array(
+        z.object({
+          x: z.number().describe("X position"),
+          y: z.number().describe("Y position"),
+          width: z.number().describe("Width"),
+          height: z.number().describe("Height"),
+          sides: z.number().min(3).describe("Number of sides"),
+          name: z.string().optional().describe("Name"),
+          parentId: z.string().optional().describe("Parent ID"),
+          fillColor: z.any().optional().describe("Fill color"),
+          strokeColor: z.any().optional().describe("Stroke color"),
+          strokeWeight: z.number().optional().describe("Stroke weight")
+        })
+      ).describe("Array of polygon configurations")
+    },
+    async ({ polygons }) => {
+      const ids: string[] = [];
+      for (const cfg of polygons) {
+        try {
+          const node = await figmaClient.createPolygon(cfg);
+          ids.push(node.id);
+        } catch {
+          // continue on error
+        }
+      }
+      return { content: [{ type: "text", text: `Created polygon IDs: ${ids.join(", ")}` }] };
+    }
+  );
+
   // Create Component Instances Tool
   server.tool(
     "create_component_instances",

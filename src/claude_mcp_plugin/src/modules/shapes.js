@@ -351,6 +351,16 @@ export async function createPolygon(params) {
  *
  * @returns {object} An object with details of the created star.
  */
+export async function createPolygons(params) {
+  const { polygons = [] } = params || {};
+  const ids = [];
+  for (const cfg of polygons) {
+    const node = await createPolygon(cfg);
+    ids.push(node.id);
+  }
+  return { ids };
+}
+
 export async function createStar(params) {
   const {
     x = 0,
@@ -794,6 +804,16 @@ export async function createVectors(params) {
     } catch (error) {
       // continue on error
     }
+  }
+  return { ids };
+}
+
+export async function createPolygons(params) {
+  const { polygons = [] } = params || {};
+  const ids = [];
+  for (const cfg of polygons) {
+    const node = await createPolygon(cfg);
+    ids.push(node.id);
   }
   return { ids };
 }
