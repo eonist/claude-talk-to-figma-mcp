@@ -163,6 +163,7 @@ Talk to Figma, channel {channel-ID}
 | `clone_node`                | Clone a node                                         | `nodeId`, `x`, `y`                                                                 |
 | `clone_nodes`               | Clone multiple nodes                                 | `nodeIds`, `x`, `y`                                                                |
 | `create_component_instance` | Create a component instance                          | `componentKey`, `x`, `y`                                                           |
+| `create_component_instances` | Create multiple component instances                 | `instances`: array of `{ componentKey, x, y, name?, parentId?, scaleX?, scaleY? }` |
 | `create_rectangle`          | Create a rectangle                                   | `x`, `y`, `width`, `height`, `name`, `parentId`                                    |
 | `create_rectangles`         | Create multiple rectangles                           | `rectangles`: array of `{ x, y, width, height, name?, parentId? }`                 |
 | `create_frame`              | Create a frame                                       | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
