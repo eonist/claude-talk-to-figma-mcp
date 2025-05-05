@@ -164,6 +164,7 @@ Talk to Figma, channel {channel-ID}
 | `create_line`                     | Create a line shape                      | `x1`, `y1`, `x2`, `y2`, `name`, `parentId`, `strokeColor`, `strokeWeight`, `strokeCap`                   |
 | `insert_svg_vector`               | Insert SVG content as vector             | `svg`, `svgPath`, `x`, `y`, `name`, `parentId`                                                           |
 | `create_frame`                    | Create a frame                           | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight`             |
+| `create_frames`                   | Create multiple frames                   | `frames`: array of objects `{ x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight? }` |
 | `create_rectangle`                | Create a rectangle shape                 | `x`, `y`, `width`, `height`, `name`, `parentId`                                                          |
 | `delete_node`                     | Remove a Figma node                      | `nodeId`                                                                                                 |
 | `move_node`                       | Reposition a node                        | `nodeId`, `x`, `y`                                                                                       |

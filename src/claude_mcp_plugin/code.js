@@ -893,6 +893,17 @@ async function createFrame(params) {
  *
  * @returns {object} An object with the ellipse node's details.
  */
+async function createFrames(params) {
+  const { frames = [] } = params || {};
+  const created = [];
+  for (const cfg of frames) {
+    // Reuse createFrame helper for each configuration
+    const frameNode = await createFrame(cfg);
+    created.push(frameNode.id);
+  }
+  return { ids: created };
+}
+
 async function createEllipse(params) {
   const {
     x = 0,
@@ -1570,6 +1581,7 @@ const shapeOperations = {
   setCornerRadius,
   resizeNode,
   deleteNode,
+  deleteNodes,
   moveNode,
   flattenNode
 };
@@ -4702,6 +4714,7 @@ function initializeCommands() {
   // Manages creation and modification of basic geometric shapes and vectors
   registerCommand('create_rectangle', shapeOperations.createRectangle);
   registerCommand('create_frame', shapeOperations.createFrame);
+  registerCommand('create_frames', shapeOperations.createFrames);
   registerCommand('create_ellipse', shapeOperations.createEllipse);
   registerCommand('create_polygon', shapeOperations.createPolygon);
   registerCommand('create_star', shapeOperations.createStar);
@@ -4710,9 +4723,11 @@ function initializeCommands() {
   registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   registerCommand('resize_node', shapeOperations.resizeNode);
+  registerCommand('resize_nodes', shapeOperations.resizeNodes);
   registerCommand('delete_node', shapeOperations.deleteNode);
   registerCommand('delete_nodes', shapeOperations.deleteNodes);
   registerCommand('move_node', shapeOperations.moveNode);
+  registerCommand('move_nodes', shapeOperations.moveNodes);
   registerCommand('flatten_node', shapeOperations.flattenNode);
   registerCommand('clone_node', shapeOperations.cloneNode);
   

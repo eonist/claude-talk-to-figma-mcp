@@ -12,6 +12,7 @@ export type FigmaCommand =
   | "get_nodes_info"
   | "create_rectangle"
   | "create_frame"
+  | "create_frames"
   | "create_text"
   | "create_ellipse"
   | "create_polygon"

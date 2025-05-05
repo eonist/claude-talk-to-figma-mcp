@@ -178,6 +178,17 @@ export async function createFrame(params) {
  *
  * @returns {object} An object with the ellipse node's details.
  */
+export async function createFrames(params) {
+  const { frames = [] } = params || {};
+  const created = [];
+  for (const cfg of frames) {
+    // Reuse createFrame helper for each configuration
+    const frameNode = await createFrame(cfg);
+    created.push(frameNode.id);
+  }
+  return { ids: created };
+}
+
 export async function createEllipse(params) {
   const {
     x = 0,

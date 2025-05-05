@@ -37,6 +37,7 @@ export function initializeCommands() {
   // Manages creation and modification of basic geometric shapes and vectors
   registerCommand('create_rectangle', shapeOperations.createRectangle);
   registerCommand('create_frame', shapeOperations.createFrame);
+  registerCommand('create_frames', shapeOperations.createFrames);
   registerCommand('create_ellipse', shapeOperations.createEllipse);
   registerCommand('create_polygon', shapeOperations.createPolygon);
   registerCommand('create_star', shapeOperations.createStar);
