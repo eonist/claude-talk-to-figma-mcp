@@ -222,7 +222,14 @@ Please resize all selected elements so their longest side is 20px.
 ## Changelog
 
 ### 0.4.5
-- Batch rectangle creation feature (`create_rectangles`)
+- Batch rectangle creation via `create_rectangles`
+- Batch frames creation via `create_frames`
+- Bulk font and text updates via `set_bulk_font` and `set_multiple_text_contents`
+- Delete multiple nodes via `delete_nodes`
+- Resize multiple nodes via `resize_nodes`
+- Move multiple nodes via `move_nodes`
+- Set single node style via `set_style`
+- Set multiple node styles via `set_styles`
 ### 0.4.4
 - Bulk font application across text nodes (`set_bulk_font`)
 - Insert SVG content as vector (`insert_svg_vector`)
