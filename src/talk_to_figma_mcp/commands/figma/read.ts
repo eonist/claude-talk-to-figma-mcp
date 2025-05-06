@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { FigmaClient } from "../../clients/figma-client.js";
+import { FigmaClient } from "../../clients/figma-client/index.js";
 import { logger } from "../../utils/logger.js";
 import { filterFigmaNode } from "../../utils/node-filter.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";

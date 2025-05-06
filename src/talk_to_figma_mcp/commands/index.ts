@@ -12,7 +12,7 @@
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../clients/figma-client.js";
+import { FigmaClient } from "../clients/figma-client/index.js";
 import { registerReadCommands } from "./figma/read.js";
 import { registerCreateCommands } from "./figma/create.js";
 import { registerModifyCommands } from "./figma/modify.js";

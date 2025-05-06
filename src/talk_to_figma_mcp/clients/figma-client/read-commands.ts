@@ -1,0 +1,26 @@
+import { filterFigmaNode } from "../../utils/node-filter.js";
+import { ensureNodeIdIsString } from "../../utils/node-utils.js";
+import type { FigmaCommand, BaseFigmaNode, DocumentInfo, SelectionInfo } from "./types.js";
+import type { FigmaClient } from "./index.js";
+
+export const readCommands = {
+  async getDocumentInfo(this: FigmaClient): Promise<DocumentInfo> {
+    return this.executeCommand("get_document_info");
+  },
+
+  async getSelection(this: FigmaClient): Promise<SelectionInfo> {
+    return this.executeCommand("get_selection");
+  },
+
+  async getNodeInfo(this: FigmaClient, nodeId: string): Promise<BaseFigmaNode> {
+    const id = ensureNodeIdIsString(nodeId);
+    const result = await this.executeCommand("get_node_info", { nodeId: id });
+    return filterFigmaNode(result);
+  },
+
+  async getNodesInfo(this: FigmaClient, nodeIds: string[]): Promise<BaseFigmaNode[]> {
+    const ids = nodeIds.map(ensureNodeIdIsString);
+    const result = await this.executeCommand("get_nodes_info", { nodeIds: ids });
+    return result.map(filterFigmaNode);
+  },
+};
