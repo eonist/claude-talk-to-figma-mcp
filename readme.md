@@ -36,6 +36,7 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
 - **Batch SVG Insertion**: Insert multiple SVGs as vectors in one operation via `insert_svg_vectors`.  
 - **Batch Polygon Creation**: Create multiple polygons in one call via `create_polygons`.
 - **Batch Ellipse Creation**: Create multiple ellipses in one call via `create_ellipses`.
+- **Gradient Support**: Create and apply gradient paint styles via `create_gradient_variable` and `apply_gradient_style`.
 
 ---
 
