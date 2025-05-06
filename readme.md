@@ -37,6 +37,7 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
 - **Batch Polygon Creation**: Create multiple polygons in one call via `create_polygons`.
 - **Batch Ellipse Creation**: Create multiple ellipses in one call via `create_ellipses`.
 - **Gradient Support**: Create and apply gradient paint styles via `create_gradient_variable` and `apply_gradient_style`.
+- **Local Image Support**: Insert local images via a file picker; supports both --imagePath and --imageData flags.
 
 ---
 
@@ -212,6 +213,18 @@ Talk to Figma, channel {channel-ID}
 
 | `create_gradient_variables` | Batch create gradient variables in Figma            | `gradients`                                                                        |
 | `apply_gradient_styles`     | Batch apply gradient styles to nodes in Figma       | `entries`                                                                          |
+
+### Image Commands
+
+| Command             | Description                                                                    | Parameters                                                         |
+|---------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `insert_local_image`| Insert a local image via file path or Base64 data URI.                         | `imagePath` (optional), `imageData` (optional), `x`, `y`, `width`, `height`, `name`, `parentId` |
+
+### Image Commands
+
+| Command             | Description                                                                    | Parameters                                                         |
+|---------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `insert_local_image`| Insert a local image via file path or Base64 data URI.                         | `imagePath` (optional), `imageData` (optional), `x`, `y`, `width`, `height`, `name`, `parentId` |
 
 ### Misc commands
 
