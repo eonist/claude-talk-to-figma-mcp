@@ -271,6 +271,23 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Convert existing node into a component
+  server.tool(
+    "create_component_from_node",
+    "Convert an existing node into a component",
+    {
+      nodeId: z.string().describe("ID of the node to convert")
+    },
+    async ({ nodeId }) => {
+      try {
+        const result = await figmaClient.executeCommand("create_component_from_node", { nodeId });
+        return { content: [{ type: "text", text: `Created component ID: ${result.componentId}` }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${String(err)}` }] };
+      }
+    }
+  );
+
   // Single line
   server.tool(
     "create_line",

@@ -121,6 +121,10 @@ export function initializeCommands() {
   registerCommand('set_style', styleOperations.setStyle);
   registerCommand('set_styles', styleOperations.setStyles);
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
+  // Component Conversion
+  registerCommand('create_component_from_node', componentOperations.createComponentFromNode);
+  registerCommand('create_component_instance', componentOperations.createComponentInstance);
+  
   // Gradient Operations
   registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
   registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);

@@ -332,12 +332,6 @@ export class FigmaClient {
     });
   }
   
-  /**
-   * Creates a new polygon
-   * 
-   * @param {object} params - Polygon parameters
-   * @returns {Promise<BaseFigmaNode>} The created polygon
-   */
   async createPolygon(params: {
     x: number;
     y: number;
@@ -364,6 +358,19 @@ export class FigmaClient {
       strokeWeight: params.strokeWeight
     });
   }
+  
+  /**
+   * Converts an existing node into a component
+   *
+   * @param {object} params - Conversion parameters
+   * @param {string} params.nodeId - The ID of the node to convert
+   * @returns {Promise<{componentId: string}>} The new component ID
+   */
+  async createComponentFromNode(params: { nodeId: string }): Promise<{ componentId: string }> {
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    return this.executeCommand("create_component_from_node", { nodeId: nodeIdString });
+  }
+  
 
   // Batch SVG insertion
   /**
