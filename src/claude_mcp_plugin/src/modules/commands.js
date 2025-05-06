@@ -97,6 +97,7 @@ export function initializeCommands() {
   });
   registerCommand('create_text', textOperations.createText);
   registerCommand('set_text_content', textOperations.setTextContent);
+  registerCommand('create_bounded_text', textOperations.createBoundedText);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);
   registerCommand('set_multiple_text_contents', textOperations.setMultipleTextContents);
   registerCommand('set_font_name', textOperations.setFontName);

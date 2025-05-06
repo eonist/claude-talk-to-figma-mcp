@@ -2001,6 +2001,189 @@ async function createText(params) {
  * const result = await setTextContent({ nodeId: "12345", text: "Hello World" });
  * console.log(result.characters);
  */
+async function createBoundedText(params) {
+  const {
+    x = 0,
+    y = 0,
+    text = "Text",
+    width,
+    height,
+    fontSize = 14,
+    fontWeight = 400,
+    fontColor = { r: 0, g: 0, b: 0, a: 1 },
+    name = "Text",
+    parentId,
+  } = params || {};
+
+  const getFontStyle = (weight) => {
+    switch (weight) {
+      case 100: return "Thin";
+      case 200: return "Extra Light";
+      case 300: return "Light";
+      case 400: return "Regular";
+      case 500: return "Medium";
+      case 600: return "Semi Bold";
+      case 700: return "Bold";
+      case 800: return "Extra Bold";
+      case 900: return "Black";
+      default: return "Regular";
+    }
+  };
+
+  try {
+    const textNode = figma.createText();
+    textNode.x = x;
+    textNode.y = y;
+    textNode.name = name;
+
+    await figma.loadFontAsync({
+      family: "Inter",
+      style: getFontStyle(fontWeight),
+    });
+    textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
+    textNode.fontSize = fontSize;
+
+    await setCharacters(textNode, text);
+
+    const paintStyle = {
+      type: "SOLID",
+      color: {
+        r: parseFloat(fontColor.r.toString()) || 0,
+        g: parseFloat(fontColor.g.toString()) || 0,
+        b: parseFloat(fontColor.b.toString()) || 0,
+      },
+      opacity: parseFloat((fontColor.a || 1).toString()),
+    };
+    textNode.fills = [paintStyle];
+
+    if (width !== undefined && height !== undefined) {
+      textNode.textAutoResize = "NONE";
+      textNode.resize(width, height);
+    } else if (width !== undefined) {
+      textNode.textAutoResize = "HEIGHT";
+      textNode.resize(width, textNode.height);
+    }
+
+    if (parentId) {
+      const parentNode = await figma.getNodeByIdAsync(parentId);
+      if (parentNode && "appendChild" in parentNode) {
+        parentNode.appendChild(textNode);
+      }
+    } else {
+      figma.currentPage.appendChild(textNode);
+    }
+
+    return {
+      id: textNode.id,
+      name: textNode.name,
+      x: textNode.x,
+      y: textNode.y,
+      width: textNode.width,
+      height: textNode.height,
+      characters: textNode.characters,
+      fontSize: textNode.fontSize,
+      fontWeight,
+      fontColor,
+      fontName: textNode.fontName,
+      fills: textNode.fills,
+      parentId: textNode.parent ? textNode.parent.id : undefined,
+    };
+  } catch (error) {
+    console.error("Error creating bounded text", error);
+    throw error;
+  }
+}
+
+async function createBoundedText(params) {
+  const {
+    x = 0,
+    y = 0,
+    text = "",
+    width,
+    height,
+    fontSize = 14,
+    fontWeight = 400,
+    fontColor = { r: 0, g: 0, b: 0, a: 1 },
+    name = "Text",
+    parentId,
+  } = params || {};
+
+  const getFontStyle = (weight) => {
+    switch (weight) {
+      case 100: return "Thin";
+      case 200: return "Extra Light";
+      case 300: return "Light";
+      case 400: return "Regular";
+      case 500: return "Medium";
+      case 600: return "Semi Bold";
+      case 700: return "Bold";
+      case 800: return "Extra Bold";
+      case 900: return "Black";
+      default: return "Regular";
+    }
+  };
+
+  try {
+    const textNode = figma.createText();
+    textNode.x = x;
+    textNode.y = y;
+    textNode.name = name;
+
+    await figma.loadFontAsync({ family: "Inter", style: getFontStyle(fontWeight) });
+    textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
+    textNode.fontSize = fontSize;
+
+    await setCharacters(textNode, text);
+
+    const paintStyle = {
+      type: "SOLID",
+      color: {
+        r: parseFloat(fontColor.r.toString()) || 0,
+        g: parseFloat(fontColor.g.toString()) || 0,
+        b: parseFloat(fontColor.b.toString()) || 0,
+      },
+      opacity: parseFloat((fontColor.a || 1).toString()),
+    };
+    textNode.fills = [paintStyle];
+
+    if (width !== undefined && height !== undefined) {
+      textNode.textAutoResize = figma.TextAutoResize.NONE;
+      textNode.resize(width, height);
+    } else if (width !== undefined) {
+      textNode.textAutoResize = figma.TextAutoResize.HEIGHT;
+      textNode.resize(width, textNode.height);
+    }
+
+    if (parentId) {
+      const parentNode = await figma.getNodeByIdAsync(parentId);
+      if (parentNode && "appendChild" in parentNode) {
+        parentNode.appendChild(textNode);
+      }
+    } else {
+      figma.currentPage.appendChild(textNode);
+    }
+
+    return {
+      id: textNode.id,
+      name: textNode.name,
+      x: textNode.x,
+      y: textNode.y,
+      width: textNode.width,
+      height: textNode.height,
+      characters: textNode.characters,
+      fontSize: textNode.fontSize,
+      fontWeight,
+      fontColor,
+      fontName: textNode.fontName,
+      fills: textNode.fills,
+      parentId: textNode.parent ? textNode.parent.id : undefined,
+    };
+  } catch (error) {
+    console.error("Error creating bounded text", error);
+    throw error;
+  }
+}
+
 async function setTextContent(params) {
   const { nodeId, text } = params || {};
 
@@ -3472,6 +3655,7 @@ async function setBulkFont(params) {
 // Group for all text operations.
 const textOperations = {
   createText,
+  createBoundedText,
   setTextContent,
   scanTextNodes,
   setMultipleTextContents,
@@ -4860,6 +5044,7 @@ function initializeCommands() {
   });
   registerCommand('create_text', textOperations.createText);
   registerCommand('set_text_content', textOperations.setTextContent);
+  registerCommand('create_bounded_text', textOperations.createBoundedText);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);
   registerCommand('set_multiple_text_contents', textOperations.setMultipleTextContents);
   registerCommand('set_font_name', textOperations.setFontName);

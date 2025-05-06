@@ -14,6 +14,7 @@ export type FigmaCommand =
   | "create_frame"
   | "create_frames"
   | "create_text"
+  | "create_bounded_text"
   | "create_ellipse"
   | "create_polygon"
   | "create_star"
