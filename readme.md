@@ -198,6 +198,8 @@ Talk to Figma, channel {channel-ID}
 | `set_auto_layout`           | Configure auto layout                                | `nodeId`, `layoutMode`, `paddingTop`, `paddingBottom`, `paddingLeft`, `paddingRight`, `itemSpacing`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `layoutWrap`, `strokesIncludedInLayout` |
 | `set_auto_layout_resizing`  | Set auto layout sizing                               | `nodeId`, `axis`, `mode`                                                           |
 | `set_bulk_font`             | Bulk apply font settings                             | `targets`                                                                          |
+| `flatten_node`              | Flatten complex node into vector path                | `nodeId`                                                                           |
+| `flatten_selection`         | Flatten a selection of nodes in Figma                | `nodeIds`                                                                          |
 
 ### Misc commands
 
