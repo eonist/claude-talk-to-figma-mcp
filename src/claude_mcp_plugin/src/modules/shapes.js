@@ -974,6 +974,102 @@ export async function createRectangles(params) {
   return { ids: created };
 }
 
+export async function union_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for union' };
+  }
+  try {
+    const unionNode = figma.union(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [unionNode];
+    return { success: true, nodeId: unionNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+export async function subtract_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for subtract' };
+  }
+  try {
+    const resultNode = figma.subtract(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [resultNode];
+    return { success: true, nodeId: resultNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+export async function intersect_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for intersect' };
+  }
+  try {
+    const resultNode = figma.intersect(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [resultNode];
+    return { success: true, nodeId: resultNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+export async function exclude_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for exclude' };
+  }
+  try {
+    const resultNode = figma.exclude(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [resultNode];
+    return { success: true, nodeId: resultNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
 export const shapeOperations = {
   createRectangle,
   createRectangles,
@@ -992,5 +1088,9 @@ export const shapeOperations = {
   deleteNode,
   deleteNodes,
   moveNode,
-  flattenNode
+  flattenNode,
+  union_selection,
+  subtract_selection,
+  intersect_selection,
+  exclude_selection
 };

@@ -1689,6 +1689,102 @@ async function createRectangles(params) {
   return { ids: created };
 }
 
+async function union_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for union' };
+  }
+  try {
+    const unionNode = figma.union(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [unionNode];
+    return { success: true, nodeId: unionNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+async function subtract_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for subtract' };
+  }
+  try {
+    const resultNode = figma.subtract(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [resultNode];
+    return { success: true, nodeId: resultNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+async function intersect_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for intersect' };
+  }
+  try {
+    const resultNode = figma.intersect(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [resultNode];
+    return { success: true, nodeId: resultNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+async function exclude_selection(params) {
+  const { nodeIds } = params;
+  if (!nodeIds || nodeIds.length < 2) {
+    return { success: false, error: 'Requires at least two node IDs' };
+  }
+  const nodes = nodeIds
+    .map(id => figma.getNodeById(id))
+    .filter(node =>
+      node &&
+      ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR', 'BOOLEAN_OPERATION'].includes(node.type)
+    );
+  if (nodes.length < 2) {
+    return { success: false, error: 'Not enough valid shape nodes for exclude' };
+  }
+  try {
+    const resultNode = figma.exclude(nodes);
+    nodes.forEach(n => n.remove());
+    figma.currentPage.selection = [resultNode];
+    return { success: true, nodeId: resultNode.id };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
 const shapeOperations = {
   createRectangle,
   createRectangles,
@@ -1707,7 +1803,11 @@ const shapeOperations = {
   deleteNode,
   deleteNodes,
   moveNode,
-  flattenNode
+  flattenNode,
+  union_selection,
+  subtract_selection,
+  intersect_selection,
+  exclude_selection
 };
 
 
@@ -4738,6 +4838,12 @@ function initializeCommands() {
   // Flatten
   registerCommand('flatten_node', shapeOperations.flattenNode);
 
+  // Boolean operation commands
+  registerCommand('union_selection', shapeOperations.union_selection);
+  registerCommand('subtract_selection', shapeOperations.subtract_selection);
+  registerCommand('intersect_selection', shapeOperations.intersect_selection);
+  registerCommand('exclude_selection', shapeOperations.exclude_selection);
+
   // Flatten Selection Tool
   // Flattens multiple selected nodes in Figma in one batch
   registerCommand('flatten_selection', async ({ nodeIds }) => {
@@ -4752,12 +4858,6 @@ function initializeCommands() {
     figma.flatten();
     return { success: true, message: `Flattened ${nodes.length} nodes.` };
   });
-  // Clone operations
-  registerCommand('clone_node', shapeOperations.cloneNode);
-  registerCommand('clone_nodes', shapeOperations.cloneNodes);
-  
-  // Text Operations
-  // Handles text creation, styling, and manipulation operations
   registerCommand('create_text', textOperations.createText);
   registerCommand('set_text_content', textOperations.setTextContent);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);

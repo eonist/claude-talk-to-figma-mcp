@@ -201,6 +201,10 @@ Talk to Figma, channel {channel-ID}
 | `set_bulk_font`             | Bulk apply font settings                             | `targets`                                                                          |
 | `flatten_node`              | Flatten complex node into vector path                | `nodeId`                                                                           |
 | `flatten_selection`         | Flatten a selection of nodes in Figma                | `nodeIds`                                                                          |
+| `union_selection`           | Combine shapes, removing overlapping areas to create a single outline | `nodeIds`                                                                          |
+| `subtract_selection`        | Remove top shape(s) from the bottom shape            | `nodeIds`                                                                          |
+| `intersect_selection`       | Keep only the areas where all selected shapes overlap | `nodeIds`                                                                          |
+| `exclude_selection`         | Keep only the areas where shapes don't overlap       | `nodeIds`                                                                          |
 
 ### Misc commands
 

@@ -75,6 +75,12 @@ export function initializeCommands() {
   // Flatten
   registerCommand('flatten_node', shapeOperations.flattenNode);
 
+  // Boolean operation commands
+  registerCommand('union_selection', shapeOperations.union_selection);
+  registerCommand('subtract_selection', shapeOperations.subtract_selection);
+  registerCommand('intersect_selection', shapeOperations.intersect_selection);
+  registerCommand('exclude_selection', shapeOperations.exclude_selection);
+
   // Flatten Selection Tool
   // Flattens multiple selected nodes in Figma in one batch
   registerCommand('flatten_selection', async ({ nodeIds }) => {
@@ -89,12 +95,6 @@ export function initializeCommands() {
     figma.flatten();
     return { success: true, message: `Flattened ${nodes.length} nodes.` };
   });
-  // Clone operations
-  registerCommand('clone_node', shapeOperations.cloneNode);
-  registerCommand('clone_nodes', shapeOperations.cloneNodes);
-  
-  // Text Operations
-  // Handles text creation, styling, and manipulation operations
   registerCommand('create_text', textOperations.createText);
   registerCommand('set_text_content', textOperations.setTextContent);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);

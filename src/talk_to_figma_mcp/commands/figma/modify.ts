@@ -85,6 +85,51 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Boolean operation tools
+  server.tool(
+    "union_selection",
+    "Combine selected shapes using Union operation",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to union"),
+    },
+    async ({ nodeIds }) => {
+      return await figmaClient.unionSelection({ nodeIds });
+    }
+  );
+
+  server.tool(
+    "subtract_selection",
+    "Subtract top shapes from bottom shape",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to subtract"),
+    },
+    async ({ nodeIds }) => {
+      return await figmaClient.subtractSelection({ nodeIds });
+    }
+  );
+
+  server.tool(
+    "intersect_selection",
+    "Intersect selected shapes",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to intersect"),
+    },
+    async ({ nodeIds }) => {
+      return await figmaClient.intersectSelection({ nodeIds });
+    }
+  );
+
+  server.tool(
+    "exclude_selection",
+    "Exclude overlapping areas of selected shapes",
+    {
+      nodeIds: z.array(z.string()).describe("Array of node IDs to exclude"),
+    },
+    async ({ nodeIds }) => {
+      return await figmaClient.excludeSelection({ nodeIds });
+    }
+  );
+
   /**
    * Flatten Selection Tool
    *

@@ -1019,4 +1019,20 @@ export class FigmaClient {
       const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
       return this.executeCommand("flatten_selection", { nodeIds: nodeIdStrings });
     }
+
+    async unionSelection(params: { nodeIds: string[] }): Promise<any> {
+      return this.executeCommand("union_selection", params);
+    }
+
+    async subtractSelection(params: { nodeIds: string[] }): Promise<any> {
+      return this.executeCommand("subtract_selection", params);
+    }
+
+    async intersectSelection(params: { nodeIds: string[] }): Promise<any> {
+      return this.executeCommand("intersect_selection", params);
+    }
+
+    async excludeSelection(params: { nodeIds: string[] }): Promise<any> {
+      return this.executeCommand("exclude_selection", params);
+    }
 }

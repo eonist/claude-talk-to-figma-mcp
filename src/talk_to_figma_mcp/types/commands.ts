@@ -76,6 +76,10 @@ export type FigmaCommand =
   | "create_gradient_variable"
   | "apply_gradient_style"
   | "detach_instance"
+  | "union_selection"
+  | "subtract_selection"
+  | "intersect_selection"
+  | "exclude_selection"
   | "join";
 
 /**
