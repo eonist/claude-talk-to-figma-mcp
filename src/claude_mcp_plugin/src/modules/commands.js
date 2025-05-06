@@ -46,6 +46,8 @@ export function initializeCommands() {
   // Handles image insertion commands only
   registerCommand('insert_image', imageOperations.insertImage);
   registerCommand('insert_images', imageOperations.insertImages);
+  registerCommand('insert_local_image', imageOperations.insertLocalImage);
+  registerCommand('insert_local_images', imageOperations.insertLocalImages);
 
   // Shape Operations
   registerCommand('create_rectangle', shapeOperations.createRectangle);

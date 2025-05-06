@@ -111,4 +111,63 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
       }
     }
   );
+
+  // Batch local image insertion
+  server.tool(
+    "insert_local_images",
+    "Insert multiple local images via file paths or Base64 data URIs",
+    {
+      images: z.array(
+        z.object({
+          imagePath: z.string().optional(),
+          imageData: z.string().optional(),
+          x: z.number().optional().default(0),
+          y: z.number().optional().default(0),
+          width: z.number().optional(),
+          height: z.number().optional(),
+          name: z.string().optional(),
+          parentId: z.string().optional()
+        })
+      )
+    },
+    async ({ images }): Promise<any> => {
+      try {
+        const results = await processBatch(
+          images,
+          async (config) => {
+            let data: Uint8Array;
+            if (config.imageData) {
+              const base64 = config.imageData.startsWith("data:")
+                ? config.imageData.split(",")[1]
+                : config.imageData;
+              data = Uint8Array.from(Buffer.from(base64, "base64"));
+            } else if (config.imagePath) {
+              const fs = require("fs");
+              const fileBuffer = fs.readFileSync(config.imagePath);
+              data = new Uint8Array(fileBuffer);
+            } else {
+              throw new Error("Either imageData or imagePath must be provided for each image.");
+            }
+            const node = await (figmaClient as any).insertLocalImage({
+              data: Array.from(data),
+              x: config.x,
+              y: config.y,
+              width: config.width,
+              height: config.height,
+              name: config.name,
+              parentId: config.parentId
+            });
+            return node.id;
+          }
+        );
+        const successCount = results.filter(r => r.result).length;
+        return {
+          content: [{ type: "text", text: `Inserted ${successCount}/${images.length} local images.` }],
+          _meta: { results }
+        };
+      } catch (err) {
+        return handleToolError(err, "image-creation-tools", "insert_local_images") as any;
+      }
+    }
+  );
 }

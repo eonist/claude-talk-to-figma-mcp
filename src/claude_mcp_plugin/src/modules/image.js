@@ -99,8 +99,23 @@ export async function insertLocalImage(params) {
   return { id: rect.id, name: rect.name };
 }
 
+export async function insertLocalImages(params) {
+  const { images = [] } = params || {};
+  const results = [];
+  for (const cfg of images) {
+    try {
+      const res = await insertLocalImage(cfg);
+      results.push({ id: res.id, success: true });
+    } catch (err) {
+      results.push({ success: false, error: err.message });
+    }
+  }
+  return { results };
+}
+
 export const imageOperations = {
   insertImage,
   insertImages,
-  insertLocalImage
+  insertLocalImage,
+  insertLocalImages
 };

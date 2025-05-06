@@ -50,12 +50,16 @@ The bundling uses esbuild to combine all the modular files into a single JS file
 
 The plugin supports various commands organized into categories:
 
-- **Document**: Get document info, selection, node info
-- **Shapes**: Create and manipulate shapes (rectangle, ellipse, etc.)
-- **Batch Ellipses**: Create multiple ellipses (`create_ellipses`)
-- **Text**: Create and modify text elements
-- **Style**: Apply styles, fills, strokes, effects
-- **Components**: Work with components, groups, and assets
+- **Document**: `get_document_info`, `get_selection`, `get_node_info`, `get_nodes_info`
+- **Images**: 
+  - Single from URL: `insertImage`
+  - Batch from URLs: `insertImages`
+  - Single local data: `insertLocalImage`
+  - Batch local data/files: `insertLocalImages`
+- **Shapes**: Create and manipulate shapes (`create_rectangle`, `create_ellipse`, etc.)
+- **Text**: Create and modify text elements (`create_text`, `set_text_content`, etc.)
+- **Style**: Apply styles, fills, strokes, effects (`set_fill_color`, `set_styles`, etc.)
+- **Components**: Work with components, groups, and assets (`create_component_from_node`, etc.)
 
 ## MCP Integration
 

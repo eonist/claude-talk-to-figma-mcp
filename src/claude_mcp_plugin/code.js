@@ -1095,10 +1095,25 @@ async function insertLocalImage(params) {
   return { id: rect.id, name: rect.name };
 }
 
+async function insertLocalImages(params) {
+  const { images = [] } = params || {};
+  const results = [];
+  for (const cfg of images) {
+    try {
+      const res = await insertLocalImage(cfg);
+      results.push({ id: res.id, success: true });
+    } catch (err) {
+      results.push({ success: false, error: err.message });
+    }
+  }
+  return { results };
+}
+
 const imageOperations = {
   insertImage,
   insertImages,
-  insertLocalImage
+  insertLocalImage,
+  insertLocalImages
 };
 
 
@@ -4283,6 +4298,8 @@ function initializeCommands() {
   // Handles image insertion commands only
   registerCommand('insert_image', imageOperations.insertImage);
   registerCommand('insert_images', imageOperations.insertImages);
+  registerCommand('insert_local_image', imageOperations.insertLocalImage);
+  registerCommand('insert_local_images', imageOperations.insertLocalImages);
 
   // Shape Operations
   registerCommand('create_rectangle', shapeOperations.createRectangle);
