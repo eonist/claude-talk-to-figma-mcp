@@ -278,14 +278,14 @@ Please resize all selected elements so their longest side is 20px.
 
 ## Changelog
 
-### 0.4.8 (2025-06-05)
-- `apply_gradient_styles`: Batch apply gradient styles to nodes in Figma.  
-- `apply_gradient_style`: Apply a gradient style to a node in Figma.  
-- `create_gradient_variables`: Batch create gradient variables in Figma.  
-- `create_gradient_variable`: Create a gradient variable in Figma.  
-- `insert_images`: Batch insert multiple images via URLs into Figma.  
-- `insert_image`: Insert a remote image from a URL into Figma.  
-- `insert_local_image`: Insert a local image via file path or Base64 data sent from the agent.
+### 0.4.8 (2025-05-07)
+- Batch apply gradient styles to nodes in Figma via `apply_gradient_styles`.  
+- Apply a gradient style to a node in Figma via `apply_gradient_style`.  
+- Batch create gradient variables in Figma via `create_gradient_variables`.  
+- Create a gradient variable in Figma via `create_gradient_variable`.  
+- Batch insert multiple images via URLs into Figma via `insert_images`.  
+- Insert a remote image from a URL into Figma via `insert_image`.  
+- Insert a local image from path or Base64. `insert_local_image`: 
 
 ### 0.4.7 (2025-05-06)
 - Batch polygon creation via `create_polygons`
