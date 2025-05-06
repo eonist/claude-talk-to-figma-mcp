@@ -261,10 +261,15 @@ Please resize all selected elements so their longest side is 20px.
 ## Changelog
 
 ### 0.4.7 (2025-06-05)
-- Create component from node via `create_component_from_node`
-- Add gradient support via `create_gradient_variable` and `apply_gradient_style`
-- Batch ellipse creation via `create_ellipses`
 - Batch polygon creation via `create_polygons`
+- Batch ellipse creation via `create_ellipses`
+- Add gradient support via `create_gradient_variable` and `apply_gradient_style`
+- Detach component instances via `detach_instance`
+- Flatten nodes via `flatten_node` and `flatten_selection`
+- Create component from node via `create_component_from_node`
+- Create bounded text via `create_bounded_text`
+- Group and ungroup nodes via `group_nodes` and `ungroup_nodes`
+- Boolean operation commands via `union_selection`, `subtract_selection`, `intersect_selection`, `exclude_selection`
 
 ### 0.4.6 (2025-05-06)
 - Batch SVG insertion via `insert_svg_vectors`
