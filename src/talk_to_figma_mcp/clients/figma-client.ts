@@ -356,27 +356,16 @@ export class FigmaClient {
 
   // Batch SVG insertion
   /**
-   * Inserts multiple SVGs as vectors in Figma
-   *
-   * @param {object} params - Batch SVG parameters
-   * @param {Array<{ svg: string; x?: number; y?: number; name?: string; parentId?: string }>} params.vectors
-   * @returns {Promise<string[]>} Array of created node IDs
+   * Detaches a Figma component instance from its master
+   * 
+   * @param {object} params - Detach parameters
+   * @param {string} params.instanceId - The ID of the instance to detach
+   * @returns {Promise<{id: string; name: string}>} The detached node info
    */
-  async insertSvgVectors(params: {
-    vectors: Array<{
-      svg: string;
-      x?: number;
-      y?: number;
-      name?: string;
-      parentId?: string;
-    }>;
-  }): Promise<string[]> {
-    const result = await this.executeCommand("insert_svg_vectors", { vectors: params.vectors });
-    return Array.isArray(result.nodeIds) ? result.nodeIds : [];
+  async detachInstance(params: { instanceId: string }): Promise<{ id: string; name: string }> {
+    const idString = ensureNodeIdIsString(params.instanceId);
+    return this.executeCommand("detach_instance", { instanceId: idString });
   }
-
-  // Style operations
-  
   /**
    * Sets the fill color of a node
    * 

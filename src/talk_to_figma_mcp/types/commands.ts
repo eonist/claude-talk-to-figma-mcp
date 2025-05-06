@@ -73,6 +73,7 @@ export type FigmaCommand =
   | "set_styles"
   | "create_gradient_variable"
   | "apply_gradient_style"
+  | "detach_instance"
   | "join";
 
 /**

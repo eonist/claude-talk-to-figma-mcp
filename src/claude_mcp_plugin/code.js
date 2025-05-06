@@ -4927,19 +4927,21 @@ function initializeCommands() {
   // Gradient Operations
   registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
   registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
-  
-  // Layout Operations
-  // Controls layout properties, grouping, and hierarchy
-  registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
-  registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
-  registerCommand('group_nodes', layoutOperations.groupNodes);
-  registerCommand('ungroup_nodes', layoutOperations.ungroupNodes);
-  registerCommand('insert_child', layoutOperations.insertChild);
-  
-  // Rename Operations
-  // Handles layer naming and batch renaming functionality
-  registerCommand('rename_layers', renameOperations.rename_layers);
-  registerCommand('ai_rename_layers', renameOperations.ai_rename_layers);
+
+  // Detach Instance Tool
+  registerCommand('detach_instance', async (params) => {
+    const { instanceId } = params;
+    const node = figma.getNodeById(instanceId);
+    if (!node) {
+      throw new Error(`No node found with ID: ${instanceId}`);
+    }
+    if (node.type !== 'INSTANCE') {
+      throw new Error('Node is not a component instance');
+    }
+    const detached = node.detachInstance();
+    return { id: detached.id, name: detached.name };
+  });
+
   registerCommand('rename_layer', renameOperations.rename_layer);
   registerCommand('rename_multiple', renameOperations.rename_multiples);
 }

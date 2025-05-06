@@ -1820,6 +1820,37 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
     }
   );
 
+  // Detach Instance Tool
+  server.tool(
+    "detach_instance",
+    "Detach a Figma component instance from its master",
+    {
+      instanceId: z.string().describe("The ID of the instance to detach")
+    },
+    async ({ instanceId }) => {
+      try {
+        const result = await figmaClient.executeCommand("detach_instance", { instanceId });
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Detached instance: ${result.name} (ID: ${result.id})`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error detaching instance: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
   server.tool(
     "apply_gradient_style",
     "Apply a gradient style to a node in Figma",
