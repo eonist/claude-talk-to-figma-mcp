@@ -652,8 +652,12 @@
         }
       };
     </script>
-    <input id="localImageInput" type="file" accept="image/*" style="display: none;" />
+      <!-- input and button for local image upload commented out
+  <input id="localImageInput" type="file" accept="image/*" style="display: none;" />
   <button id="uploadImageButton">Upload Local Image</button>
+  -->
+  <script src="dist/ui.js" type="module"></script>
+  <!-- inline upload script commented out
   <script>
     const uploadBtn = document.getElementById("uploadImageButton");
     const fileInput = document.getElementById("localImageInput");
@@ -676,5 +680,6 @@
       reader.readAsArrayBuffer(file);
     });
   </script>
+  --> 
 </body>
 </html>
