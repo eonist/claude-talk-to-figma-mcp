@@ -1,6 +1,6 @@
 # Claude Talk to Figma MCP
 
-[![version](https://img.shields.io/badge/version-0.4.7-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
+[![version](https://img.shields.io/badge/version-0.4.6-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 A Figma plugin enabling seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP). This tool allows you to design and modify Figma elements through natural language commands processed by Claude.
@@ -166,6 +166,7 @@ Talk to Figma, channel {channel-ID}
 | `ai_rename_layers`          | AI-assisted rename of layers                         | `layer_ids`, `context_prompt`                                                      |
 | `clone_node`                | Clone a node                                         | `nodeId`, `x`, `y`                                                                 |
 | `clone_nodes`               | Clone multiple nodes                                 | `nodeIds`, `x`, `y`                                                                |
+| `detach_instance`           | Detach a component instance from its master           | `instanceId`                                                                       |
 | `create_component_instance` | Create a component instance                          | `componentKey`, `x`, `y`                                                           |
 | `create_component_instances` | Create multiple component instances                 | `instances`: array of `{ componentKey, x, y, name?, parentId?, scaleX?, scaleY? }` |
 | `create_rectangle`          | Create a rectangle                                   | `x`, `y`, `width`, `height`, `name`, `parentId`                                    |
@@ -246,9 +247,6 @@ Please resize all selected elements so their longest side is 20px.
 ```
 
 ## Changelog
-
-### 0.4.7 (2025-06-05)
-- Added `detach_instance` command to detach component instances
 
 ### 0.4.6 (2025-05-06)
 - Batch SVG insertion via `insert_svg_vectors`
