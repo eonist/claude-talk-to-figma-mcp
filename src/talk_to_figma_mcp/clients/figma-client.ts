@@ -982,11 +982,23 @@ export class FigmaClient {
   /**
    * Applies a gradient style to a node in Figma
    */
-  async applyGradientStyle(params: {
-    nodeId: string;
-    gradientStyleId: string;
-    applyTo: "FILL" | "STROKE" | "BOTH";
-  }): Promise<any> {
-    return this.executeCommand("apply_gradient_style", params);
-  }
+    async applyGradientStyle(params: {
+      nodeId: string;
+      gradientStyleId: string;
+      applyTo: "FILL" | "STROKE" | "BOTH";
+    }): Promise<any> {
+      return this.executeCommand("apply_gradient_style", params);
+    }
+
+    /**
+     * Flattens a selection of nodes in Figma.
+     *
+     * @param params - Contains node IDs to flatten.
+     * @param nodeIds - Array of node IDs.
+     * @returns Operation result.
+     */
+    async flattenSelection(params: { nodeIds: string[]; }): Promise<any> {
+      const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
+      return this.executeCommand("flatten_selection", { nodeIds: nodeIdStrings });
+    }
 }

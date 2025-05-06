@@ -4892,6 +4892,21 @@ function initializeCommands() {
   registerCommand('move_nodes', shapeOperations.moveNodes);
   // Flatten
   registerCommand('flatten_node', shapeOperations.flattenNode);
+
+  // Flatten Selection Tool
+  // Flattens multiple selected nodes in Figma in one batch
+  registerCommand('flatten_selection', async ({ nodeIds }) => {
+    if (!Array.isArray(nodeIds) || nodeIds.length === 0) {
+      throw new Error('No nodes provided for flatten_selection');
+    }
+    // Select and flatten nodes
+    const nodes = nodeIds
+      .map(id => figma.getNodeById(id))
+      .filter(node => node !== null);
+    figma.currentPage.selection = nodes;
+    figma.flatten();
+    return { success: true, message: `Flattened ${nodes.length} nodes.` };
+  });
   // Clone operations
   registerCommand('clone_node', shapeOperations.cloneNode);
   registerCommand('clone_nodes', shapeOperations.cloneNodes);

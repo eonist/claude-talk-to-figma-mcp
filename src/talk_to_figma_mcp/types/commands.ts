@@ -59,6 +59,7 @@ export type FigmaCommand =
   | "group_nodes"
   | "ungroup_nodes"
   | "flatten_node"
+  | "flatten_selection"
   | "insert_child"
   | "rename_layer"
   | "rename_layers"

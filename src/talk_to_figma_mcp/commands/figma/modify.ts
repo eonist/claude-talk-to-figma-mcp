@@ -73,6 +73,43 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
   );
 
   /**
+   * Flatten Selection Tool
+   *
+   * Flattens a selection of nodes in Figma.
+   */
+  server.tool(
+    "flatten_selection",
+    "Flatten a selection of nodes in Figma",
+    {
+      nodeIds: z.array(z.string()).describe("IDs of nodes to flatten"),
+    },
+    async ({ nodeIds }) => {
+      try {
+        const nodeIdStrings = nodeIds.map(id => ensureNodeIdIsString(id));
+        logger.debug(`Flattening selection of ${nodeIdStrings.length} node(s): ${nodeIdStrings.join(", ")}`);
+        const result = await figmaClient.flattenSelection({ nodeIds: nodeIdStrings });
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Successfully flattened ${nodeIdStrings.length} nodes.`,
+            },
+          ],
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error flattening selection: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ],
+        };
+      }
+    }
+  );
+
+  /**
    * Set Stroke Color Tool
    *
    * Sets the stroke color of a node in Figma.
