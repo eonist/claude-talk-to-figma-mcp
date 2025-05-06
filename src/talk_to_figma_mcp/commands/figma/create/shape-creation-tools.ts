@@ -4,6 +4,7 @@ import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 import { CreateRectangleParams } from "../../../types/command-params.js";
 import { v4 as uuidv4 } from "uuid";
+import { handleToolError } from "../../../utils/error-handling.js";
 
 /**
  * Registers shape-creation-related commands:
@@ -23,8 +24,9 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
       name: z.string().optional(), parentId: z.string().optional(),
       cornerRadius: z.number().min(0).optional()
     },
-    async (args, extra) => {
-      const params: CreateRectangleParams = { commandId: uuidv4(), ...args };
+    async (args, extra): Promise<any> => {
+      try {
+        const params: CreateRectangleParams = { commandId: uuidv4(), ...args };
       const node = await figmaClient.createRectangle(params);
       if (args.cornerRadius != null) {
         await figmaClient.executeCommand("set_corner_radius", {
@@ -33,7 +35,10 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
           radius: args.cornerRadius
         });
       }
-      return { content: [{ type: "text", text: `Created rectangle ${node.id}` }] };
+        return { content: [{ type: "text", text: `Created rectangle ${node.id}` }] };
+      } catch (err) {
+        return handleToolError(err, "shape-creation-tools", "create_rectangle") as any;
+      }
     }
   );
 

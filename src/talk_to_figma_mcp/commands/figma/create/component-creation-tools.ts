@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
+import { handleToolError } from "../../../utils/error-handling.js";
 
 /**
  * Registers component-creation-related commands:
@@ -19,10 +20,14 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
       x: z.number(),
       y: z.number()
     },
-    async ({ componentKey, x, y }) => {
-      const result = await figmaClient.executeCommand("create_component_instance", { componentKey, x, y });
-      return { content: [{ type: "text", text: `Created component instance ${result.id}` }] };
-    }
+        async ({ componentKey, x, y }): Promise<any> => {
+          try {
+            const result = await figmaClient.executeCommand("create_component_instance", { componentKey, x, y });
+            return { content: [{ type: "text", text: `Created component instance ${result.id}` }] };
+          } catch (err) {
+            return handleToolError(err, "component-creation-tools", "create_component_instance") as any;
+          }
+        }
   );
 
   // Batch component instances
@@ -38,16 +43,20 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
         })
       ).describe("Component instance specs")
     },
-    async ({ instances }) => {
-      const results = await processBatch(
-        instances,
-        cfg => figmaClient.executeCommand("create_component_instance", cfg).then(res => res.id)
-      );
-      const successCount = results.filter(r => r.result !== undefined).length;
-      return {
-        content: [{ type: "text", text: `Created ${successCount}/${instances.length} component instances.` }],
-        _meta: { results }
-      };
+    async ({ instances }): Promise<any> => {
+      try {
+        const results = await processBatch(
+          instances,
+          cfg => figmaClient.executeCommand("create_component_instance", cfg).then(res => res.id)
+        );
+        const successCount = results.filter(r => r.result !== undefined).length;
+        return {
+          content: [{ type: "text", text: `Created ${successCount}/${instances.length} component instances.` }],
+          _meta: { results }
+        };
+      } catch (err) {
+        return handleToolError(err, "component-creation-tools", "create_component_instances") as any;
+      }
     }
   );
 
@@ -56,10 +65,14 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
     "create_component_from_node",
     "Convert an existing node into a component",
     { nodeId: z.string() },
-    async ({ nodeId }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      const result = await figmaClient.executeCommand("create_component_from_node", { nodeId: id });
-      return { content: [{ type: "text", text: `Created component ${result.componentId}` }] };
+    async ({ nodeId }): Promise<any> => {
+      try {
+        const id = ensureNodeIdIsString(nodeId);
+        const result = await figmaClient.executeCommand("create_component_from_node", { nodeId: id });
+        return { content: [{ type: "text", text: `Created component ${result.componentId}` }] };
+      } catch (err) {
+        return handleToolError(err, "component-creation-tools", "create_component_from_node") as any;
+      }
     }
   );
 }

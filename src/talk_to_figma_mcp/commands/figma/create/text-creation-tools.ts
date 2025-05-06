@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { CreateTextParams, CreateBoundedTextParams } from "../../../types/command-params.js";
 import { v4 as uuidv4 } from "uuid";
+import { handleToolError } from "../../../utils/error-handling.js";
 
 /**
  * Registers text-creation-related commands:
@@ -23,10 +24,14 @@ export function registerTextCreationCommands(server: McpServer, figmaClient: Fig
       name: z.string().optional(),
       parentId: z.string().optional()
     },
-    async (args, extra) => {
-      const params: CreateTextParams = { commandId: uuidv4(), ...args };
-      const node = await figmaClient.createText(params);
-      return { content: [{ type: "text", text: `Created text ${node.id}` }] };
+    async (args, extra): Promise<any> => {
+      try {
+        const params: CreateTextParams = { commandId: uuidv4(), ...args };
+        const node = await figmaClient.createText(params);
+        return { content: [{ type: "text", text: `Created text ${node.id}` }] };
+      } catch (err) {
+        return handleToolError(err, "text-creation-tools", "create_text") as any;
+      }
     }
   );
 
@@ -44,10 +49,14 @@ export function registerTextCreationCommands(server: McpServer, figmaClient: Fig
       name: z.string().optional(),
       parentId: z.string().optional()
     },
-    async (args, extra) => {
-      const params: CreateBoundedTextParams = { commandId: uuidv4(), ...args };
-      const node = await figmaClient.executeCommand("create_bounded_text", params);
-      return { content: [{ type: "text", text: `Created bounded text ${node.id}` }] };
+    async (args, extra): Promise<any> => {
+      try {
+        const params: CreateBoundedTextParams = { commandId: uuidv4(), ...args };
+        const node = await figmaClient.executeCommand("create_bounded_text", params);
+        return { content: [{ type: "text", text: `Created bounded text ${node.id}` }] };
+      } catch (err) {
+        return handleToolError(err, "text-creation-tools", "create_bounded_text") as any;
+      }
     }
   );
 }
