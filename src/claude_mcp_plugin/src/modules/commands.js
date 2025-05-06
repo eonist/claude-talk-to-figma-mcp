@@ -47,13 +47,21 @@ export function initializeCommands() {
   registerCommand('insert_image', imageOperations.insertImage);
   registerCommand('insert_images', imageOperations.insertImages);
 
-
-  // Batch vectors
-  registerCommand('create_vectors', shapeOperations.createVectors);
-  // Batch rectangles
+  // Shape Operations
+  registerCommand('create_rectangle', shapeOperations.createRectangle);
   registerCommand('create_rectangles', shapeOperations.createRectangles);
-  // Batch ellipses
+  registerCommand('create_frame', shapeOperations.createFrame);
+  registerCommand('create_frames', shapeOperations.createFrames);
+  registerCommand('create_ellipse', shapeOperations.createEllipse);
   registerCommand('create_ellipses', shapeOperations.createEllipses);
+  registerCommand('create_polygon', shapeOperations.createPolygon);
+  registerCommand('create_polygons', shapeOperations.createPolygons);
+  registerCommand('create_star', shapeOperations.createStar);
+  registerCommand('create_vector', shapeOperations.createVector);
+  registerCommand('create_vectors', shapeOperations.createVectors);
+  registerCommand('create_line', shapeOperations.createLine);
+  registerCommand('create_lines', shapeOperations.createLines);
+
   // Corner radius
   registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   // Resize operations

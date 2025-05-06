@@ -13,12 +13,15 @@ export type FigmaCommand =
   | "get_node_info"
   | "get_nodes_info"
   | "create_rectangle"
+  | "create_rectangles"
   | "create_frame"
   | "create_frames"
   | "create_text"
   | "create_bounded_text"
   | "create_ellipse"
+  | "create_ellipses"
   | "create_polygon"
+  | "create_polygons"
   | "create_star"
   | "create_vector"
   | "create_vectors"
@@ -71,8 +74,6 @@ export type FigmaCommand =
   | "ai_rename_layers"
   | "insert_svg_vector"
   | "insert_svg_vectors"
-  | "create_ellipses"
-  | "create_rectangles"
   | "set_bulk_font"
   | "set_style"
   | "set_styles"
@@ -85,6 +86,8 @@ export type FigmaCommand =
   | "subtract_selection"
   | "intersect_selection"
   | "exclude_selection"
+  | "insert_image"
+  | "insert_images"
   | "join";
 
 /**

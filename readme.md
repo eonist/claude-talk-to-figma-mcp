@@ -177,6 +177,8 @@ Talk to Figma, channel {channel-ID}
 | `create_frame`              | Create a frame                                       | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_frames`             | Create multiple frames                               | `frames`: array of `{ x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight? }` |
 | `create_ellipse`            | Create an ellipse                                    | `x`, `y`, `width`, `height`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
+| `create_ellipses`           | Create multiple ellipses                             | `ellipses`: array of `{ x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight? }` |
+| `create_ellipses`           | Create multiple ellipses                             | `ellipses`: array of `{ x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight? }` |
 | `create_polygon`            | Create a polygon                                     | `x`, `y`, `width`, `height`, `sides`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_star`               | Create a star                                        | `x`, `y`, `width`, `height`, `points`, `innerRadius`, `name`, `parentId`, `fillColor`, `strokeColor`, `strokeWeight` |
 | `create_vector`             | Create a vector                                      | `x`, `y`, `width`, `height`, `vectorPaths`, `name?`, `parentId?`, `fillColor?`, `strokeColor?`, `strokeWeight?` |

@@ -25,6 +25,31 @@ export const writeCommands = {
     });
   },
 
+  // Insert Image Tool
+  async insertImage(
+    this: FigmaClient,
+    params: {
+      url: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      name?: string;
+      parentId?: string;
+    }
+  ): Promise<BaseFigmaNode> {
+    const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    return this.executeCommand("insert_image", {
+      url: params.url,
+      x: params.x || 0,
+      y: params.y || 0,
+      width: params.width,
+      height: params.height,
+      name: params.name || "Image",
+      parentId: parent,
+    });
+  },
+
   async createFrame(
     this: FigmaClient,
     params: {
@@ -160,29 +185,6 @@ export const writeCommands = {
     });
   },
 
-  async createPolygon(
-    this: FigmaClient,
-    params: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-      sides?: number;
-      name?: string;
-      parentId?: string;
-      fillColor?: RGBAColor;
-      strokeColor?: RGBAColor;
-      strokeWeight?: number;
-    }
-  ): Promise<BaseFigmaNode> {
-    const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_polygon", {
-      ...params,
-      sides: params.sides,
-      name: params.name,
-      parentId: parent,
-    });
-  },
 
   async moveNode(
     this: FigmaClient,
