@@ -8,6 +8,7 @@
 
 import * as documentOperations from './document.js';
 import * as shapeOperations from './shapes.js';
+import * as imageOperations from './image.js';
 import * as textOperations from './text.js';
 import * as styleOperations from './styles.js';
 import * as componentOperations from './components.js';
@@ -41,19 +42,11 @@ export function initializeCommands() {
   registerCommand('get_node_info', documentOperations.getNodeInfo);
   registerCommand('get_nodes_info', documentOperations.getNodesInfo);
   
-  // Shape Operations
-  // Manages creation and modification of basic geometric shapes and vectors
-  registerCommand('create_rectangle', shapeOperations.createRectangle);
-  registerCommand('create_frame', shapeOperations.createFrame);
-  registerCommand('create_frames', shapeOperations.createFrames);
-  registerCommand('create_ellipse', shapeOperations.createEllipse);
-  registerCommand('create_polygon', shapeOperations.createPolygon);
-  registerCommand('create_star', shapeOperations.createStar);
-  registerCommand('create_vector', shapeOperations.createVector);
-  registerCommand('create_line', shapeOperations.createLine);
-  registerCommand('create_lines', shapeOperations.createLines);
-  registerCommand('insert_svg_vector', shapeOperations.createSvgVector);
-  registerCommand('insert_svg_vectors', shapeOperations.createSvgVectors);
+  // Image Operations
+  // Handles image insertion commands only
+  registerCommand('insert_image', imageOperations.insertImage);
+  registerCommand('insert_images', imageOperations.insertImages);
+
 
   // Batch vectors
   registerCommand('create_vectors', shapeOperations.createVectors);

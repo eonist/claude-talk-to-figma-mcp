@@ -101,6 +101,7 @@ function buildPlugin() {
     const moduleOrder = [
       'document.js',
       'shapes.js',
+      'image.js',
       'text.js',
       'styles.js',
       'components.js',
@@ -120,7 +121,7 @@ function buildPlugin() {
         // Remove export keywords to embed the declarations directly.
         moduleContent = moduleContent.replace(/export\s+/g, '');
         // Optionally remove export objects declarations.
-        moduleContent = moduleContent.replace(/export\s+const\s+\w+Operations\s*=\s*{[^}]*};?\n?/g, '');
+        // moduleContent = moduleContent.replace(/export\s+const\s+\w+Operations\s*=\s*{[^}]*};?\n?/g, '');
         
         output += `// ----- ${path.basename(moduleFile, '.js')} Module -----\n`;
         output += moduleContent + '\n\n';
