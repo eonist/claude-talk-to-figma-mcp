@@ -260,7 +260,7 @@ Please resize all selected elements so their longest side is 20px.
 
 ## Changelog
 
-### 0.4.7 (2025-06-05)
+### 0.4.7 (2025-05-06)
 - Batch polygon creation via `create_polygons`
 - Batch ellipse creation via `create_ellipses`
 - Add gradient support via `create_gradient_variable` and `apply_gradient_style`
