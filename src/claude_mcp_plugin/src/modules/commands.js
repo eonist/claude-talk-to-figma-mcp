@@ -145,6 +145,10 @@ export function initializeCommands() {
 
   registerCommand('rename_layer', renameOperations.rename_layer);
   registerCommand('rename_multiple', renameOperations.rename_multiples);
+
+  // Group/Ungroup operations
+  registerCommand('group_nodes', layoutOperations.groupNodes);
+  registerCommand('ungroup_nodes', layoutOperations.ungroupNodes);
 }
 
 /**

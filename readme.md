@@ -214,6 +214,8 @@ Talk to Figma, channel {channel-ID}
 | `join_channel`          | Join a WebSocket communication channel      | `channel`                          |
 | `group_nodes`           | Group multiple nodes in Figma               | `nodeIds`, `name?`                 |
 | `ungroup_nodes`         | Ungroup a node group                        | `nodeId`                           |
+| `group_nodes`           | Group multiple nodes in Figma               | `nodeIds`, `name?`                 |
+| `ungroup_nodes`         | Ungroup a node group                        | `nodeId`                           |
 | `flatten_node`          | Flatten complex node into vector path       | `nodeId`                           |
 | `flatten_selection`     | Flatten a selection of nodes in Figma       | `nodeIds`                          |
 | `insert_child`          | Insert a child into a parent node           | `parentId`, `childId`, `index?`    |
