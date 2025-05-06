@@ -97,6 +97,12 @@ bun run build:all
 
 ## Commands
 
+**Gradient Support:**
+- `create_gradient_variable(name, gradientType, stops)`  
+  Create a new gradient paint style in Figma.
+- `apply_gradient_style(nodeId, gradientStyleId, applyTo)`  
+  Apply an existing gradient style to a node’s fill, stroke, or both.
+
 The server supports multiple commands which are registered on startup. These include, but are not limited to:
 
 - **Document Inspection:** Retrieve detailed document structure and node information.

@@ -978,4 +978,26 @@ export class FigmaClient {
   }): Promise<any> {
     return this.executeCommand("set_bulk_font", params);
   }
+
+  /**
+   * Creates a gradient paint style in Figma
+   */
+  async createGradientVariable(params: {
+    name: string;
+    gradientType: "LINEAR" | "RADIAL" | "ANGULAR" | "DIAMOND";
+    stops: Array<{ position: number; color: [number, number, number, number] }>;
+  }): Promise<any> {
+    return this.executeCommand("create_gradient_variable", params);
+  }
+
+  /**
+   * Applies a gradient style to a node in Figma
+   */
+  async applyGradientStyle(params: {
+    nodeId: string;
+    gradientStyleId: string;
+    applyTo: "FILL" | "STROKE" | "BOTH";
+  }): Promise<any> {
+    return this.executeCommand("apply_gradient_style", params);
+  }
 }

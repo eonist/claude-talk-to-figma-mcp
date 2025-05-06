@@ -3525,15 +3525,13 @@ async function setStrokeColor(params) {
 }
 
 /**
- * Retrieves local style definitions from the Figma document.
+ * Sets both fill and stroke properties on a node.
  *
- * Collects local paint, text, effect, and grid styles then maps each style to a simplified
- * serializable format with key properties.
- *
- * @returns {Promise<object>} An object containing arrays for colors, texts, effects, and grids.
- * @example
- * const styles = await getStyles();
- * console.log(styles.colors, styles.texts);
+ * @param {object} params - Style parameters.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {object} [params.fillProps] - Fill properties.
+ * @param {object} [params.strokeProps] - Stroke properties.
+ * @returns {object} An object containing the node id, name, fills, and strokes.
  */
 async function setStyle(params) {
   const { nodeId, fillProps, strokeProps } = params || {};
@@ -3578,6 +3576,7 @@ async function setStyle(params) {
  * Apply styles to multiple nodes in one call.
  *
  * @param {Array} entries - Array of objects { nodeId, fillProps?, strokeProps? }
+ * @returns {Array} Results per node.
  */
 async function setStyles(entries) {
   const results = [];
@@ -3588,6 +3587,11 @@ async function setStyles(entries) {
   return results;
 }
 
+/**
+ * Retrieves local style definitions from Figma.
+ *
+ * @returns {Promise<object>} Styles categorized by type.
+ */
 async function getStyles() {
   const styles = {
     colors: await figma.getLocalPaintStylesAsync(),
@@ -3597,25 +3601,25 @@ async function getStyles() {
   };
 
   return {
-    colors: styles.colors.map((style) => ({
+    colors: styles.colors.map(style => ({
       id: style.id,
       name: style.name,
       key: style.key,
       paint: style.paints[0],
     })),
-    texts: styles.texts.map((style) => ({
+    texts: styles.texts.map(style => ({
       id: style.id,
       name: style.name,
       key: style.key,
       fontSize: style.fontSize,
       fontName: style.fontName,
     })),
-    effects: styles.effects.map((style) => ({
+    effects: styles.effects.map(style => ({
       id: style.id,
       name: style.name,
       key: style.key,
     })),
-    grids: styles.grids.map((style) => ({
+    grids: styles.grids.map(style => ({
       id: style.id,
       name: style.name,
       key: style.key,
@@ -3624,131 +3628,135 @@ async function getStyles() {
 }
 
 /**
- * Applies visual effects to a specified node.
+ * Sets visual effects on a node.
  *
- * Converts incoming effects to valid Figma effects based on effect type and applies them.
- *
- * @param {object} params - Parameters for applying effects.
- * @param {string} params.nodeId - The ID of the node to update.
- * @param {Array} params.effects - An array of effect objects to apply.
- * @returns {Promise<object>} An object with the node's id, name, and applied effects.
- * @throws {Error} If the nodeId is missing, the effects parameter is invalid, the node doesn't support effects, or an effect type is unsupported.
+ * @param {object} params - Effect parameters.
+ * @returns {object} Node id, name, and applied effects.
  */
 async function setEffects(params) {
   const { nodeId, effects } = params || {};
-  
-  if (!nodeId) {
-    throw new Error("Missing nodeId parameter");
-  }
-  
-  if (!effects || !Array.isArray(effects)) {
-    throw new Error("Missing or invalid effects parameter. Must be an array.");
-  }
-  
+  if (!nodeId) throw new Error("Missing nodeId parameter");
+  if (!effects || !Array.isArray(effects)) throw new Error("Invalid effects parameter");
+
   const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  
-  if (!("effects" in node)) {
-    throw new Error(`Node does not support effects: ${nodeId}`);
-  }
-  
-  try {
-    // Validate and map each effect to a proper Figma effect object
-    const validEffects = effects.map(effect => {
-      if (!effect.type) {
-        throw new Error("Each effect must have a type property");
-      }
-      
-      switch (effect.type) {
-        case "DROP_SHADOW":
-        case "INNER_SHADOW":
-          return {
-            type: effect.type,
-            color: effect.color || { r: 0, g: 0, b: 0, a: 0.5 },
-            offset: effect.offset || { x: 0, y: 0 },
-            radius: effect.radius || 5,
-            spread: effect.spread || 0,
-            visible: effect.visible !== undefined ? effect.visible : true,
-            blendMode: effect.blendMode || "NORMAL"
-          };
-        case "LAYER_BLUR":
-        case "BACKGROUND_BLUR":
-          return {
-            type: effect.type,
-            radius: effect.radius || 5,
-            visible: effect.visible !== undefined ? effect.visible : true
-          };
-        default:
-          throw new Error(`Unsupported effect type: ${effect.type}`);
-      }
-    });
-    
-    node.effects = validEffects;
-    
-    return {
-      id: node.id,
-      name: node.name,
-      effects: node.effects
-    };
-  } catch (error) {
-    throw new Error(`Error setting effects: ${error.message}`);
-  }
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  if (!("effects" in node)) throw new Error(`Node does not support effects: ${nodeId}`);
+
+  const validEffects = effects.map(effect => {
+    switch (effect.type) {
+      case "DROP_SHADOW":
+      case "INNER_SHADOW":
+        return {
+          type: effect.type,
+          color: effect.color || { r: 0, g: 0, b: 0, a: 0.5 },
+          offset: effect.offset || { x: 0, y: 0 },
+          radius: effect.radius || 5,
+          spread: effect.spread || 0,
+          visible: effect.visible !== undefined ? effect.visible : true,
+          blendMode: effect.blendMode || "NORMAL"
+        };
+      case "LAYER_BLUR":
+      case "BACKGROUND_BLUR":
+        return {
+          type: effect.type,
+          radius: effect.radius || 5,
+          visible: effect.visible !== undefined ? effect.visible : true
+        };
+      default:
+        throw new Error(`Unsupported effect type: ${effect.type}`);
+    }
+  });
+
+  node.effects = validEffects;
+  return {
+    id: node.id,
+    name: node.name,
+    effects: node.effects
+  };
 }
 
 /**
- * Applies an effect style to a specified node.
+ * Applies an effect style to a node.
  *
- * Finds the effect style by its ID from local styles and applies it to the node.
- *
- * @param {object} params - Parameters for applying the effect style.
- * @param {string} params.nodeId - The ID of the node to update.
- * @param {string} params.effectStyleId - The ID of the effect style to apply.
- * @returns {Promise<object>} An object with the node's id, name, applied effectStyleId, and current effects.
- * @throws {Error} If required parameters are missing, node not found, node does not support effect styles, or the style cannot be found.
+ * @param {object} params - Parameters with nodeId and effectStyleId.
+ * @returns {object} Node id, name, and applied effect style.
  */
 async function setEffectStyleId(params) {
   const { nodeId, effectStyleId } = params || {};
-  
-  if (!nodeId) {
-    throw new Error("Missing nodeId parameter");
+  if (!nodeId) throw new Error("Missing nodeId parameter");
+  if (!effectStyleId) throw new Error("Missing effectStyleId parameter");
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  if (!("effectStyleId" in node)) throw new Error(`Node does not support effect styles: ${nodeId}`);
+
+  const effectStyles = await figma.getLocalEffectStylesAsync();
+  const style = effectStyles.find(s => s.id === effectStyleId);
+  if (!style) throw new Error(`Effect style not found: ${effectStyleId}`);
+
+  node.effectStyleId = effectStyleId;
+  return {
+    id: node.id,
+    name: node.name,
+    effectStyleId: node.effectStyleId,
+    appliedEffects: node.effects
+  };
+}
+
+/**
+ * Creates a gradient paint style in Figma.
+ */
+async function createGradientVariable(params) {
+  const { name, gradientType, stops } = params || {};
+  if (!name || !gradientType || !Array.isArray(stops)) {
+    throw new Error("Missing or invalid parameters for create_gradient_variable");
   }
-  
-  if (!effectStyleId) {
-    throw new Error("Missing effectStyleId parameter");
+  const paintStyle = figma.createPaintStyle();
+  paintStyle.name = name;
+  const typeMap = {
+    LINEAR: "GRADIENT_LINEAR",
+    RADIAL: "GRADIENT_RADIAL",
+    ANGULAR: "GRADIENT_ANGULAR",
+    DIAMOND: "GRADIENT_DIAMOND"
+  };
+  paintStyle.paints = [{
+    type: typeMap[gradientType],
+    gradientTransform: [[1, 0, 0], [0, 1, 0]],
+    gradientStops: stops.map(s => ({
+      position: s.position,
+      color: { r: s.color[0], g: s.color[1], b: s.color[2], a: s.color[3] }
+    }))
+  }];
+  return { id: paintStyle.id, name: paintStyle.name };
+}
+
+/**
+ * Applies a gradient paint style to a node in Figma.
+ */
+async function applyGradientStyle(params) {
+  const { nodeId, gradientStyleId, applyTo } = params || {};
+  if (!nodeId || !gradientStyleId) {
+    throw new Error("Missing nodeId or gradientStyleId for apply_gradient_style");
   }
-  
   const node = await figma.getNodeByIdAsync(nodeId);
   if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
+    throw new Error(`Node not found: ${nodeId}`);
   }
-  
-  if (!("effectStyleId" in node)) {
-    throw new Error(`Node does not support effect styles: ${nodeId}`);
+  const styles = await figma.getLocalPaintStylesAsync();
+  const style = styles.find(s => s.id === gradientStyleId);
+  if (!style) {
+    throw new Error(`Gradient style not found: ${gradientStyleId}`);
   }
-  
-  try {
-    // Retrieve local effect styles and find the matching style by ID
-    const effectStyles = await figma.getLocalEffectStylesAsync();
-    const foundStyle = effectStyles.find(style => style.id === effectStyleId);
-    
-    if (!foundStyle) {
-      throw new Error(`Effect style not found with ID: ${effectStyleId}`);
-    }
-    
-    // Apply the effect style to the node
-    node.effectStyleId = effectStyleId;
-    
-    return {
-      id: node.id,
-      name: node.name,
-      effectStyleId: node.effectStyleId,
-      appliedEffects: node.effects
-    };
-  } catch (error) {
-    throw new Error(`Error setting effect style ID: ${error.message}`);
+  const paintRef = { type: "PAINT_STYLE", styleId: style.id };
+  if (applyTo === "FILL" || applyTo === "BOTH") {
+    if (!("fills" in node)) throw new Error("Node does not support fills");
+    node.fills = [paintRef];
   }
+  if (applyTo === "STROKE" || applyTo === "BOTH") {
+    if (!("strokes" in node)) throw new Error("Node does not support strokes");
+    node.strokes = [paintRef];
+  }
+  return { id: node.id, name: node.name };
 }
 
 // Export all style operations as a grouped object
@@ -3758,7 +3766,9 @@ const styleOperations = {
   setStrokeColor,
   getStyles,
   setEffects,
-  setEffectStyleId
+  setEffectStyleId,
+  createGradientVariable,
+  applyGradientStyle
 };
 
 
@@ -4913,14 +4923,10 @@ function initializeCommands() {
   registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
   registerCommand('set_style', styleOperations.setStyle);
   registerCommand('set_styles', styleOperations.setStyles);
-  
-  // Component Operations
-  // Manages Figma components and their instances
-  registerCommand('get_local_components', componentOperations.getLocalComponents);
-  registerCommand('get_remote_components', componentOperations.getRemoteComponents);
-  registerCommand('create_component_instance', componentOperations.createComponentInstance);
-+  registerCommand('create_component_instances', componentOperations.createComponentInstances);
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
+  // Gradient Operations
+  registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
+  registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
   
   // Layout Operations
   // Controls layout properties, grouping, and hierarchy

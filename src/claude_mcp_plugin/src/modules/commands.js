@@ -105,14 +105,10 @@ export function initializeCommands() {
   registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
   registerCommand('set_style', styleOperations.setStyle);
   registerCommand('set_styles', styleOperations.setStyles);
-  
-  // Component Operations
-  // Manages Figma components and their instances
-  registerCommand('get_local_components', componentOperations.getLocalComponents);
-  registerCommand('get_remote_components', componentOperations.getRemoteComponents);
-  registerCommand('create_component_instance', componentOperations.createComponentInstance);
-+  registerCommand('create_component_instances', componentOperations.createComponentInstances);
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
+  // Gradient Operations
+  registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
+  registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
   
   // Layout Operations
   // Controls layout properties, grouping, and hierarchy

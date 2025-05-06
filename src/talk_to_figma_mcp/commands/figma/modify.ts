@@ -1780,4 +1780,73 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
       };
     }
   );
+
+  // Gradient support
+  server.tool(
+    "create_gradient_variable",
+    "Create a gradient paint style in Figma",
+    {
+      name: z.string().describe("The name for the gradient style"),
+      gradientType: z
+        .enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"])
+        .describe("Type of gradient"),
+      stops: z
+        .array(
+          z.object({
+            position: z.number().min(0).max(1).describe("Position of color stop (0-1)"),
+            color: z
+              .tuple([
+                z.number().min(0).max(1),
+                z.number().min(0).max(1),
+                z.number().min(0).max(1),
+                z.number().min(0).max(1),
+              ])
+              .describe("RGBA color for the stop"),
+          })
+        )
+        .describe("Array of gradient stops"),
+    },
+    async ({ name, gradientType, stops }) => {
+      const result = await figmaClient.executeCommand("create_gradient_variable", { name, gradientType, stops });
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Created gradient variable "${result.name}" with ID ${result.id}`,
+          },
+        ],
+        _meta: { id: result.id, name: result.name },
+      };
+    }
+  );
+
+  server.tool(
+    "apply_gradient_style",
+    "Apply a gradient style to a node in Figma",
+    {
+      nodeId: z.string().describe("The ID of the node to style"),
+      gradientStyleId: z.string().describe("The ID of the gradient style to apply"),
+      applyTo: z
+        .enum(["FILL", "STROKE", "BOTH"])
+        .describe("Apply to fill, stroke, or both"),
+    },
+    async ({ nodeId, gradientStyleId, applyTo }) => {
+      const nodeIdStr = ensureNodeIdIsString(nodeId);
+      const result = await figmaClient.executeCommand("apply_gradient_style", {
+        nodeId: nodeIdStr,
+        gradientStyleId,
+        applyTo,
+      });
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Applied gradient style ${gradientStyleId} to node "${result.name}" (${applyTo})`,
+          },
+        ],
+        _meta: { id: nodeIdStr },
+      };
+    }
+  );
+
 }
