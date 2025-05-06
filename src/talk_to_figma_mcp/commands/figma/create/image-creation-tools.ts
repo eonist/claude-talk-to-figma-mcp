@@ -25,7 +25,7 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
     },
     async ({ url, x, y, width, height, name, parentId }): Promise<any> => {
       try {
-        const node = await figmaClient.insertImage({ url, x, y, width, height, name, parentId });
+        const node = await (figmaClient as any).insertImage({ url, x, y, width, height, name, parentId });
         return { content: [{ type: "text", text: `Inserted image ${node.id}` }] };
       } catch (err) {
         return handleToolError(err, "image-creation-tools", "insert_image") as any;
@@ -54,7 +54,7 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
       try {
         const results = await processBatch(
           images,
-          cfg => figmaClient.insertImage(cfg).then(node => node.id)
+          cfg => (figmaClient as any).insertImage(cfg).then((node: any) => node.id)
         );
         const successCount = results.filter(r => r.result).length;
         return {
@@ -63,6 +63,51 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
         };
       } catch (err) {
         return handleToolError(err, "image-creation-tools", "insert_images") as any;
+      }
+    }
+  );
+
+  // Local image insertion command: supports both --imagePath and --imageData flags.
+  server.tool(
+    "insert_local_image",
+    "Insert a local image via a file path or a Base64 data URI",
+    {
+      imagePath: z.string().optional(),
+      imageData: z.string().optional(),
+      x: z.number().optional().default(0),
+      y: z.number().optional().default(0),
+      width: z.number().optional(),
+      height: z.number().optional(),
+      name: z.string().optional(),
+      parentId: z.string().optional()
+    },
+    async ({ imagePath, imageData, x, y, width, height, name, parentId }): Promise<any> => {
+      try {
+        let data: Uint8Array;
+        if (imageData) {
+          // If imageData is a data URI, strip the metadata prefix.
+          const base64 = imageData.startsWith("data:") ? imageData.split(",")[1] : imageData;
+          data = Uint8Array.from(Buffer.from(base64, "base64"));
+        } else if (imagePath) {
+          // Read file from disk using Node's fs module.
+          const fs = require("fs");
+          const fileBuffer = fs.readFileSync(imagePath);
+          data = new Uint8Array(fileBuffer);
+        } else {
+          throw new Error("Either imageData or imagePath must be provided.");
+        }
+        const node = await (figmaClient as any).insertLocalImage({
+          data: Array.from(data),
+          x,
+          y,
+          width,
+          height,
+          name,
+          parentId
+        });
+        return { content: [{ type: "text", text: `Inserted local image ${node.id}` }] };
+      } catch (err) {
+        return handleToolError(err, "image-creation-tools", "insert_local_image") as any;
       }
     }
   );

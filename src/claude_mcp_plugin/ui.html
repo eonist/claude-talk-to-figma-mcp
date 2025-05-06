@@ -652,5 +652,29 @@
         }
       };
     </script>
-  </body>
+    <input id="localImageInput" type="file" accept="image/*" style="display: none;" />
+  <button id="uploadImageButton">Upload Local Image</button>
+  <script>
+    const uploadBtn = document.getElementById("uploadImageButton");
+    const fileInput = document.getElementById("localImageInput");
+    uploadBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+         const arrayBuffer = evt.target.result;
+         const bytes = new Uint8Array(arrayBuffer);
+         parent.postMessage({
+           pluginMessage: { 
+             type: 'insert_local_image', 
+             data: Array.from(bytes), 
+             name: file.name 
+           }
+         }, '*');
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+</body>
 </html>

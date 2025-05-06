@@ -69,7 +69,38 @@ export async function insertImages(params) {
   return { results };
 }
 
+export async function insertLocalImage(params) {
+  const { data, x = 0, y = 0, width, height, name = "Local Image", parentId } = params || {};
+  if (!data) {
+    throw new Error("No image data provided");
+  }
+  const bytes = Array.isArray(data) ? new Uint8Array(data) : data;
+  const image = figma.createImage(bytes);
+  const rect = figma.createRectangle();
+  rect.x = x;
+  rect.y = y;
+  if (width !== undefined) {
+    const h = height !== undefined ? height : width;
+    rect.resize(width, h);
+  }
+  rect.name = name;
+  rect.fills = [{
+    type: "IMAGE",
+    scaleMode: "FILL",
+    imageHash: image.hash
+  }];
+  const parent = parentId
+    ? await figma.getNodeByIdAsync(parentId)
+    : figma.currentPage;
+  if (parentId && !parent) {
+    throw new Error(`Parent not found: ${parentId}`);
+  }
+  parent.appendChild(rect);
+  return { id: rect.id, name: rect.name };
+}
+
 export const imageOperations = {
   insertImage,
-  insertImages
+  insertImages,
+  insertLocalImage
 };
