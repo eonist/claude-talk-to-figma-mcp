@@ -997,7 +997,7 @@ export class FigmaClient {
     return this.executeCommand("create_gradient_variable", params);
   }
 
-  /**
+    /**
    * Applies a gradient style to a node in Figma
    */
     async applyGradientStyle(params: {
@@ -1006,6 +1006,80 @@ export class FigmaClient {
       applyTo: "FILL" | "STROKE" | "BOTH";
     }): Promise<any> {
       return this.executeCommand("apply_gradient_style", params);
+    }
+  
+
+    /**
+     * Batch create gradient variables in Figma
+     *
+     * @param params.gradients - Array of gradient definitions
+     * @returns Array of results with id, name, and optional error per gradient
+     */
+    async createGradientVariables(params: {
+      gradients: Array<{
+        name: string;
+        gradientType: "LINEAR" | "RADIAL" | "ANGULAR" | "DIAMOND";
+        stops: Array<{ position: number; color: [number, number, number, number] }>;
+        mode?: string;
+        opacity?: number;
+        transformMatrix?: number[][];
+      }>;
+    }): Promise<Array<{ id: string; name: string; error?: string }>> {
+      const results: Array<{ id: string; name: string; error?: string }> = [];
+      for (const grad of params.gradients) {
+        try {
+          const result = await this.executeCommand("create_gradient_variable", {
+            name: grad.name,
+            gradientType: grad.gradientType,
+            stops: grad.stops,
+            ...(grad.mode !== undefined ? { mode: grad.mode } : {}),
+            ...(grad.opacity !== undefined ? { opacity: grad.opacity } : {}),
+            ...(grad.transformMatrix !== undefined ? { transformMatrix: grad.transformMatrix } : {})
+          });
+          results.push({ id: result.id, name: result.name });
+        } catch (error) {
+          results.push({
+            id: "",
+            name: grad.name,
+            error: error instanceof Error ? error.message : String(error)
+          });
+        }
+      }
+      return results;
+    }
+
+    /**
+     * Batch apply gradient styles to nodes in Figma
+     *
+     * @param params.entries - Array of nodeId, gradientStyleId, applyTo
+     * @returns Array of results with nodeId, success, and optional error per entry
+     */
+    async applyGradientStyles(params: {
+      entries: Array<{
+        nodeId: string;
+        gradientStyleId: string;
+        applyTo: "FILL" | "STROKE" | "BOTH";
+      }>;
+    }): Promise<Array<{ nodeId: string; success: boolean; error?: string }>> {
+      const results: Array<{ nodeId: string; success: boolean; error?: string }> = [];
+      for (const entry of params.entries) {
+        const id = ensureNodeIdIsString(entry.nodeId);
+        try {
+          await this.executeCommand("apply_gradient_style", {
+            nodeId: id,
+            gradientStyleId: entry.gradientStyleId,
+            applyTo: entry.applyTo
+          });
+          results.push({ nodeId: id, success: true });
+        } catch (error) {
+          results.push({
+            nodeId: id,
+            success: false,
+            error: error instanceof Error ? error.message : String(error)
+          });
+        }
+      }
+      return results;
     }
 
     /**

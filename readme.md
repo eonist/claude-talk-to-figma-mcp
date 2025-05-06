@@ -208,6 +208,9 @@ Talk to Figma, channel {channel-ID}
 | `intersect_selection`       | Keep only the areas where all selected shapes overlap | `nodeIds`                                                                          |
 | `exclude_selection`         | Keep only the areas where shapes don't overlap       | `nodeIds`                                                                          |
 
+| `create_gradient_variables` | Batch create gradient variables in Figma            | `gradients`                                                                        |
+| `apply_gradient_styles`     | Batch apply gradient styles to nodes in Figma       | `entries`                                                                          |
+
 ### Misc commands
 
 | Command                 | Description                                 | Parameters                         |

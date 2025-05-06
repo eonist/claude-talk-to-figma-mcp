@@ -23,10 +23,97 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
       b: z.number().min(0).max(1),
       a: z.number().min(0).max(1).optional(),
     },
-    async ({ nodeId, r, g, b, a }) => {
+    async ({ nodeId, r, g, b, a }: { nodeId: string; r: number; g: number; b: number; a?: number }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.setFillColor({ nodeId: id, r, g, b, a });
       return { content: [{ type: "text", text: `Set fill ${id}` }] };
+    }
+  );
+
+  // Batch create gradient variables
+  server.tool(
+    "create_gradient_variables",
+    "Batch create gradient variables in Figma",
+    {
+      gradients: z.array(
+        z.object({
+          name: z.string().describe("The name for the gradient style"),
+          gradientType: z
+            .enum(["LINEAR","RADIAL","ANGULAR","DIAMOND"])
+            .describe("Type of gradient"),
+          stops: z.array(
+            z.object({
+              position: z.number().min(0).max(1).describe("Position of color stop (0-1)"),
+              color: z
+                .tuple([
+                  z.number().min(0).max(1),
+                  z.number().min(0).max(1),
+                  z.number().min(0).max(1),
+                  z.number().min(0).max(1)
+                ])
+                .describe("RGBA color for the stop")
+            })
+          ).describe("Array of gradient stops"),
+          mode: z.string().optional().describe("Blend mode, e.g., NORMAL, DARKEN"),
+          opacity: z.number().min(0).max(1).optional().describe("Overall opacity"),
+          transformMatrix: z
+            .array(z.array(z.number()))
+            .optional()
+            .describe("Optional 2x3 transform matrix for gradient")
+        })
+      ).describe("Array of gradient definitions")
+    },
+    async ({ gradients }: { gradients: Array<{
+      name: string;
+      gradientType: "LINEAR"|"RADIAL"|"ANGULAR"|"DIAMOND";
+      stops: Array<{ position: number; color: [number, number, number, number] }>;
+      mode?: string;
+      opacity?: number;
+      transformMatrix?: number[][];
+    }> }) => {
+      const results = await figmaClient.createGradientVariables({ gradients });
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Batch created ${results.length} gradient variables`
+          }
+        ],
+        _meta: { results }
+      };
+    }
+  );
+
+  // Batch apply gradient styles
+  server.tool(
+    "apply_gradient_styles",
+    "Batch apply gradient styles to nodes in Figma",
+    {
+      entries: z.array(
+        z.object({
+          nodeId: z.string().describe("The ID of the node to style"),
+          gradientStyleId: z.string().describe("The ID of the gradient style to apply"),
+          applyTo: z
+            .enum(["FILL","STROKE","BOTH"])
+            .describe("Apply to fill, stroke, or both")
+        })
+      ).describe("Array of entries specifying nodeId, gradientStyleId, and applyTo")
+    },
+    async ({ entries }: { entries: Array<{
+      nodeId: string;
+      gradientStyleId: string;
+      applyTo: "FILL"|"STROKE"|"BOTH";
+    }> }) => {
+      const results = await figmaClient.applyGradientStyles({ entries });
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Batch applied gradients: ${results.filter(r => r.success).length}/${results.length} successes`
+          }
+        ],
+        _meta: { results }
+      };
     }
   );
 
@@ -42,7 +129,7 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
       a: z.number().min(0).max(1).optional(),
       weight: z.number().positive().optional(),
     },
-    async ({ nodeId, r, g, b, a, weight }) => {
+    async ({ nodeId, r, g, b, a, weight }: { nodeId: string; r: number; g: number; b: number; a?: number; weight?: number }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.setStrokeColor({ nodeId: id, r, g, b, a, weight });
       return { content: [{ type: "text", text: `Set stroke ${id}` }] };
