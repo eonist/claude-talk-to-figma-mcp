@@ -1,6 +1,6 @@
 # Claude Talk to Figma MCP
 
-[![version](https://img.shields.io/badge/version-0.4.6-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
+[![version](https://img.shields.io/badge/version-0.4.7-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 A Figma plugin enabling seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP). This tool allows you to design and modify Figma elements through natural language commands processed by Claude.
@@ -259,6 +259,12 @@ Please resize all selected elements so their longest side is 20px.
 ```
 
 ## Changelog
+
+### 0.4.7 (2025-06-05)
+- Create component from node via `create_component_from_node`
+- Add gradient support via `create_gradient_variable` and `apply_gradient_style`
+- Batch ellipse creation via `create_ellipses`
+- Batch polygon creation via `create_polygons`
 
 ### 0.4.6 (2025-05-06)
 - Batch SVG insertion via `insert_svg_vectors`
