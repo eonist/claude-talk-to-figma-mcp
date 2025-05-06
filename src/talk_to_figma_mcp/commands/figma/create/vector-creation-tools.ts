@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
+import { processBatch } from "../../../utils/batch-processor.js";
 
 /**
  * Registers vector-creation-related commands:
@@ -43,16 +44,15 @@ export function registerVectorCreationCommands(server: McpServer, figmaClient: F
       }))
     },
     async ({ vectors }) => {
-      const ids: string[] = [];
-      for (const cfg of vectors) {
-        try {
-          const node = await figmaClient.createVector(cfg);
-          ids.push(node.id);
-        } catch {
-          /* skip errors */
-        }
-      }
-      return { content: [{ type: "text", text: `Created vectors: ${ids.join(", ")}` }] };
+      const results = await processBatch(
+        vectors,
+        cfg => figmaClient.createVector(cfg).then(node => node.id)
+      );
+      const successCount = results.filter(r => r.result).length;
+      return {
+        content: [{ type: "text", text: `Created ${successCount}/${vectors.length} vectors.` }],
+        _meta: { results }
+      };
     }
   );
 }

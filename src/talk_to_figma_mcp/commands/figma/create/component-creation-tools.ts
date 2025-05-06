@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
+import { processBatch } from "../../../utils/batch-processor.js";
 
 /**
  * Registers component-creation-related commands:
@@ -24,7 +25,7 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
     }
   );
 
-  // Create multiple component instances
+  // Batch component instances
   server.tool(
     "create_component_instances",
     "Create multiple component instances in Figma",
@@ -35,19 +36,18 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
           x: z.number(),
           y: z.number()
         })
-      )
+      ).describe("Component instance specs")
     },
     async ({ instances }) => {
-      const ids: string[] = [];
-      for (const cfg of instances) {
-        try {
-          const res = await figmaClient.executeCommand("create_component_instance", cfg);
-          ids.push(res.id);
-        } catch {
-          // skip errors
-        }
-      }
-      return { content: [{ type: "text", text: `Created component instances: ${ids.join(", ")}` }] };
+      const results = await processBatch(
+        instances,
+        cfg => figmaClient.executeCommand("create_component_instance", cfg).then(res => res.id)
+      );
+      const successCount = results.filter(r => r.result !== undefined).length;
+      return {
+        content: [{ type: "text", text: `Created ${successCount}/${instances.length} component instances.` }],
+        _meta: { results }
+      };
     }
   );
 

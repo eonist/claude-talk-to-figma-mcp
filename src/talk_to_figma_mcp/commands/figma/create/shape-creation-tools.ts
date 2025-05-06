@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
+import { processBatch } from "../../../utils/batch-processor.js";
 
 /**
  * Registers shape-creation-related commands:
@@ -44,21 +45,21 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
       }))
     },
     async ({ rectangles }) => {
-      const ids: string[] = [];
-      for (const cfg of rectangles) {
-        try {
+      const results = await processBatch(
+        rectangles,
+        async cfg => {
           const node = await figmaClient.createRectangle(cfg);
           if (cfg.cornerRadius != null) {
-            await figmaClient.executeCommand("set_corner_radius", {
-              nodeId: node.id, radius: cfg.cornerRadius
-            });
+            await figmaClient.executeCommand("set_corner_radius", { nodeId: node.id, radius: cfg.cornerRadius });
           }
-          ids.push(node.id);
-        } catch {
-          /* skip errors */
+          return node.id;
         }
-      }
-      return { content: [{ type: "text", text: `Created rectangles: ${ids.join(", ")}` }] };
+      );
+      const successCount = results.filter(r => r.result).length;
+      return {
+        content: [{ type: "text", text: `Created ${successCount}/${rectangles.length} rectangles.` }],
+        _meta: { results }
+      };
     }
   );
 
@@ -92,16 +93,15 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
       }))
     },
     async ({ lines }) => {
-      const ids: string[] = [];
-      for (const cfg of lines) {
-        try {
-          const node = await figmaClient.createLine(cfg);
-          ids.push(node.id);
-        } catch {
-          /* skip errors */
-        }
-      }
-      return { content: [{ type: "text", text: `Created lines: ${ids.join(", ")}` }] };
+      const results = await processBatch(
+        lines,
+        cfg => figmaClient.createLine(cfg).then(node => node.id)
+      );
+      const successCount = results.filter(r => r.result).length;
+      return {
+        content: [{ type: "text", text: `Created ${successCount}/${lines.length} lines.` }],
+        _meta: { results }
+      };
     }
   );
 
@@ -119,16 +119,15 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
       }))
     },
     async ({ polygons }) => {
-      const ids: string[] = [];
-      for (const cfg of polygons) {
-        try {
-          const node = await figmaClient.createPolygon(cfg);
-          ids.push(node.id);
-        } catch {
-          /* skip errors */
-        }
-      }
-      return { content: [{ type: "text", text: `Created polygons: ${ids.join(", ")}` }] };
+      const results = await processBatch(
+        polygons,
+        cfg => figmaClient.createPolygon(cfg).then(node => node.id)
+      );
+      const successCount = results.filter(r => r.result).length;
+      return {
+        content: [{ type: "text", text: `Created ${successCount}/${polygons.length} polygons.` }],
+        _meta: { results }
+      };
     }
   );
 
@@ -145,16 +144,15 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
       }))
     },
     async ({ ellipses }) => {
-      const ids: string[] = [];
-      for (const cfg of ellipses) {
-        try {
-          const node = await figmaClient.createEllipse(cfg);
-          ids.push(node.id);
-        } catch {
-          /* skip errors */
-        }
-      }
-      return { content: [{ type: "text", text: `Created ellipses: ${ids.join(", ")}` }] };
+      const results = await processBatch(
+        ellipses,
+        cfg => figmaClient.createEllipse(cfg).then(node => node.id)
+      );
+      const successCount = results.filter(r => r.result).length;
+      return {
+        content: [{ type: "text", text: `Created ${successCount}/${ellipses.length} ellipses.` }],
+        _meta: { results }
+      };
     }
   );
 }
