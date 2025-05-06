@@ -1,0 +1,1 @@
+export { rgbaToHex } from './color';

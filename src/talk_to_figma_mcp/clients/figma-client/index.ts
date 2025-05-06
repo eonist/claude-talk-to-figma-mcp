@@ -2,7 +2,7 @@ import { filterFigmaNode } from "../../utils/node-filter.js";
 import { logger } from "../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import { sendCommandToFigma, getCurrentChannel, isConnectedToFigma } from "../../server/websocket.js";
-import type { FigmaCommand } from "./types.ts";
+import type { FigmaCommand } from "./types.js";
 
 /**
  * Core FigmaClient class with basic connectivity and command dispatch.
@@ -29,11 +29,11 @@ export class FigmaClient {
 }
 
 // Mixin command groups onto the prototype
-import { readCommands } from "./read-commands.ts";
-import { writeCommands } from "./write-commands.ts";
-import { textCommands } from "./text-commands.ts";
-import { effectCommands } from "./effect-commands.ts";
-import { miscCommands } from "./misc-commands.ts";
+import { readCommands } from "./read-commands.js";
+import { writeCommands } from "./write-commands.js";
+import { textCommands } from "./text-commands.js";
+import { effectCommands } from "./effect-commands.js";
+import { miscCommands } from "./misc-commands.js";
 
 Object.assign(
   FigmaClient.prototype,
