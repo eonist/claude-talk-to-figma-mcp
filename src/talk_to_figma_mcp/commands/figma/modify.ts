@@ -20,6 +20,19 @@ import { ensureNodeIdIsString } from "../../utils/node-utils.js";
  * @param {McpServer} server - The MCP server instance
  * @param {FigmaClient} figmaClient - The Figma client instance
  */
+/**
+ * Registers modify commands for the MCP server:
+ * - move_node
+ * - move_nodes
+ * - resize_node
+ * - resize_nodes
+ * - delete_node
+ * - delete_nodes
+ * - set_fill_color
+ * - set_stroke_color
+ * - set_style
+ * - set_styles
+ */
 export function registerModifyCommands(server: McpServer, figmaClient: FigmaClient) {
 
   /**

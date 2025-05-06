@@ -9,8 +9,19 @@ let currentChannel: string | null = null;
 const pendingRequests = new Map<string, PendingRequest>();
 
 /**
- * Connects and manages WebSocket connection to Figma plugin server
- * 
+ * Manages WebSocket connection between the MCP server and Figma plugin.
+ * Provides connection lifecycle management, command messaging, request tracking, and error recovery.
+ *
+ * Module responsibilities:
+ * - connectToFigma: Establish and maintain a WebSocket connection with exponential backoff.
+ * - joinChannel: Join a dedicated Figma communication channel.
+ * - sendCommandToFigma: Send commands to Figma with promise-based request tracking and timeouts.
+ * - processFigmaNodeResponse: Filter and log Figma node responses.
+ * - isConnectedToFigma: Check current connection status.
+ *
+ * @module websocket
+ */
+/*
  * Handles the full WebSocket connection lifecycle including:
  * 1. Initial connection attempt
  * 2. Connection state management 

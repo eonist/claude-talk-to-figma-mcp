@@ -1,3 +1,14 @@
+/**
+ * Client for interacting with Figma via WebSocket.
+ *
+ * Provides a structured API for:
+ * - Reading document and node information
+ * - Creation, modification, and deletion of Figma elements
+ * - Style and text operations
+ * - Layout and transform operations
+ *
+ * @module clients/figma-client
+ */
 import { filterFigmaNode } from "../utils/node-filter.js";
 import { logger } from "../utils/logger.js";
 import { ensureNodeIdIsString } from "../utils/node-utils.js";

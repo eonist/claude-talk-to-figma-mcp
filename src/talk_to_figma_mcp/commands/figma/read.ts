@@ -18,6 +18,21 @@ import { ensureNodeIdIsString } from "../../utils/node-utils.js";
  * @param {McpServer} server - The MCP server instance
  * @param {FigmaClient} figmaClient - The Figma client instance
  */
+/**
+ * Registers read commands for the MCP server:
+ * - get_document_info: Retrieves detailed document metadata
+ * - get_selection: Retrieves current selection state
+ * - get_node_info: Retrieves details for a specific node
+ * - get_nodes_info: Retrieves details for multiple nodes
+ * - get_styles: Retrieves all paint and text styles
+ * - get_local_components: Retrieves all local components
+ * - get_remote_components: Retrieves team library components
+ * - get_styled_text_segments: Retrieves styled segments within a text node
+ * - scan_text_nodes: Scans all text nodes under a given node with optional chunking
+ *
+ * @param {McpServer} server - The MCP server instance
+ * @param {FigmaClient} figmaClient - The Figma client instance
+ */
 export function registerReadCommands(server: McpServer, figmaClient: FigmaClient) {
   /**
    * Get Document Info Tool

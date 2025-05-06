@@ -9,6 +9,18 @@ import { FigmaClient } from "../../clients/figma-client.js";
  * - create_line
  * - create_lines (batch)
  */
+/**
+ * Registers creation commands for the MCP server:
+ * - create_rectangle / create_rectangles
+ * - create_vector / create_vectors
+ * - create_polygons / create_polygons (batch)
+ * - create_ellipses / create_ellipses (batch)
+ * - create_component_instances
+ * - create_line / create_lines
+ *
+ * @param {McpServer} server - The MCP server instance
+ * @param {FigmaClient} figmaClient - The Figma client instance
+ */
 export function registerCreateCommands(server: McpServer, figmaClient: FigmaClient) {
 
   // Single rectangle

@@ -1,3 +1,12 @@
+/**
+ * Registers channel management command for the MCP server.
+ *
+ * This module provides the 'join' command to establish a dedicated communication
+ * channel between the MCP server and Figma plugin. Subsequent commands require
+ * this channel to be joined first.
+ *
+ * @module channel
+ */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../clients/figma-client.js";

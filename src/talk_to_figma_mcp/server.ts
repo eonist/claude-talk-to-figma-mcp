@@ -7,17 +7,31 @@ import { registerAllCommands } from "./commands/index.js";
 import { logger } from "./utils/logger.js";
 
 /**
- * Main entry point for the Talk to Figma MCP server
- * 
+ * Main entry point for the Talk to Figma MCP server.
+ *
  * This server provides a Model Context Protocol interface to Figma,
  * allowing models like Claude to interact with Figma documents via
  * WebSocket connections.
- * 
+ *
  * Features:
  * - Real-time communication with Figma
  * - Document inspection
  * - Creation and modification of Figma elements
  * - Auto-reconnection and robust error handling
+ *
+ * Command-line arguments:
+ * @param {string} --server=<url>             Figma socket server host (default: localhost)
+ * @param {number} --port=<port>              Figma socket server port (default: 3055)
+ * @param {number} --reconnect-interval=<ms>  Base reconnect interval in milliseconds (default: 2000)
+ *
+ * @async
+ * @function main
+ * @returns {Promise<void>} Resolves when the MCP server is running
+ * @throws Will log errors and exit with code 1 on startup failure
+ *
+ * @example
+ * # Start server on custom host and port
+ * node ./dist/server.js --server=figma.local --port=4080 --reconnect-interval=5000
  */
 async function main(): Promise<void> {
   try {

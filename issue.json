@@ -1,0 +1,71 @@
+{
+  "url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51",
+  "repository_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp",
+  "labels_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/labels{/name}",
+  "comments_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/comments",
+  "events_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/events",
+  "html_url": "https://github.com/eonist/claude-talk-to-figma-mcp/issues/51",
+  "id": 3041145471,
+  "node_id": "I_kwDOOjKCnc61RDJ_",
+  "number": 51,
+  "title": "Improve comments ",
+  "user": {
+    "login": "eonist",
+    "id": 11816788,
+    "node_id": "MDQ6VXNlcjExODE2Nzg4",
+    "avatar_url": "https://avatars.githubusercontent.com/u/11816788?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/eonist",
+    "html_url": "https://github.com/eonist",
+    "followers_url": "https://api.github.com/users/eonist/followers",
+    "following_url": "https://api.github.com/users/eonist/following{/other_user}",
+    "gists_url": "https://api.github.com/users/eonist/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/eonist/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/eonist/subscriptions",
+    "organizations_url": "https://api.github.com/users/eonist/orgs",
+    "repos_url": "https://api.github.com/users/eonist/repos",
+    "events_url": "https://api.github.com/users/eonist/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/eonist/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+
+  ],
+  "state": "open",
+  "locked": false,
+  "assignee": null,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 7,
+  "created_at": "2025-05-06T00:18:47Z",
+  "updated_at": "2025-05-06T01:05:15Z",
+  "closed_at": null,
+  "author_association": "OWNER",
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "body": "I'm unable to analyze the specific codebase at https://github.com/eonist/claude-talk-to-figma-mcp/ as the content wasn't successfully loaded from that repository[1]. However, based on similar MCP projects for Claude-Figma integration, I can suggest areas where method documentation is typically lacking and how to improve them.\n\n## Potential Areas Needing Better Documentation\n\n**Tool Implementation Methods**\nFunctions in tool modules (document-tools.ts, creation-tools.ts, etc.) often lack comprehensive parameter descriptions[[3](https://github.com/arinspunk/claude-talk-to-figma-mcp)][[4](https://github.com/arinspunk/claude-talk-to-figma-mcp)]. For example:\n\n```typescript\n// Before\nfunction createRectangle(params) {\n  // Implementation\n}\n\n// Improved\n/**\n * Creates a rectangle in the Figma document\n * @param {Object} params - Configuration parameters\n * @param {number} params.x - X position of rectangle\n * @param {number} params.y - Y position of rectangle\n * @param {number} params.width - Width of rectangle\n * @param {number} params.height - Height of rectangle\n * @param {string} [params.color] - Fill color (hex format)\n * @param {number} [params.cornerRadius] - Corner radius in pixels\n * @returns {Promise} - ID of the created node\n */\nfunction createRectangle(params) {\n  // Implementation\n}\n```\n\n**WebSocket Communication Methods**\nWebSocket handling typically needs better error state documentation[[3](https://github.com/arinspunk/claude-talk-to-figma-mcp)]:\n\n```typescript\n// Before\nfunction handleWebSocketMessage(message) {\n  // Implementation\n}\n\n// Improved\n/**\n * Processes incoming WebSocket messages from Figma plugin\n * @param {Object} message - The parsed message object\n * @param {string} message.type - Message type identifier\n * @param {string} message.channelId - Channel for communication\n * @param {Object} [message.payload] - Optional data payload\n * @throws Will throw error if message format is invalid\n */\nfunction handleWebSocketMessage(message) {\n  // Implementation\n}\n```\n\n**Configuration Helper Functions**\nInstallation and setup methods often lack environment-specific details[[2](https://libraries.io/npm/claude-talk-to-figma-mcp)][[4](https://github.com/arinspunk/claude-talk-to-figma-mcp)]:\n\n```typescript\n// Before\nfunction configureClaudeDesktop() {\n  // Implementation\n}\n\n// Improved\n/**\n * Configures Claude Desktop to use the Figma MCP\n * @description Modifies the Claude Desktop configuration file to include\n * the ClaudeTalkToFigma MCP. Creates a backup of the existing config.\n * @platform Supports macOS (~/Library/Application Support/Claude/...)\n * @platform Supports Windows (%APPDATA%\\Claude\\...)\n * @returns {boolean} True if configuration was successful\n */\nfunction configureClaudeDesktop() {\n  // Implementation \n}\n```\n\nThese improvements would make the codebase more maintainable and easier for contributors to understand[[3](https://github.com/arinspunk/claude-talk-to-figma-mcp)].\n\nCitations:\n[1] https://github.com/eonist/claude-talk-to-figma-mcp/\n[2] https://libraries.io/npm/claude-talk-to-figma-mcp\n[3] https://github.com/arinspunk/claude-talk-to-figma-mcp\n[4] https://github.com/arinspunk/claude-talk-to-figma-mcp\n[5] https://www.youtube.com/watch?v=1L1tSwJk30Y\n[6] https://github.com/tonycueva/claude-figma-mcp\n[7] https://www.linkedin.com/posts/temperamento_figma-claude-mcp-activity-7320462080447262720-BZ1d\n[8] https://github.com/karthiks3000/figma-mcp-server\n[9] https://www.linkedin.com/posts/sonnylazuardi_claude-code-designing-in-figma-with-mcp-server-activity-7308248516710027264-j_5K\n[10] https://www.aibase.com/repos/project/claude-talk-to-figma-mcp\n[11] https://html.to.design/docs/mcp-tab/\n[12] https://www.npmjs.com/package/@hapins/figma-mcp\n\n---\nAnswer from Perplexity: [pplx.ai/share](https://www.perplexity.ai/search/pplx.ai/share)",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/reactions",
+    "total_count": 0,
+    "+1": 0,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null
+}
