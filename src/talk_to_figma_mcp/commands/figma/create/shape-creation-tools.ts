@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
+import { CreateRectangleParams } from "../../../types/command-params.js";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Registers shape-creation-related commands:
@@ -21,12 +23,14 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
       name: z.string().optional(), parentId: z.string().optional(),
       cornerRadius: z.number().min(0).optional()
     },
-    async ({ x, y, width, height, name, parentId, cornerRadius }) => {
-      const params: any = { x, y, width, height, name, parentId };
+    async (args, extra) => {
+      const params: CreateRectangleParams = { commandId: uuidv4(), ...args };
       const node = await figmaClient.createRectangle(params);
-      if (cornerRadius != null) {
+      if (args.cornerRadius != null) {
         await figmaClient.executeCommand("set_corner_radius", {
-          nodeId: node.id, radius: cornerRadius
+          commandId: uuidv4(),
+          nodeId: node.id,
+          radius: args.cornerRadius
         });
       }
       return { content: [{ type: "text", text: `Created rectangle ${node.id}` }] };

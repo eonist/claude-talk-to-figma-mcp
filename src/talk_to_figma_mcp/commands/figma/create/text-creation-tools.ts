@@ -1,6 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
+import { CreateTextParams, CreateBoundedTextParams } from "../../../types/command-params.js";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Registers text-creation-related commands:
@@ -21,8 +23,8 @@ export function registerTextCreationCommands(server: McpServer, figmaClient: Fig
       name: z.string().optional(),
       parentId: z.string().optional()
     },
-    async ({ x, y, text, fontSize, fontWeight, fontColor, name, parentId }) => {
-      const params: any = { x, y, text, fontSize, fontWeight, fontColor, name, parentId };
+    async (args, extra) => {
+      const params: CreateTextParams = { commandId: uuidv4(), ...args };
       const node = await figmaClient.createText(params);
       return { content: [{ type: "text", text: `Created text ${node.id}` }] };
     }
@@ -42,8 +44,8 @@ export function registerTextCreationCommands(server: McpServer, figmaClient: Fig
       name: z.string().optional(),
       parentId: z.string().optional()
     },
-    async ({ x, y, width, height, text, fontSize, fontWeight, fontColor, name, parentId }) => {
-      const params: any = { x, y, width, height, text, fontSize, fontWeight, fontColor, name, parentId };
+    async (args, extra) => {
+      const params: CreateBoundedTextParams = { commandId: uuidv4(), ...args };
       const node = await figmaClient.executeCommand("create_bounded_text", params);
       return { content: [{ type: "text", text: `Created bounded text ${node.id}` }] };
     }

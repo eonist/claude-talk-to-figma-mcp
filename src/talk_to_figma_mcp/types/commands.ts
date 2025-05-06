@@ -5,6 +5,8 @@
 /**
  * Defines all available Figma command types that can be sent over WebSocket
  */
+import { CommandParamsMap } from "./command-params.js";
+
 export type FigmaCommand =
   | "get_document_info"
   | "get_selection"
@@ -86,11 +88,9 @@ export type FigmaCommand =
   | "join";
 
 /**
- * Generic interface for command parameters
+ * Map each command to its specific params
  */
-export interface CommandParams {
-  [key: string]: any;
-}
+export type CommandParams = CommandParamsMap[FigmaCommand];
 
 /**
  * Command request structure sent to Figma WebSocket
@@ -111,7 +111,7 @@ export interface WebSocketMessage {
   message?: {
     id: string;
     command: FigmaCommand;
-    params: CommandParams & { commandId: string };
+    params: CommandParams;
   };
 }
 
