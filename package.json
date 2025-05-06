@@ -30,7 +30,8 @@
     "dev:all": "concurrently \"bun run build:watch\" \"bun run watch:plugin\"",
     "pub:release": "bun run build && npm publish",
     "configure-claude": "node scripts/configure-claude.js",
-    "test": "node scripts/test-integration.js"
+    "test": "node scripts/test-integration.js",
+    "test-local-images": "node scripts/test-local-images.js"
   },
   "devDependencies": {
     "@types/bun": "latest",

@@ -37,7 +37,7 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
 - **Batch Polygon Creation**: Create multiple polygons in one call via `create_polygons`.
 - **Batch Ellipse Creation**: Create multiple ellipses in one call via `create_ellipses`.
 - **Gradient Support**: Create and apply gradient paint styles via `create_gradient_variable` and `apply_gradient_style`.
-- **Local Image Support**: Insert local images via a file picker; supports both --imagePath and --imageData flags.
+- **Local Image Support**: Insert local images via MCP agent with `insert_local_image` (single) and `insert_local_images` (batch) commands, using file paths or Base64 data URIs.
 
 ---
 
@@ -125,6 +125,21 @@ Ready to send commands to Figma from Claude.
 After loading a UX/UI prompt, run:
 ```
 Talk to Figma, channel {channel-ID}
+```
+
+#### Agent Invocation Example
+
+To invoke batch local-image insertion directly from an MCP agent (no plugin UI required), send JSON over stdio to the MCP server. For example:
+```bash
+echo '{
+  "command": "insert_local_images",
+  "params": {
+    "images": [
+      { "imagePath": "/absolute/path/to/image1.png", "x": 10, "y": 20 },
+      { "imageData": "data:image/png;base64,iVBORw0KGgoAAAANS...", "x": 100, "y": 150 }
+    ]
+  }
+}' | node src/talk_to_figma_mcp/server.ts
 ```
 
 ---
@@ -216,9 +231,32 @@ Talk to Figma, channel {channel-ID}
 
 ### Image Commands
 
-| Command             | Description                                                                    | Parameters                                                         |
-|---------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| `insert_local_image`| Insert a local image via file path or Base64 data URI.                         | `imagePath` (optional), `imageData` (optional), `x`, `y`, `width`, `height`, `name`, `parentId` |
+| Command               | Description                                                                    | Parameters                                                                                           |
+|-----------------------|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| `insert_local_image`  | Insert a local image via file path or Base64 data URI.                         | `imagePath` (optional), `imageData` (optional), `x`, `y`, `width`, `height`, `name`, `parentId`       |
+| `insert_local_images` | Batch insert multiple local images via file paths or Base64 data URIs.         | `images`: array of `{ imagePath?, imageData?, x?, y?, width?, height?, name?, parentId? }`           |
+
+#### Example JSON Request
+
+```json
+{
+  "command": "insert_local_images",
+  "params": {
+    "images": [
+      {
+        "imagePath": "/absolute/path/to/image1.png",
+        "x": 10,
+        "y": 20
+      },
+      {
+        "imageData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+        "x": 100,
+        "y": 150
+      }
+    ]
+  }
+}
+```
 
 ### Image Commands
 
