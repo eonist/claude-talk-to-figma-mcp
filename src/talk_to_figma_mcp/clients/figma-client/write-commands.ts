@@ -240,4 +240,66 @@ export const writeCommands = {
     const ids = nodeIds.map(ensureNodeIdIsString);
     return this.executeCommand("delete_nodes", { nodeIds: ids });
   },
+
+  /**
+   * Sets the fill color of a node
+   * 
+   * @param {object} params - Fill color parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setFillColor(
+    this: FigmaClient,
+    params: {
+      nodeId: string;
+      r: number;
+      g: number;
+      b: number;
+      a?: number;
+    }
+  ): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_fill_color", {
+      nodeId: nodeIdString,
+      color: {
+        r: params.r,
+        g: params.g,
+        b: params.b,
+        a: params.a || 1
+      }
+    });
+  },
+
+  /**
+   * Sets the stroke color of a node
+   * 
+   * @param {object} params - Stroke color parameters
+   * @returns {Promise<any>} Operation result
+   */
+  async setStrokeColor(
+    this: FigmaClient,
+    params: {
+      nodeId: string;
+      r: number;
+      g: number;
+      b: number;
+      a?: number;
+      weight?: number;
+    }
+  ): Promise<any> {
+    // Ensure nodeId is treated as a string and validate it's not an object
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    
+    return this.executeCommand("set_stroke_color", {
+      nodeId: nodeIdString,
+      color: {
+        r: params.r,
+        g: params.g,
+        b: params.b,
+        a: params.a || 1
+      },
+      weight: params.weight || 1
+    });
+  },
 };

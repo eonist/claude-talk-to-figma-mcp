@@ -1205,7 +1205,7 @@ function setStroke(node, color, weight) {
  */
 async function setCornerRadius(params) {
   const { nodeId, radius, corners } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -1241,7 +1241,7 @@ async function setCornerRadius(params) {
  */
 async function resizeNode(params) {
   const { nodeId, width, height } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -1267,7 +1267,7 @@ async function resizeNodes(params) {
   let resized = 0;
   
   for (const id of nodeIds) {
-    const node = figma.getNodeById(id);
+    const node = await figma.getNodeByIdAsync(id);
     if (node) {
       node.resize(targetSize.width, targetSize.height);
       resized++;
@@ -1287,7 +1287,7 @@ async function resizeNodes(params) {
  */
 async function deleteNode(params) {
   const { nodeId } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -1311,7 +1311,7 @@ async function deleteNodes(params) {
   const failed = [];
   
   for (const id of nodeIds) {
-    const node = figma.getNodeById(id);
+    const node = await figma.getNodeByIdAsync(id);
     if (node) {
       node.remove();
       success.push(id);
@@ -1335,7 +1335,7 @@ async function deleteNodes(params) {
  */
 async function moveNode(params) {
   const { nodeId, x, y } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -1361,7 +1361,7 @@ async function moveNodes(params) {
   let moved = 0;
   
   for (const id of nodeIds) {
-    const node = figma.getNodeById(id);
+    const node = await figma.getNodeByIdAsync(id);
     if (node) {
       node.x = x;
       node.y = y;
@@ -1382,7 +1382,7 @@ async function moveNodes(params) {
  */
 async function flattenNode(params) {
   const { nodeId } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -1403,7 +1403,12 @@ async function flattenNode(params) {
  */
 async function union_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');
@@ -1424,7 +1429,12 @@ async function union_selection(params) {
  */
 async function subtract_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');
@@ -1445,7 +1455,12 @@ async function subtract_selection(params) {
  */
 async function intersect_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');
@@ -1466,7 +1481,12 @@ async function intersect_selection(params) {
  */
 async function exclude_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');

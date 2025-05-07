@@ -29,6 +29,12 @@ export class FigmaClient {
 }
 
 // Mixin command groups onto the prototype
+// NOTE: There's a potential issue with method conflicts between the main FigmaClient class
+// and the methods defined in command modules. In particular, methods like setFillColor
+// and setStrokeColor are defined in both the main class and in writeCommands.
+// This can lead to the "figmaClient.setFillColor is not a function" error.
+// The recommended solution is to rely only on methods from command modules and avoid
+// duplicating them in the main class to maintain consistent architecture.
 import { readCommands } from "./read-commands.js";
 import { writeCommands } from "./write-commands.js";
 import { textCommands } from "./text-commands.js";

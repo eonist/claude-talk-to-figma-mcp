@@ -12,7 +12,7 @@
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../clients/figma-client/index.js";
+import { FigmaClient } from "../clients/figma-client.js";
 import { registerReadCommands } from "./figma/read.js";
 import { registerCreateCommands } from "./figma/create.js";
 import { registerModifyCommands } from "./figma/modify.js";
@@ -37,7 +37,8 @@ export function registerAllCommands(server: McpServer): void {
     logger.info("Registering all commands...");
 
     // Instantiate Figma client to pass into each command group
-    const figmaClient: any = new FigmaClient();
+    // Note: Using explicit FigmaClient type instead of 'any' to prevent type issues
+    const figmaClient: FigmaClient = new FigmaClient();
 
     // Register command categories
     registerReadCommands(server, figmaClient);
