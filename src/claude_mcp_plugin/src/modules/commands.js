@@ -21,6 +21,7 @@ import * as shapeOperations from './shapes.js';
 import * as imageOperations from './image.js';
 import * as textOperations from './text.js';
 import * as styleOperations from './styles.js';
+import * as directGradientOperations from './direct-gradient.js';
 import * as componentOperations from './components.js';
 import * as layoutOperations from './layout.js';
 import * as renameOperations from './rename.js';
@@ -256,6 +257,10 @@ export function initializeCommands() {
   // Gradient Operations
   registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
   registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
+  
+  // Direct Gradient Operations (Style-free alternatives)
+  registerCommand('apply_direct_gradient', directGradientOperations.applyDirectGradient);
+  registerCommand('apply_grayscale_gradient', directGradientOperations.applyGrayscaleGradient);
 
   // Detach Instance Tool
   registerCommand('detach_instance', async (params) => {

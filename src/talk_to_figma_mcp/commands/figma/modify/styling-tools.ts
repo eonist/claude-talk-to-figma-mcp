@@ -239,4 +239,46 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
       return { content: [{ type: "text", text: `Applied gradient to ${id}` }] };
     }
   );
+
+  // Apply Direct Gradient (Style-free alternative)
+  server.tool(
+    "apply_direct_gradient",
+    "Apply a gradient directly to a node without using styles",
+    {
+      nodeId: z.string().describe("The ID of the node to apply gradient to"),
+      gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]).describe("Type of gradient"),
+      stops: z.array(
+        z.object({
+          position: z.number().min(0).max(1).describe("Position of color stop (0-1)"),
+          color: z.tuple([
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1)
+          ]).describe("RGBA color for the stop")
+        })
+      ).describe("Array of gradient stops"),
+      applyTo: z.enum(["FILL", "STROKE", "BOTH"]).default("FILL").describe("Apply to fill, stroke, or both")
+    },
+    async ({ nodeId, gradientType, stops, applyTo }) => {
+      const id = ensureNodeIdIsString(nodeId);
+      await figmaClient.executeCommand("apply_direct_gradient", { nodeId: id, gradientType, stops, applyTo });
+      return { content: [{ type: "text", text: `Applied direct gradient to ${id}` }] };
+    }
+  );
+
+  // Apply Grayscale Gradient (Convenience function)
+  server.tool(
+    "apply_grayscale_gradient",
+    "Apply a predefined grayscale gradient to a node",
+    {
+      nodeId: z.string().describe("The ID of the node to apply gradient to"),
+      applyTo: z.enum(["FILL", "STROKE", "BOTH"]).default("FILL").describe("Apply to fill, stroke, or both")
+    },
+    async ({ nodeId, applyTo }) => {
+      const id = ensureNodeIdIsString(nodeId);
+      await figmaClient.executeCommand("apply_grayscale_gradient", { nodeId: id, applyTo });
+      return { content: [{ type: "text", text: `Applied grayscale gradient to ${id}` }] };
+    }
+  );
 }

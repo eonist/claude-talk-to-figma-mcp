@@ -81,6 +81,8 @@ export type FigmaCommand =
   | "apply_gradient_style"
   | "create_gradient_variables"
   | "apply_gradient_styles"
+  | "apply_direct_gradient"
+  | "apply_grayscale_gradient"
   | "detach_instance"
   | "union_selection"
   | "subtract_selection"
