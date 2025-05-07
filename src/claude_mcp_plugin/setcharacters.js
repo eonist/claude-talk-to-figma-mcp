@@ -1,3 +1,14 @@
+/**
+ * Removes duplicate items from an array based on a key or predicate function.
+ *
+ * @template T, K
+ * @param {T[]} arr - Array of items to deduplicate.
+ * @param {((item: T) => K) | string} predicate - Function or property name to derive uniqueness key.
+ * @returns {T[]} Array of unique items preserving first occurrences.
+ * @example
+ * // Deduplicate by 'id' property:
+ * uniqBy([{id:1},{id:2},{id:1}], 'id');
+ */
 function uniqBy(arr, predicate) {
   const cb = typeof predicate === "function" ? predicate : (o) => o[predicate];
   return [
@@ -12,6 +23,22 @@ function uniqBy(arr, predicate) {
       .values(),
   ];
 }
+/**
+ * Sets text characters on a Figma TextNode with optional font fallback and strategies.
+ *
+ * @param {TextNode} node - Figma TextNode to update.
+ * @param {string} characters - The text string to set.
+ * @param {object} [options] - Configuration options.
+ * @param {{family:string, style:string}} [options.fallbackFont={family:'Roboto',style:'Regular'}] - Fallback font if loading fails.
+ * @param {'prevail'|'strict'|'experimental'} [options.smartStrategy] - Strategy for mixed-font nodes.
+ * @returns {Promise<boolean>} Resolves to true if characters set successfully, false otherwise.
+ * @example
+ * // Simple usage:
+ * await setCharacters(textNode, 'Hello World');
+ * @example
+ * // With smart strategy:
+ * await setCharacters(textNode, 'Hello', { smartStrategy: 'prevail' });
+ */
 export const setCharacters = async (node, characters, options) => {
   const fallbackFont = options?.fallbackFont || {
     family: "Roboto",
@@ -68,6 +95,14 @@ export const setCharacters = async (node, characters, options) => {
   }
 };
 
+/**
+ * Helper: Sets characters on a Figma TextNode preserving original fonts using the strict-match strategy.
+ *
+ * @param {TextNode} node - Figma TextNode to update.
+ * @param {string} characters - The text string to set.
+ * @param {{family:string, style:string}} fallbackFont - Fallback font to use if strict matching fails.
+ * @returns {Promise<boolean>} Resolves to true once strict-match font assignment is complete.
+ */
 const setCharactersWithStrictMatchFont = async (
   node,
   characters,
@@ -107,6 +142,18 @@ const setCharactersWithStrictMatchFont = async (
   return true;
 };
 
+/**
+ * Determines ranges between delimiters in a string.
+ *
+ * @param {string} str - Input string to scan.
+ * @param {string} delimiter - Character delimiter to split on (e.g., '\\n' or ' ').
+ * @param {number} [startIdx=0] - Starting index in the string.
+ * @param {number} [endIdx=str.length] - Ending index in the string.
+ * @returns {Array<[number, number]>} Array of [start, end] index tuples for each segment.
+ * @example
+ * // Split 'a b c' around spaces:
+ * getDelimiterPos('a b c', ' ');
+ */
 const getDelimiterPos = (str, delimiter, startIdx = 0, endIdx = str.length) => {
   const indices = [];
   let temp = startIdx;
@@ -124,6 +171,12 @@ const getDelimiterPos = (str, delimiter, startIdx = 0, endIdx = str.length) => {
   return indices.filter(Boolean);
 };
 
+/**
+ * Builds a linear font sequence for a TextNode by scanning newline and space delimiters.
+ *
+ * @param {TextNode} node - Figma TextNode to analyze.
+ * @returns {Array<{family:string, style:string, delimiter:string}>} Sorted array describing fonts and delimiters sequence.
+ */
 const buildLinearOrder = (node) => {
   const fontTree = [];
   const newLinesPos = getDelimiterPos(node.characters, "\n");
@@ -178,6 +231,16 @@ const buildLinearOrder = (node) => {
     .map(({ family, style, delimiter }) => ({ family, style, delimiter }));
 };
 
+/**
+ * Helper: Sets characters on a Figma TextNode using a smart-match font strategy.
+ *
+ * @param {TextNode} node - Figma TextNode to update.
+ * @param {string} characters - The text string to set.
+ * @param {{family:string, style:string}} fallbackFont - Fallback font to load.
+ * @returns {Promise<boolean>} Resolves to true once smart-match font assignment is complete.
+ * @example
+ * await setCharactersWithSmartMatchFont(textNode, 'Hello', { family: 'Roboto', style: 'Regular' });
+ */
 const setCharactersWithSmartMatchFont = async (
   node,
   characters,

@@ -28,6 +28,22 @@ const stats = {
   errors: 0
 };
 
+/**
+ * Handles a new WebSocket connection.
+ *
+ * @param {ServerWebSocket<any>} ws - The WebSocket connection object.
+ * @remarks
+ *   - Increments connection stats.
+ *   - Assigns a unique clientId for tracking.
+ *   - Sends a welcome message prompting the client to join a channel.
+ *   - Overrides the close method to clean up and notify other clients.
+ * @example
+ * // Client-side example:
+ * const ws = new WebSocket("ws://localhost:3055");
+ * ws.addEventListener("open", () => {
+ *   ws.send(JSON.stringify({ type: "join", channel: "main", id: 1 }));
+ * });
+ */
 function handleConnection(ws: ServerWebSocket<any>) {
   // Track connection statistics
   stats.totalConnections++;
@@ -82,6 +98,45 @@ function handleConnection(ws: ServerWebSocket<any>) {
   };
 }
 
+/**
+ * Starts an HTTP/WebSocket server on port 3055.
+ *
+ * HTTP Endpoint:
+ *   GET /status
+ *     Response: {
+ *       status: string, // "running"
+ *       uptime: number, // seconds since start
+ *       stats: {
+ *         totalConnections: number,
+ *         activeConnections: number,
+ *         messagesSent: number,
+ *         messagesReceived: number,
+ *         errors: number
+ *       }
+ *     }
+ *
+ * WebSocket Message Formats:
+ *   To server:
+ *     - join: { type: "join", channel: string, id?: any }
+ *     - message: { type: "message", channel: string, message: string }
+ *     - progress_update: { type: "progress_update", channel: string, id: string, message: { data: { status: string, progress: number } } }
+ *
+ *   From server:
+ *     - system: { type: "system", message: string | object, channel?: string }
+ *     - broadcast: { type: "broadcast", message: string, sender: string, channel: string }
+ *     - error: { type: "error", message: string }
+ *
+ * @example
+ * // Check server status:
+ * fetch("http://localhost:3055/status").then(res => res.json()).then(console.log);
+ *
+ * // Connect via WebSocket:
+ * const ws = new WebSocket("ws://localhost:3055");
+ * ws.addEventListener("message", ({ data }) => console.log("Received:", JSON.parse(data)));
+ * ws.addEventListener("open", () => {
+ *   ws.send(JSON.stringify({ type: "join", channel: "main", id: 42 }));
+ * });
+ */
 const server = Bun.serve({
   port: 3055,
   // uncomment this to allow connections in windows wsl

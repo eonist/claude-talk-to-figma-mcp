@@ -26,6 +26,10 @@ const OUTPUT_FILE = path.join(__dirname, 'code.js'); // Final bundled output fil
  * @param {string} filePath - Absolute path to the file
  * @returns {string} Raw file contents as UTF-8 string
  * @throws {Error} If file reading fails
+ * @example
+ * // Read a module file’s contents
+ * // const contents = readFile(path.join(__dirname, 'src', 'modules', 'document.js'));
+ * // console.log(contents);
  */
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');

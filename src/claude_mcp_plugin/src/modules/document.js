@@ -17,6 +17,7 @@
 
 /**
  * Safely converts a node ID to a string.
+ * @function ensureNodeIdIsString
  * Guards against passing objects as node IDs, which would result in "[object Object]"
  * 
  * @param {any} nodeId - The node ID to convert to a string
@@ -38,6 +39,8 @@ export function ensureNodeIdIsString(nodeId) {
 
 /**
  * Retrieves detailed information about the current Figma page and its contents.
+ * @async
+ * @function getDocumentInfo
  * 
  * @returns {Promise<{
  *   name: string,
@@ -98,6 +101,8 @@ export async function getDocumentInfo() {
 
 /**
  * Retrieves information about the currently selected nodes on the active Figma page.
+ * @async
+ * @function getSelection
  * If no nodes are selected, returns an empty selection array.
  *
  * @returns {Promise<{
@@ -136,6 +141,8 @@ export async function getSelection() {
 
 /**
  * Retrieves detailed information about a specific node in the Figma document.
+ * @async
+ * @function getNodeInfo
  * Attempts to export the node in JSON_REST_V1 format, falling back to basic
  * properties if export is not supported for the node type.
  *
@@ -201,6 +208,8 @@ export async function getNodeInfo(nodeIdOrParams) {
 
 /**
  * Retrieves information for multiple nodes simultaneously using parallel processing.
+ * @async
+ * @function getNodesInfo
  * Nodes that cannot be found are automatically filtered out of the results.
  *
  * @param {Array<string|Object>|Object} nodeIdsOrParams - Array of node IDs or objects containing id properties,

@@ -33,6 +33,7 @@ import { generateCommandId, setCharacters } from './utils.js';
 
 /**
  * Sends a progress update message to the plugin UI.
+ * @function sendProgressUpdate
  *
  * @param {string} commandId - Unique identifier for the command execution.
  * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').

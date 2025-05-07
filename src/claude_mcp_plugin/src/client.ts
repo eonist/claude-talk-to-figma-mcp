@@ -1,4 +1,22 @@
 /**
+ * Client library for connecting to and communicating with the MCP WebSocket server.
+ *
+ * Exposes:
+ *   - connect(port): Connect and join channel
+ *   - disconnect(): Disconnect
+ *   - send(command, params): Send a tool command
+ *   - onMessage(handler): Subscribe to incoming messages
+ *   - onProgress(handler): Subscribe to progress updates
+ *
+ * @example
+ * import { connect, send, onMessage, onProgress } from './client';
+ * connect(3055);
+ * onProgress(p => console.log('Progress', p));
+ * onMessage(res => console.log('Result', res));
+ * send('get_node_info', { nodeId: '123' }).then(console.log);
+ */
+
+/**
  * Progress update data for a running command.
  * @interface ProgressData
  * @property {string} commandId - Unique ID of the command.
@@ -27,6 +45,9 @@ const progressHandlers: Array<(data: ProgressData) => void> = [];
 /**
  * Generates a unique identifier string.
  * @returns {string} A unique ID based on timestamp and random characters.
+ * @example
+ * // Generate a new ID:
+ * const id = generateId();
  */
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
@@ -35,6 +56,9 @@ function generateId(): string {
 /**
  * Generates a random channel name for WebSocket communication.
  * @returns {string} An 8-character random channel name.
+ * @example
+ * // Generate a channel identifier:
+ * const channel = generateChannelName();
  */
 function generateChannelName(): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";

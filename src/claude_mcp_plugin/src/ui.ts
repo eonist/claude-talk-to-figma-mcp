@@ -1,3 +1,15 @@
+/**
+ * UI panel script for the Claude MCP plugin.
+ *
+ * @module ui
+ * @requires connect, disconnect, send, onMessage, onProgress, ProgressData
+ * @description
+ *   - Manages connection controls, tabs, and progress display in the plugin UI.
+ *   - Forwards messages to the Figma plugin via postMessage.
+ * @example
+ * // In ui.html:
+ * // <script type="module" src="ui.ts"></script>
+ */
 import { connect, disconnect, send, onMessage, onProgress, ProgressData } from './client';
 
 // UI Elements
