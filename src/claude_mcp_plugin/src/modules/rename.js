@@ -1,7 +1,14 @@
-// Rename module - Collection of functions for renaming Figma layers with various strategies
+/**
+ * Rename operations module.
+ * Provides functions to rename Figma layers via template, regex replacement, AI assistance, and batch operations.
+ *
+ * @module modules/rename
+ */
 
 /**
  * Rename Multiple Figma Layers
+ * @async
+ * @function rename_layers
  * 
  * Renames multiple layers in a Figma document using either template-based naming or regex pattern replacement.
  * Template naming supports special placeholders:
@@ -75,6 +82,8 @@ export async function rename_layers(params) {
 
 /**
  * Rename Multiple Figma Layers Using AI Assistance
+ * @async
+ * @function ai_rename_layers
  *
  * Leverages Figma's AI capabilities to intelligently rename layers based on their content
  * and context. Useful for batch renaming layers to follow naming conventions or improve clarity.
@@ -123,6 +132,8 @@ export async function ai_rename_layers(params) {
 
 /**
  * Rename a Single Figma Layer
+ * @async
+ * @function rename_layer
  *
  * Renames an individual Figma node with special handling for text nodes.
  * For text nodes, offers control over the auto-rename feature which automatically
@@ -170,6 +181,8 @@ export async function rename_layer(params) {
 
 /**
  * Rename Multiple Figma Layers with Individual Names
+ * @async
+ * @function rename_multiples
  *
  * Assigns specific names to multiple layers in a single operation.
  * Useful when each layer needs a unique, predetermined name.
@@ -223,7 +236,15 @@ export async function rename_multiples(params) {
   return { success: true, results };
 }
 
-// Export all rename operations as a grouped object for convenience
+/**
+ * Collection of all rename operation functions for convenience.
+ *
+ * @namespace renameOperations
+ * @property {Function} rename_layers - Rename multiple layers using a template or regex.
+ * @property {Function} ai_rename_layers - AI-assisted batch renaming of layers.
+ * @property {Function} rename_layer - Rename a single layer with optional auto-rename for text.
+ * @property {Function} rename_multiples - Rename multiple layers to specific names.
+ */
 export const renameOperations = {
   rename_layers,
   ai_rename_layers,

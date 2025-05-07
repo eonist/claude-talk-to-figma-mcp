@@ -1,39 +1,21 @@
-/**
- * Styles operations module.
- * Provides functions to set fills, strokes, effects, and retrieve local style definitions in Figma via MCP.
- *
- * Exposed functions:
- * - setFillColor(params): Promise<{ id, name, fills }>
- * - setStrokeColor(params): Promise<{ id, name, strokes, strokeWeight }>
- * - setStyle(params): Promise<{ id, name, fills, strokes }>
- * - setStyles(entries): Promise<Array<{ id, name, fills?, strokes? }>>
- * - getStyles(): Promise<{ colors, texts, effects, grids }>
- * - setEffects(params): Promise<{ id, name, effects }>
- * - setEffectStyleId(params): Promise<{ id, name, effectStyleId, appliedEffects }>
- * - createGradientVariable(params): Promise<{ id, name }>
- * - applyGradientStyle(params): Promise<{ id, name }>
- *
- * @example
- * import { styleOperations } from './modules/styles.js';
- * await styleOperations.setFillColor({ nodeId: '123', color: { r: 1, g: 0, b: 0, a: 1 } });
- */
+// Styles module
 import { customBase64Encode } from './utils.js';
 
 /**
-*Ssthe colo fa spciidoe.
-*
- * Rsthe ndeb itID, aldtesthat/it sutpsrt e ills, aid lheo applielr of a specified node.
- *aold fi with the prvided RGBA co.
+ * Sets the fill color of a specified node.
  *
- * @{} e by i - IaDa l ers for solding thi fill color.
- * @l wit {htring}hpa arv.nedRId Th ID of h odt updat.
- * @pam {} params.color @pThr}RGBA cal-r o Para.eters for setting the fill color.
- * @paramp{numbrr} g} par.color.r - Redscodp-nhn  (0–1).D of the node to update.
- * @paramp{numb r} ams.co.color.g -rG-een c TpGn no (0–1).or object.
- *p@pmumm {}umscr} lor.r .color.b - BlueRc cpnntn( (0–1).–1).
- *p@panum {rumbar} [s.colo.color.a=1] - Alphagc Gp nmno (0–1). @param {number} params.color.b - Blue component (0–1).
- * @rpturns {obj{ct} An tbjecr conoAining nhe node'jeid,tnane,tang  pdated fites name, and updated fills.
- *w@ h} w  {Err m} If thesing, t isemissing  the node is notif und, otftheunodeodoesenotdsupport fills.s not support fills.
+ * Retrieves the node by its ID, validates that it supports fills, and then applies
+ * a solid fill with the provided RGBA color.
+ *
+ * @param {object} params - Parameters for setting the fill color.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {object} params.color - The RGBA color object.
+ * @param {number} params.color.r - Red component (0–1).
+ * @param {number} params.color.g - Green component (0–1).
+ * @param {number} params.color.b - Blue component (0–1).
+ * @param {number} [params.color.a=1] - Alpha component (0–1).
+ * @returns {object} An object containing the node's id, name, and updated fills.
+ * @throws {Error} If the nodeId is missing, the node is not found, or the node does not support fills.
  */
 export async function setFillColor(params) {
   const {
@@ -379,24 +361,6 @@ export async function applyGradientStyle(params) {
     if (!("fills" in node)) throw new Error("Node does not support fills");
     node.fills = [paintRef];
   }
-  if (applyTo === "STROKE" || applyTo === "BOTH") {
-    if (!("strokes" in node)) throw new Error("Node does not support strokes");
-    node.strokes = [paintRef];
-  }
-  return { id: node.id, name: node.name };
-}
-
-// Export all style operations as a grouped object
-export const styleOperations = {
-  setStyle,
-  setFillColor,
-  setStrokeColor,
-  getStyles,
-  setEffects,
-  setEffectStyleId,
-  createGradientVariable,
-  applyGradientStyle
-};
   if (applyTo === "STROKE" || applyTo === "BOTH") {
     if (!("strokes" in node)) throw new Error("Node does not support strokes");
     node.strokes = [paintRef];

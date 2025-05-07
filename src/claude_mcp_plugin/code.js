@@ -3,8 +3,19 @@
 // ----- Utils Module -----
 // ----- Utils/plugin.js -----
 /**
- * Plugin utilities for state management and core functionality
- * @module plugin-utils
+ * Plugin utilities module.
+ * Provides state management, configuration, and progress update functionality for the plugin.
+ *
+ * Exposed functions:
+ * - state: { serverPort: number }
+ * - sendProgressUpdate(commandId, commandType, status, progress, totalItems, processedItems, message, payload?): object
+ * - initializePlugin(): Promise<void>
+ * - updateSettings(settings): void
+ *
+ * @module plugin
+ * @example
+ *  * await initializePlugin();
+ * updateSettings({ serverPort: 4000 });
  */
 
 /**
@@ -425,9 +436,21 @@ async function setCharacters(node, characters, options) {
 
 
 // ----- document Module -----
-// Document operations module
-// This module provides functions for retrieving information about the Figma document,
-// including page details, selection state, and node information.
+/**
+ * Document operations module.
+ * Provides functions for retrieving information about the Figma document via MCP.
+ *
+ * Exposed functions:
+ * - ensureNodeIdIsString(nodeId): string
+ * - getDocumentInfo(): Promise<{ name, id, type, children, currentPage, pages }>
+ * - getSelection(): Promise<{ selectionCount, selection }>
+ * - getNodeInfo(params|string): Promise<Object>
+ * - getNodesInfo(params|Array): Promise<Array<{ nodeId, document }>>
+ *
+ * @example
+ *  * const info = await documentOperations.getDocumentInfo();
+ * console.log(`Page has ${info.currentPage.childCount} nodes`);
+ */
 
 /**
  * Safely converts a node ID to a string.
@@ -703,7 +726,13 @@ async function getNodesInfo(nodeIdsOrParams) {
   }
 }
 
-// Export all document operations as a named group for convenient importing
+/**
+ * Named group of document operation functions for convenient importing.
+ * @namespace documentOperations
+ * @example
+ * const { getSelection } = documentOperations;
+ * const selection = await getSelection();
+ */
 const documentOperations = {
   getDocumentInfo,
   getSelection,
@@ -714,22 +743,45 @@ const documentOperations = {
 
 
 // ----- shapes Module -----
-// Shapes module
-// Helper functions for creating and manipulating shape nodes in a Figma document
+/**
+ * Shapes operations module.
+ * Provides functions to create and manipulate geometric nodes in Figma via MCP.
+ *
+ * Exposed functions:
+ * - createRectangle(params): Promise<{ id, name, x, y, width, height }>
+ * - createRectangles(params): Promise<{ ids: string[] }>
+ * - createFrame(params): Promise<{ id, name, width, height }>
+ * - createFrames(params): Promise<{ ids: string[] }>
+ * - createEllipse(params): Promise<{ id: string }>
+ * - createEllipses(params): Promise<{ ids: string[] }>
+ * - createPolygon(params): Promise<{ id: string }>
+ * - createPolygons(params): Promise<{ ids: string[] }>
+ * - createStar(params): Promise<{ id: string }>
+ * - createVector(params): Promise<{ id: string }>
+ * - createVectors(params): Promise<{ ids: string[] }>
+ * - createLine(params): Promise<{ id: string }>
+ * - createLines(params): Promise<{ ids: string[] }>
+ *
+ * @example
+ *  * const rect = await shapeOperations.createRectangle({ x: 10, y: 20, width: 50, height: 50 });
+ * console.log('Created rectangle', rect);
+ */
 
 /**
  * Creates a new rectangle node in the Figma document.
  * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0]
- * @param {number} [params.y=0]
- * @param {number} [params.width=100]
- * @param {number} [params.height=100]
- * @param {string} [params.name="Rectangle"]
- * @param {string} [params.parentId]
- * @param {object} [params.fillColor]
- * @param {object} [params.strokeColor]
- * @param {number} [params.strokeWeight]
- * @returns {object}
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {number} [params.width=100] - Width of the rectangle.
+ * @param {number} [params.height=100] - Height of the rectangle.
+ * @param {string} [params.name="Rectangle"] - Name of the rectangle node.
+ * @param {string} [params.parentId] - Optional parent node ID to append the rectangle.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ id: string, name: string, x: number, y: number, width: number, height: number }>}
+ * @example
+ * const result = await createRectangle({ x: 0, y: 0, width: 100, height: 100 });
  */
 async function createRectangle(params) {
   const {
@@ -755,7 +807,12 @@ async function createRectangle(params) {
 }
 
 /**
- * Batch create rectangles.
+ * Batch creates multiple rectangle nodes.
+ * @param {object} params - Parameters object.
+ * @param {Array<object>} [params.rectangles] - Array of rectangle configuration objects.
+ * @returns {Promise<{ ids: string[] }>} Created rectangle node IDs.
+ * @example
+ * const { ids } = await createRectangles({ rectangles: [ { x:0, y:0, width:50, height:50 } ] });
  */
 async function createRectangles(params) {
   const { rectangles = [] } = params || {};
@@ -768,7 +825,20 @@ async function createRectangles(params) {
 }
 
 /**
- * Creates a new frame node.
+ * Creates a new frame node in the Figma document.
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {number} [params.width=100] - Width of the frame.
+ * @param {number} [params.height=100] - Height of the frame.
+ * @param {string} [params.name="Frame"] - Name of the frame node.
+ * @param {string} [params.parentId] - Optional parent node ID to append the frame.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ id: string, name: string, width: number, height: number }>}
+ * @example
+ * const frameResult = await createFrame({ x: 10, y: 10, width: 200, height: 150 });
  */
 async function createFrame(params) {
   const {
@@ -794,7 +864,12 @@ async function createFrame(params) {
 }
 
 /**
- * Batch create frames.
+ * Batch creates multiple frame nodes.
+ * @param {object} params - Parameters object.
+ * @param {Array<object>} [params.frames] - Array of frame configuration objects.
+ * @returns {Promise<{ ids: string[] }>} Created frame node IDs.
+ * @example
+ * const { ids } = await createFrames({ frames: [ { width:100, height:100 } ] });
  */
 async function createFrames(params) {
   const { frames = [] } = params || {};
@@ -807,7 +882,20 @@ async function createFrames(params) {
 }
 
 /**
- * Creates an ellipse.
+ * Creates a new ellipse node in the Figma document.
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {number} [params.width=100] - Width of the ellipse.
+ * @param {number} [params.height=100] - Height of the ellipse.
+ * @param {string} [params.name="Ellipse"] - Name of the ellipse node.
+ * @param {string} [params.parentId] - Optional parent node ID to append the ellipse.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ id: string }>}
+ * @example
+ * const ellipseRes = await createEllipse({ width: 80, height: 80 });
  */
 async function createEllipse(params) {
   const {
@@ -994,20 +1082,38 @@ const shapeOperations = {
 
 
 // ----- image Module -----
-// Image insertion utilities for the Figma plugin
+/**
+ * Image operations module.
+ * Provides functions to insert images via URL or local data into Figma via MCP.
+ *
+ * Exposed functions:
+ * - insertImage(params): Promise<{ id: string, name: string }>
+ * - insertImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
+ * - insertLocalImage(params): Promise<{ id: string, name: string }>
+ * - insertLocalImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
+ *
+ * @example
+ *  * const result = await imageOperations.insertImage({ url: 'https://example.com/img.png' });
+ */
 
 /**
  * Inserts a single image into the document.
+ * Fetches image bytes from a URL and places them in a new rectangle node.
  *
- * @param {object} params - Configuration parameters.
- * @param {string} params.url - URL of the image to fetch.
- * @param {number} [params.x=0] - X coordinate where the image rectangle will be placed.
- * @param {number} [params.y=0] - Y coordinate where the image rectangle will be placed.
- * @param {number} [params.width] - Desired width (if omitted, image's intrinsic size is used).
- * @param {number} [params.height] - Desired height (if omitted, the width is used for a square).
- * @param {string} [params.name="Image"] - Name of the rectangle node.
- * @param {string} [params.parentId] - Optional ID of the parent node to append to.
- * @returns {{id: string, name: string}} Details of the created rectangle node.
+ * @async
+ * @function insertImage
+ * @param {{ url: string, x?: number, y?: number, width?: number, height?: number, name?: string, parentId?: string }} params
+ *   - url: URL of the image to fetch.
+ *   - x: X coordinate for placement (default 0).
+ *   - y: Y coordinate for placement (default 0).
+ *   - width: Desired width (intrinsic if omitted).
+ *   - height: Desired height (intrinsic or equal to width if omitted).
+ *   - name: Node name (default "Image").
+ *   - parentId: Optional parent node ID for placement.
+ * @returns {Promise<{ id: string, name: string }>} Created rectangle node details.
+ * @throws {Error} If fetching the image fails or parent node is not found.
+ * @example
+ * const { id } = await insertImage({ url: 'https://example.com/img.png', x: 10, y: 10 });
  */
 async function insertImage(params) {
   const { url, x = 0, y = 0, width, height, name = "Image", parentId } = params || {};
@@ -1120,6 +1226,34 @@ const imageOperations = {
 // ----- text Module -----
 // Text module providing functions to create and modify text nodes in Figma.
 
+/**
+ * Text operations module.
+ * Provides functions for creating, modifying, and scanning text nodes in Figma via MCP.
+ *
+ * Exposed functions:
+ * - sendProgressUpdate(commandId, commandType, status, progress, totalItems, processedItems, message, payload?): object
+ * - delay(ms): Promise<void>
+ * - createText(params): Promise<object>
+ * - createBoundedText(params): Promise<object>
+ * - setTextContent(params): Promise<object>
+ * - scanTextNodes(params): Promise<object>
+ * - setMultipleTextContents(params): Promise<object>
+ * - setFontName(params): Promise<object>
+ * - setFontSize(params): Promise<object>
+ * - setFontWeight(params): Promise<object>
+ * - setLetterSpacing(params): Promise<object>
+ * - setLineHeight(params): Promise<object>
+ * - setParagraphSpacing(params): Promise<object>
+ * - setTextCase(params): Promise<object>
+ * - setTextDecoration(params): Promise<object>
+ * - getStyledTextSegments(params): Promise<object>
+ * - loadFontAsyncWrapper(params): Promise<object>
+ * - setBulkFont(params): Promise<object>
+ *
+ * @example
+ *  * const result = await textOperations.createText({ x:0, y:0, text: 'Hello' });
+ * console.log('Created text node ID:', result.id);
+ */
 
 /**
  * Sends a progress update message to the plugin UI.
@@ -2959,6 +3093,13 @@ async function setBulkFont(params) {
 }
 
 // Group for all text operations.
+/**
+ * Named group of text operation functions for convenient importing.
+ * @namespace textOperations
+ * @example
+ * const { setTextContent } = textOperations;
+ * const updateResult = await setTextContent({ nodeId: '123', text: 'Goodbye' });
+ */
 const textOperations = {
   createText,
   createBoundedText,
@@ -3361,14 +3502,33 @@ const styleOperations = {
   applyGradientStyle
 };
 
-
 // ----- components Module -----
-// Components module - Provides functionality for working with Figma components
-// including local components, team library components, component instances, and conversion
+/**
+ * Components operations module.
+ * Provides functions to retrieve and manage Figma components via MCP.
+ *
+ * Exposed functions:
+ * - getLocalComponents(): Promise<{ count: number, components: Array<{ id: string, name: string, key: string|null }> }>
+ * - getRemoteComponents(): Promise<{ success: boolean, count?: number, components?: Array<any>, error?: boolean, message?: string }>
+ * - createComponentFromNode(params): Promise<{ success: boolean, componentId: string }>
+ * - createComponentInstance(params): Promise<{ id: string, name: string, x: number, y: number, width: number, height: number, componentId: string }>
+ * - createComponentInstances(params): Promise<{ instances: Array<any> }>
+ * - exportNodeAsImage(params): Promise<{ nodeId: string, format: string, scale: number, mimeType: string, imageData: string }>
+ *
+ * @example
+ *  * const locals = await componentOperations.getLocalComponents();
+ * console.log(`Found ${locals.count} local components`);
+ */
 
 /**
  * Retrieves all local components available in the Figma document.
- * @returns {Promise<{count: number, components: Array<{id: string, name: string, key: string|null}>}>}
+ * @async
+ * @function getLocalComponents
+ * @returns {Promise<{ count: number, components: Array<{ id: string, name: string, key: string|null }> }>}
+ * @throws {Error} If Figma pages cannot be loaded
+ * @example
+ * const result = await getLocalComponents();
+ * console.log(`Found ${result.count} components`, result.components);
  */
 async function getLocalComponents() {
   await figma.loadAllPagesAsync();
@@ -3385,7 +3545,16 @@ async function getLocalComponents() {
 
 /**
  * Retrieves remote components from team libraries.
- * @returns {Promise<{success: boolean, count?: number, components?: Array<any>, error?: boolean, message?: string}>}
+ * @async
+ * @function getRemoteComponents
+ * @returns {Promise<{ success: boolean, count?: number, components?: Array<{ key: string, name: string, description: string, libraryName: string }>, error?: boolean, message?: string }>}
+ * @example
+ * const remote = await getRemoteComponents();
+ * if (remote.success) {
+ *   console.log(`Loaded ${remote.count} remote components`);
+ * } else {
+ *   console.error('Failed to load remote components:', remote.message);
+ * }
  */
 async function getRemoteComponents() {
   try {
@@ -3493,19 +3662,28 @@ const componentOperations = {
 
 // ----- layout Module -----
 /**
- * Layout module for configuring Figma node layouts and grouping operations.
- * This module provides functionality for auto-layout configuration, resizing,
- * and node grouping/ungrouping operations.
+ * Layout operations module.
+ * Provides functions to configure auto-layout, resizing behaviors, grouping, ungrouping, and child insertion in Figma via MCP.
+ *
+ * Exposed functions:
+ * - setAutoLayout(params): Promise<{ id: string, name: string, layoutMode: string, paddingTop: number, paddingBottom: number, paddingLeft: number, paddingRight: number, itemSpacing: number, primaryAxisAlignItems: string, counterAxisAlignItems: string, layoutWrap: string, strokesIncludedInLayout: boolean }>
+ * - setAutoLayoutResizing(params): Promise<{ id: string, primaryAxisSizingMode: string, counterAxisSizingMode: string }>
+ * - groupNodes(params): Promise<{ id: string, name: string, type: string, children: Array<{ id: string, name: string, type: string }> }>
+ * - ungroupNodes(params): Promise<{ success: boolean, ungroupedCount: number, items: Array<{ id: string, name: string, type: string }> }>
+ * - insertChild(params): Promise<{ parentId: string, childId: string, index: number, success: boolean, previousParentId: string|null }>
+ *
+ * @example
+ *  * await layoutOperations.setAutoLayout({ nodeId: '123', layoutMode: 'HORIZONTAL', itemSpacing: 8 });
  */
 
 /**
- * Sets auto layout properties on a node in Figma.
- * Auto layout allows for automatic arrangement and spacing of child elements
- * within a parent frame or group.
- *
- * @param {object} params - Auto layout configuration parameters
- * @param {string} params.nodeId - The ID of the node to configure
- * @param {('NONE'|'HORIZONTAL'|'VERTICAL')} params.layoutMode - Layout direction:
+Ss a l pertson a noei Figa.
+* Auto llwsfr autc arramendsof chds
+/**wih a ntfm rup.
+*
+ *e@out pe{ibjatuows fo -aAutoalayort no fiaunatiigfparamechrllements
+ *i@t fra {mt ong}ams.nod -Te D of theo toonfg
+ * @arra T{('NONE'|'HORIZONTAL'|hVERTICAL )}mp{|'mZOlERTICM} pm-uLMode  Lrto
  *   - NONE: Disables auto layout
  *   - HORIZONTAL: Arranges items in a row
  *   - VERTICAL: Arranges items in a column
@@ -4023,10 +4201,17 @@ const layoutOperations = {
 
 
 // ----- rename Module -----
-// Rename module - Collection of functions for renaming Figma layers with various strategies
+/**
+ * Rename operations module.
+ * Provides functions to rename Figma layers via template, regex replacement, AI assistance, and batch operations.
+ *
+ * @module modules/rename
+ */
 
 /**
  * Rename Multiple Figma Layers
+ * @async
+ * @function rename_layers
  * 
  * Renames multiple layers in a Figma document using either template-based naming or regex pattern replacement.
  * Template naming supports special placeholders:
@@ -4100,6 +4285,8 @@ async function rename_layers(params) {
 
 /**
  * Rename Multiple Figma Layers Using AI Assistance
+ * @async
+ * @function ai_rename_layers
  *
  * Leverages Figma's AI capabilities to intelligently rename layers based on their content
  * and context. Useful for batch renaming layers to follow naming conventions or improve clarity.
@@ -4148,6 +4335,8 @@ async function ai_rename_layers(params) {
 
 /**
  * Rename a Single Figma Layer
+ * @async
+ * @function rename_layer
  *
  * Renames an individual Figma node with special handling for text nodes.
  * For text nodes, offers control over the auto-rename feature which automatically
@@ -4195,6 +4384,8 @@ async function rename_layer(params) {
 
 /**
  * Rename Multiple Figma Layers with Individual Names
+ * @async
+ * @function rename_multiples
  *
  * Assigns specific names to multiple layers in a single operation.
  * Useful when each layer needs a unique, predetermined name.
@@ -4248,7 +4439,15 @@ async function rename_multiples(params) {
   return { success: true, results };
 }
 
-// Export all rename operations as a grouped object for convenience
+/**
+ * Collection of all rename operation functions for convenience.
+ *
+ * @namespace renameOperations
+ * @property {Function} rename_layers - Rename multiple layers using a template or regex.
+ * @property {Function} ai_rename_layers - AI-assisted batch renaming of layers.
+ * @property {Function} rename_layer - Rename a single layer with optional auto-rename for text.
+ * @property {Function} rename_multiples - Rename multiple layers to specific names.
+ */
 const renameOperations = {
   rename_layers,
   ai_rename_layers,
@@ -4285,6 +4484,14 @@ function registerCommand(name, fn) {
  * Initializes and registers all available commands in the plugin
  * This function is called once during plugin initialization to set up the command system
  * Commands are organized by functional categories for better maintainability
+ */
+/**
+ * Initializes and registers all available commands in the plugin.
+ * This function is called once during plugin initialization to set up the command system.
+ * @returns {void}
+ * @example
+ * // Initialize command handlers during plugin setup
+ * initializeCommands();
  */
 function initializeCommands() {
   // Document Operations
@@ -4444,64 +4651,85 @@ const commandOperations = {
 
 // ----- Main Plugin Code -----
 /**
- * Main entry point for the Figma plugin that enables communication with Claude AI.
- * This plugin acts as a bridge between Figma and the Model Context Protocol (MCP) server,
- * allowing AI-driven manipulation of Figma documents.
+ * Main entry point for the Claude MCP Figma plugin.
+ * Initializes UI, sets up command handlers, and processes messages from the UI.
+ *
+ * Exposed UI messages:
+ * - update-settings: Updates plugin configuration
+ * - notify: Shows a notification in Figma
+ * - close-plugin: Closes the plugin
+ * - execute-command: Runs a command via WebSocket from the MCP server
+ *
+ * @module index
  */
 
-// Import core operation modules for different Figma capabilities
 
-// Initialize plugin UI with a fixed size window
+// Show the plugin UI with fixed dimensions
 figma.showUI(__html__, { width: 350, height: 450 });
 
-// Set up command handlers for all supported operations
+// Register all available command handlers
 initializeCommands();
 
 /**
- * Message handler for UI events. Processes different types of messages:
- * - update-settings: Updates plugin configuration
- * - notify: Shows notification in Figma
- * - close-plugin: Terminates the plugin
- * - execute-command: Processes commands received via WebSocket from the MCP server
+ * Handles messages sent from the UI.
+ *
+ * Supported message types:
+ * - update-settings: Persist plugin settings (e.g., port)
+ * - notify: Display a Figma notification
+ * - close-plugin: Terminate the plugin
+ * - execute-command: Invoke a registered command and return its result
+ *
+ * @param {{ type: string, id?: string, command?: string, params?: any, message?: string }} msg
+ * @returns {void}
+ * @example
+ * figma.ui.postMessage({ pluginMessage: { type: 'notify', message: 'Hello' } });
  */
 figma.ui.onmessage = async (msg) => {
   switch (msg.type) {
-    case "update-settings":
+    case 'update-settings':
       updateSettings(msg);
       break;
-    case "notify":
+    case 'notify':
       figma.notify(msg.message);
       break;
-    case "close-plugin":
+    case 'close-plugin':
       figma.closePlugin();
       break;
-    case "execute-command":
+    case 'execute-command':
       try {
-        // Execute the received command and collect results
         const result = await handleCommand(msg.command, msg.params);
-        // Send command execution results back to UI
         figma.ui.postMessage({
-          type: "command-result",
+          type: 'command-result',
           id: msg.id,
-          result,
+          result
         });
       } catch (error) {
-        // Handle and report any errors during command execution
         figma.ui.postMessage({
-          type: "command-error",
+          type: 'command-error',
           id: msg.id,
-          error: error.message || "Error executing command",
+          error: error.message || 'Error executing command'
         });
       }
       break;
+    default:
+      console.warn('Unhandled UI message type:', msg.type);
   }
 };
 
-// Handle plugin activation from Figma menu
-figma.on("run", ({ command }) => {
-  // Trigger automatic WebSocket connection when plugin starts
-  figma.ui.postMessage({ type: "auto-connect" });
+/**
+ * Invoked when the plugin is run from the Figma menu.
+ * Automatically triggers a WebSocket connection to the MCP server.
+ *
+ * @param {{ command: string }} args - The command that launched the plugin
+ * @returns {void}
+ * @example
+ * // In manifest.json:
+ * // { "command": "Auto Connect", "name": "Auto-Connect" }
+ * figma.on('run', ({ command }) => { ... });
+ */
+figma.on('run', ({ command }) => {
+  figma.ui.postMessage({ type: 'auto-connect' });
 });
 
-// Perform initial plugin setup and configuration
+// Perform initial plugin setup and notify the UI of current settings
 initializePlugin();

@@ -1,17 +1,36 @@
-// Image insertion utilities for the Figma plugin
+/**
+ * Image operations module.
+ * Provides functions to insert images via URL or local data into Figma via MCP.
+ *
+ * Exposed functions:
+ * - insertImage(params): Promise<{ id: string, name: string }>
+ * - insertImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
+ * - insertLocalImage(params): Promise<{ id: string, name: string }>
+ * - insertLocalImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
+ *
+ * @example
+ * import { imageOperations } from './modules/image.js';
+ * const result = await imageOperations.insertImage({ url: 'https://example.com/img.png' });
+ */
 
 /**
  * Inserts a single image into the document.
+ * Fetches image bytes from a URL and places them in a new rectangle node.
  *
- * @param {object} params - Configuration parameters.
- * @param {string} params.url - URL of the image to fetch.
- * @param {number} [params.x=0] - X coordinate where the image rectangle will be placed.
- * @param {number} [params.y=0] - Y coordinate where the image rectangle will be placed.
- * @param {number} [params.width] - Desired width (if omitted, image's intrinsic size is used).
- * @param {number} [params.height] - Desired height (if omitted, the width is used for a square).
- * @param {string} [params.name="Image"] - Name of the rectangle node.
- * @param {string} [params.parentId] - Optional ID of the parent node to append to.
- * @returns {{id: string, name: string}} Details of the created rectangle node.
+ * @async
+ * @function insertImage
+ * @param {{ url: string, x?: number, y?: number, width?: number, height?: number, name?: string, parentId?: string }} params
+ *   - url: URL of the image to fetch.
+ *   - x: X coordinate for placement (default 0).
+ *   - y: Y coordinate for placement (default 0).
+ *   - width: Desired width (intrinsic if omitted).
+ *   - height: Desired height (intrinsic or equal to width if omitted).
+ *   - name: Node name (default "Image").
+ *   - parentId: Optional parent node ID for placement.
+ * @returns {Promise<{ id: string, name: string }>} Created rectangle node details.
+ * @throws {Error} If fetching the image fails or parent node is not found.
+ * @example
+ * const { id } = await insertImage({ url: 'https://example.com/img.png', x: 10, y: 10 });
  */
 export async function insertImage(params) {
   const { url, x = 0, y = 0, width, height, name = "Image", parentId } = params || {};

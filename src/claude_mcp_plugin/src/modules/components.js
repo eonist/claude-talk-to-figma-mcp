@@ -1,9 +1,30 @@
-// Components module - Provides functionality for working with Figma components
-// including local components, team library components, component instances, and conversion
+/**
+ * Components operations module.
+ * Provides functions to retrieve and manage Figma components via MCP.
+ *
+ * Exposed functions:
+ * - getLocalComponents(): Promise<{ count: number, components: Array<{ id: string, name: string, key: string|null }> }>
+ * - getRemoteComponents(): Promise<{ success: boolean, count?: number, components?: Array<any>, error?: boolean, message?: string }>
+ * - createComponentFromNode(params): Promise<{ success: boolean, componentId: string }>
+ * - createComponentInstance(params): Promise<{ id: string, name: string, x: number, y: number, width: number, height: number, componentId: string }>
+ * - createComponentInstances(params): Promise<{ instances: Array<any> }>
+ * - exportNodeAsImage(params): Promise<{ nodeId: string, format: string, scale: number, mimeType: string, imageData: string }>
+ *
+ * @example
+ * import { componentOperations } from './modules/components.js';
+ * const locals = await componentOperations.getLocalComponents();
+ * console.log(`Found ${locals.count} local components`);
+ */
 
 /**
  * Retrieves all local components available in the Figma document.
- * @returns {Promise<{count: number, components: Array<{id: string, name: string, key: string|null}>}>}
+ * @async
+ * @function getLocalComponents
+ * @returns {Promise<{ count: number, components: Array<{ id: string, name: string, key: string|null }> }>}
+ * @throws {Error} If Figma pages cannot be loaded
+ * @example
+ * const result = await getLocalComponents();
+ * console.log(`Found ${result.count} components`, result.components);
  */
 export async function getLocalComponents() {
   await figma.loadAllPagesAsync();
@@ -20,7 +41,16 @@ export async function getLocalComponents() {
 
 /**
  * Retrieves remote components from team libraries.
- * @returns {Promise<{success: boolean, count?: number, components?: Array<any>, error?: boolean, message?: string}>}
+ * @async
+ * @function getRemoteComponents
+ * @returns {Promise<{ success: boolean, count?: number, components?: Array<{ key: string, name: string, description: string, libraryName: string }>, error?: boolean, message?: string }>}
+ * @example
+ * const remote = await getRemoteComponents();
+ * if (remote.success) {
+ *   console.log(`Loaded ${remote.count} remote components`);
+ * } else {
+ *   console.error('Failed to load remote components:', remote.message);
+ * }
  */
 export async function getRemoteComponents() {
   try {

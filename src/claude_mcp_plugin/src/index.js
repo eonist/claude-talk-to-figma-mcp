@@ -1,10 +1,16 @@
 /**
- * Main entry point for the Figma plugin that enables communication with Claude AI.
- * This plugin acts as a bridge between Figma and the Model Context Protocol (MCP) server,
- * allowing AI-driven manipulation of Figma documents.
+ * Main entry point for the Claude MCP Figma plugin.
+ * Initializes UI, sets up command handlers, and processes messages from the UI.
+ *
+ * Exposed UI messages:
+ * - update-settings: Updates plugin configuration
+ * - notify: Shows a notification in Figma
+ * - close-plugin: Closes the plugin
+ * - execute-command: Runs a command via WebSocket from the MCP server
+ *
+ * @module index
  */
 
-// Import core operation modules for different Figma capabilities
 import { documentOperations } from './modules/document.js';
 import { shapeOperations } from './modules/shapes.js';
 import { textOperations } from './modules/text.js';
@@ -13,82 +19,78 @@ import { componentOperations } from './modules/components.js';
 import { layoutOperations } from './modules/layout.js';
 import { renameOperations } from './modules/rename.js';
 import { initializeCommands, handleCommand } from './modules/commands.js';
-import { 
-  sendProgressUpdate, 
-  initializePlugin, 
-  updateSettings 
+import {
+  sendProgressUpdate,
+  initializePlugin,
+  updateSettings
 } from './modules/utils/plugin.js';
 
-// Initialize plugin UI with a fixed size window
+// Show the plugin UI with fixed dimensions
 figma.showUI(__html__, { width: 350, height: 450 });
 
-// Set up command handlers for all supported operations
+// Register all available command handlers
 initializeCommands();
 
 /**
- * Message handler for UI events. Processes different types of messages:
- * - update-settings: Updates plugin configuration
- * - notify: Shows notification in Figma
- * - close-plugin: Terminates the plugin
- * - execute-command: Processes commands received via WebSocket from the MCP server
- */
-/**
- * Handles UI messages sent from the HTML UI.
- * @param {{ type: 'update-settings'|'notify'|'close-plugin'|'execute-command'; params?: any; message?: string; id?: string; command?: string; }} msg
- *   - Incoming message object from the UI.
+ * Handles messages sent from the UI.
+ *
+ * Supported message types:
+ * - update-settings: Persist plugin settings (e.g., port)
+ * - notify: Display a Figma notification
+ * - close-plugin: Terminate the plugin
+ * - execute-command: Invoke a registered command and return its result
+ *
+ * @param {{ type: string, id?: string, command?: string, params?: any, message?: string }} msg
  * @returns {void}
  * @example
- * // Example: Post a notification from the UI
- * parent.postMessage({ pluginMessage: { type: 'notify', message: 'Hello from plugin' } }, '*');
+ * figma.ui.postMessage({ pluginMessage: { type: 'notify', message: 'Hello' } });
  */
 figma.ui.onmessage = async (msg) => {
   switch (msg.type) {
-    case "update-settings":
+    case 'update-settings':
       updateSettings(msg);
       break;
-    case "notify":
+    case 'notify':
       figma.notify(msg.message);
       break;
-    case "close-plugin":
+    case 'close-plugin':
       figma.closePlugin();
       break;
-    case "execute-command":
+    case 'execute-command':
       try {
-        // Execute the received command and collect results
         const result = await handleCommand(msg.command, msg.params);
-        // Send command execution results back to UI
         figma.ui.postMessage({
-          type: "command-result",
+          type: 'command-result',
           id: msg.id,
-          result,
+          result
         });
       } catch (error) {
-        // Handle and report any errors during command execution
         figma.ui.postMessage({
-          type: "command-error",
+          type: 'command-error',
           id: msg.id,
-          error: error.message || "Error executing command",
+          error: error.message || 'Error executing command'
         });
       }
       break;
+    default:
+      console.warn('Unhandled UI message type:', msg.type);
   }
 };
 
-// Handle plugin activation from Figma menu
 /**
- * Handler invoked when the plugin is run via the Figma UI menu.
- * @param {{ command: string }} args - Contains the menu command that triggered the plugin.
+ * Invoked when the plugin is run from the Figma menu.
+ * Automatically triggers a WebSocket connection to the MCP server.
+ *
+ * @param {{ command: string }} args - The command that launched the plugin
  * @returns {void}
  * @example
- * // In manifest.json, define:
- * // { "command": "Auto Connect", "name": "Auto-Connect Command" }
- * // Then:
+ * // In manifest.json:
+ * // { "command": "Auto Connect", "name": "Auto-Connect" }
  * figma.on('run', ({ command }) => { ... });
  */
-figma.on("run", ({ command }) => {
-  // Trigger automatic WebSocket connection when plugin starts
-  figma.ui.postMessage({ type: "auto-connect" });
+figma.on('run', ({ command }) => {
+  figma.ui.postMessage({ type: 'auto-connect' });
 });
 
-// Perform initial plugin setup and configuration
+// Perform initial plugin setup and notify the UI of current settings
 initializePlugin();

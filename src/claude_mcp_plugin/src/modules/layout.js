@@ -1,17 +1,27 @@
 /**
- * Layout module for configuring Figma node layouts and grouping operations.
- * This module provides functionality for auto-layout configuration, resizing,
- * and node grouping/ungrouping operations.
+ * Layout operations module.
+ * Provides functions to configure auto-layout, resizing behaviors, grouping, ungrouping, and child insertion in Figma via MCP.
+ *
+ * Exposed functions:
+ * - setAutoLayout(params): Promise<{ id: string, name: string, layoutMode: string, paddingTop: number, paddingBottom: number, paddingLeft: number, paddingRight: number, itemSpacing: number, primaryAxisAlignItems: string, counterAxisAlignItems: string, layoutWrap: string, strokesIncludedInLayout: boolean }>
+ * - setAutoLayoutResizing(params): Promise<{ id: string, primaryAxisSizingMode: string, counterAxisSizingMode: string }>
+ * - groupNodes(params): Promise<{ id: string, name: string, type: string, children: Array<{ id: string, name: string, type: string }> }>
+ * - ungroupNodes(params): Promise<{ success: boolean, ungroupedCount: number, items: Array<{ id: string, name: string, type: string }> }>
+ * - insertChild(params): Promise<{ parentId: string, childId: string, index: number, success: boolean, previousParentId: string|null }>
+ *
+ * @example
+ * import { layoutOperations } from './modules/layout.js';
+ * await layoutOperations.setAutoLayout({ nodeId: '123', layoutMode: 'HORIZONTAL', itemSpacing: 8 });
  */
 
 /**
- * Sets auto layout properties on a node in Figma.
- * Auto layout allows for automatic arrangement and spacing of child elements
- * within a parent frame or group.
- *
- * @param {object} params - Auto layout configuration parameters
- * @param {string} params.nodeId - The ID of the node to configure
- * @param {('NONE'|'HORIZONTAL'|'VERTICAL')} params.layoutMode - Layout direction:
+Ss a l pertson a noei Figa.
+* Auto llwsfr autc arramendsof chds
+/**wih a ntfm rup.
+*
+ *e@out pe{ibjatuows fo -aAutoalayort no fiaunatiigfparamechrllements
+ *i@t fra {mt ong}ams.nod -Te D of theo toonfg
+ * @arra T{('NONE'|'HORIZONTAL'|hVERTICAL )}mp{|'mZOlERTICM} pm-uLMode  Lrto
  *   - NONE: Disables auto layout
  *   - HORIZONTAL: Arranges items in a row
  *   - VERTICAL: Arranges items in a column
