@@ -9,6 +9,7 @@ import { handleToolError } from "../../../utils/error-handling.js";
 /**
  * Registers shape-creation-related commands:
  * - create_rectangle, create_rectangles
+ * - create_frame
  * - create_line, create_lines
  * - create_ellipse, create_ellipses
  * - create_polygons
@@ -69,6 +70,28 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
         content: [{ type: "text", text: `Created ${successCount}/${rectangles.length} rectangles.` }],
         _meta: { results }
       };
+    }
+  );
+
+  // Create Frame (supports auto layout)
+  server.tool(
+    "create_frame",
+    "Create a new frame in Figma",
+    {
+      x: z.number(), y: z.number(),
+      width: z.number(), height: z.number(),
+      name: z.string().optional(), parentId: z.string().optional(),
+      fillColor: z.any().optional(), strokeColor: z.any().optional(),
+      strokeWeight: z.number().optional()
+    },
+    async (args) => {
+      try {
+        const params = { commandId: uuidv4(), ...args };
+        const node = await figmaClient.createFrame(params);
+        return { content: [{ type: "text", text: `Created frame ${node.id}` }] };
+      } catch (err) {
+        return handleToolError(err, "shape-creation-tools", "create_frame") as any;
+      }
     }
   );
 
