@@ -25,6 +25,8 @@
 
 /**
  * Creates a new rectangle node in the Figma document.
+ * @async
+ * @function createRectangle
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x=0] - X position.
  * @param {number} [params.y=0] - Y position.
@@ -64,6 +66,8 @@ export async function createRectangle(params) {
 
 /**
  * Batch creates multiple rectangle nodes.
+ * @async
+ * @function createRectangles
  * @param {object} params - Parameters object.
  * @param {Array<object>} [params.rectangles] - Array of rectangle configuration objects.
  * @returns {Promise<{ ids: string[] }>} Created rectangle node IDs.
@@ -82,6 +86,8 @@ export async function createRectangles(params) {
 
 /**
  * Creates a new frame node in the Figma document.
+ * @async
+ * @function createFrame
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x=0] - X position.
  * @param {number} [params.y=0] - Y position.
@@ -121,6 +127,8 @@ export async function createFrame(params) {
 
 /**
  * Batch creates multiple frame nodes.
+ * @async
+ * @function createFrames
  * @param {object} params - Parameters object.
  * @param {Array<object>} [params.frames] - Array of frame configuration objects.
  * @returns {Promise<{ ids: string[] }>} Created frame node IDs.
@@ -139,6 +147,8 @@ export async function createFrames(params) {
 
 /**
  * Creates a new ellipse node in the Figma document.
+ * @async
+ * @function createEllipse
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x=0] - X position.
  * @param {number} [params.y=0] - Y position.
@@ -178,6 +188,8 @@ export async function createEllipse(params) {
 
 /**
  * Batch ellipses.
+ * @async
+ * @function createEllipses
  */
 export async function createEllipses(params) {
   const { ellipses = [] } = params || {};

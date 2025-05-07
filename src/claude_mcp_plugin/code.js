@@ -769,6 +769,8 @@ const documentOperations = {
 
 /**
  * Creates a new rectangle node in the Figma document.
+ * @async
+ * @function createRectangle
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x=0] - X position.
  * @param {number} [params.y=0] - Y position.
@@ -808,6 +810,8 @@ async function createRectangle(params) {
 
 /**
  * Batch creates multiple rectangle nodes.
+ * @async
+ * @function createRectangles
  * @param {object} params - Parameters object.
  * @param {Array<object>} [params.rectangles] - Array of rectangle configuration objects.
  * @returns {Promise<{ ids: string[] }>} Created rectangle node IDs.
@@ -826,6 +830,8 @@ async function createRectangles(params) {
 
 /**
  * Creates a new frame node in the Figma document.
+ * @async
+ * @function createFrame
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x=0] - X position.
  * @param {number} [params.y=0] - Y position.
@@ -865,6 +871,8 @@ async function createFrame(params) {
 
 /**
  * Batch creates multiple frame nodes.
+ * @async
+ * @function createFrames
  * @param {object} params - Parameters object.
  * @param {Array<object>} [params.frames] - Array of frame configuration objects.
  * @returns {Promise<{ ids: string[] }>} Created frame node IDs.
@@ -883,6 +891,8 @@ async function createFrames(params) {
 
 /**
  * Creates a new ellipse node in the Figma document.
+ * @async
+ * @function createEllipse
  * @param {object} params - Configuration parameters.
  * @param {number} [params.x=0] - X position.
  * @param {number} [params.y=0] - Y position.
@@ -922,6 +932,8 @@ async function createEllipse(params) {
 
 /**
  * Batch ellipses.
+ * @async
+ * @function createEllipses
  */
 async function createEllipses(params) {
   const { ellipses = [] } = params || {};
@@ -3121,10 +3133,17 @@ const textOperations = {
 
 
 // ----- styles Module -----
-// Styles module
+/**
+ * Styles operations module.
+ * Provides functions to set fills, strokes, effects, and retrieve local style definitions in Figma via MCP.
+ *
+ * @module modules/styles
+ */
 
 /**
  * Sets the fill color of a specified node.
+ * @async
+ * @function setFillColor
  *
  * Retrieves the node by its ID, validates that it supports fills, and then applies
  * a solid fill with the provided RGBA color.
@@ -3187,6 +3206,8 @@ async function setFillColor(params) {
 
 /**
  * Sets the stroke color and weight for a specified node.
+ * @async
+ * @function setStrokeColor
  *
  * Retrieves the node by its ID, validates stroke support, and then applies
  * the specified stroke color (RGBA) and weight.
@@ -3257,6 +3278,8 @@ async function setStrokeColor(params) {
 
 /**
  * Sets both fill and stroke properties on a node.
+ * @async
+ * @function setStyle
  *
  * @param {object} params - Style parameters.
  * @param {string} params.nodeId - The ID of the node to update.
@@ -3305,6 +3328,8 @@ async function setStyle(params) {
 
 /**
  * Apply styles to multiple nodes in one call.
+ * @async
+ * @function setStyles
  *
  * @param {Array} entries - Array of objects { nodeId, fillProps?, strokeProps? }
  * @returns {Array} Results per node.
@@ -3320,6 +3345,8 @@ async function setStyles(entries) {
 
 /**
  * Retrieves local style definitions from Figma.
+ * @async
+ * @function getStyles
  *
  * @returns {Promise<object>} Styles categorized by type.
  */
@@ -3360,6 +3387,8 @@ async function getStyles() {
 
 /**
  * Sets visual effects on a node.
+ * @async
+ * @function setEffects
  *
  * @param {object} params - Effect parameters.
  * @returns {object} Node id, name, and applied effects.
@@ -3408,6 +3437,8 @@ async function setEffects(params) {
 
 /**
  * Applies an effect style to a node.
+ * @async
+ * @function setEffectStyleId
  *
  * @param {object} params - Parameters with nodeId and effectStyleId.
  * @returns {object} Node id, name, and applied effect style.
@@ -3436,6 +3467,8 @@ async function setEffectStyleId(params) {
 
 /**
  * Creates a gradient paint style in Figma.
+ * @async
+ * @function createGradientVariable
  */
 async function createGradientVariable(params) {
   const { name, gradientType, stops } = params || {};
@@ -3463,6 +3496,8 @@ async function createGradientVariable(params) {
 
 /**
  * Applies a gradient paint style to a node in Figma.
+ * @async
+ * @function applyGradientStyle
  */
 async function applyGradientStyle(params) {
   const { nodeId, gradientStyleId, applyTo } = params || {};
@@ -3501,6 +3536,7 @@ const styleOperations = {
   createGradientVariable,
   applyGradientStyle
 };
+
 
 // ----- components Module -----
 /**

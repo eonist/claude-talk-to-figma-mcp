@@ -1,8 +1,15 @@
-// Styles module
+/**
+ * Styles operations module.
+ * Provides functions to set fills, strokes, effects, and retrieve local style definitions in Figma via MCP.
+ *
+ * @module modules/styles
+ */
 import { customBase64Encode } from './utils.js';
 
 /**
  * Sets the fill color of a specified node.
+ * @async
+ * @function setFillColor
  *
  * Retrieves the node by its ID, validates that it supports fills, and then applies
  * a solid fill with the provided RGBA color.
@@ -65,6 +72,8 @@ export async function setFillColor(params) {
 
 /**
  * Sets the stroke color and weight for a specified node.
+ * @async
+ * @function setStrokeColor
  *
  * Retrieves the node by its ID, validates stroke support, and then applies
  * the specified stroke color (RGBA) and weight.
@@ -135,6 +144,8 @@ export async function setStrokeColor(params) {
 
 /**
  * Sets both fill and stroke properties on a node.
+ * @async
+ * @function setStyle
  *
  * @param {object} params - Style parameters.
  * @param {string} params.nodeId - The ID of the node to update.
@@ -183,6 +194,8 @@ export async function setStyle(params) {
 
 /**
  * Apply styles to multiple nodes in one call.
+ * @async
+ * @function setStyles
  *
  * @param {Array} entries - Array of objects { nodeId, fillProps?, strokeProps? }
  * @returns {Array} Results per node.
@@ -198,6 +211,8 @@ export async function setStyles(entries) {
 
 /**
  * Retrieves local style definitions from Figma.
+ * @async
+ * @function getStyles
  *
  * @returns {Promise<object>} Styles categorized by type.
  */
@@ -238,6 +253,8 @@ export async function getStyles() {
 
 /**
  * Sets visual effects on a node.
+ * @async
+ * @function setEffects
  *
  * @param {object} params - Effect parameters.
  * @returns {object} Node id, name, and applied effects.
@@ -286,6 +303,8 @@ export async function setEffects(params) {
 
 /**
  * Applies an effect style to a node.
+ * @async
+ * @function setEffectStyleId
  *
  * @param {object} params - Parameters with nodeId and effectStyleId.
  * @returns {object} Node id, name, and applied effect style.
@@ -314,6 +333,8 @@ export async function setEffectStyleId(params) {
 
 /**
  * Creates a gradient paint style in Figma.
+ * @async
+ * @function createGradientVariable
  */
 export async function createGradientVariable(params) {
   const { name, gradientType, stops } = params || {};
@@ -341,6 +362,8 @@ export async function createGradientVariable(params) {
 
 /**
  * Applies a gradient paint style to a node in Figma.
+ * @async
+ * @function applyGradientStyle
  */
 export async function applyGradientStyle(params) {
   const { nodeId, gradientStyleId, applyTo } = params || {};
