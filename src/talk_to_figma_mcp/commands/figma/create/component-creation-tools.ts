@@ -9,6 +9,7 @@ import { handleToolError } from "../../../utils/error-handling.js";
  * - create_component_instance
  * - create_component_instances
  * - create_component_from_node
+ * - create_button
  */
 export function registerComponentCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   // Create single component instance
@@ -72,6 +73,74 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
         return { content: [{ type: "text", text: `Created component ${result.componentId}` }] };
       } catch (err) {
         return handleToolError(err, "component-creation-tools", "create_component_from_node") as any;
+      }
+    }
+  );
+
+  // Create a button with proper hierarchy (frame > rectangle + text)
+  server.tool(
+    "create_button",
+    "Create a complete button with background and text in Figma",
+    {
+      x: z.number(),
+      y: z.number(),
+      width: z.number().optional().default(100),
+      height: z.number().optional().default(40),
+      text: z.string().optional().default("Button"),
+      background: z.object({
+        r: z.number().min(0).max(1),
+        g: z.number().min(0).max(1),
+        b: z.number().min(0).max(1),
+        a: z.number().min(0).max(1).optional().default(1)
+      }).optional().default({ r: 0.19, g: 0.39, b: 0.85, a: 1 }),
+      textColor: z.object({
+        r: z.number().min(0).max(1),
+        g: z.number().min(0).max(1),
+        b: z.number().min(0).max(1),
+        a: z.number().min(0).max(1).optional().default(1)
+      }).optional().default({ r: 1, g: 1, b: 1, a: 1 }),
+      fontSize: z.number().optional().default(14),
+      fontWeight: z.number().optional().default(500),
+      cornerRadius: z.number().min(0).optional().default(4),
+      name: z.string().optional(),
+      parentId: z.string().optional()
+    },
+    async (args, extra): Promise<any> => {
+      try {
+        // Format params to match the ui.js createButton format
+        const params = {
+          x: args.x,
+          y: args.y,
+          width: args.width,
+          height: args.height,
+          text: args.text,
+          style: {
+            background: args.background,
+            text: args.textColor,
+            fontSize: args.fontSize,
+            fontWeight: args.fontWeight,
+            cornerRadius: args.cornerRadius
+          },
+          name: args.name,
+          parentId: args.parentId
+        };
+
+        // Execute the createButton command via figmaClient
+        const result = await figmaClient.executeCommand("create_button", params);
+        
+        return { 
+          content: [{ 
+            type: "text", 
+            text: `Created button with frame ID: ${result.frameId}, background ID: ${result.backgroundId}, text ID: ${result.textId}` 
+          }],
+          _meta: {
+            frameId: result.frameId,
+            backgroundId: result.backgroundId,
+            textId: result.textId
+          }
+        };
+      } catch (err) {
+        return handleToolError(err, "component-creation-tools", "create_button") as any;
       }
     }
   );

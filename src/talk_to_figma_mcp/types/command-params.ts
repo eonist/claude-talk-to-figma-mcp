@@ -165,6 +165,24 @@ export interface SetTextContentParams extends BaseCommandParams {
   text: string;
 }
 
+/** Parameters for create_button command */
+export interface CreateButtonParams extends BaseCommandParams {
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  text?: string;
+  style?: {
+    background?: { r: number; g: number; b: number; a?: number };
+    text?: { r: number; g: number; b: number; a?: number };
+    fontSize?: number;
+    fontWeight?: number;
+    cornerRadius?: number;
+  };
+  name?: string;
+  parentId?: string;
+}
+
 /**
  * Map each FigmaCommand to its parameter interface.
  */
@@ -185,6 +203,7 @@ export interface CommandParamsMap {
   set_fill_color: SetFillColorParams;
   set_stroke_color: SetStrokeColorParams;
   set_text_content: SetTextContentParams;
+  create_button: CreateButtonParams;
   // TODO: add mappings for all remaining Figma commands
   [command: string]: BaseCommandParams;
 }

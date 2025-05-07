@@ -786,6 +786,7 @@ const documentOperations = {
  * - createVectors(params): Promise<{ ids: string[] }>
  * - createLine(params): Promise<{ id: string }>
  * - createLines(params): Promise<{ ids: string[] }>
+ * - setCornerRadius(params): Promise<{ success: boolean }> (works on rectangle and frame nodes)
  *
  * @example
  *  * const rect = await shapeOperations.createRectangle({ x: 10, y: 20, width: 50, height: 50 });
@@ -1192,7 +1193,7 @@ function setStroke(node, color, weight) {
 }
 
 /**
- * Sets the corner radius of a rectangle node
+ * Sets the corner radius of a rectangle or frame node
  * @async
  * @function setCornerRadius
  * @param {object} params - Parameters
@@ -1202,6 +1203,8 @@ function setStroke(node, color, weight) {
  * @returns {Promise<{success: boolean}>}
  * @example
  * const result = await setCornerRadius({ nodeId: 'rect-id', radius: 8 });
+ * // Also works with frame nodes
+ * const frameResult = await setCornerRadius({ nodeId: 'frame-id', radius: 12 });
  */
 async function setCornerRadius(params) {
   const { nodeId, radius, corners } = params;
@@ -1211,8 +1214,8 @@ async function setCornerRadius(params) {
     throw new Error(`Node not found: ${nodeId}`);
   }
   
-  if (node.type !== 'RECTANGLE') {
-    throw new Error('Corner radius can only be set on rectangle nodes');
+  if (node.type !== 'RECTANGLE' && node.type !== 'FRAME') {
+    throw new Error('Corner radius can only be set on rectangle or frame nodes');
   }
   
   if (corners && corners.length === 4) {

@@ -302,4 +302,37 @@ export const writeCommands = {
       weight: params.weight || 1
     });
   },
+
+  /**
+   * Creates a complete button with background and text
+   * 
+   * @param {object} params - Button parameters
+   * @returns {Promise<{frameId: string, backgroundId: string, textId: string}>} Created button elements
+   */
+  async createButton(
+    this: FigmaClient,
+    params: {
+      x: number;
+      y: number;
+      width?: number;
+      height?: number;
+      text?: string;
+      style?: {
+        background?: { r: number; g: number; b: number; a?: number };
+        text?: { r: number; g: number; b: number; a?: number };
+        fontSize?: number;
+        fontWeight?: number;
+        cornerRadius?: number;
+      };
+      name?: string;
+      parentId?: string;
+    }
+  ): Promise<{frameId: string, backgroundId: string, textId: string}> {
+    const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    return this.executeCommand("create_button", {
+      ...params,
+      name: params.name || "Button",
+      parentId: parent,
+    });
+  },
 };

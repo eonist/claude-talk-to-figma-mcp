@@ -88,6 +88,7 @@ export type FigmaCommand =
   | "exclude_selection"
   | "insert_image"
   | "insert_images"
+  | "create_button"
   | "join";
 
 /**

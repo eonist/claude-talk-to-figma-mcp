@@ -24,6 +24,7 @@ import * as styleOperations from './styles.js';
 import * as componentOperations from './components.js';
 import * as layoutOperations from './layout.js';
 import * as renameOperations from './rename.js';
+import { uiComponents } from './ui.js';
 
 // Internal registry to store command handlers
 const commandRegistry = {};
@@ -184,6 +185,9 @@ export function initializeCommands() {
   // Auto Layout operations
   registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
+  
+  // UI Component operations
+  registerCommand('create_button', uiComponents.createButton);
 }
 
 /**

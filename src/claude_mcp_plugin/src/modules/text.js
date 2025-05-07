@@ -57,7 +57,7 @@
  * const result = await textOperations.createText({ x:0, y:0, text: 'Hello' });
  * console.log('Created text node ID:', result.id);
  */
-import { generateCommandId, setCharacters } from './utils.js';
+import { generateCommandId, setCharacters, canAcceptChildren } from './utils.js';
 
 /**
  * Sends a progress update message to the plugin UI.
@@ -200,8 +200,12 @@ export async function createText(params) {
       if (!parentNode) {
         throw new Error(`Parent node not found with ID: ${parentId}`);
       }
-      if (!("appendChild" in parentNode)) {
-        throw new Error(`Parent node does not support children: ${parentId}`);
+      if (!canAcceptChildren(parentNode)) {
+        const nodeType = parentNode.type || 'unknown type';
+        throw new Error(
+          `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
+          `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
+        );
       }
       parentNode.appendChild(textNode);
     } else {
@@ -308,9 +312,17 @@ export async function createBoundedText(params) {
 
     if (parentId) {
       const parentNode = await figma.getNodeByIdAsync(parentId);
-      if (parentNode && "appendChild" in parentNode) {
-        parentNode.appendChild(textNode);
+      if (!parentNode) {
+        throw new Error(`Parent node not found with ID: ${parentId}`);
       }
+      if (!canAcceptChildren(parentNode)) {
+        const nodeType = parentNode.type || 'unknown type';
+        throw new Error(
+          `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
+          `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
+        );
+      }
+      parentNode.appendChild(textNode);
     } else {
       figma.currentPage.appendChild(textNode);
     }
