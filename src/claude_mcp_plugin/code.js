@@ -3903,15 +3903,24 @@ async function applyGradientStyle(params) {
   if (!style) {
     throw new Error(`Gradient style not found: ${gradientStyleId}`);
   }
-  const paintRef = { type: "PAINT_STYLE", styleId: style.id };
+  
+  // Get the actual paint definitions from the style
+  const paints = style.paints;
+  if (!paints || !paints.length) {
+    throw new Error(`No paint definitions found in style: ${gradientStyleId}`);
+  }
+  
+  // Apply the actual paint definitions directly
   if (applyTo === "FILL" || applyTo === "BOTH") {
     if (!("fills" in node)) throw new Error("Node does not support fills");
-    node.fills = [paintRef];
+    node.fills = [...paints]; // Use spread operator to create a new array
   }
+  
   if (applyTo === "STROKE" || applyTo === "BOTH") {
     if (!("strokes" in node)) throw new Error("Node does not support strokes");
-    node.strokes = [paintRef];
+    node.strokes = [...paints]; // Use spread operator to create a new array
   }
+  
   return { id: node.id, name: node.name };
 }
 

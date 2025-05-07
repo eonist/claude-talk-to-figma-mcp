@@ -114,6 +114,28 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
     }
   );
 
+  // Single ellipse
+  server.tool(
+    "create_ellipse",
+    "Create a new ellipse in Figma",
+    {
+      x: z.number(), y: z.number(),
+      width: z.number(), height: z.number(),
+      name: z.string().optional(), parentId: z.string().optional(),
+      fillColor: z.any().optional(), strokeColor: z.any().optional(),
+      strokeWeight: z.number().optional()
+    },
+    async (args) => {
+      try {
+        const params = { commandId: uuidv4(), ...args };
+        const node = await figmaClient.createEllipse(params);
+        return { content: [{ type: "text", text: `Created ellipse ${node.id}` }] };
+      } catch (err) {
+        return handleToolError(err, "shape-creation-tools", "create_ellipse") as any;
+      }
+    }
+  );
+
   // Batch polygons
   server.tool(
     "create_polygons",
