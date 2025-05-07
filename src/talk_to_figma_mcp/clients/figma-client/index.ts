@@ -40,6 +40,7 @@ import { writeCommands } from "./write-commands.js";
 import { textCommands } from "./text-commands.js";
 import { effectCommands } from "./effect-commands.js";
 import { miscCommands } from "./misc-commands.js";
+import { layoutCommands } from "./layout-commands.js";
 
 Object.assign(
   FigmaClient.prototype,
@@ -47,5 +48,6 @@ Object.assign(
   writeCommands,
   textCommands,
   effectCommands,
-  miscCommands
+  miscCommands,
+  layoutCommands
 );

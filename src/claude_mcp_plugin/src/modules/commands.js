@@ -180,6 +180,10 @@ export function initializeCommands() {
   // Group/Ungroup operations
   registerCommand('group_nodes', layoutOperations.groupNodes);
   registerCommand('ungroup_nodes', layoutOperations.ungroupNodes);
+  
+  // Auto Layout operations
+  registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
+  registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
 }
 
 /**
