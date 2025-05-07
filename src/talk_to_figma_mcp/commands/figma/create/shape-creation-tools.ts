@@ -60,7 +60,11 @@ export function registerShapeCreationCommands(server: McpServer, figmaClient: Fi
         async cfg => {
           const node = await figmaClient.createRectangle(cfg);
           if (cfg.cornerRadius != null) {
-            await figmaClient.executeCommand("set_corner_radius", { nodeId: node.id, radius: cfg.cornerRadius });
+            await figmaClient.executeCommand("set_corner_radius", { 
+              commandId: uuidv4(),
+              nodeId: node.id, 
+              radius: cfg.cornerRadius 
+            });
           }
           return node.id;
         }
