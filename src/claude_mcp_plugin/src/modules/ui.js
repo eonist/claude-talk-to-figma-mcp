@@ -140,8 +140,12 @@ export async function createButton(params) {
 }
 
 /**
- * Export a group of UI component creation functions
+ * Export both the individual functions and a grouped object for flexibility
  */
+// Direct export for named imports
+export { createButton };
+
+// Grouped export for namespace imports
 export const uiComponents = {
   createButton
 };

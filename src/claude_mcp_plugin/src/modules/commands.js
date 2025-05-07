@@ -24,7 +24,7 @@ import * as styleOperations from './styles.js';
 import * as componentOperations from './components.js';
 import * as layoutOperations from './layout.js';
 import * as renameOperations from './rename.js';
-import { uiComponents } from './ui.js';
+import * as uiComponents from './ui.js';
 
 // Internal registry to store command handlers
 const commandRegistry = {};

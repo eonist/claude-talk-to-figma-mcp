@@ -287,6 +287,7 @@ function customBase64Encode(bytes) {
  * - generateCommandId(): string
  * - uniqBy(arr: any[], predicate: string | Function): any[]
  * - setCharacters(node: SceneNode, characters: string, options?: object): Promise<boolean>
+ * - canAcceptChildren(node: SceneNode): boolean
  *
  * @module modules/utils/helpers
  * @example
@@ -446,6 +447,36 @@ async function setCharacters(node, characters, options) {
     console.warn(`Failed to set characters. Skipped.`, err);
     return false;
   }
+}
+
+/**
+ * Checks if a Figma node can accept children.
+ * 
+ * This utility function determines whether a given Figma node type can 
+ * contain child nodes, which is important for creating proper node hierarchies.
+ * 
+ * @param {SceneNode} node - The Figma node to check
+ * @returns {boolean} - True if the node can have children, false otherwise
+ * 
+ * @example
+ * const frame = figma.createFrame();
+ * const rect = figma.createRectangle();
+ * 
+ * canAcceptChildren(frame); // Returns true
+ * canAcceptChildren(rect); // Returns false
+ */
+function canAcceptChildren(node) {
+  if (!node) return false;
+  
+  // These are the node types that can have children in Figma
+  const containerNodeTypes = [
+    'FRAME', 'GROUP', 'COMPONENT', 'COMPONENT_SET', 
+    'SECTION', 'INSTANCE', 'PAGE', 'DOCUMENT'
+  ];
+  
+  // Check by node type or by presence of appendChild method
+  return containerNodeTypes.includes(node.type) || 
+    ('appendChild' in node && typeof node.appendChild === 'function');
 }
 
 
@@ -1880,8 +1911,12 @@ async function createText(params) {
       if (!parentNode) {
         throw new Error(`Parent node not found with ID: ${parentId}`);
       }
-      if (!("appendChild" in parentNode)) {
-        throw new Error(`Parent node does not support children: ${parentId}`);
+      if (!canAcceptChildren(parentNode)) {
+        const nodeType = parentNode.type || 'unknown type';
+        throw new Error(
+          `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
+          `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
+        );
       }
       parentNode.appendChild(textNode);
     } else {
@@ -1988,9 +2023,17 @@ async function createBoundedText(params) {
 
     if (parentId) {
       const parentNode = await figma.getNodeByIdAsync(parentId);
-      if (parentNode && "appendChild" in parentNode) {
-        parentNode.appendChild(textNode);
+      if (!parentNode) {
+        throw new Error(`Parent node not found with ID: ${parentId}`);
       }
+      if (!canAcceptChildren(parentNode)) {
+        const nodeType = parentNode.type || 'unknown type';
+        throw new Error(
+          `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
+          `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
+        );
+      }
+      parentNode.appendChild(textNode);
     } else {
       figma.currentPage.appendChild(textNode);
     }
@@ -5106,6 +5149,9 @@ function initializeCommands() {
   // Auto Layout operations
   registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
+  
+  // UI Component operations
+  registerCommand('create_button', uiComponents.createButton);
 }
 
 /**
