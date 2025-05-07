@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+/**
+ * @fileoverview CLI entry for the Talk to Figma MCP server module.
+ * Provides a Model Context Protocol interface for Figma through stdio transport.
+ */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { connectToFigma } from "./server/websocket.js";
@@ -32,6 +36,9 @@ import { logger } from "./utils/logger.js";
  * @example
  * # Start server on custom host and port
  * node ./dist/server.js --server=figma.local --port=4080 --reconnect-interval=5000
+ * @example
+ * # Start server with defaults
+ * node ./dist/server.js
  */
 async function main(): Promise<void> {
   try {

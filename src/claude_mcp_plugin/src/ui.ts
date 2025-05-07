@@ -15,6 +15,17 @@ const progressMessage = document.getElementById('progress-message')!;
 const progressStatus = document.getElementById('progress-status')!;
 const progressPercentage = document.getElementById('progress-percentage')!;
 
+/**
+ * Updates the UI connection status display.
+ * @param {boolean} isConnected - Indicates whether the client is connected to the MCP server.
+ * @param {string} [message] - Optional custom status message to display.
+ * @returns {void}
+ * @example
+ * // Show connected status
+ * updateConnectionStatus(true);
+ * // Show error message
+ * updateConnectionStatus(false, 'Failed to connect');
+ */
 function updateConnectionStatus(isConnected: boolean, message?: string) {
   connectionStatus.innerHTML = message
     ? message
@@ -27,6 +38,14 @@ function updateConnectionStatus(isConnected: boolean, message?: string) {
   portInput.disabled = isConnected;
 }
 
+/**
+ * Updates the progress UI elements based on incoming progress data.
+ * @param {ProgressData} data - Progress update object with commandId, progress, status, and optional message.
+ * @returns {void}
+ * @example
+ * // Called when progress event fires
+ * onProgress(data => updateProgressUI(data));
+ */
 function updateProgressUI(data: ProgressData) {
   progressContainer.classList.remove('hidden');
   const pct = data.progress || 0;

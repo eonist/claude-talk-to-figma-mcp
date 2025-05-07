@@ -1,3 +1,11 @@
+/**
+ * Progress update data for a running command.
+ * @interface ProgressData
+ * @property {string} commandId - Unique ID of the command.
+ * @property {number} progress - Progress percentage (0–100).
+ * @property {'started' | 'in_progress' | 'completed' | 'error'} status - Current status of the command.
+ * @property {string} [message] - Optional status message.
+ */
 export interface ProgressData {
   commandId: string;
   progress: number;
@@ -16,10 +24,18 @@ const messageHandlers: Array<(msg: any) => void> = [];
 const progressHandlers: Array<(data: ProgressData) => void> = [];
 
 // Helpers
+/**
+ * Generates a unique identifier string.
+ * @returns {string} A unique ID based on timestamp and random characters.
+ */
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
 
+/**
+ * Generates a random channel name for WebSocket communication.
+ * @returns {string} An 8-character random channel name.
+ */
 function generateChannelName(): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
@@ -30,6 +46,13 @@ function generateChannelName(): string {
 }
 
 // Connect to MCP WebSocket server
+/**
+ * Establishes a WebSocket connection to the MCP server.
+ * @param {number} port - TCP port of the MCP WebSocket server.
+ * @returns {void}
+ * @example
+ * connect(3055);
+ */
 export function connect(port: number): void {
   if (connected || socket) return;
   serverPort = port;
@@ -71,6 +94,12 @@ export function connect(port: number): void {
 }
 
 // Disconnect from server
+/**
+ * Closes the WebSocket connection to the MCP server.
+ * @returns {void}
+ * @example
+ * disconnect();
+ */
 export function disconnect(): void {
   if (socket) {
     socket.close();
@@ -80,6 +109,16 @@ export function disconnect(): void {
 }
 
 // Send a command, returns a promise for the result
+/**
+ * Sends a command to the MCP server.
+ * @param {string} command - Name of the command/tool to execute on the server.
+ * @param {any} params - Parameters object for the command.
+ * @returns {Promise<any>} Promise resolving to the command result or rejecting on error/timeout.
+ * @example
+ * send('get_node_info', { nodeId: '123' })
+ *   .then(result => console.log(result))
+ *   .catch(err => console.error(err));
+ */
 export function send(command: string, params: any): Promise<any> {
   return new Promise((resolve, reject) => {
     if (!connected || !socket) {
@@ -106,11 +145,25 @@ export function send(command: string, params: any): Promise<any> {
 }
 
 // Subscribe to incoming messages
+/**
+ * Registers a handler for incoming messages from the server.
+ * @param {(msg: any) => void} fn - Callback invoked with each incoming message.
+ * @returns {void}
+ * @example
+ * onMessage(msg => console.log('Message:', msg));
+ */
 export function onMessage(fn: (msg: any) => void): void {
   messageHandlers.push(fn);
 }
 
 // Subscribe to progress updates
+/**
+ * Registers a handler for progress updates.
+ * @param {(data: ProgressData) => void} fn - Callback invoked with progress data.
+ * @returns {void}
+ * @example
+ * onProgress(data => console.log('Progress:', data));
+ */
 export function onProgress(fn: (data: ProgressData) => void): void {
   progressHandlers.push(fn);
 }

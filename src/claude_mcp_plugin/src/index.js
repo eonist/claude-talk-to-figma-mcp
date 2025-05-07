@@ -32,6 +32,15 @@ initializeCommands();
  * - close-plugin: Terminates the plugin
  * - execute-command: Processes commands received via WebSocket from the MCP server
  */
+/**
+ * Handles UI messages sent from the HTML UI.
+ * @param {{ type: 'update-settings'|'notify'|'close-plugin'|'execute-command'; params?: any; message?: string; id?: string; command?: string; }} msg
+ *   - Incoming message object from the UI.
+ * @returns {void}
+ * @example
+ * // Example: Post a notification from the UI
+ * parent.postMessage({ pluginMessage: { type: 'notify', message: 'Hello from plugin' } }, '*');
+ */
 figma.ui.onmessage = async (msg) => {
   switch (msg.type) {
     case "update-settings":
@@ -66,6 +75,16 @@ figma.ui.onmessage = async (msg) => {
 };
 
 // Handle plugin activation from Figma menu
+/**
+ * Handler invoked when the plugin is run via the Figma UI menu.
+ * @param {{ command: string }} args - Contains the menu command that triggered the plugin.
+ * @returns {void}
+ * @example
+ * // In manifest.json, define:
+ * // { "command": "Auto Connect", "name": "Auto-Connect Command" }
+ * // Then:
+ * figma.on('run', ({ command }) => { ... });
+ */
 figma.on("run", ({ command }) => {
   // Trigger automatic WebSocket connection when plugin starts
   figma.ui.postMessage({ type: "auto-connect" });

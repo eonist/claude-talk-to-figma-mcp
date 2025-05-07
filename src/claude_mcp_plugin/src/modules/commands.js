@@ -34,6 +34,14 @@ function registerCommand(name, fn) {
  * This function is called once during plugin initialization to set up the command system
  * Commands are organized by functional categories for better maintainability
  */
+/**
+ * Initializes and registers all available commands in the plugin.
+ * This function is called once during plugin initialization to set up the command system.
+ * @returns {void}
+ * @example
+ * // Initialize command handlers during plugin setup
+ * initializeCommands();
+ */
 export function initializeCommands() {
   // Document Operations
   // Handles document-level operations like getting document info and selection state
