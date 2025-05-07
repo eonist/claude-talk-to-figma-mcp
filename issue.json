@@ -1,14 +1,14 @@
 {
-  "url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51",
+  "url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/88",
   "repository_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp",
-  "labels_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/labels{/name}",
-  "comments_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/comments",
-  "events_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/events",
-  "html_url": "https://github.com/eonist/claude-talk-to-figma-mcp/issues/51",
-  "id": 3041145471,
-  "node_id": "I_kwDOOjKCnc61RDJ_",
-  "number": 51,
-  "title": "Improve comments ",
+  "labels_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/88/labels{/name}",
+  "comments_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/88/comments",
+  "events_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/88/events",
+  "html_url": "https://github.com/eonist/claude-talk-to-figma-mcp/issues/88",
+  "id": 3046604526,
+  "node_id": "I_kwDOOjKCnc61l37u",
+  "number": 88,
+  "title": "Redesign the plugin layout",
   "user": {
     "login": "eonist",
     "id": 11816788,
@@ -40,9 +40,9 @@
 
   ],
   "milestone": null,
-  "comments": 7,
-  "created_at": "2025-05-06T00:18:47Z",
-  "updated_at": "2025-05-06T01:05:15Z",
+  "comments": 1,
+  "created_at": "2025-05-07T16:55:39Z",
+  "updated_at": "2025-05-07T17:40:30Z",
   "closed_at": null,
   "author_association": "OWNER",
   "active_lock_reason": null,
@@ -51,10 +51,10 @@
     "completed": 0,
     "percent_completed": 0
   },
-  "body": "I'm unable to analyze the specific codebase at https://github.com/eonist/claude-talk-to-figma-mcp/ as the content wasn't successfully loaded from that repository[1]. However, based on similar MCP projects for Claude-Figma integration, I can suggest areas where method documentation is typically lacking and how to improve them.\n\n## Potential Areas Needing Better Documentation\n\n**Tool Implementation Methods**\nFunctions in tool modules (document-tools.ts, creation-tools.ts, etc.) often lack comprehensive parameter descriptions[[3](https://github.com/arinspunk/claude-talk-to-figma-mcp)][[4](https://github.com/arinspunk/claude-talk-to-figma-mcp)]. For example:\n\n```typescript\n// Before\nfunction createRectangle(params) {\n  // Implementation\n}\n\n// Improved\n/**\n * Creates a rectangle in the Figma document\n * @param {Object} params - Configuration parameters\n * @param {number} params.x - X position of rectangle\n * @param {number} params.y - Y position of rectangle\n * @param {number} params.width - Width of rectangle\n * @param {number} params.height - Height of rectangle\n * @param {string} [params.color] - Fill color (hex format)\n * @param {number} [params.cornerRadius] - Corner radius in pixels\n * @returns {Promise} - ID of the created node\n */\nfunction createRectangle(params) {\n  // Implementation\n}\n```\n\n**WebSocket Communication Methods**\nWebSocket handling typically needs better error state documentation[[3](https://github.com/arinspunk/claude-talk-to-figma-mcp)]:\n\n```typescript\n// Before\nfunction handleWebSocketMessage(message) {\n  // Implementation\n}\n\n// Improved\n/**\n * Processes incoming WebSocket messages from Figma plugin\n * @param {Object} message - The parsed message object\n * @param {string} message.type - Message type identifier\n * @param {string} message.channelId - Channel for communication\n * @param {Object} [message.payload] - Optional data payload\n * @throws Will throw error if message format is invalid\n */\nfunction handleWebSocketMessage(message) {\n  // Implementation\n}\n```\n\n**Configuration Helper Functions**\nInstallation and setup methods often lack environment-specific details[[2](https://libraries.io/npm/claude-talk-to-figma-mcp)][[4](https://github.com/arinspunk/claude-talk-to-figma-mcp)]:\n\n```typescript\n// Before\nfunction configureClaudeDesktop() {\n  // Implementation\n}\n\n// Improved\n/**\n * Configures Claude Desktop to use the Figma MCP\n * @description Modifies the Claude Desktop configuration file to include\n * the ClaudeTalkToFigma MCP. Creates a backup of the existing config.\n * @platform Supports macOS (~/Library/Application Support/Claude/...)\n * @platform Supports Windows (%APPDATA%\\Claude\\...)\n * @returns {boolean} True if configuration was successful\n */\nfunction configureClaudeDesktop() {\n  // Implementation \n}\n```\n\nThese improvements would make the codebase more maintainable and easier for contributors to understand[[3](https://github.com/arinspunk/claude-talk-to-figma-mcp)].\n\nCitations:\n[1] https://github.com/eonist/claude-talk-to-figma-mcp/\n[2] https://libraries.io/npm/claude-talk-to-figma-mcp\n[3] https://github.com/arinspunk/claude-talk-to-figma-mcp\n[4] https://github.com/arinspunk/claude-talk-to-figma-mcp\n[5] https://www.youtube.com/watch?v=1L1tSwJk30Y\n[6] https://github.com/tonycueva/claude-figma-mcp\n[7] https://www.linkedin.com/posts/temperamento_figma-claude-mcp-activity-7320462080447262720-BZ1d\n[8] https://github.com/karthiks3000/figma-mcp-server\n[9] https://www.linkedin.com/posts/sonnylazuardi_claude-code-designing-in-figma-with-mcp-server-activity-7308248516710027264-j_5K\n[10] https://www.aibase.com/repos/project/claude-talk-to-figma-mcp\n[11] https://html.to.design/docs/mcp-tab/\n[12] https://www.npmjs.com/package/@hapins/figma-mcp\n\n---\nAnswer from Perplexity: [pplx.ai/share](https://www.perplexity.ai/search/pplx.ai/share)",
+  "body": "# Figma plugin design \n\n**Title in the window header: \"Conduit\"**\n\n### Layout-specs: \n\n1. Each component is placed in a vertical stack. Width 12px spacing between each item. \n2. Plugin size will be: w/h 350x500 \n\n- Header-component\n    - Logo-icon: (size: 64x64, url: root/logo_dark.svg or root/logo_light, align: left) \n    - TitleText: \"Conduit\"\n    - SubtitleText: \"Design at the speed of thought\"\n- Tab-toggle: options: \"Connection\", \"About\" (size: width: 100%)\n    - two rounded capsule buttons. \n    - selected has a different shade\n    - background is also rounded capsule, with some padding\n    - font color shades are different for selected and not selected\n    - text in buttons are centered, some padding around text\n    - buttons are grouped horizontally, and the group is centered horizontally\n- Connect-view: (default selected)\n    - Websocket-component: (100% width)\n        - Title: text: \"Websocket-port:\" (top left)\n        - single-lined-input-textfield: default value: \"3055\" (bellow title, left aligned)\n        - Connect button: \"Connect\" or \"Disconnect\" (right-aligned of input-textfield)\n    - Toggle-component: (100% width)\n        - toggle-button: checked unchecked, default is checked, (top left aligned)\n        - description text: text: \"Auto connect to server\" (right of toggle button).\n    - Status-component: (100% width)\n        - Multiline textfield, left alined, \n        - Text for Multiline textfield: Connected to server on port \"\\(port_value)\" in channel: \"\\(channel_value)\"\n        - Border and fill: Green when connected, red when disconnected. Border: is a different shade than the fill etc\n- About-view: (this is shown when we toggle to \"about\", hidden by default)\n    - TitleText: \"About Conduit\"\n    - multiline-text: \"This plugin allows you to use any agentic AI app that supports MCP. Enabling AI assisted design operations. Based on work by Sonny and Arinspunk newline newline Version: \\(version_value), newline newline  How to use: newline 1. Start server in terminal: \"bun socket\" the plugin will auto-connect if this is enabled. newline 2. Press the \"copy channel\" button in the plugin. 3. Make sure you add the mcp config to your AI agent. paste this in the mcp-config file: \"mcp{conduit,autoconnect, etc}\" newlinePrompt:  4. talk to figma on channel: paste your channel id. And then begin chatting with your design.  the \" (sonny and arinspunk should be links to their user accounts on github, the links should have a different shade than the rest of the text)\n    ",
   "closed_by": null,
   "reactions": {
-    "url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/reactions",
+    "url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/88/reactions",
     "total_count": 0,
     "+1": 0,
     "-1": 0,
@@ -65,7 +65,7 @@
     "rocket": 0,
     "eyes": 0
   },
-  "timeline_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/51/timeline",
+  "timeline_url": "https://api.github.com/repos/eonist/claude-talk-to-figma-mcp/issues/88/timeline",
   "performed_via_github_app": null,
   "state_reason": null
 }
