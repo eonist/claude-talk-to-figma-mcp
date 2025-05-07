@@ -7,6 +7,11 @@
  *
  * @param {Uint8Array} bytes - The binary data to encode.
  * @returns {string} A base64 encoded string representation of the data.
+ * @example
+ * // Convert Uint8Array to base64 string
+ * const data = new Uint8Array([72, 101, 108, 108, 111]);
+ * const b64 = customBase64Encode(data);
+ * console.log(b64); // "SGVsbG8="
  */
 export function customBase64Encode(bytes) {
   // Base64 character set lookup table

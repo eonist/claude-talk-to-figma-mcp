@@ -25,6 +25,15 @@ const commandRegistry = {};
  * @param {Function} fn - The handler function to execute for this command
  * @throws {Error} If the command name is already registered
  */
+/**
+ * Registers a command handler function under a specific name.
+ *
+ * @param {string} name - The command identifier (e.g., 'create_rectangle').
+ * @param {Function} fn - Handler function to execute when the command is called.
+ * @throws {Error} If registration fails or if the command name is a duplicate.
+ * @example
+ * registerCommand('get_document_info', getDocumentInfo);
+ */
 function registerCommand(name, fn) {
   commandRegistry[name] = fn;
 }

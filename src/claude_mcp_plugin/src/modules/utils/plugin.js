@@ -20,6 +20,9 @@
  * Maintains core configuration settings that persist across plugin sessions.
  *
  * @property {number} serverPort - The port number for plugin's backend connection (default: 3055)
+ * @example
+ * // Access current serverPort
+ * console.log(state.serverPort);
  */
 export const state = {
   serverPort: 3055,

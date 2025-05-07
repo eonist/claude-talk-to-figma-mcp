@@ -23,6 +23,9 @@
  * Maintains core configuration settings that persist across plugin sessions.
  *
  * @property {number} serverPort - The port number for plugin's backend connection (default: 3055)
+ * @example
+ * // Access current serverPort
+ * console.log(state.serverPort);
  */
 const state = {
   serverPort: 3055,
@@ -228,6 +231,11 @@ function updateSettings(settings) {
  *
  * @param {Uint8Array} bytes - The binary data to encode.
  * @returns {string} A base64 encoded string representation of the data.
+ * @example
+ * // Convert Uint8Array to base64 string
+ * const data = new Uint8Array([72, 101, 108, 108, 111]);
+ * const b64 = customBase64Encode(data);
+ * console.log(b64); // "SGVsbG8="
  */
 function customBase64Encode(bytes) {
   // Base64 character set lookup table
@@ -279,7 +287,11 @@ function customBase64Encode(bytes) {
 
 // ----- Utils/helpers.js -----
 /**
- * Collection of helper utilities for the Figma plugin
+ * Collection of helper utilities for the Figma plugin.
+ *
+ * @module helpers
+ * @example
+ *  * await delay(1000);
  */
 
 /**
@@ -454,6 +466,7 @@ async function setCharacters(node, characters, options) {
 
 /**
  * Safely converts a node ID to a string.
+ * @function ensureNodeIdIsString
  * Guards against passing objects as node IDs, which would result in "[object Object]"
  * 
  * @param {any} nodeId - The node ID to convert to a string
@@ -475,6 +488,8 @@ function ensureNodeIdIsString(nodeId) {
 
 /**
  * Retrieves detailed information about the current Figma page and its contents.
+ * @async
+ * @function getDocumentInfo
  * 
  * @returns {Promise<{
  *   name: string,
@@ -535,6 +550,8 @@ async function getDocumentInfo() {
 
 /**
  * Retrieves information about the currently selected nodes on the active Figma page.
+ * @async
+ * @function getSelection
  * If no nodes are selected, returns an empty selection array.
  *
  * @returns {Promise<{
@@ -573,6 +590,8 @@ async function getSelection() {
 
 /**
  * Retrieves detailed information about a specific node in the Figma document.
+ * @async
+ * @function getNodeInfo
  * Attempts to the node in JSON_REST_V1 format, falling back to basic
  * properties if is not supported for the node type.
  *
@@ -638,6 +657,8 @@ async function getNodeInfo(nodeIdOrParams) {
 
 /**
  * Retrieves information for multiple nodes simultaneously using parallel processing.
+ * @async
+ * @function getNodesInfo
  * Nodes that cannot be found are automatically filtered out of the results.
  *
  * @param {Array<string|Object>|Object} nodeIdsOrParams - Array of node IDs or objects containing id properties,
@@ -1269,6 +1290,7 @@ const imageOperations = {
 
 /**
  * Sends a progress update message to the plugin UI.
+ * @function sendProgressUpdate
  *
  * @param {string} commandId - Unique identifier for the command execution.
  * @param {string} commandType - Type of command (e.g., 'scan_text_nodes').
@@ -4511,6 +4533,15 @@ const commandRegistry = {};
  * @param {string} name - The command name to register (e.g., 'create_rectangle', 'set_text_content')
  * @param {Function} fn - The handler function to execute for this command
  * @throws {Error} If the command name is already registered
+ */
+/**
+ * Registers a command handler function under a specific name.
+ *
+ * @param {string} name - The command identifier (e.g., 'create_rectangle').
+ * @param {Function} fn - Handler function to execute when the command is called.
+ * @throws {Error} If registration fails or if the command name is a duplicate.
+ * @example
+ * registerCommand('get_document_info', getDocumentInfo);
  */
 function registerCommand(name, fn) {
   commandRegistry[name] = fn;

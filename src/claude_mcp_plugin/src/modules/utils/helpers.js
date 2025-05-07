@@ -1,5 +1,10 @@
 /**
- * Collection of helper utilities for the Figma plugin
+ * Collection of helper utilities for the Figma plugin.
+ *
+ * @module helpers
+ * @example
+ * import { delay, generateCommandId, uniqBy, setCharacters } from './helpers';
+ * await delay(1000);
  */
 
 /**
