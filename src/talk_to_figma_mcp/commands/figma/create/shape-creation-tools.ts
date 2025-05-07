@@ -10,8 +10,8 @@ import { handleToolError } from "../../../utils/error-handling.js";
  * Registers shape-creation-related commands:
  * - create_rectangle, create_rectangles
  * - create_line, create_lines
+ * - create_ellipse, create_ellipses
  * - create_polygons
- * - create_ellipses
  */
 export function registerShapeCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   // Single rectangle
