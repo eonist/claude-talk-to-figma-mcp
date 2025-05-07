@@ -1,11 +1,13 @@
 /**
- * @module utils
- * Utility functions for the Claude MCP Figma plugin
- * 
- * This module consolidates all utility functions used throughout the plugin:
- * - Plugin state management and configuration (plugin.js)
- * - Binary data encoding utilities (encoding.js)
- * - General helper functions (helpers.js)
+ * Utils operations module.
+ * Consolidates plugin utility functions for state management, binary encoding, and general helpers.
+ *
+ * Exposed submodules:
+ * - plugin: State/configuration and progress updates
+ * - encoding: Base64 encoding for binary data
+ * - helpers: Delay, ID generation, unique filtering, and text setting utilities
+ *
+ * @module modules/utils
  */
 
 // Re-export all utilities for build compatibility

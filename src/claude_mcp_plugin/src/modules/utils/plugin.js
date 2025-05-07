@@ -1,17 +1,19 @@
 /**
  * Plugin utilities module.
- * Provides state management, configuration, and progress update functionality for the plugin.
+ * Consolidates plugin configuration, state management, and progress reporting helpers.
  *
  * Exposed functions:
  * - state: { serverPort: number }
- * - sendProgressUpdate(commandId, commandType, status, progress, totalItems, processedItems, message, payload?): object
+ * - sendProgressUpdate(commandId: string, commandType: string, status: string, progress: number, totalItems: number, processedItems: number, message: string, payload?: object): object
  * - initializePlugin(): Promise<void>
- * - updateSettings(settings): void
+ * - updateSettings(settings: { serverPort: number }): void
  *
- * @module plugin
+ * @module modules/utils/plugin
  * @example
  * import { initializePlugin, updateSettings } from './utils/plugin.js';
+ * // Initialize with persisted settings
  * await initializePlugin();
+ * // Update server port setting
  * updateSettings({ serverPort: 4000 });
  */
 

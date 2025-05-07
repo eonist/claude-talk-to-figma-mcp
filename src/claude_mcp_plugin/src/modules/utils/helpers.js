@@ -1,10 +1,20 @@
 /**
- * Collection of helper utilities for the Figma plugin.
+ * Helper utilities module.
+ * Provides common utility functions for command execution, delays, and text manipulation.
  *
- * @module helpers
+ * Exposed functions:
+ * - delay(ms: number): Promise<void>
+ * - generateCommandId(): string
+ * - uniqBy(arr: any[], predicate: string | Function): any[]
+ * - setCharacters(node: SceneNode, characters: string, options?: object): Promise<boolean>
+ *
+ * @module modules/utils/helpers
  * @example
  * import { delay, generateCommandId, uniqBy, setCharacters } from './helpers';
- * await delay(1000);
+ * // Use delay to pause execution
+ * await delay(500);
+ * // Generate a command ID
+ * const cmdId = generateCommandId();
  */
 
 /**

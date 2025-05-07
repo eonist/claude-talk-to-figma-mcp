@@ -1,18 +1,24 @@
 /**
- * Client library for connecting to and communicating with the MCP WebSocket server.
+ * Client for connecting to and communicating with the MCP WebSocket server.
+ * Provides functions to manage the WebSocket lifecycle and execute MCP tool commands.
  *
- * Exposes:
- *   - connect(port): Connect and join channel
- *   - disconnect(): Disconnect
- *   - send(command, params): Send a tool command
- *   - onMessage(handler): Subscribe to incoming messages
- *   - onProgress(handler): Subscribe to progress updates
+ * Exposed functions:
+ * - connect(port: number): void
+ * - disconnect(): void
+ * - send(command: string, params: any): Promise<any>
+ * - onMessage(handler: (msg: any) => void): void
+ * - onProgress(handler: (data: ProgressData) => void): void
  *
+ * @module modules/client
  * @example
  * import { connect, send, onMessage, onProgress } from './client';
+ * // Establish connection
  * connect(3055);
- * onProgress(p => console.log('Progress', p));
- * onMessage(res => console.log('Result', res));
+ * // Listen for progress updates
+ * onProgress(data => console.log('Progress:', data));
+ * // Listen for responses
+ * onMessage(msg => console.log('Message:', msg));
+ * // Send a command
  * send('get_node_info', { nodeId: '123' }).then(console.log);
  */
 
