@@ -1192,6 +1192,292 @@ function setStroke(node, color, weight) {
 }
 
 /**
+ * Sets the corner radius of a rectangle node
+ * @async
+ * @function setCornerRadius
+ * @param {object} params - Parameters
+ * @param {string} params.nodeId - ID of the node to modify
+ * @param {number} params.radius - Corner radius value
+ * @param {Array<boolean>} [params.corners] - Optional array of 4 booleans to specify which corners to round
+ * @returns {Promise<{success: boolean}>}
+ * @example
+ * const result = await setCornerRadius({ nodeId: 'rect-id', radius: 8 });
+ */
+async function setCornerRadius(params) {
+  const { nodeId, radius, corners } = params;
+  const node = figma.getNodeById(nodeId);
+  
+  if (!node) {
+    throw new Error(`Node not found: ${nodeId}`);
+  }
+  
+  if (node.type !== 'RECTANGLE') {
+    throw new Error('Corner radius can only be set on rectangle nodes');
+  }
+  
+  if (corners && corners.length === 4) {
+    // Set individual corners
+    node.topLeftRadius = corners[0] ? radius : 0;
+    node.topRightRadius = corners[1] ? radius : 0;
+    node.bottomRightRadius = corners[2] ? radius : 0;
+    node.bottomLeftRadius = corners[3] ? radius : 0;
+  } else {
+    // Set all corners uniformly
+    node.cornerRadius = radius;
+  }
+  
+  return { success: true };
+}
+
+/**
+ * Resizes a node to the specified dimensions
+ * @async
+ * @function resizeNode
+ * @param {object} params - Parameters
+ * @param {string} params.nodeId - ID of the node to resize
+ * @param {number} params.width - New width
+ * @param {number} params.height - New height
+ * @returns {Promise<{success: boolean}>}
+ */
+async function resizeNode(params) {
+  const { nodeId, width, height } = params;
+  const node = figma.getNodeById(nodeId);
+  
+  if (!node) {
+    throw new Error(`Node not found: ${nodeId}`);
+  }
+  
+  node.resize(width, height);
+  return { success: true };
+}
+
+/**
+ * Resizes multiple nodes to the same dimensions
+ * @async
+ * @function resizeNodes
+ * @param {object} params - Parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to resize
+ * @param {object} params.targetSize - Target dimensions
+ * @param {number} params.targetSize.width - New width
+ * @param {number} params.targetSize.height - New height
+ * @returns {Promise<{success: boolean, resized: number}>}
+ */
+async function resizeNodes(params) {
+  const { nodeIds, targetSize } = params;
+  let resized = 0;
+  
+  for (const id of nodeIds) {
+    const node = figma.getNodeById(id);
+    if (node) {
+      node.resize(targetSize.width, targetSize.height);
+      resized++;
+    }
+  }
+  
+  return { success: true, resized };
+}
+
+/**
+ * Deletes a node from the document
+ * @async
+ * @function deleteNode
+ * @param {object} params - Parameters
+ * @param {string} params.nodeId - ID of the node to delete
+ * @returns {Promise<{success: boolean}>}
+ */
+async function deleteNode(params) {
+  const { nodeId } = params;
+  const node = figma.getNodeById(nodeId);
+  
+  if (!node) {
+    throw new Error(`Node not found: ${nodeId}`);
+  }
+  
+  node.remove();
+  return { success: true };
+}
+
+/**
+ * Deletes multiple nodes from the document
+ * @async
+ * @function deleteNodes
+ * @param {object} params - Parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to delete
+ * @returns {Promise<{success: string[], failed: string[]}>}
+ */
+async function deleteNodes(params) {
+  const { nodeIds } = params;
+  const success = [];
+  const failed = [];
+  
+  for (const id of nodeIds) {
+    const node = figma.getNodeById(id);
+    if (node) {
+      node.remove();
+      success.push(id);
+    } else {
+      failed.push(id);
+    }
+  }
+  
+  return { success, failed };
+}
+
+/**
+ * Moves a node to a new position
+ * @async
+ * @function moveNode
+ * @param {object} params - Parameters
+ * @param {string} params.nodeId - ID of the node to move
+ * @param {number} params.x - New X position
+ * @param {number} params.y - New Y position
+ * @returns {Promise<{success: boolean}>}
+ */
+async function moveNode(params) {
+  const { nodeId, x, y } = params;
+  const node = figma.getNodeById(nodeId);
+  
+  if (!node) {
+    throw new Error(`Node not found: ${nodeId}`);
+  }
+  
+  node.x = x;
+  node.y = y;
+  return { success: true };
+}
+
+/**
+ * Moves multiple nodes to a new position
+ * @async
+ * @function moveNodes
+ * @param {object} params - Parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to move
+ * @param {number} params.x - New X position
+ * @param {number} params.y - New Y position
+ * @returns {Promise<{success: boolean, moved: number}>}
+ */
+async function moveNodes(params) {
+  const { nodeIds, x, y } = params;
+  let moved = 0;
+  
+  for (const id of nodeIds) {
+    const node = figma.getNodeById(id);
+    if (node) {
+      node.x = x;
+      node.y = y;
+      moved++;
+    }
+  }
+  
+  return { success: true, moved };
+}
+
+/**
+ * Flattens a node
+ * @async
+ * @function flattenNode
+ * @param {object} params - Parameters
+ * @param {string} params.nodeId - ID of the node to flatten
+ * @returns {Promise<{success: boolean, nodeId: string}>}
+ */
+async function flattenNode(params) {
+  const { nodeId } = params;
+  const node = figma.getNodeById(nodeId);
+  
+  if (!node) {
+    throw new Error(`Node not found: ${nodeId}`);
+  }
+  
+  figma.currentPage.selection = [node];
+  const flattened = figma.flatten();
+  return { success: true, nodeId: flattened.id };
+}
+
+/**
+ * Applies union boolean operation to selected nodes
+ * @async
+ * @function union_selection
+ * @param {object} params - Parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to union
+ * @returns {Promise<{success: boolean}>}
+ */
+async function union_selection(params) {
+  const { nodeIds } = params;
+  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  
+  if (nodes.length < 2) {
+    throw new Error('Need at least 2 nodes for boolean operation');
+  }
+  
+  figma.currentPage.selection = nodes;
+  figma.union();
+  return { success: true };
+}
+
+/**
+ * Applies subtract boolean operation to selected nodes
+ * @async
+ * @function subtract_selection
+ * @param {object} params - Parameters
+ * @param {string[]} params.nodeIds - Array of node IDs (first is bottom shape, rest are subtracted)
+ * @returns {Promise<{success: boolean}>}
+ */
+async function subtract_selection(params) {
+  const { nodeIds } = params;
+  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  
+  if (nodes.length < 2) {
+    throw new Error('Need at least 2 nodes for boolean operation');
+  }
+  
+  figma.currentPage.selection = nodes;
+  figma.subtract();
+  return { success: true };
+}
+
+/**
+ * Applies intersect boolean operation to selected nodes
+ * @async
+ * @function intersect_selection
+ * @param {object} params - Parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to intersect
+ * @returns {Promise<{success: boolean}>}
+ */
+async function intersect_selection(params) {
+  const { nodeIds } = params;
+  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  
+  if (nodes.length < 2) {
+    throw new Error('Need at least 2 nodes for boolean operation');
+  }
+  
+  figma.currentPage.selection = nodes;
+  figma.intersect();
+  return { success: true };
+}
+
+/**
+ * Applies exclude boolean operation to selected nodes
+ * @async
+ * @function exclude_selection
+ * @param {object} params - Parameters
+ * @param {string[]} params.nodeIds - Array of node IDs to exclude
+ * @returns {Promise<{success: boolean}>}
+ */
+async function exclude_selection(params) {
+  const { nodeIds } = params;
+  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  
+  if (nodes.length < 2) {
+    throw new Error('Need at least 2 nodes for boolean operation');
+  }
+  
+  figma.currentPage.selection = nodes;
+  figma.exclude();
+  return { success: true };
+}
+
+/**
  * Registry of available shape operations for the plugin.
  */
 const shapeOperations = {
@@ -1207,7 +1493,19 @@ const shapeOperations = {
   createVector,
   createVectors,
   createLine,
-  createLines
+  createLines,
+  setCornerRadius,
+  resizeNode,
+  resizeNodes,
+  deleteNode,
+  deleteNodes,
+  moveNode,
+  moveNodes,
+  flattenNode,
+  union_selection,
+  subtract_selection,
+  intersect_selection,
+  exclude_selection
 };
 
 

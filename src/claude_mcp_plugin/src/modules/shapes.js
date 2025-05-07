@@ -436,7 +436,7 @@ function setStroke(node, color, weight) {
  */
 export async function setCornerRadius(params) {
   const { nodeId, radius, corners } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -472,7 +472,7 @@ export async function setCornerRadius(params) {
  */
 export async function resizeNode(params) {
   const { nodeId, width, height } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -498,7 +498,7 @@ export async function resizeNodes(params) {
   let resized = 0;
   
   for (const id of nodeIds) {
-    const node = figma.getNodeById(id);
+    const node = await figma.getNodeByIdAsync(id);
     if (node) {
       node.resize(targetSize.width, targetSize.height);
       resized++;
@@ -518,7 +518,7 @@ export async function resizeNodes(params) {
  */
 export async function deleteNode(params) {
   const { nodeId } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -542,7 +542,7 @@ export async function deleteNodes(params) {
   const failed = [];
   
   for (const id of nodeIds) {
-    const node = figma.getNodeById(id);
+    const node = await figma.getNodeByIdAsync(id);
     if (node) {
       node.remove();
       success.push(id);
@@ -566,7 +566,7 @@ export async function deleteNodes(params) {
  */
 export async function moveNode(params) {
   const { nodeId, x, y } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -592,7 +592,7 @@ export async function moveNodes(params) {
   let moved = 0;
   
   for (const id of nodeIds) {
-    const node = figma.getNodeById(id);
+    const node = await figma.getNodeByIdAsync(id);
     if (node) {
       node.x = x;
       node.y = y;
@@ -613,7 +613,7 @@ export async function moveNodes(params) {
  */
 export async function flattenNode(params) {
   const { nodeId } = params;
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -634,7 +634,12 @@ export async function flattenNode(params) {
  */
 export async function union_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');
@@ -655,7 +660,12 @@ export async function union_selection(params) {
  */
 export async function subtract_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');
@@ -676,7 +686,12 @@ export async function subtract_selection(params) {
  */
 export async function intersect_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');
@@ -697,7 +712,12 @@ export async function intersect_selection(params) {
  */
 export async function exclude_selection(params) {
   const { nodeIds } = params;
-  const nodes = nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  const nodes = [];
+  
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   
   if (nodes.length < 2) {
     throw new Error('Need at least 2 nodes for boolean operation');
