@@ -3944,30 +3944,89 @@ async function applyGradientStyle(params) {
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
   }
+
+  // Get all local paint styles
   const styles = await figma.getLocalPaintStylesAsync();
-  const style = styles.find(s => s.id === gradientStyleId);
+  
+  // Try multiple methods to find the style
+  let style = null;
+  
+  // Method 1: Direct ID match
+  style = styles.find(s => s.id === gradientStyleId);
+  
+  // Method 2: If that fails, try matching by key (remove the "S:" prefix if present)
+  if (!style && gradientStyleId.startsWith("S:")) {
+    const key = gradientStyleId.substring(2);
+    style = styles.find(s => s.key === key);
+  }
+  
+  // Method 3: As last resort, try a looser match on the ID
   if (!style) {
-    throw new Error(`Gradient style not found: ${gradientStyleId}`);
+    style = styles.find(s => 
+      s.id.includes(gradientStyleId.replace("S:", "")) || 
+      gradientStyleId.includes(s.id)
+    );
   }
   
-  // Get the actual paint definitions from the style
-  const paints = style.paints;
-  if (!paints || !paints.length) {
-    throw new Error(`No paint definitions found in style: ${gradientStyleId}`);
+  // If we found a style, apply it properly
+  if (style) {
+    // Get the actual paint definitions from the style
+    const paints = style.paints;
+    if (!paints || !paints.length) {
+      throw new Error(`No paint definitions found in style: ${gradientStyleId}`);
+    }
+    
+    // Apply the actual paint definitions directly
+    if (applyTo === "FILL" || applyTo === "BOTH") {
+      if (!("fills" in node)) throw new Error("Node does not support fills");
+      node.fills = [...paints]; // Use spread operator to create a new array
+    }
+    
+    if (applyTo === "STROKE" || applyTo === "BOTH") {
+      if (!("strokes" in node)) throw new Error("Node does not support strokes");
+      node.strokes = [...paints]; // Use spread operator to create a new array
+    }
+    
+    return { id: node.id, name: node.name };
   }
   
-  // Apply the actual paint definitions directly
-  if (applyTo === "FILL" || applyTo === "BOTH") {
-    if (!("fills" in node)) throw new Error("Node does not support fills");
-    node.fills = [...paints]; // Use spread operator to create a new array
+  // Debug information
+  console.warn(`Style lookup failed for: ${gradientStyleId}`);
+  console.info(`Available style IDs: ${styles.map(s => s.id).join(', ')}`);
+  
+  // If the style ID starts with S: and we couldn't find it, try creating a default gradient
+  // This is a fallback for when a style was just created but not yet available through lookup
+  if (gradientStyleId.startsWith("S:")) {
+    try {
+      // Create a default grayscale gradient as fallback
+      const fallbackGradient = {
+        type: "GRADIENT_LINEAR",
+        gradientTransform: [[1, 0, 0], [0, 1, 0]],
+        gradientStops: [
+          { position: 0, color: { r: 0.2, g: 0.2, b: 0.22, a: 1 } },
+          { position: 1, color: { r: 0.6, g: 0.6, b: 0.62, a: 1 } }
+        ]
+      };
+      
+      if (applyTo === "FILL" || applyTo === "BOTH") {
+        if (!("fills" in node)) throw new Error("Node does not support fills");
+        node.fills = [fallbackGradient];
+      }
+      
+      if (applyTo === "STROKE" || applyTo === "BOTH") {
+        if (!("strokes" in node)) throw new Error("Node does not support strokes");
+        node.strokes = [fallbackGradient];
+      }
+      
+      console.info(`Applied fallback gradient to ${nodeId} since style ${gradientStyleId} was not found`);
+      return { id: node.id, name: node.name, usedFallback: true };
+    } catch (fallbackError) {
+      console.error(`Failed to apply fallback gradient: ${fallbackError}`);
+      throw new Error(`Gradient style not found: ${gradientStyleId} and fallback failed`);
+    }
   }
   
-  if (applyTo === "STROKE" || applyTo === "BOTH") {
-    if (!("strokes" in node)) throw new Error("Node does not support strokes");
-    node.strokes = [...paints]; // Use spread operator to create a new array
-  }
-  
-  return { id: node.id, name: node.name };
+  throw new Error(`Gradient style not found: ${gradientStyleId}`);
 }
 
 // Export all style operations as a grouped object
@@ -5221,6 +5280,9 @@ function initializeCommands() {
   // Gradient Operations
   registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
   registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
+  
+  // Direct Gradient Operations (Style-free alternatives)
+  registerCommand('apply_direct_gradient', directGradientOperations.applyDirectGradient);
 
   // Detach Instance Tool
   registerCommand('detach_instance', async (params) => {

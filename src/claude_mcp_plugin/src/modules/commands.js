@@ -21,7 +21,7 @@ import * as shapeOperations from './shapes.js';
 import * as imageOperations from './image.js';
 import * as textOperations from './text.js';
 import * as styleOperations from './styles.js';
-import * as directGradientOperations from './direct-gradient.js';
+import { directGradientOperations } from './direct-gradient.js';
 import * as componentOperations from './components.js';
 import * as layoutOperations from './layout.js';
 import * as renameOperations from './rename.js';
