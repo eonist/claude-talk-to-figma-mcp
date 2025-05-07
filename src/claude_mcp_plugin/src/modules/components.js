@@ -78,6 +78,17 @@ export async function getRemoteComponents() {
  * @param {{nodeId: string}} params
  * @returns {Promise<{success: boolean, componentId: string}>}
  */
+/**
+ * Converts an existing node into a component.
+ *
+ * @param {{nodeId: string}} params - Parameters including the node ID to convert.
+ * @returns {Promise<{success: boolean, componentId: string}>} Result containing success flag and new component ID.
+ * @throws {Error} If `nodeId` is missing or node not found.
+ * @example
+ * // Convert node '123:45' into a component
+ * const result = await createComponentFromNode({ nodeId: '123:45' });
+ * console.log(result.componentId);
+ */
 export async function createComponentFromNode(params) {
   const { nodeId } = params;
   if (!nodeId) throw new Error("Missing nodeId");
@@ -92,6 +103,18 @@ export async function createComponentFromNode(params) {
  * Creates an instance of a component by key.
  * @param {{componentKey: string, x?: number, y?: number}} params
  * @returns {Promise<{id: string, name: string, x: number, y: number, width: number, height: number, componentId: string}>}
+ */
+/**
+ * Creates an instance of a component by its key.
+ *
+ * @param {{componentKey: string, x?: number, y?: number}} params - Component key and optional position.
+ * @returns {Promise<{id: string, name: string, x: number, y: number, width: number, height: number, componentId: string}>}
+ *    Details of the new instance including coordinates and ID.
+ * @throws {Error} If `componentKey` is missing or import fails.
+ * @example
+ * // Create an instance of a published component
+ * const inst = await createComponentInstance({ componentKey: 'ABC123', x: 100, y: 200 });
+ * console.log(`Instance created at (${inst.x},${inst.y})`);
  */
 export async function createComponentInstance(params) {
   const { componentKey, x = 0, y = 0 } = params;

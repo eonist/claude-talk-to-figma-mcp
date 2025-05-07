@@ -1,3 +1,23 @@
+/**
+ * WebSocket transport module for the Talk to Figma MCP server.
+ *
+ * Manages connection lifecycle, command dispatch, response handling, and automatic reconnection.
+ *
+ * Exposes:
+ *   - connectToFigma(serverUrl, port, reconnectInterval): void
+ *   - joinChannel(channelName): Promise<void>
+ *   - getCurrentChannel(): string | null
+ *   - sendCommandToFigma(command, params, timeoutMs?): Promise<unknown>
+ *   - processFigmaNodeResponse(result): any
+ *   - isConnectedToFigma(): boolean
+ *
+ * @module websocket
+ * @example
+ * import { connectToFigma, sendCommandToFigma, onResponse } from './websocket.js';
+ * connectToFigma('localhost', 3055, 2000);
+ * const result = await sendCommandToFigma('get_document_info', {});
+ * console.log(result);
+ */
 import WebSocket from "ws";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../utils/logger.js";

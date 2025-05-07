@@ -1,6 +1,23 @@
 #!/usr/bin/env node
 
 /**
+ * Module: Talk to Figma MCP Server CLI
+ *
+ * @module server
+ * @description
+ *   Provides a CLI entry point for the Model Context Protocol server that interfaces
+ *   with Figma via WebSocket and stdio transport.
+ *
+ * @example
+ * # Start server with defaults
+ * node ./dist/server.js
+ *
+ * @example
+ * # Start server on custom host and port
+ * node ./dist/server.js --server=figma.local --port=4080 --reconnect-interval=5000
+ */
+
+/**
  * @fileoverview CLI entry for the Talk to Figma MCP server module.
  * Provides a Model Context Protocol interface for Figma through stdio transport.
  */

@@ -8,6 +8,12 @@
  * - Layout and transform operations
  *
  * @module clients/figma-client
+ * @example
+ * import { FigmaClient } from './figma-client';
+ * const client = new FigmaClient();
+ * await client.connectToFigma('localhost', 3055, 2000);
+ * const info = await client.getDocumentInfo();
+ * console.log(info);
  */
 import { filterFigmaNode } from "../utils/node-filter.js";
 import { logger } from "../utils/logger.js";

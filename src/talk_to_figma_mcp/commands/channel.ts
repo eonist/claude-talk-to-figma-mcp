@@ -18,17 +18,17 @@ import { joinChannel } from "../server/websocket.js";
  * 
  * These commands handle operations related to Figma communication channels,
  * such as joining a channel to establish a connection with Figma.
- * 
+ *  
  * @param {McpServer} server - The MCP server instance
  * @param {FigmaClient} figmaClient - The Figma client instance
  */
-export function registerChannelCommand(server: McpServer, figmaClient: FigmaClient): void {
-  /**
-   * Join Channel Tool
-   *
-   * Allows joining a specific channel to communicate with Figma.
-   */
-  server.tool(
+ortefunctionprfunctioCregistCChanne((serve: ,*nel Tool:FC): void {
+  / *
+ * Jon  Tol
+*
+     All wwnjoinigg naspecifichnne  */mmuicaewh.
+    /
+ s.too(
     "join_channel",
     "Join a specific channel to communicate with Figma",
     {
