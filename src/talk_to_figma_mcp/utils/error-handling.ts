@@ -1,8 +1,22 @@
 import { logger } from "./logger.js";
 
 /**
- * Standard error response shape for tools.
+ * Error handling utilities for Figma MCP commands.
+ *
+ * Provides custom error classes and a helper to standardize tool errors.
+ *
+ * @module utils/error-handling
+ * @example
+ * import { handleToolError, FigmaMCPError, TimeoutError } from './error-handling';
+ * try {
+ *   // tool logic...
+ * } catch (err) {
+ *   return handleToolError(err, 'moduleName', 'commandName');
+ * }
  */
+
+/**
+ * Standard error response shape for tools.
 export interface ToolErrorResponse {
   content: Array<{ type: string; text: string }>;
   error: {

@@ -1,4 +1,15 @@
 /**
+ * Utility setcharacters module.
+ * Provides deduplication and robust text setting for Figma TextNodes via MCP.
+ *
+ * Exposed functions:
+ * - uniqBy(arr: any[], predicate: string|Function): any[]
+ * - setCharacters(node: TextNode, characters: string, options?: object): Promise<boolean>
+ *
+ * @module modules/utils/setcharacters
+ */
+
+/**
  * Removes duplicate items from an array based on a key or predicate function.
  *
  * @template T, K

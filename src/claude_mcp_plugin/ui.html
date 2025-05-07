@@ -1,3 +1,9 @@
+<!--
+  UI panel markup for Claude MCP Figma plugin.
+  Provides the HTML structure for connection controls, tabs, and progress display.
+  The corresponding script 'ui.ts' handles UI logic and communication.
+  @module ui/html
+-->
 <!DOCTYPE html>
 <html>
   <head>
@@ -665,6 +671,24 @@
     fileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+         const arrayBuffer = evt.target.result;
+         const bytes = new Uint8Array(arrayBuffer);
+         parent.postMessage({
+           pluginMessage: { 
+             type: 'insert_local_image', 
+             data: Array.from(bytes), 
+             name: file.name 
+           }
+         }, '*');
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+  --> 
+</body>
+</html>
       const reader = new FileReader();
       reader.onload = (evt) => {
          const arrayBuffer = evt.target.result;

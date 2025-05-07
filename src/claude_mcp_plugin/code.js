@@ -4693,11 +4693,20 @@ const renameOperations = {
 
 // ----- commands Module -----
 /**
- * Command Registry and Handler Module
- * 
- * This module manages the registration and execution of all available commands in the Figma plugin.
- * It provides a centralized system for registering command handlers and routing incoming commands
- * to their appropriate implementations.
+ * Command registry and handler module for the Claude MCP Figma plugin.
+ * Centralizes registration and dispatch of all tool commands (read, create, modify, rename, styling).
+ *
+ * Exposed functions:
+ * - registerCommand(name: string, fn: Function): void
+ * - initializeCommands(): void
+ * - handleCommand(commandName: string, params: any): Promise<any>
+ * - commandOperations: { initializeCommands, handleCommand }
+ *
+ * @module modules/commands
+ * @example
+ *  * initializeCommands();
+ * const info = await handleCommand('get_document_info', {});
+ * console.log(info);
  */
 
 

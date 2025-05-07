@@ -1,9 +1,22 @@
 /**
- * Build script for Figma Plugin
- * 
- * This script combines modular JavaScript code into a single file (code.js) that Figma can load.
- * The build process concatenates files in a specific order, removes ES module syntax,
- * and ensures proper dependency inclusion.
+ * Build script for the Claude MCP Figma plugin.
+ * Bundles individual module files into a single distributable `code.js` for Figma.
+ *
+ * Process overview:
+ * 1. Validates existence of source directories (`src/`, `src/modules/`, `src/modules/utils/`).
+ * 2. Concatenates utility files (plugin.js, encoding.js, helpers.js) after stripping imports/exports.
+ * 3. Processes feature modules (document, shapes, image, text, styles, components, layout, rename, commands).
+ * 4. Bundles the main `index.js` entrypoint last.
+ * 5. Writes the combined output to `code.js` in plugin root.
+ *
+ * Exposed functions (not exported):
+ * - readFile(filePath: string): string
+ * - buildPlugin(): void
+ *
+ * @module build
+ * @example
+ * // Run the build script from project root:
+ * node build.js
  */
 
 import fs from 'fs';

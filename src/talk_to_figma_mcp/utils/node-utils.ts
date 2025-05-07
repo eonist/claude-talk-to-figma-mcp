@@ -1,10 +1,14 @@
 /**
- * Safely converts a node ID to a string.
- * Guards against passing objects as node IDs, which would result in "[object Object]"
- * 
- * @param nodeId - The node ID to convert to a string
- * @returns The node ID as a string
- * @throws Error if the node ID is an object (not null) or undefined
+ * Node utilities module.
+ * Provides helpers for validating and converting Figma node identifiers.
+ *
+ * Exposed functions:
+ * - ensureNodeIdIsString(nodeId: any): string
+ *
+ * @module utils/node-utils
+ * @example
+ * import { ensureNodeIdIsString } from './node-utils.js';
+ * const id = ensureNodeIdIsString(node.id);
  */
 export function ensureNodeIdIsString(nodeId: any): string {
   if (nodeId === null || nodeId === undefined) {
