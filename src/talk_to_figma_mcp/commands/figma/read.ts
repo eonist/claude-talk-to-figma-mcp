@@ -12,7 +12,7 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { FigmaClient } from "../../clients/figma-client.js";
+import { FigmaClient } from "../../clients/figma-client/index.js";
 import { logger } from "../../utils/logger.js";
 import { filterFigmaNode } from "../../utils/node-filter.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
@@ -57,7 +57,7 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        const result = await figmaClient.getDocumentInfo();
+        const result = await figmaClient.executeCommand("get_document_info");
         return {
           content: [
             {
@@ -90,7 +90,7 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        const result = await figmaClient.getSelection();
+        const result = await figmaClient.executeCommand("get_selection");
         return {
           content: [
             {
@@ -168,7 +168,7 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
         const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
         logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
         
-        const results = await figmaClient.getNodesInfo(nodeIdStrings);
+        const results = await figmaClient.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings });
         return {
           content: [
             {

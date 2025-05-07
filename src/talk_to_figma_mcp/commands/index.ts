@@ -37,7 +37,7 @@ export function registerAllCommands(server: McpServer): void {
     logger.info("Registering all commands...");
 
     // Instantiate Figma client to pass into each command group
-    const figmaClient = new FigmaClient();
+    const figmaClient: any = new FigmaClient();
 
     // Register command categories
     registerReadCommands(server, figmaClient);

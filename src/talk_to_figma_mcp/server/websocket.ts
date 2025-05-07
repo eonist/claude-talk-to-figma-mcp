@@ -19,12 +19,13 @@
  * console.log(result);
  */
 import WebSocket from "ws";
+import { ReconnectingWebSocket } from "../utils/reconnecting-websocket.js";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../utils/logger.js";
 import { FigmaCommand, PendingRequest, WebSocketMessage } from "../types/commands.js";
 
 // WebSocket connection and request tracking
-let ws: WebSocket | null = null;
+let ws: any = null;
 let currentChannel: string | null = null;
 const pendingRequests = new Map<string, PendingRequest>();
 
@@ -77,7 +78,11 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
   logger.info(`Connecting to Figma socket server at ${wsUrl}...`);
   
   try {
-    ws = new WebSocket(wsUrl);
+    ws = new ReconnectingWebSocket(wsUrl, {
+      maxReconnectAttempts: 5,
+      initialDelay: reconnectInterval,
+      maxDelay: 30000
+    });
     
     // Add connection timeout
     const connectionTimeout = setTimeout(() => {
@@ -167,13 +172,13 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
       }
     });
 
-    ws.on('error', (error) => {
+    ws.on('error', (error: any) => {
       // Log the WebSocket error detail to indicate an error occurred.
       logger.error(`Socket error: ${error}`);
       // Note: Do not attempt reconnection here; let the close event handle reconnection.
     });
 
-    ws.on('close', (code, reason) => {
+    ws.on('close', (code: any, reason: any) => {
       // Clear the connection timeout in case it is still pending.
       clearTimeout(connectionTimeout);
       logger.info(`Disconnected from Figma socket server with code ${code} and reason: ${reason || 'No reason provided'}`);
