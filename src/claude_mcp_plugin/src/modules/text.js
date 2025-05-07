@@ -1,5 +1,34 @@
 // Text module providing functions to create and modify text nodes in Figma.
 
+/**
+ * Text operations module.
+ * Provides functions for creating, modifying, and scanning text nodes in Figma via MCP.
+ *
+ * Exposed functions:
+ * - sendProgressUpdate(commandId, commandType, status, progress, totalItems, processedItems, message, payload?): object
+ * - delay(ms): Promise<void>
+ * - createText(params): Promise<object>
+ * - createBoundedText(params): Promise<object>
+ * - setTextContent(params): Promise<object>
+ * - scanTextNodes(params): Promise<object>
+ * - setMultipleTextContents(params): Promise<object>
+ * - setFontName(params): Promise<object>
+ * - setFontSize(params): Promise<object>
+ * - setFontWeight(params): Promise<object>
+ * - setLetterSpacing(params): Promise<object>
+ * - setLineHeight(params): Promise<object>
+ * - setParagraphSpacing(params): Promise<object>
+ * - setTextCase(params): Promise<object>
+ * - setTextDecoration(params): Promise<object>
+ * - getStyledTextSegments(params): Promise<object>
+ * - loadFontAsyncWrapper(params): Promise<object>
+ * - setBulkFont(params): Promise<object>
+ *
+ * @example
+ * import { textOperations } from './modules/text.js';
+ * const result = await textOperations.createText({ x:0, y:0, text: 'Hello' });
+ * console.log('Created text node ID:', result.id);
+ */
 import { generateCommandId, setCharacters } from './utils.js';
 
 /**
@@ -1840,6 +1869,13 @@ export async function setBulkFont(params) {
 }
 
 // Group export for all text operations.
+/**
+ * Named group of text operation functions for convenient importing.
+ * @namespace textOperations
+ * @example
+ * const { setTextContent } = textOperations;
+ * const updateResult = await setTextContent({ nodeId: '123', text: 'Goodbye' });
+ */
 export const textOperations = {
   createText,
   createBoundedText,

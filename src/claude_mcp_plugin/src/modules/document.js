@@ -1,6 +1,19 @@
-// Document operations module
-// This module provides functions for retrieving information about the Figma document,
-// including page details, selection state, and node information.
+/**
+ * Document operations module.
+ * Provides functions for retrieving information about the Figma document via MCP.
+ *
+ * Exposed functions:
+ * - ensureNodeIdIsString(nodeId): string
+ * - getDocumentInfo(): Promise<{ name, id, type, children, currentPage, pages }>
+ * - getSelection(): Promise<{ selectionCount, selection }>
+ * - getNodeInfo(params|string): Promise<Object>
+ * - getNodesInfo(params|Array): Promise<Array<{ nodeId, document }>>
+ *
+ * @example
+ * import { documentOperations } from './modules/document.js';
+ * const info = await documentOperations.getDocumentInfo();
+ * console.log(`Page has ${info.currentPage.childCount} nodes`);
+ */
 
 /**
  * Safely converts a node ID to a string.
@@ -276,7 +289,13 @@ export async function getNodesInfo(nodeIdsOrParams) {
   }
 }
 
-// Export all document operations as a named group for convenient importing
+/**
+ * Named group of document operation functions for convenient importing.
+ * @namespace documentOperations
+ * @example
+ * const { getSelection } = documentOperations;
+ * const selection = await getSelection();
+ */
 export const documentOperations = {
   getDocumentInfo,
   getSelection,

@@ -1,19 +1,43 @@
-// Shapes module
-// Helper functions for creating and manipulating shape nodes in a Figma document
+/**
+ * Shapes operations module.
+ * Provides functions to create and manipulate geometric nodes in Figma via MCP.
+ *
+ * Exposed functions:
+ * - createRectangle(params): Promise<{ id, name, x, y, width, height }>
+ * - createRectangles(params): Promise<{ ids: string[] }>
+ * - createFrame(params): Promise<{ id, name, width, height }>
+ * - createFrames(params): Promise<{ ids: string[] }>
+ * - createEllipse(params): Promise<{ id: string }>
+ * - createEllipses(params): Promise<{ ids: string[] }>
+ * - createPolygon(params): Promise<{ id: string }>
+ * - createPolygons(params): Promise<{ ids: string[] }>
+ * - createStar(params): Promise<{ id: string }>
+ * - createVector(params): Promise<{ id: string }>
+ * - createVectors(params): Promise<{ ids: string[] }>
+ * - createLine(params): Promise<{ id: string }>
+ * - createLines(params): Promise<{ ids: string[] }>
+ *
+ * @example
+ * import { shapeOperations } from './modules/shapes.js';
+ * const rect = await shapeOperations.createRectangle({ x: 10, y: 20, width: 50, height: 50 });
+ * console.log('Created rectangle', rect);
+ */
 
 /**
  * Creates a new rectangle node in the Figma document.
  * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0]
- * @param {number} [params.y=0]
- * @param {number} [params.width=100]
- * @param {number} [params.height=100]
- * @param {string} [params.name="Rectangle"]
- * @param {string} [params.parentId]
- * @param {object} [params.fillColor]
- * @param {object} [params.strokeColor]
- * @param {number} [params.strokeWeight]
- * @returns {object}
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {number} [params.width=100] - Width of the rectangle.
+ * @param {number} [params.height=100] - Height of the rectangle.
+ * @param {string} [params.name="Rectangle"] - Name of the rectangle node.
+ * @param {string} [params.parentId] - Optional parent node ID to append the rectangle.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ id: string, name: string, x: number, y: number, width: number, height: number }>}
+ * @example
+ * const result = await createRectangle({ x: 0, y: 0, width: 100, height: 100 });
  */
 export async function createRectangle(params) {
   const {
@@ -39,7 +63,12 @@ export async function createRectangle(params) {
 }
 
 /**
- * Batch create rectangles.
+ * Batch creates multiple rectangle nodes.
+ * @param {object} params - Parameters object.
+ * @param {Array<object>} [params.rectangles] - Array of rectangle configuration objects.
+ * @returns {Promise<{ ids: string[] }>} Created rectangle node IDs.
+ * @example
+ * const { ids } = await createRectangles({ rectangles: [ { x:0, y:0, width:50, height:50 } ] });
  */
 export async function createRectangles(params) {
   const { rectangles = [] } = params || {};
@@ -52,7 +81,20 @@ export async function createRectangles(params) {
 }
 
 /**
- * Creates a new frame node.
+ * Creates a new frame node in the Figma document.
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {number} [params.width=100] - Width of the frame.
+ * @param {number} [params.height=100] - Height of the frame.
+ * @param {string} [params.name="Frame"] - Name of the frame node.
+ * @param {string} [params.parentId] - Optional parent node ID to append the frame.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ id: string, name: string, width: number, height: number }>}
+ * @example
+ * const frameResult = await createFrame({ x: 10, y: 10, width: 200, height: 150 });
  */
 export async function createFrame(params) {
   const {
@@ -78,7 +120,12 @@ export async function createFrame(params) {
 }
 
 /**
- * Batch create frames.
+ * Batch creates multiple frame nodes.
+ * @param {object} params - Parameters object.
+ * @param {Array<object>} [params.frames] - Array of frame configuration objects.
+ * @returns {Promise<{ ids: string[] }>} Created frame node IDs.
+ * @example
+ * const { ids } = await createFrames({ frames: [ { width:100, height:100 } ] });
  */
 export async function createFrames(params) {
   const { frames = [] } = params || {};
@@ -91,7 +138,20 @@ export async function createFrames(params) {
 }
 
 /**
- * Creates an ellipse.
+ * Creates a new ellipse node in the Figma document.
+ * @param {object} params - Configuration parameters.
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {number} [params.width=100] - Width of the ellipse.
+ * @param {number} [params.height=100] - Height of the ellipse.
+ * @param {string} [params.name="Ellipse"] - Name of the ellipse node.
+ * @param {string} [params.parentId] - Optional parent node ID to append the ellipse.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ id: string }>}
+ * @example
+ * const ellipseRes = await createEllipse({ width: 80, height: 80 });
  */
 export async function createEllipse(params) {
   const {
