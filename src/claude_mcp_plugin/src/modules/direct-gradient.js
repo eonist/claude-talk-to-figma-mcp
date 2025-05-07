@@ -77,7 +77,7 @@ export async function applyDirectGradient(params) {
   };
 }
 
-// Export all direct gradient operations
-export const directGradientOperations = {
+// Use a default export instead of named export
+export default {
   applyDirectGradient
 };

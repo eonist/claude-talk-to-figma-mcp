@@ -21,7 +21,6 @@ import * as shapeOperations from './shapes.js';
 import * as imageOperations from './image.js';
 import * as textOperations from './text.js';
 import * as styleOperations from './styles.js';
-import { directGradientOperations } from './direct-gradient.js';
 import * as componentOperations from './components.js';
 import * as layoutOperations from './layout.js';
 import * as renameOperations from './rename.js';
@@ -259,7 +258,65 @@ export function initializeCommands() {
   registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
   
   // Direct Gradient Operations (Style-free alternatives)
-  registerCommand('apply_direct_gradient', directGradientOperations.applyDirectGradient);
+  registerCommand('apply_direct_gradient', async (params) => {
+    const { nodeId, gradientType = "LINEAR", stops, applyTo = "FILL" } = params || {};
+    
+    if (!nodeId) {
+      throw new Error("Missing nodeId parameter");
+    }
+    
+    if (!stops || !Array.isArray(stops) || stops.length < 2) {
+      throw new Error("Gradient must have at least two stops");
+    }
+    
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      throw new Error(`Node not found: ${nodeId}`);
+    }
+    
+    // Map gradient type to Figma internal type
+    const typeMap = {
+      LINEAR: "GRADIENT_LINEAR",
+      RADIAL: "GRADIENT_RADIAL",
+      ANGULAR: "GRADIENT_ANGULAR", 
+      DIAMOND: "GRADIENT_DIAMOND"
+    };
+    
+    const figmaType = typeMap[gradientType] || "GRADIENT_LINEAR";
+    
+    // Create the gradient paint
+    const gradientPaint = {
+      type: figmaType,
+      gradientTransform: [[1, 0, 0], [0, 1, 0]], // Default transform
+      gradientStops: stops.map(stop => ({
+        position: stop.position,
+        color: Array.isArray(stop.color) 
+          ? { r: stop.color[0], g: stop.color[1], b: stop.color[2], a: stop.color[3] || 1 }
+          : stop.color
+      }))
+    };
+    
+    // Apply the gradient
+    if (applyTo === "FILL" || applyTo === "BOTH") {
+      if (!("fills" in node)) {
+        throw new Error("Node does not support fills");
+      }
+      node.fills = [gradientPaint];
+    }
+    
+    if (applyTo === "STROKE" || applyTo === "BOTH") {
+      if (!("strokes" in node)) {
+        throw new Error("Node does not support strokes");
+      }
+      node.strokes = [gradientPaint];
+    }
+    
+    return {
+      id: node.id,
+      name: node.name,
+      success: true
+    };
+  });
 
   // Detach Instance Tool
   registerCommand('detach_instance', async (params) => {
