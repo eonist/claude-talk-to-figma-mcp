@@ -1,6 +1,6 @@
 /**
  * Document operations module.
- * Provides functions for retrieving information about the Figma document via MCP.
+ * Provides functions for retrieving document and selection details, and node exports via MCP.
  *
  * Exposed functions:
  * - ensureNodeIdIsString(nodeId): string
@@ -9,10 +9,12 @@
  * - getNodeInfo(params|string): Promise<Object>
  * - getNodesInfo(params|Array): Promise<Array<{ nodeId, document }>>
  *
+ * @module modules/document
  * @example
  * import { documentOperations } from './modules/document.js';
- * const info = await documentOperations.getDocumentInfo();
- * console.log(`Page has ${info.currentPage.childCount} nodes`);
+ * // Get basic document info
+ * const doc = await documentOperations.getDocumentInfo();
+ * console.log(`Doc name: ${doc.name}, child count: ${doc.currentPage.childCount}`);
  */
 
 /**

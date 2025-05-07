@@ -450,7 +450,7 @@ async function setCharacters(node, characters, options) {
 // ----- document Module -----
 /**
  * Document operations module.
- * Provides functions for retrieving information about the Figma document via MCP.
+ * Provides functions for retrieving document and selection details, and node exports via MCP.
  *
  * Exposed functions:
  * - ensureNodeIdIsString(nodeId): string
@@ -459,9 +459,11 @@ async function setCharacters(node, characters, options) {
  * - getNodeInfo(params|string): Promise<Object>
  * - getNodesInfo(params|Array): Promise<Array<{ nodeId, document }>>
  *
+ * @module modules/document
  * @example
- *  * const info = await documentOperations.getDocumentInfo();
- * console.log(`Page has ${info.currentPage.childCount} nodes`);
+ *  * // Get basic document info
+ * const doc = await documentOperations.getDocumentInfo();
+ * console.log(`Doc name: ${doc.name}, child count: ${doc.currentPage.childCount}`);
  */
 
 /**
@@ -969,6 +971,27 @@ async function createEllipses(params) {
 /**
  * Creates a polygon.
  */
+/**
+ * Creates a polygon node in the Figma document.
+ *
+ * @async
+ * @function createPolygon
+ * @param {{ x?: number, y?: number, width?: number, height?: number, sides?: number, name?: string, parentId?: string, fillColor?: {r:number,g:number,b:number,a?:number}, strokeColor?: {r:number,g:number,b:number,a?:number}, strokeWeight?: number }} params
+ *   - x: X position (default 0)
+ *   - y: Y position (default 0)
+ *   - width: Width of polygon (default 100)
+ *   - height: Height of polygon (default 100)
+ *   - sides: Number of sides (default 6)
+ *   - name: Node name (default "Polygon")
+ *   - parentId: Optional parent node ID
+ *   - fillColor: Optional fill color
+ *   - strokeColor: Optional stroke color
+ *   - strokeWeight: Optional stroke weight
+ * @returns {Promise<{ id: string }>} Created polygon node ID
+ * @example
+ * const poly = await createPolygon({ x:10, y:10, width:80, height:80, sides:5 });
+ * console.log(poly.id);
+ */
 async function createPolygon(params) {
   const {
     x = 0, y = 0, width = 100, height = 100,
@@ -991,6 +1014,16 @@ async function createPolygon(params) {
 /**
  * Batch polygons.
  */
+/**
+ * Batch creates multiple polygon nodes.
+ *
+ * @async
+ * @function createPolygons
+ * @param {{ polygons?: Array<object> }} params - Contains array of polygon configs.
+ * @returns {Promise<{ ids: string[] }>} Array of created polygon IDs.
+ * @example
+ * const { ids } = await createPolygons({ polygons: [{ width:50, height:50 }] });
+ */
 async function createPolygons(params) {
   const { polygons = [] } = params || {};
   const ids = [];
@@ -1003,6 +1036,19 @@ async function createPolygons(params) {
 
 /**
  * Creates a star.
+ */
+/**
+ * Creates a star-shaped node in the Figma document.
+ *
+ * @async
+ * @function createStar
+ * @param {{ x?: number, y?: number, width?: number, height?: number, points?: number, innerRadius?: number, name?: string, parentId?: string, fillColor?: object, strokeColor?: object, strokeWeight?: number }} params
+ *   - points: Number of star points (default 5)
+ *   - innerRadius: Inner radius ratio (default 0.5)
+ * @returns {Promise<{ id: string }>} Created star node ID
+ * @example
+ * const star = await createStar({ points:7, innerRadius:0.4 });
+ * console.log(star.id);
  */
 async function createStar(params) {
   const {
@@ -1025,6 +1071,17 @@ async function createStar(params) {
 /**
  * Creates a vector node.
  */
+/**
+ * Creates a vector node with specified vectorPaths.
+ *
+ * @async
+ * @function createVector
+ * @param {{ x?: number, y?: number, width?: number, height?: number, vectorPaths?: Array<object>, name?: string, parentId?: string, fillColor?: object, strokeColor?: object, strokeWeight?: number }} params
+ * @returns {Promise<{ id: string }>} Created vector node ID
+ * @example
+ * const vec = await createVector({ vectorPaths: [{ data: 'M0,0 L10,10' }] });
+ * console.log(vec.id);
+ */
 async function createVector(params) {
   const {
     x=0,y=0,width=100,height=100,
@@ -1044,6 +1101,17 @@ async function createVector(params) {
 
 /**
  * Creates a line.
+ */
+/**
+ * Creates a line in the Figma document.
+ *
+ * @async
+ * @function createLine
+ * @param {{ x1?: number, y1?: number, x2?: number, y2?: number, strokeColor?: object, strokeWeight?: number, name?: string, parentId?: string }} params
+ * @returns {Promise<{ id: string }>} Created line node ID
+ * @example
+ * const line = await createLine({ x1:0, y1:0, x2:100, y2:0 });
+ * console.log(line.id);
  */
 async function createLine(params) {
   const { x1=0,y1=0,x2=100,y2=0,strokeColor={r:0,g:0,b:0,a:1},strokeWeight=1,name="Line",parentId } = params||{};
@@ -1072,6 +1140,16 @@ async function createVectors(params) {
 /**
  * Batch lines.
  */
+/**
+ * Batch creates multiple lines.
+ *
+ * @async
+ * @function createLines
+ * @param {{ lines?: Array<object> }} params - Contains array of line configs.
+ * @returns {Promise<{ ids: string[] }>} Created line IDs.
+ * @example
+ * const { ids } = await createLines({ lines: [{ x1:0, y1:0, x2:50, y2:50 }] });
+ */
 async function createLines(params) {
   const { lines=[] } = params||{};
   const ids=[];
@@ -1085,10 +1163,27 @@ async function createLines(params) {
 
 // Helper functions
 
+/**
+ * Helper: Applies a solid fill color to a node.
+ *
+ * @param {SceneNode} node - The Figma node to style.
+ * @param {{ r: number, g: number, b: number, a?: number }} color - RGBA color.
+ * @example
+ * setFill(rect, { r:1, g:0, b:0 });
+ */
 function setFill(node, color) {
   node.fills=[{ type:"SOLID", color:{ r:color.r, g:color.g, b:color.b }, opacity:color.a||1 }];
 }
 
+/**
+ * Helper: Applies a solid stroke color and weight to a node.
+ *
+ * @param {SceneNode} node - The Figma node to style.
+ * @param {{ r: number, g: number, b: number, a?: number }} color - RGBA color.
+ * @param {number} [weight] - Stroke weight.
+ * @example
+ * setStroke(rect, { r:0, g:0, b:1 }, 2);
+ */
 function setStroke(node, color, weight) {
   node.strokes=[{ type:"SOLID", color:{ r:color.r, g:color.g, b:color.b }, opacity:color.a||1 }];
   if(weight!==undefined) node.strokeWeight=weight;
@@ -1120,13 +1215,19 @@ const shapeOperations = {
  * Provides functions to insert images via URL or local data into Figma via MCP.
  *
  * Exposed functions:
- * - insertImage(params): Promise<{ id: string, name: string }>
- * - insertImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
- * - insertLocalImage(params): Promise<{ id: string, name: string }>
- * - insertLocalImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
+ * - insertImage(params)
+ * - insertImages(params)
+ * - insertLocalImage(params)
+ * - insertLocalImages(params)
  *
+ * @module modules/image
  * @example
- *  * const result = await imageOperations.insertImage({ url: 'https://example.com/img.png' });
+ *  * // Insert from URL
+ * const { id } = await imageOperations.insertImage({
+ *   url: 'https://example.com/image.png',
+ *   x: 10, y: 10, width: 100, height: 100
+ * });
+ * console.log('Inserted image node:', id);
  */
 
 /**
@@ -1257,7 +1358,34 @@ const imageOperations = {
 
 
 // ----- text Module -----
-// Text module providing functions to create and modify text nodes in Figma.
+/**
+ * Text operations module.
+ * Provides functions for creating, modifying, and scanning text nodes in Figma via MCP.
+ *
+ * Exposed functions:
+ * - createText(params)
+ * - createBoundedText(params)
+ * - setTextContent(params)
+ * - scanTextNodes(params)
+ * - setMultipleTextContents(params)
+ * - setFontName(params)
+ * - setFontSize(params)
+ * - setFontWeight(params)
+ * - setLetterSpacing(params)
+ * - setLineHeight(params)
+ * - setParagraphSpacing(params)
+ * - setTextCase(params)
+ * - setTextDecoration(params)
+ * - getStyledTextSegments(params)
+ * - loadFontAsyncWrapper(params)
+ * - setBulkFont(params)
+ *
+ * @module modules/text
+ * @example
+ *  * const result = await textOperations.createText({ x: 0, y: 0, text: 'Hello' });
+ * console.log('Created text node ID:', result.id);
+ */
+ // Text module providing functions to create and modify text nodes in Figma.
 
 /**
  * Text operations module.
@@ -3159,7 +3287,20 @@ const textOperations = {
  * Styles operations module.
  * Provides functions to set fills, strokes, effects, and retrieve local style definitions in Figma via MCP.
  *
+ * Exposed functions:
+ * - setFillColor(params)
+ * - setStrokeColor(params)
+ * - setStyle(params)
+ * - setStyles(entries)
+ * - getStyles()
+ * - setEffects(params)
+ * - setEffectStyleId(params)
+ * - createGradientVariable(params)
+ * - applyGradientStyle(params)
+ *
  * @module modules/styles
+ * @example
+ *  * await styleOperations.setFillColor({ nodeId: '123', color: { r:1, g:0, b:0, a:1 } });
  */
 
 /**
@@ -3640,6 +3781,17 @@ async function getRemoteComponents() {
  * @param {{nodeId: string}} params
  * @returns {Promise<{success: boolean, componentId: string}>}
  */
+/**
+ * Converts an existing node into a component.
+ *
+ * @param {{nodeId: string}} params - Parameters including the node ID to convert.
+ * @returns {Promise<{success: boolean, componentId: string}>} Result containing success flag and new component ID.
+ * @throws {Error} If `nodeId` is missing or node not found.
+ * @example
+ * // Convert node '123:45' into a component
+ * const result = await createComponentFromNode({ nodeId: '123:45' });
+ * console.log(result.componentId);
+ */
 async function createComponentFromNode(params) {
   const { nodeId } = params;
   if (!nodeId) throw new Error("Missing nodeId");
@@ -3654,6 +3806,18 @@ async function createComponentFromNode(params) {
  * Creates an instance of a component by key.
  * @param {{componentKey: string, x?: number, y?: number}} params
  * @returns {Promise<{id: string, name: string, x: number, y: number, width: number, height: number, componentId: string}>}
+ */
+/**
+ * Creates an instance of a component by its key.
+ *
+ * @param {{componentKey: string, x?: number, y?: number}} params - Component key and optional position.
+ * @returns {Promise<{id: string, name: string, x: number, y: number, width: number, height: number, componentId: string}>}
+ *    Details of the new instance including coordinates and ID.
+ * @throws {Error} If `componentKey` is missing or import fails.
+ * @example
+ * // Create an instance of a published component
+ * const inst = await createComponentInstance({ componentKey: 'ABC123', x: 100, y: 200 });
+ * console.log(`Instance created at (${inst.x},${inst.y})`);
  */
 async function createComponentInstance(params) {
   const { componentKey, x = 0, y = 0 } = params;
@@ -4263,7 +4427,18 @@ const layoutOperations = {
  * Rename operations module.
  * Provides functions to rename Figma layers via template, regex replacement, AI assistance, and batch operations.
  *
+ * Exposed functions:
+ * - rename_layers(params)
+ * - ai_rename_layers(params)
+ * - rename_layer(params)
+ * - rename_multiples(params)
+ *
  * @module modules/rename
+ * @example
+ *  * // Template renaming
+ * await rename_layers({ layer_ids: ['1','2'], new_name: 'Item ${asc}' });
+ * // AI renaming
+ * await ai_rename_layers({ layer_ids: ['1','2'], context_prompt: 'Use descriptive names' });
  */
 
 /**
@@ -4719,15 +4894,19 @@ const commandOperations = {
 // ----- Main Plugin Code -----
 /**
  * Main entry point for the Claude MCP Figma plugin.
- * Initializes UI, sets up command handlers, and processes messages from the UI.
+ * Initializes the UI panel, registers command handlers, and mediates communication
+ * between the Figma plugin environment and the Model Context Protocol server.
  *
  * Exposed UI messages:
- * - update-settings: Updates plugin configuration
- * - notify: Shows a notification in Figma
- * - close-plugin: Closes the plugin
- * - execute-command: Runs a command via WebSocket from the MCP server
+ * - update-settings(params): Persist plugin settings (e.g., port configuration)
+ * - notify(message): Display a Figma notification
+ * - close-plugin(): Close the plugin
+ * - execute-command(commandName, params): Invoke a registered command on the MCP server
  *
  * @module index
+ * @example
+ * import './index.js';
+ * // The plugin UI is shown automatically and commands are ready to execute
  */
 
 

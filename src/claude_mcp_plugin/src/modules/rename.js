@@ -2,7 +2,19 @@
  * Rename operations module.
  * Provides functions to rename Figma layers via template, regex replacement, AI assistance, and batch operations.
  *
+ * Exposed functions:
+ * - rename_layers(params)
+ * - ai_rename_layers(params)
+ * - rename_layer(params)
+ * - rename_multiples(params)
+ *
  * @module modules/rename
+ * @example
+ * import { rename_layers, ai_rename_layers, rename_layer, rename_multiples } from './modules/rename.js';
+ * // Template renaming
+ * await rename_layers({ layer_ids: ['1','2'], new_name: 'Item ${asc}' });
+ * // AI renaming
+ * await ai_rename_layers({ layer_ids: ['1','2'], context_prompt: 'Use descriptive names' });
  */
 
 /**

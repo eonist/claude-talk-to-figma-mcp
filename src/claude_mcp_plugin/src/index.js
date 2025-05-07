@@ -1,14 +1,18 @@
 /**
  * Main entry point for the Claude MCP Figma plugin.
- * Initializes UI, sets up command handlers, and processes messages from the UI.
+ * Initializes the UI panel, registers command handlers, and mediates communication
+ * between the Figma plugin environment and the Model Context Protocol server.
  *
  * Exposed UI messages:
- * - update-settings: Updates plugin configuration
- * - notify: Shows a notification in Figma
- * - close-plugin: Closes the plugin
- * - execute-command: Runs a command via WebSocket from the MCP server
+ * - update-settings(params): Persist plugin settings (e.g., port configuration)
+ * - notify(message): Display a Figma notification
+ * - close-plugin(): Close the plugin
+ * - execute-command(commandName, params): Invoke a registered command on the MCP server
  *
  * @module index
+ * @example
+ * import './index.js';
+ * // The plugin UI is shown automatically and commands are ready to execute
  */
 
 import { documentOperations } from './modules/document.js';

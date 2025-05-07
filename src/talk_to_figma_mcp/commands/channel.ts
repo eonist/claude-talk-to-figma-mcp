@@ -1,12 +1,13 @@
 /**
  * Registers channel management command for the MCP server.
  *
- * This module provides the 'join' command to establish a dedicated communication
+ * This module provides the 'join_channel' tool to establish a dedicated communication
  * channel between the MCP server and Figma plugin. Subsequent commands require
  * this channel to be joined first.
  *
- * @module channel
+ * @module commands/channel
  */
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../clients/figma-client.js";
@@ -14,21 +15,20 @@ import { logger } from "../utils/logger.js";
 import { joinChannel } from "../server/websocket.js";
 
 /**
- * Registers channel-related commands for the MCP server
- * 
- * These commands handle operations related to Figma communication channels,
- * such as joining a channel to establish a connection with Figma.
- *  
- * @param {McpServer} server - The MCP server instance
- * @param {FigmaClient} figmaClient - The Figma client instance
+ * Registers channel-related commands for the MCP server.
+ *
+ * @param {McpServer} server - The MCP server instance.
+ * @param {FigmaClient} figmaClient - The Figma client instance.
+ * @example
+ * import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+ * import { FigmaClient } from "../clients/figma-client.js";
+ * import { registerChannelCommand } from "./channel.js";
+ * const server = new McpServer({ name: "MyServer", version: "1.0.0", capabilities: { tools: {} } });
+ * const client = new FigmaClient();
+ * registerChannelCommand(server, client);
  */
-ortefunctionprfunctioCregistCChanne((serve: ,*nel Tool:FC): void {
-  / *
- * Jon  Tol
-*
-     All wwnjoinigg naspecifichnne  */mmuicaewh.
-    /
- s.too(
+export function registerChannelCommand(server: McpServer, figmaClient: FigmaClient): void {
+  server.tool(
     "join_channel",
     "Join a specific channel to communicate with Figma",
     {
@@ -37,7 +37,6 @@ ortefunctionprfunctioCregistCChanne((serve: ,*nel Tool:FC): void {
     async ({ channel }) => {
       try {
         if (!channel) {
-          // If no channel provided, ask the user for input
           return {
             content: [
               {
@@ -52,9 +51,8 @@ ortefunctionprfunctioCregistCChanne((serve: ,*nel Tool:FC): void {
           };
         }
 
-        // Check if we're already in the requested channel
-        const currentChannel = figmaClient.getCurrentChannel();
-        if (currentChannel === channel) {
+        const current = figmaClient.getCurrentChannel();
+        if (current === channel) {
           return {
             content: [
               {
@@ -65,9 +63,7 @@ ortefunctionprfunctioCregistCChanne((serve: ,*nel Tool:FC): void {
           };
         }
 
-        // Join the new channel
         await joinChannel(channel);
-        
         return {
           content: [
             {

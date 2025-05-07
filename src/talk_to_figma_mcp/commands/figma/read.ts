@@ -1,6 +1,18 @@
+/**
+ * Figma READ command registrations for the MCP server.
+ *
+ * Adds tools for retrieving document, selection, node, style, and component data.
+ *
+ * @module commands/figma/read
+ * @param {McpServer} server - The MCP server instance.
+ * @param {FigmaClient} figmaClient - The Figma client instance.
+ * @example
+ * import { registerReadCommands } from './read.js';
+ * registerReadCommands(server, figmaClient);
+ */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { FigmaClient } from "../../clients/figma-client/index.js";
+import { FigmaClient } from "../../clients/figma-client.js";
 import { logger } from "../../utils/logger.js";
 import { filterFigmaNode } from "../../utils/node-filter.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";

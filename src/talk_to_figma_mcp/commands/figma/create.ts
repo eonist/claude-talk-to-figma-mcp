@@ -1,3 +1,15 @@
+/**
+ * Figma CREATE command registrations for the MCP server.
+ *
+ * Adds tools for creating shapes, text, vectors, components, and images via Figma.
+ *
+ * @module commands/figma/create
+ * @param {McpServer} server - The MCP server instance.
+ * @param {FigmaClient} figmaClient - The Figma client instance.
+ * @example
+ * import { registerCreateCommands } from './create.js';
+ * registerCreateCommands(server, figmaClient);
+ */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client.js";
 

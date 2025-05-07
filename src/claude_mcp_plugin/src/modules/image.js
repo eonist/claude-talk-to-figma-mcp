@@ -3,14 +3,20 @@
  * Provides functions to insert images via URL or local data into Figma via MCP.
  *
  * Exposed functions:
- * - insertImage(params): Promise<{ id: string, name: string }>
- * - insertImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
- * - insertLocalImage(params): Promise<{ id: string, name: string }>
- * - insertLocalImages(params): Promise<{ results: Array<{ id?: string, success: boolean, error?: string }> }>
+ * - insertImage(params)
+ * - insertImages(params)
+ * - insertLocalImage(params)
+ * - insertLocalImages(params)
  *
+ * @module modules/image
  * @example
  * import { imageOperations } from './modules/image.js';
- * const result = await imageOperations.insertImage({ url: 'https://example.com/img.png' });
+ * // Insert from URL
+ * const { id } = await imageOperations.insertImage({
+ *   url: 'https://example.com/image.png',
+ *   x: 10, y: 10, width: 100, height: 100
+ * });
+ * console.log('Inserted image node:', id);
  */
 
 /**

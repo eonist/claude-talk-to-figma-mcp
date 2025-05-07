@@ -1,4 +1,32 @@
-// Text module providing functions to create and modify text nodes in Figma.
+/**
+ * Text operations module.
+ * Provides functions for creating, modifying, and scanning text nodes in Figma via MCP.
+ *
+ * Exposed functions:
+ * - createText(params)
+ * - createBoundedText(params)
+ * - setTextContent(params)
+ * - scanTextNodes(params)
+ * - setMultipleTextContents(params)
+ * - setFontName(params)
+ * - setFontSize(params)
+ * - setFontWeight(params)
+ * - setLetterSpacing(params)
+ * - setLineHeight(params)
+ * - setParagraphSpacing(params)
+ * - setTextCase(params)
+ * - setTextDecoration(params)
+ * - getStyledTextSegments(params)
+ * - loadFontAsyncWrapper(params)
+ * - setBulkFont(params)
+ *
+ * @module modules/text
+ * @example
+ * import { textOperations } from './modules/text.js';
+ * const result = await textOperations.createText({ x: 0, y: 0, text: 'Hello' });
+ * console.log('Created text node ID:', result.id);
+ */
+ // Text module providing functions to create and modify text nodes in Figma.
 
 /**
  * Text operations module.

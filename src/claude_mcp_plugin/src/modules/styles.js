@@ -2,7 +2,21 @@
  * Styles operations module.
  * Provides functions to set fills, strokes, effects, and retrieve local style definitions in Figma via MCP.
  *
+ * Exposed functions:
+ * - setFillColor(params)
+ * - setStrokeColor(params)
+ * - setStyle(params)
+ * - setStyles(entries)
+ * - getStyles()
+ * - setEffects(params)
+ * - setEffectStyleId(params)
+ * - createGradientVariable(params)
+ * - applyGradientStyle(params)
+ *
  * @module modules/styles
+ * @example
+ * import { styleOperations } from './modules/styles.js';
+ * await styleOperations.setFillColor({ nodeId: '123', color: { r:1, g:0, b:0, a:1 } });
  */
 import { customBase64Encode } from './utils.js';
 
