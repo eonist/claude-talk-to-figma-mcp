@@ -260,7 +260,6 @@ export function initializeCommands() {
   
   // Direct Gradient Operations (Style-free alternatives)
   registerCommand('apply_direct_gradient', directGradientOperations.applyDirectGradient);
-  registerCommand('apply_grayscale_gradient', directGradientOperations.applyGrayscaleGradient);
 
   // Detach Instance Tool
   registerCommand('detach_instance', async (params) => {

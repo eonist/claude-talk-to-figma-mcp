@@ -194,12 +194,6 @@ export interface ApplyDirectGradientParams extends BaseCommandParams {
   applyTo?: "FILL" | "STROKE" | "BOTH";
 }
 
-/** Parameters for apply_grayscale_gradient command */
-export interface ApplyGrayscaleGradientParams extends BaseCommandParams {
-  nodeId: string;
-  applyTo?: "FILL" | "STROKE" | "BOTH";
-}
-
 /**
  * Map each FigmaCommand to its parameter interface.
  */
@@ -222,7 +216,6 @@ export interface CommandParamsMap {
   set_text_content: SetTextContentParams;
   create_button: CreateButtonParams;
   apply_direct_gradient: ApplyDirectGradientParams;
-  apply_grayscale_gradient: ApplyGrayscaleGradientParams;
   // TODO: add mappings for all remaining Figma commands
   [command: string]: BaseCommandParams;
 }

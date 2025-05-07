@@ -267,18 +267,4 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
     }
   );
 
-  // Apply Grayscale Gradient (Convenience function)
-  server.tool(
-    "apply_grayscale_gradient",
-    "Apply a predefined grayscale gradient to a node",
-    {
-      nodeId: z.string().describe("The ID of the node to apply gradient to"),
-      applyTo: z.enum(["FILL", "STROKE", "BOTH"]).default("FILL").describe("Apply to fill, stroke, or both")
-    },
-    async ({ nodeId, applyTo }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("apply_grayscale_gradient", { nodeId: id, applyTo });
-      return { content: [{ type: "text", text: `Applied grayscale gradient to ${id}` }] };
-    }
-  );
 }

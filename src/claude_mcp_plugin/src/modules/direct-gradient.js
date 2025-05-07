@@ -77,32 +77,7 @@ export async function applyDirectGradient(params) {
   };
 }
 
-/**
- * Creates a sample grayscale gradient on a node
- * @async
- * @function applyGrayscaleGradient
- * 
- * @param {object} params - Parameters
- * @param {string} params.nodeId - Node ID to apply gradient to
- * @param {string} params.applyTo - FILL, STROKE, or BOTH
- * @returns {object} Operation result
- */
-export async function applyGrayscaleGradient(params) {
-  const { nodeId, applyTo = "FILL" } = params || {};
-  
-  return applyDirectGradient({
-    nodeId,
-    gradientType: "LINEAR",
-    stops: [
-      { position: 0, color: [0.2, 0.2, 0.22, 1] },
-      { position: 1, color: [0.6, 0.6, 0.62, 1] }
-    ],
-    applyTo
-  });
-}
-
 // Export all direct gradient operations
 export const directGradientOperations = {
-  applyDirectGradient,
-  applyGrayscaleGradient
+  applyDirectGradient
 };
