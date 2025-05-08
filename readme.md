@@ -1,6 +1,6 @@
 # Claude Talk to Figma MCP
 
-[![version](https://img.shields.io/badge/version-0.4.8-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
+[![version](https://img.shields.io/badge/version-0.4.9-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 A Figma plugin enabling seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP). This tool allows you to design and modify Figma elements through natural language commands processed by Claude.
@@ -315,6 +315,44 @@ Please resize all selected elements so their longest side is 20px.
 ```
 
 ## Changelog
+
+### 0.4.9 (2025-05-08)
+- implemented a new "convert_rectangle_to_frame
+- improved the error handling and validation for color formats
+- # Fixed: Direct Gradient Application in Figma
+- Gradient Application in Figma - Fixed and Improved
+- radient API Simplified Successfully
+- Gradient Application Fix: Implementation Complete
+- Fixed Figma Node Errors and Import Issues
+- Fix for Figma Node Hierarchy Error
+- Figma Node Hierarchy Error Fixed
+- fixed the issue with setting corner radius on frame nodes
+- fixed the error "Corner radius can only be set on rectangle nodes"
+- fixed both error  "Auto Layout Command" and "Frame Creation Tool" issues by addressing gaps in command registration across the system
+- fixed the "Unknown command: set_auto_layout" error by addressing a gap in the command registration system.
+- fixed the error by adding the missing `create_ellipse` tool registration to the MCP server.
+- fixed the error by adding the missing `create_ellipse` tool to the MCP server.
+- fixed the issue with gradient styling
+- fixed the issue with the `create_bounded_text` command
+- Fxed the "Error: figmaClient.setFillColor is not a function"
+- Fix synchronous bug
+- Fix rectangle + corner radius bug
+- feat: implement robust WebSocket reconnection logic via ReconnectingWebSocket utility
+- Comments 10
+- Comments part 9
+- Comments 8
+- Comments pt7
+- Comments pt 6
+- Comments pt 5
+- Comments pt4
+- Comment tweaks pt3
+- Update comments pt2
+- Add comments pt1
+- feat: add batch local-image insertion support with docs and integration test
+- Add local image batch feature
+- refactor: separate UI and protocol logic and remove local image upload button
+- Update readme.md
+- chore: update changelog date and flip entries for 0.4.8
 
 ### 0.4.8 (2025-05-07)
 - Batch apply gradient styles to nodes in Figma via `apply_gradient_styles`
