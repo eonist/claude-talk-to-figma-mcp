@@ -207,6 +207,9 @@ export function initializeCommands() {
   registerCommand('subtract_selection', shapeOperations.subtract_selection);
   registerCommand('intersect_selection', shapeOperations.intersect_selection);
   registerCommand('exclude_selection', shapeOperations.exclude_selection);
+  
+  // Rectangle to Frame conversion command
+  registerCommand('convert_rectangle_to_frame', shapeOperations.convertRectangleToFrame);
 
   // Flatten Selection Tool
   // Flattens multiple selected nodes in Figma in one batch

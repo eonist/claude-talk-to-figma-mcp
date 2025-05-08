@@ -90,6 +90,7 @@ export type FigmaCommand =
   | "insert_image"
   | "insert_images"
   | "create_button"
+  | "convert_rectangle_to_frame"
   | "join";
 
 /**

@@ -183,6 +183,13 @@ export interface CreateButtonParams extends BaseCommandParams {
   parentId?: string;
 }
 
+/** Parameters for convert_rectangle_to_frame command */
+export interface ConvertRectangleToFrameParams extends BaseCommandParams {
+  nodeId: string;
+  elementsToPlace?: string[];
+  deleteOriginal?: boolean;
+}
+
 /** Parameters for apply_direct_gradient command */
 export interface ApplyDirectGradientParams extends BaseCommandParams {
   nodeId: string;
@@ -215,6 +222,7 @@ export interface CommandParamsMap {
   set_stroke_color: SetStrokeColorParams;
   set_text_content: SetTextContentParams;
   create_button: CreateButtonParams;
+  convert_rectangle_to_frame: ConvertRectangleToFrameParams;
   apply_direct_gradient: ApplyDirectGradientParams;
   // TODO: add mappings for all remaining Figma commands
   [command: string]: BaseCommandParams;
