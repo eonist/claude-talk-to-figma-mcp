@@ -102,4 +102,16 @@ export function registerLayerManagementCommands(server: McpServer, figmaClient: 
       };
     }
   );
+  
+  // Delete single node
+  server.tool(
+    "delete_node",
+    "Delete a node in Figma",
+    { nodeId: z.string() },
+    async ({ nodeId }) => {
+      const id = ensureNodeIdIsString(nodeId);
+      await figmaClient.executeCommand("delete_node", { nodeId: id });
+      return { content: [{ type: "text", text: `Deleted node ${id}` }] };
+    }
+  );
 }
