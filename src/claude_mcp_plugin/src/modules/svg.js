@@ -24,8 +24,10 @@
  */
 export async function insertSvgVector(params) {
   const { svg, x = 0, y = 0, name = "SVG Vector", parentId } = params || {};
+  // Determine content: raw SVG text or URL fetch
+  const content = svg.startsWith('http') ? await fetch(svg).then(res => res.text()) : svg;
   // Create vector nodes from SVG
-  const result = figma.createNodeFromSvg(svg);
+  const result = figma.createNodeFromSvg(content);
   // createNodeFromSvg may return a single node or an array
   const node = Array.isArray(result) ? result[0] : result;
   // Position and name

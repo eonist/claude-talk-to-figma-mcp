@@ -27,9 +27,7 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
     },
     async ({ svg, x, y, name, parentId }): Promise<any> => {
       try {
-        const content = svg.startsWith("http")
-          ? await fetch(svg).then(res => res.text())
-          : svg;
+        const content = svg;
         const node = await (figmaClient as any).insertSvgVector({
           svg: content,
           x,
@@ -66,9 +64,7 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
         const results = await processBatch(
           svgs,
           async (cfg) => {
-            const content = cfg.svg.startsWith("http")
-              ? await fetch(cfg.svg).then(res => res.text())
-              : cfg.svg;
+            const content = cfg.svg;
             const node = await (figmaClient as any).insertSvgVector({
               svg: content,
               x: cfg.x,
