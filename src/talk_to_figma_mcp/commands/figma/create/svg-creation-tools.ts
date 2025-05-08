@@ -13,16 +13,17 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
   // Insert single SVG vector
   server.tool(
     "insert_svg_vector",
-    "Insert an SVG as vector in Figma",
+    "Insert an SVG from a URL as vector in Figma",
     {
-      svg: z.string(),
+      url: z.string(),
       x: z.number().optional().default(0),
       y: z.number().optional().default(0),
       name: z.string().optional(),
       parentId: z.string().optional()
     },
-    async ({ svg, x, y, name, parentId }): Promise<any> => {
+    async ({ url, x, y, name, parentId }): Promise<any> => {
       try {
+        const svg = await fetch(url).then(res => res.text());
         const node = await (figmaClient as any).insertSvgVector({
           svg,
           x,
@@ -44,7 +45,7 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
     {
       svgs: z.array(
         z.object({
-          svg: z.string(),
+          url: z.string(),
           x: z.number().optional().default(0),
           y: z.number().optional().default(0),
           name: z.string().optional(),
@@ -56,15 +57,18 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
       try {
         const results = await processBatch(
           svgs,
-          cfg => (figmaClient as any)
-            .insertSvgVector({
-              svg: cfg.svg,
-              x: cfg.x,
-              y: cfg.y,
-              name: cfg.name,
-              parentId: cfg.parentId ? ensureNodeIdIsString(cfg.parentId) : undefined
-            })
-            .then((node: any) => node.id)
+          cfg => fetch(cfg.url)
+            .then(res => res.text())
+            .then(svgStr => (figmaClient as any)
+              .insertSvgVector({
+                svg: svgStr,
+                x: cfg.x,
+                y: cfg.y,
+                name: cfg.name,
+                parentId: cfg.parentId ? ensureNodeIdIsString(cfg.parentId) : undefined
+              })
+              .then((node: any) => node.id)
+            )
         );
         const successCount = results.filter(r => r.result).length;
         return {

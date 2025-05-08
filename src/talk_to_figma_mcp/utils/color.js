@@ -1,1 +1,1 @@
-export { rgbaToHex } from './color';
+export { rgbaToHex } from './color.ts';
