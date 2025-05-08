@@ -870,7 +870,7 @@ export async function setMultipleTextContents(params) {
   let failureCount = 0;
 
   // Split text replacements into chunks of 5
-  const CHUNK_SIZE = 5;
+  const CHUNK_SIZE = text.length;
   const chunks = [];
   
   for (let i = 0; i < text.length; i += CHUNK_SIZE) {
@@ -1041,10 +1041,7 @@ export async function setMultipleTextContents(params) {
     );
     
     // Add a small delay between chunks to avoid overloading Figma
-    if (chunkIndex < chunks.length - 1) {
-      console.log('Pausing between chunks to avoid overloading Figma...');
-      await delay(1000); // 1 second delay between chunks
-    }
+    // Removed inter-chunk pause to avoid timeout
   }
 
   console.log(
