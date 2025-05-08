@@ -3595,13 +3595,22 @@ const textOperations = {
  * @throws {Error} If the nodeId is missing, the node is not found, or the node does not support fills.
  */
 async function setFillColor(params) {
-  const {
-    nodeId,
-    color: { r, g, b, a },
-  } = params || {};
+  if (!params) {
+    throw new Error("Missing parameters for setFillColor");
+  }
+  
+  const { nodeId, color } = params;
 
   if (!nodeId) {
     throw new Error("Missing nodeId parameter");
+  }
+  
+  if (!color || typeof color !== 'object') {
+    throw new Error("Fill color must be provided as an RGB object { r: number, g: number, b: number, a?: number } where values range from 0-1. Received: " + JSON.stringify(color));
+  }
+  
+  if (color.r === undefined || color.g === undefined || color.b === undefined) {
+    throw new Error("Fill color object is missing required RGB components. Expected format: { r: number, g: number, b: number, a?: number } where values range from 0-1. Received: " + JSON.stringify(color));
   }
 
   const node = await figma.getNodeByIdAsync(nodeId);
@@ -3611,6 +3620,9 @@ async function setFillColor(params) {
   if (!("fills" in node)) {
     throw new Error(`Node does not support fills: ${nodeId}`);
   }
+
+  // Destructure only after validation
+  const { r, g, b, a } = color;
 
   // Prepare RGBA color values
   const rgbColor = {
@@ -3660,14 +3672,22 @@ async function setFillColor(params) {
  * @throws {Error} If the nodeId is missing, the node is not found, or the node does not support strokes.
  */
 async function setStrokeColor(params) {
-  const {
-    nodeId,
-    color: { r, g, b, a },
-    weight = 1,
-  } = params || {};
+  if (!params) {
+    throw new Error("Missing parameters for setStrokeColor");
+  }
+  
+  const { nodeId, color, weight = 1 } = params;
 
   if (!nodeId) {
     throw new Error("Missing nodeId parameter");
+  }
+  
+  if (!color || typeof color !== 'object') {
+    throw new Error("Stroke color must be provided as an RGB object { r: number, g: number, b: number, a?: number } where values range from 0-1. Received: " + JSON.stringify(color));
+  }
+  
+  if (color.r === undefined || color.g === undefined || color.b === undefined) {
+    throw new Error("Stroke color object is missing required RGB components. Expected format: { r: number, g: number, b: number, a?: number } where values range from 0-1. Received: " + JSON.stringify(color));
   }
 
   const node = await figma.getNodeByIdAsync(nodeId);
@@ -3677,6 +3697,9 @@ async function setStrokeColor(params) {
   if (!("strokes" in node)) {
     throw new Error(`Node does not support strokes: ${nodeId}`);
   }
+
+  // Destructure only after validation
+  const { r, g, b, a } = color;
 
   // Prepare RGBA color values with defaults
   const rgbColor = {
@@ -3724,31 +3747,54 @@ async function setStrokeColor(params) {
  * @returns {object} An object containing the node id, name, fills, and strokes.
  */
 async function setStyle(params) {
-  const { nodeId, fillProps, strokeProps } = params || {};
+  if (!params) {
+    throw new Error("Missing parameters for setStyle");
+  }
+  
+  const { nodeId, fillProps, strokeProps } = params;
+  
   if (!nodeId) {
     throw new Error("Missing nodeId parameter");
   }
+  
   // Apply fill properties if provided
   if (fillProps) {
+    if (!fillProps.color || !Array.isArray(fillProps.color)) {
+      throw new Error("Fill color must be provided as an array [r, g, b, a] where values range from 0-1. Received: " + JSON.stringify(fillProps.color));
+    }
+    
+    if (fillProps.color.length < 3) {
+      throw new Error("Fill color array must contain at least 3 elements [r, g, b]. Received: " + JSON.stringify(fillProps.color));
+    }
+    
     await setFillColor({
       nodeId,
       color: {
-        r: Array.isArray(fillProps.color) ? fillProps.color[0] : 0,
-        g: Array.isArray(fillProps.color) ? fillProps.color[1] : 0,
-        b: Array.isArray(fillProps.color) ? fillProps.color[2] : 0,
-        a: Array.isArray(fillProps.color) ? fillProps.color[3] : 1
+        r: fillProps.color[0],
+        g: fillProps.color[1],
+        b: fillProps.color[2],
+        a: fillProps.color[3] !== undefined ? fillProps.color[3] : 1
       }
     });
   }
+  
   // Apply stroke properties if provided
   if (strokeProps) {
+    if (!strokeProps.color || !Array.isArray(strokeProps.color)) {
+      throw new Error("Stroke color must be provided as an array [r, g, b, a] where values range from 0-1. Received: " + JSON.stringify(strokeProps.color));
+    }
+    
+    if (strokeProps.color.length < 3) {
+      throw new Error("Stroke color array must contain at least 3 elements [r, g, b]. Received: " + JSON.stringify(strokeProps.color));
+    }
+    
     await setStrokeColor({
       nodeId,
       color: {
-        r: Array.isArray(strokeProps.color) ? strokeProps.color[0] : 0,
-        g: Array.isArray(strokeProps.color) ? strokeProps.color[1] : 0,
-        b: Array.isArray(strokeProps.color) ? strokeProps.color[2] : 0,
-        a: Array.isArray(strokeProps.color) ? strokeProps.color[3] : 1
+        r: strokeProps.color[0],
+        g: strokeProps.color[1],
+        b: strokeProps.color[2],
+        a: strokeProps.color[3] !== undefined ? strokeProps.color[3] : 1
       },
       weight: strokeProps.weight != null ? strokeProps.weight : 1
     });
@@ -5282,7 +5328,65 @@ function initializeCommands() {
   registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
   
   // Direct Gradient Operations (Style-free alternatives)
-  registerCommand('apply_direct_gradient', directGradientOperations.applyDirectGradient);
+  registerCommand('apply_direct_gradient', async (params) => {
+    const { nodeId, gradientType = "LINEAR", stops, applyTo = "FILL" } = params || {};
+    
+    if (!nodeId) {
+      throw new Error("Missing nodeId parameter");
+    }
+    
+    if (!stops || !Array.isArray(stops) || stops.length < 2) {
+      throw new Error("Gradient must have at least two stops");
+    }
+    
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      throw new Error(`Node not found: ${nodeId}`);
+    }
+    
+    // Map gradient type to Figma internal type
+    const typeMap = {
+      LINEAR: "GRADIENT_LINEAR",
+      RADIAL: "GRADIENT_RADIAL",
+      ANGULAR: "GRADIENT_ANGULAR", 
+      DIAMOND: "GRADIENT_DIAMOND"
+    };
+    
+    const figmaType = typeMap[gradientType] || "GRADIENT_LINEAR";
+    
+    // Create the gradient paint
+    const gradientPaint = {
+      type: figmaType,
+      gradientTransform: [[1, 0, 0], [0, 1, 0]], // Default transform
+      gradientStops: stops.map(stop => ({
+        position: stop.position,
+        color: Array.isArray(stop.color) 
+          ? { r: stop.color[0], g: stop.color[1], b: stop.color[2], a: stop.color[3] || 1 }
+          : stop.color
+      }))
+    };
+    
+    // Apply the gradient
+    if (applyTo === "FILL" || applyTo === "BOTH") {
+      if (!("fills" in node)) {
+        throw new Error("Node does not support fills");
+      }
+      node.fills = [gradientPaint];
+    }
+    
+    if (applyTo === "STROKE" || applyTo === "BOTH") {
+      if (!("strokes" in node)) {
+        throw new Error("Node does not support strokes");
+      }
+      node.strokes = [gradientPaint];
+    }
+    
+    return {
+      id: node.id,
+      name: node.name,
+      success: true
+    };
+  });
 
   // Detach Instance Tool
   registerCommand('detach_instance', async (params) => {
