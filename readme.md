@@ -319,8 +319,8 @@ Please resize all selected elements so their longest side is 20px.
 ### 0.4.9 (2025-05-08)
 - Implement robust WebSocket reconnection logic via `ReconnectingWebSocket` 
 - Add batch local-image insertion support via `insert_local_images`
-- Separate UI and protocol logic and remove local image upload button
 - Implement rectangle-to-frame conversion via `convert_rectangle_to_frame`
+- Separate UI and protocol logic and remove local image upload button
 
 ### 0.4.8 (2025-05-07)
 - Batch apply gradient styles to nodes in Figma via `apply_gradient_styles`
