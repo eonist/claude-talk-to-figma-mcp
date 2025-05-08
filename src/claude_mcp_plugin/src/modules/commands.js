@@ -24,6 +24,7 @@ import * as styleOperations from './styles.js';
 import * as componentOperations from './components.js';
 import * as layoutOperations from './layout.js';
 import * as renameOperations from './rename.js';
+import { insertSvgVector } from './svg.js';
 
 // Internal registry to store command handlers
 const commandRegistry = {};
@@ -170,6 +171,7 @@ export function initializeCommands() {
   // Handles image insertion commands only
   registerCommand('insert_image', imageOperations.insertImage);
   registerCommand('insert_images', imageOperations.insertImages);
+  registerCommand('insert_svg_vector', insertSvgVector);
   registerCommand('insert_local_image', imageOperations.insertLocalImage);
   registerCommand('insert_local_images', imageOperations.insertLocalImages);
 

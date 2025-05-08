@@ -124,6 +124,7 @@ function buildPlugin() {
       'components.js',
       'layout.js',
       'rename.js',
+      'svg.js',
       'commands.js', // Ensure commands.js is concatenated last as needed.
     ];
     
