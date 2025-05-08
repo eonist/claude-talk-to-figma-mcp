@@ -12,6 +12,7 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client.js";
+import { logger } from "../../utils/logger.js";
 
 import { registerShapeCreationCommands } from "./create/shape-creation-tools.js";
 import { registerTextCreationCommands } from "./create/text-creation-tools.js";
@@ -32,5 +33,7 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
   registerVectorCreationCommands(server, figmaClient);
   registerComponentCreationCommands(server, figmaClient);
   registerImageCreationCommands(server, figmaClient);
+  logger.info("🔌 before registerSvgCreationCommands");
   registerSvgCreationCommands(server, figmaClient);
+  logger.info("🔌 after registerSvgCreationCommands");
 }
