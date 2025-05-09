@@ -2696,7 +2696,7 @@ async function setMultipleTextContents(params) {
   let failureCount = 0;
 
   // Split text replacements into chunks of 5
-  const CHUNK_SIZE = 5;
+  const CHUNK_SIZE = text.length;
   const chunks = [];
   
   for (let i = 0; i < text.length; i += CHUNK_SIZE) {
@@ -2867,10 +2867,7 @@ async function setMultipleTextContents(params) {
     );
     
     // Add a small delay between chunks to avoid overloading Figma
-    if (chunkIndex < chunks.length - 1) {
-      console.log('Pausing between chunks to avoid overloading Figma...');
-      await delay(1000); // 1 second delay between chunks
-    }
+    // Removed inter-chunk pause to avoid timeout
   }
 
   console.log(
@@ -5218,8 +5215,10 @@ const renameOperations = {
  */
 async function insertSvgVector(params) {
   const { svg, x = 0, y = 0, name = "SVG Vector", parentId } = params || {};
+  // Determine content: raw SVG text or URL fetch
+  const content = svg.startsWith('http') ? await fetch(svg).then(res => res.text()) : svg;
   // Create vector nodes from SVG
-  const result = figma.createNodeFromSvg(svg);
+  const result = figma.createNodeFromSvg(content);
   // createNodeFromSvg may return a single node or an array
   const node = Array.isArray(result) ? result[0] : result;
   // Position and name
