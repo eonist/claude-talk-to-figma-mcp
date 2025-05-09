@@ -84,13 +84,14 @@ async function main(): Promise<void> {
     // Register all commands
     registerAllCommands(server);
 
-    try {
-      // Connect to Figma socket server
-      connectToFigma(serverUrl, defaultPort, reconnectInterval);
-    } catch (error) {
-      logger.warn(`Could not connect to Figma initially: ${error instanceof Error ? error.message : String(error)}`);
-      logger.warn('Will try to connect when the first command is sent');
-    }
+    // Initial Figma socket connection disabled to prevent high CPU usage when socket server is not running
+    // To enable on-demand connection, uncomment the lines below
+    // try {
+    //   connectToFigma(serverUrl, defaultPort, reconnectInterval);
+    // } catch (error) {
+    //   logger.warn(`Could not connect to Figma initially: ${error instanceof Error ? error.message : String(error)}`);
+    //   logger.warn('Will try to connect when the first command is sent');
+    // }
 
     // Start the MCP server using stdio transport
     const transport = new StdioServerTransport();
