@@ -169,6 +169,38 @@ function buildPlugin() {
     // Write the aggregated content to the designated output file.
     fs.writeFileSync(OUTPUT_FILE, output);
     
+    // Embed CSS directly into the HTML file during build
+    try {
+      const cssSourcePath = path.join(__dirname, 'styles.css');
+      const htmlPath = path.join(__dirname, 'ui.html');
+      
+      // Read the CSS and HTML files
+      const cssContent = fs.readFileSync(cssSourcePath, 'utf8');
+      const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+      
+      // Find the CSS placeholder or comment in the HTML
+      const cssPlaceholder = /<!-- CSS directly embedded during build process -->[\s\S]*?<\/style>|<!-- Will dynamically load the CSS file in script -->/;
+      
+      // Replace with a style tag containing the CSS content
+      const newContent = htmlContent.replace(cssPlaceholder, 
+        `<!-- CSS directly embedded during build process -->
+     <style>
+${cssContent}
+     </style>`);
+      
+      // Write the updated HTML
+      fs.writeFileSync(htmlPath, newContent);
+      console.log('✅ CSS directly embedded into ui.html');
+      
+      // Ensure dist directory exists for the ui.js file
+      const distDir = path.join(__dirname, 'dist');
+      if (!fs.existsSync(distDir)) {
+        fs.mkdirSync(distDir, { recursive: true });
+      }
+    } catch (cssError) {
+      console.error('⚠️ Error embedding CSS:', cssError);
+    }
+    
     console.log('✅ Figma plugin built successfully!');
   } catch (error) {
     console.error('❌ Error building plugin:', error);
