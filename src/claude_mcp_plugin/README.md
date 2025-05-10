@@ -65,22 +65,28 @@ The plugin uses a dual-output strategy with files generated in both the root dir
 
 The build scripts handle this dual-output automatically to maintain both compatibility and organization.
 
-The plugin also uses a dual build system:
+The plugin uses a modular build system with specialized scripts:
 
 1. **Plugin Core (`code.js`)**: 
    - Built using `build.js`
+   - **Primary purpose**: Building code.js (the plugin logic)
    - Combines all the JavaScript modules from `src/` into a single file that Figma loads
    - Command: `bun run build:plugin`
 
 2. **Plugin UI (`ui.html`)**: 
-   - Built using `direct-build.js` (recommended)
-   - Performs the following:
-     - Compiles TypeScript files (ui.ts, client.ts) using esbuild
-     - Processes all CSS files and inlines them
-     - Includes all HTML components from components/
-     - Includes all JavaScript modules from js/
-     - Combines everything into a single ui.html file with no external dependencies
-   - Command: `bun run build:ui`
+   - Multiple build approaches available:
+     - `direct-build.js` (recommended)
+       - **Primary purpose**: UI generation with modern tools
+       - Uses esbuild for efficient TypeScript bundling
+       - Processes all CSS files and inlines them
+       - Includes all HTML components from components/
+       - Includes all JavaScript modules from js/
+       - Combines everything into a single ui.html file with no external dependencies
+     - `build-ts.js` (alternative)
+       - **Primary purpose**: TypeScript compilation
+       - Uses tsc for TypeScript compilation
+       - Inlines compiled JS into ui.html
+   - Command: `bun run build:ui` (uses direct-build.js)
 
 ### Available Build Scripts
 
