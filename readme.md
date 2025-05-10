@@ -170,6 +170,13 @@ Please resize all selected elements so their longest side is 20px.
 
 ## Changelog
 
+### 0.5.0 (2025-10-05)
+- Export Figma HTML: Enables exporting Figma designs as HTML code.
+- Export Figma CSS: Allows exporting design styles into CSS files.
+- Plugin Auto Reconnect: Plugin checkbox for automatic server reconnection.
+- Reliable Server Link: Keeps client-server auto-connected via heartbeat checks.
+- Flexible SVG Input: Supports inserting SVGs via raw code or URL.
+
 ### 0.4.9 (2025-05-08)
 - Implement robust WebSocket reconnection logic via `ReconnectingWebSocket` 
 - Add batch local-image insertion support via `insert_local_images`
