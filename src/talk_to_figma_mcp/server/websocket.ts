@@ -29,6 +29,20 @@ let ws: any = null;
 let currentChannel: string | null = null;
 const pendingRequests = new Map<string, PendingRequest>();
 
+// Saved config for lazy connection
+let savedServerUrl: string = "";
+let savedPort: number = 0;
+let savedReconnectInterval: number = 0;
+
+/**
+ * Store Figma socket connection parameters for on-demand connection.
+ */
+export function setConnectionConfig(serverUrl: string, port: number, reconnectInterval: number): void {
+  savedServerUrl = serverUrl;
+  savedPort = port;
+  savedReconnectInterval = reconnectInterval;
+}
+
 /**
  * Manages WebSocket connection between the MCP server and Figma plugin.
  * Provides connection lifecycle management, command messaging, request tracking, and error recovery.
@@ -260,6 +274,22 @@ export function sendCommandToFigma(
   params: unknown = {},
   timeoutMs: number = 30000
 ): Promise<unknown> {
+  // Lazy-connect if socket is not open
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    if (!savedServerUrl) {
+      return Promise.reject(new Error("Not connected to Figma. Please ensure connection config is set."));
+    }
+    // initiate connection on demand
+    connectToFigma(savedServerUrl, savedPort, savedReconnectInterval);
+    return new Promise((resolve, reject) => {
+      const onOpen = () => {
+        ws.off('open', onOpen);
+        // resend after connection
+        sendCommandToFigma(command, params, timeoutMs).then(resolve, reject);
+      };
+      ws.on('open', onOpen);
+    });
+  }
   return new Promise((resolve, reject) => {
     // If not connected, try to connect first
     if (!ws || ws.readyState !== WebSocket.OPEN) {

@@ -23,7 +23,7 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { connectToFigma } from "./server/websocket.js";
+import { connectToFigma, setConnectionConfig } from "./server/websocket.js";
 import { registerAllCommands } from "./commands/index.js";
 import { logger } from "./utils/logger.js";
 
@@ -84,14 +84,9 @@ async function main(): Promise<void> {
     // Register all commands
     registerAllCommands(server);
 
-    // Initial Figma socket connection disabled to prevent high CPU usage when socket server is not running
-    // To enable on-demand connection, uncomment the lines below
-    try {
-      connectToFigma(serverUrl, defaultPort, reconnectInterval);
-    } catch (error) {
-      logger.warn(`Could not connect to Figma initially: ${error instanceof Error ? error.message : String(error)}`);
-      logger.warn('Will try to connect when the first command is sent');
-    }
+    // Store connection config for on-demand connection
+    setConnectionConfig(serverUrl, defaultPort, reconnectInterval);
+    logger.info('Connection to Figma will be established on first command');
 
     // Start the MCP server using stdio transport
     const transport = new StdioServerTransport();
