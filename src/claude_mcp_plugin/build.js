@@ -174,7 +174,10 @@ function buildPlugin() {
     try {
       // Define paths
       const templatePath = path.join(__dirname, 'ui-template.html');
-      const cssPath = path.join(__dirname, 'styles.css');
+      const stylesPath = path.join(__dirname, 'styles.css');
+      const connectionPath = path.join(__dirname, 'connection.css');
+      const tabsPath = path.join(__dirname, 'tabs.css');
+      const progressPath = path.join(__dirname, 'progress.css');
       const outputPath = path.join(__dirname, 'ui.html');
       
       // Check if template and CSS files exist
@@ -182,17 +185,35 @@ function buildPlugin() {
         throw new Error(`Template file not found: ${templatePath}`);
       }
       
-      if (!fs.existsSync(cssPath)) {
-        throw new Error(`CSS file not found: ${cssPath}`);
+      const cssFiles = [
+        { path: stylesPath, name: 'styles.css' },
+        { path: connectionPath, name: 'connection.css' },
+        { path: tabsPath, name: 'tabs.css' },
+        { path: progressPath, name: 'progress.css' }
+      ];
+      
+      for (const cssFile of cssFiles) {
+        if (!fs.existsSync(cssFile.path)) {
+          throw new Error(`CSS file not found: ${cssFile.path}`);
+        }
       }
       
       // Read content from template and CSS files
       console.log('Reading template and CSS files...');
       const templateContent = fs.readFileSync(templatePath, 'utf8');
-      const cssContent = fs.readFileSync(cssPath, 'utf8');
       
-      // Create style tag with CSS content
-      const styleTag = `<style>\n${cssContent}\n</style>`;
+      // Read and combine all CSS files
+      console.log('Combining CSS files...');
+      let combinedCss = '';
+      
+      for (const cssFile of cssFiles) {
+        console.log(`Adding ${cssFile.name}...`);
+        const cssContent = fs.readFileSync(cssFile.path, 'utf8');
+        combinedCss += `/* ${cssFile.name} */\n${cssContent}\n\n`;
+      }
+      
+      // Create style tag with combined CSS content
+      const styleTag = `<style>\n${combinedCss}</style>`;
       
       // Replace placeholder with actual styles
       const outputContent = templateContent.replace('<!-- STYLES_PLACEHOLDER -->', styleTag);
