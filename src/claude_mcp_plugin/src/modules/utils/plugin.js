@@ -144,25 +144,4 @@ export function updateSettings(settings) {
     });
 }
 
-/**
- * Sends the current Figma UI theme to the plugin UI.
- * 
- * This function detects the current Figma UI theme (light or dark)
- * and sends it to the plugin UI via postMessage for syncing the plugin's
- * appearance with Figma's.
- * 
- * @returns {void}
- */
-export function sendThemeToUI() {
-  // Get the current theme from Figma
-  const theme = figma.ui.getTheme(); // 'light' or 'dark'
-  
-  // Simple logging of the theme value
-  console.log(`Figma theme detected: ${theme}`);
-  
-  // Send theme info to the UI
-  figma.ui.postMessage({
-    type: 'theme-update',
-    theme: theme
-  });
-}
+// Theme detection now handled by Figma's themeColors feature

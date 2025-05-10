@@ -26,12 +26,15 @@ import { initializeCommands, handleCommand } from './modules/commands.js';
 import {
   sendProgressUpdate,
   initializePlugin,
-  updateSettings,
-  sendThemeToUI
+  updateSettings
 } from './modules/utils/plugin.js';
 
-// Show the plugin UI with fixed dimensions
-figma.showUI(__html__, { width: 350, height: 450 });
+// Show the plugin UI with fixed dimensions and enable theme colors
+figma.showUI(__html__, { 
+  width: 350, 
+  height: 450,
+  themeColors: true  // Enable Figma's theme variables
+});
 
 // Register all available command handlers
 initializeCommands();
@@ -61,10 +64,7 @@ figma.ui.onmessage = async (msg) => {
     case 'close-plugin':
       figma.closePlugin();
       break;
-    case 'check-theme':
-      // Send current theme to UI using the improved function
-      sendThemeToUI();
-      break;
+    // Theme detection is now handled directly by Figma's themeColors
     case 'execute-command':
       try {
         const result = await handleCommand(msg.command, msg.params);
@@ -104,15 +104,5 @@ figma.on('run', ({ command }) => {
 // Perform initial plugin setup and notify the UI of current settings
 initializePlugin();
 
-// Send initial theme to UI directly (without using the function)
-try {
-  const initialTheme = figma.ui.getTheme();
-  console.log(`Initial Figma theme: ${initialTheme}`);
-  
-  figma.ui.postMessage({
-    type: 'theme-update',
-    theme: initialTheme
-  });
-} catch (error) {
-  console.error('Error sending initial theme:', error);
-}
+// Theme detection is now handled by Figma's built-in themeColors feature
+// No need to manually detect and send theme information

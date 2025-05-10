@@ -17,47 +17,15 @@
     <title>Claude MCP Plugin</title>
     <style>
 /* styles.css */
-/* Theme color variables */
+/* Theme is now handled by Figma's built-in CSS variables */
 :root {
-  /* Dark theme (default) */
-  --bg-color: #1e1e1e;
-  --text-color: #e0e0e0;
-  --heading-color: #ffffff;
-  --button-primary: #18a0fb;
+  /* Custom variables that don't have Figma equivalents */
   --button-primary-hover: #0d8ee0;
-  --button-secondary: #3d3d3d;
-  --button-secondary-hover: #4d4d4d;
-  --button-disabled: #333333;
-  --button-disabled-text: #666666;
-  --input-border: #444444;
-  --input-bg: #2d2d2d;
-  --input-text: #e0e0e0;
-  --label-color: #cccccc;
-  --link-color: #18a0fb;
-  --box-bg: #2a2a2a;
-  --header-bg: #252525;
-  --accent-color: #18a0fb;
-}
-
-/* Light theme */
-body.theme-light {
-  --bg-color: #ffffff;
-  --text-color: #333333;
-  --heading-color: #000000;
-  --button-primary: #18a0fb;
-  --button-primary-hover: #0d8ee0;
-  --button-secondary: #e0e0e0;
   --button-secondary-hover: #d0d0d0;
-  --button-disabled: #cccccc;
-  --button-disabled-text: #999999;
-  --input-border: #cccccc;
-  --input-bg: #f8f8f8;
-  --input-text: #333333;
-  --label-color: #555555;
-  --link-color: #18a0fb;
-  --box-bg: #f5f5f5;
-  --header-bg: #f0f0f0;
-  --accent-color: #18a0fb;
+  --box-bg: var(--figma-color-bg-secondary);
+  --header-bg: var(--figma-color-bg-secondary);
+  --accent-color: var(--figma-color-bg-brand);
+  --heading-color: var(--figma-color-text);
 }
 
 /* Base styles */
@@ -66,8 +34,8 @@ body {
     Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 20px;
-  color: var(--text-color);
-  background-color: var(--bg-color);
+  color: var(--figma-color-text);
+  background-color: var(--figma-color-bg);
   transition: all 0.3s ease;
 }
 
@@ -95,9 +63,9 @@ h2 {
   color: var(--heading-color);
 }
 button {
-  background-color: var(--button-primary);
+  background-color: var(--figma-color-bg-brand);
   border: none;
-  color: white;
+  color: var(--figma-color-text-on-brand);
   padding: 8px 12px;
   border-radius: 6px;
   margin-top: 8px;
@@ -110,34 +78,34 @@ button:hover {
   background-color: var(--button-primary-hover);
 }
 button.secondary {
-  background-color: var(--button-secondary);
-  color: var(--text-color);
+  background-color: var(--figma-color-bg-secondary);
+  color: var(--figma-color-text);
 }
 button.secondary:hover {
   background-color: var(--button-secondary-hover);
 }
 button:disabled {
-  background-color: var(--button-disabled);
-  color: var(--button-disabled-text);
+  background-color: var(--figma-color-bg-disabled);
+  color: var(--figma-color-text-disabled);
   cursor: not-allowed;
 }
 input {
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--figma-color-border);
   border-radius: 4px;
   padding: 8px;
   margin-bottom: 12px;
   font-size: 14px;
   width: 100%;
   box-sizing: border-box;
-  background-color: var(--input-bg);
-  color: var(--input-text);
+  background-color: var(--figma-color-bg);
+  color: var(--figma-color-text);
 }
 label {
   display: block;
   margin-bottom: 4px;
   font-size: 12px;
   font-weight: 500;
-  color: var(--label-color);
+  color: var(--figma-color-text-secondary);
 }
 .section {
   margin-bottom: 24px;
@@ -150,7 +118,7 @@ label {
   height: 50px;
 }
 .link {
-  color: var(--link-color);
+  color: var(--figma-color-bg-brand);
   text-decoration: none;
   cursor: pointer;
 }
@@ -945,17 +913,8 @@ function resetProgressUI() {
   progressPercentage.textContent = "0%";
 }
 
-/**
- * Apply theme to the plugin UI - always using light theme
- * for compatibility with Figma
- * 
- * @param {string} theme - The theme from Figma (ignored, always using 'light')
- */
-function applyThemeToUI(theme) {
-  // Always use light theme regardless of Figma's theme
-  document.body.classList.remove('theme-dark', 'theme-light');
-  document.body.classList.add('theme-light');
-}
+// Theme handling is now managed by Figma's built-in themeColors feature
+// which applies CSS variables and classes automatically
 
 
 /* tab-manager.js */
@@ -1073,13 +1032,7 @@ function initMessageListener() {
         // Forward progress update to server
         sendProgressUpdateToServer(message);
         break;
-      case "theme-update":
-        // Log Figma's actual theme but always apply light theme
-        console.log(`Figma's actual theme is: ${message.theme} (Plugin will use light theme)`);
-        
-        // Update UI theme (always using light theme)
-        applyThemeToUI(message.theme);
-        break;
+      // Theme case removed - now handled by Figma's built-in themeColors
     }
   };
 }
@@ -1090,6 +1043,35 @@ function initMessageListener() {
  * Main entry point for the Claude MCP Figma plugin UI.
  * Initializes and coordinates all UI modules.
  */
+
+/**
+ * Detects current Figma theme and sets up observer for theme changes
+ */
+function setupThemeDetection() {
+  // Function to handle theme changes
+  function handleThemeChange() {
+    const isDarkTheme = document.documentElement.classList.contains('figma-dark');
+    const theme = isDarkTheme ? 'dark' : 'light';
+    console.log(`Current Figma theme: ${theme}`);
+    
+    // Additional theme-specific logic can go here if needed
+  }
+  
+  // Detect initial theme
+  handleThemeChange();
+  
+  // Set up observer to detect theme changes
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class') {
+        handleThemeChange();
+      }
+    });
+  });
+  
+  // Start observing the HTML element for class changes
+  observer.observe(document.documentElement, { attributes: true });
+}
 
 // Initialize all UI components when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -1102,20 +1084,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize message listener for plugin communication
   initMessageListener();
   
-  // Apply light theme explicitly on plugin startup
-  applyThemeToUI('light');
+  // Setup theme detection using Figma's built-in theme classes
+  setupThemeDetection();
   
-  // Request Figma's actual theme information
-  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
-  
-  console.log('Claude MCP Figma plugin UI initialized with light theme');
+  console.log('Claude MCP Figma plugin UI initialized');
 });
-
-// Add global function to help debugging theme issues
-window.checkFigmaTheme = function() {
-  console.log('Checking Figma theme...');
-  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
-};
 
 
 </script>

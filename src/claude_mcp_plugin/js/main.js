@@ -3,6 +3,35 @@
  * Initializes and coordinates all UI modules.
  */
 
+/**
+ * Detects current Figma theme and sets up observer for theme changes
+ */
+function setupThemeDetection() {
+  // Function to handle theme changes
+  function handleThemeChange() {
+    const isDarkTheme = document.documentElement.classList.contains('figma-dark');
+    const theme = isDarkTheme ? 'dark' : 'light';
+    console.log(`Current Figma theme: ${theme}`);
+    
+    // Additional theme-specific logic can go here if needed
+  }
+  
+  // Detect initial theme
+  handleThemeChange();
+  
+  // Set up observer to detect theme changes
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class') {
+        handleThemeChange();
+      }
+    });
+  });
+  
+  // Start observing the HTML element for class changes
+  observer.observe(document.documentElement, { attributes: true });
+}
+
 // Initialize all UI components when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize UI elements
@@ -14,17 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize message listener for plugin communication
   initMessageListener();
   
-  // Apply light theme explicitly on plugin startup
-  applyThemeToUI('light');
+  // Setup theme detection using Figma's built-in theme classes
+  setupThemeDetection();
   
-  // Request Figma's actual theme information
-  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
-  
-  console.log('Claude MCP Figma plugin UI initialized with light theme');
+  console.log('Claude MCP Figma plugin UI initialized');
 });
-
-// Add global function to help debugging theme issues
-window.checkFigmaTheme = function() {
-  console.log('Checking Figma theme...');
-  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
-};

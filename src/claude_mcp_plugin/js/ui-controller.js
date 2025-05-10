@@ -115,14 +115,5 @@ function resetProgressUI() {
   progressPercentage.textContent = "0%";
 }
 
-/**
- * Apply theme to the plugin UI - always using light theme
- * for compatibility with Figma
- * 
- * @param {string} theme - The theme from Figma (ignored, always using 'light')
- */
-function applyThemeToUI(theme) {
-  // Always use light theme regardless of Figma's theme
-  document.body.classList.remove('theme-dark', 'theme-light');
-  document.body.classList.add('theme-light');
-}
+// Theme handling is now managed by Figma's built-in themeColors feature
+// which applies CSS variables and classes automatically
