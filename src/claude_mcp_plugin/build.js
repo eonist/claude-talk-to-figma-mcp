@@ -70,7 +70,7 @@ function readFile(filePath) {
  * 
  * @throws {Error} If any critical build step fails
  */
-function buildPlugin() {
+async function buildPlugin() {
   console.log('Building Figma plugin...');
   
   try {
@@ -290,7 +290,19 @@ function buildPlugin() {
       process.exit(1);
     }
     
-    console.log('✅ Figma plugin built successfully!');
+    console.log('✅ Figma plugin core built successfully!');
+    
+    // Now compile and inline TypeScript
+    try {
+      console.log('Building TypeScript for UI...');
+      const { execSync } = await import('child_process');
+      execSync('node build-ts.js', { stdio: 'inherit', cwd: __dirname });
+      console.log('✅ TypeScript build complete');
+    } catch (error) {
+      console.error('❌ Error building TypeScript:', error);
+      // Continue with the process, don't exit
+    }
+    
   } catch (error) {
     console.error('❌ Error building plugin:', error);
     process.exit(1);
@@ -298,4 +310,7 @@ function buildPlugin() {
 }
 
 // Initiate the build process
-buildPlugin();
+buildPlugin().catch(error => {
+  console.error("Build process failed:", error);
+  process.exit(1);
+});
