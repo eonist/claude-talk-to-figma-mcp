@@ -30,18 +30,12 @@ import {
   sendThemeToUI
 } from './modules/utils/plugin.js';
 
-// Track current theme and interval for theme checking
+// Track current theme and timeout for theme checking
 let currentTheme = figma.ui.getTheme();
-let themeCheckInterval;
+let themeCheckTimeoutId = null;
 
-// Show the plugin UI with fixed dimensions
-figma.showUI(__html__, { width: 350, height: 450 });
-
-// Register all available command handlers
-initializeCommands();
-
-// Set up polling interval to check for theme changes
-themeCheckInterval = setInterval(() => {
+// Function to check theme periodically
+function checkTheme() {
   const newTheme = figma.ui.getTheme();
   
   if (newTheme !== currentTheme) {
@@ -50,7 +44,19 @@ themeCheckInterval = setInterval(() => {
     currentTheme = newTheme;
     sendThemeToUI();
   }
-}, 1000); // Check every second
+  
+  // Set up next check
+  themeCheckTimeoutId = setTimeout(checkTheme, 1000);
+}
+
+// Show the plugin UI with fixed dimensions
+figma.showUI(__html__, { width: 350, height: 450 });
+
+// Register all available command handlers
+initializeCommands();
+
+// Start theme checking
+checkTheme();
 
 /**
  * Handles messages sent from the UI.
@@ -75,9 +81,9 @@ figma.ui.onmessage = async (msg) => {
       figma.notify(msg.message);
       break;
     case 'close-plugin':
-      // Clear the theme check interval before closing
-      if (themeCheckInterval) {
-        clearInterval(themeCheckInterval);
+      // Clear the theme check timeout before closing
+      if (themeCheckTimeoutId) {
+        clearTimeout(themeCheckTimeoutId);
       }
       figma.closePlugin();
       break;
