@@ -5606,7 +5606,7 @@ function initializeCommands() {
   // UI Component operations
   // HTML (lite)
   registerCommand('generate_html', async ({ nodeId, format, cssMode }) => {
-    const node = figma.getNodeById(nodeId);
+    const node = await figma.getNodeByIdAsync(nodeId);
     if (!node) throw new Error(`Node not found: ${nodeId}`);
     const generator = new HTMLGenerator({
       format,

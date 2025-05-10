@@ -10,7 +10,7 @@ import { FigmaClient } from "../clients/figma-client.js";
  */
 export function registerHtmlCommands(server: McpServer, figmaClient: FigmaClient): void {
   server.tool(
-    "generate_html_async",
+    "generate_html",
     "Generates HTML structure from Figma nodes",
     {
       nodeId: z.string().describe("Target node ID"),
