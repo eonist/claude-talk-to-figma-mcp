@@ -789,12 +789,36 @@ async function getNodesInfo(nodeIdsOrParams) {
  * const { getSelection } = documentOperations;
  * const selection = await getSelection();
  */
+async function getCssAsync(params = {}) {
+  const { nodeId, format = "string" } = params;
+  let node;
+  if (nodeId) {
+    node = await figma.getNodeByIdAsync(ensureNodeIdIsString(nodeId));
+  } else {
+    node = figma.currentPage.selection[0];
+  }
+  if (!node) {
+    throw new Error("No node found for CSS extraction");
+  }
+  const cssProps = await node.getCSSAsync();
+  let output;
+  if (format === "object") {
+    output = cssProps;
+  } else if (format === "inline") {
+    output = Object.entries(cssProps).map(([k, v]) => `${k}:${v}`).join(";");
+  } else {
+    output = Object.entries(cssProps).map(([k, v]) => `${k}: ${v};`).join("\n");
+  }
+  return output;
+}
+
 const documentOperations = {
   getDocumentInfo,
   getSelection,
   getNodeInfo,
   getNodesInfo,
-  ensureNodeIdIsString
+  ensureNodeIdIsString,
+  getCssAsync
 };
 
 
@@ -5396,6 +5420,7 @@ function initializeCommands() {
   registerCommand('get_selection', documentOperations.getSelection);
   registerCommand('get_node_info', documentOperations.getNodeInfo);
   registerCommand('get_nodes_info', documentOperations.getNodesInfo);
+  registerCommand('get_css_async', documentOperations.getCssAsync);
   
   // Image Operations
   // Handles image insertion commands only

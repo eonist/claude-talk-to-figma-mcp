@@ -428,4 +428,43 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     }
   );
 
+  /**
+   * Get CSS Async Tool
+   *
+   * Retrieves CSS properties from a Figma node in various formats.
+   */
+  server.tool(
+    "get_css_async",
+    "Get CSS properties from a node",
+    {
+      nodeId: z.string().optional().describe("Optional ID of the node to get CSS from"),
+      format: z.enum(["object","string","inline"]).optional().describe("Format to return CSS in"),
+    },
+    async ({ nodeId, format }) => {
+      try {
+        const params: any = {};
+        if (nodeId !== undefined) params.nodeId = ensureNodeIdIsString(nodeId);
+        if (format !== undefined) params.format = format;
+        const result = await figmaClient.executeCommand("get_css_async", params);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result)
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error getting CSS: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+
 }

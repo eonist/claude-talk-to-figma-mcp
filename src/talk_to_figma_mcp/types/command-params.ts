@@ -201,6 +201,14 @@ export interface ApplyDirectGradientParams extends BaseCommandParams {
   applyTo?: "FILL" | "STROKE" | "BOTH";
 }
 
+/** Parameters for get_css_async command */
+export interface GetCssAsyncParams extends BaseCommandParams {
+  /** Optional ID of the node to get CSS from – defaults to first selected node */
+  nodeId?: string;
+  /** Format for CSS output: 'object', 'string', or 'inline' */
+  format?: "object" | "string" | "inline";
+}
+
 /**
  * Map each FigmaCommand to its parameter interface.
  */

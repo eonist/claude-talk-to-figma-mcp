@@ -166,6 +166,7 @@ export function initializeCommands() {
   registerCommand('get_selection', documentOperations.getSelection);
   registerCommand('get_node_info', documentOperations.getNodeInfo);
   registerCommand('get_nodes_info', documentOperations.getNodesInfo);
+  registerCommand('get_css_async', documentOperations.getCssAsync);
   
   // Image Operations
   // Handles image insertion commands only

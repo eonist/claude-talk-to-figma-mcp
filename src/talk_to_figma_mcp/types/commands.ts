@@ -46,6 +46,7 @@ export type FigmaCommand =
   | "set_corner_radius"
   | "clone_node"
   | "clone_nodes"
+  | "get_css_async"
   | "scan_text_nodes"
   | "set_multiple_text_contents"
   | "set_auto_layout"

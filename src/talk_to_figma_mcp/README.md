@@ -25,6 +25,7 @@ The Talk to Figma MCP Server connects to a Figma document and listens for comman
 - **Robust Error Handling:** Implements reconnection logic with exponential backoff.
 - **Transport Options:** Connects via stdio for secure, local communication.
 - **Modular Architecture:** Command registration and utility modules ease maintainability and extensibility.
+- **CSS Extraction:** Extract and format CSS properties from Figma elements via `get_css_async`.
 
 ## Prerequisites
 
