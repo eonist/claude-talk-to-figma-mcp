@@ -8,6 +8,7 @@
  * 3. Processes feature modules (document, shapes, image, text, styles, components, layout, rename, commands).
  * 4. Bundles the main `index.js` entrypoint last.
  * 5. Writes the combined output to `code.js` in plugin root.
+ * 6. Processes the UI template by combining component HTML files and JS modules.
  *
  * Exposed functions (not exported):
  * - readFile(filePath: string): string
@@ -33,6 +34,10 @@ const MODULES_DIR = path.join(SRC_DIR, 'modules');   // Contains feature-specifi
 const UTILS_DIR = path.join(MODULES_DIR, 'utils');   // Common utilities and helper functions
 const OUTPUT_FILE = path.join(__dirname, 'code.js'); // Final bundled output file for Figma
 
+// UI component directories
+const COMPONENTS_DIR = path.join(__dirname, 'components'); // HTML components
+const JS_DIR = path.join(__dirname, 'js');               // JavaScript modules
+
 /**
  * Reads a file's contents synchronously
  * 
@@ -40,7 +45,7 @@ const OUTPUT_FILE = path.join(__dirname, 'code.js'); // Final bundled output fil
  * @returns {string} Raw file contents as UTF-8 string
  * @throws {Error} If file reading fails
  * @example
- * // Read a module file’s contents
+ * // Read a module file's contents
  * // const contents = readFile(path.join(__dirname, 'src', 'modules', 'document.js'));
  * // console.log(contents);
  */
@@ -170,7 +175,7 @@ function buildPlugin() {
     // Write the aggregated content to the designated output file.
     fs.writeFileSync(OUTPUT_FILE, output);
     
-    // Generate the UI HTML file from template and CSS
+    // Generate the UI HTML file from template and CSS and components
     try {
       // Define paths
       const templatePath = path.join(__dirname, 'ui-template.html');
@@ -200,7 +205,7 @@ function buildPlugin() {
       
       // Read content from template and CSS files
       console.log('Reading template and CSS files...');
-      const templateContent = fs.readFileSync(templatePath, 'utf8');
+      let templateContent = fs.readFileSync(templatePath, 'utf8');
       
       // Read and combine all CSS files
       console.log('Combining CSS files...');
@@ -216,11 +221,69 @@ function buildPlugin() {
       const styleTag = `<style>\n${combinedCss}</style>`;
       
       // Replace placeholder with actual styles
-      const outputContent = templateContent.replace('<!-- STYLES_PLACEHOLDER -->', styleTag);
+      templateContent = templateContent.replace('<!-- STYLES_PLACEHOLDER -->', styleTag);
+      
+      // Process HTML components
+      console.log('Processing HTML components...');
+      
+      // Define component placeholders and file mappings
+      const componentMappings = [
+        { placeholder: '<!-- HEADER_PLACEHOLDER -->', file: 'header.html' },
+        { placeholder: '<!-- TABS_PLACEHOLDER -->', file: 'tabs.html' },
+        { placeholder: '<!-- CONNECTION_PANEL_PLACEHOLDER -->', file: 'connection-panel.html' },
+        { placeholder: '<!-- PROGRESS_CONTAINER_PLACEHOLDER -->', file: 'progress-container.html' },
+        { placeholder: '<!-- ABOUT_PANEL_PLACEHOLDER -->', file: 'about-panel.html' }
+      ];
+      
+      // Replace each component placeholder with the actual component content
+      for (const component of componentMappings) {
+        const componentPath = path.join(COMPONENTS_DIR, component.file);
+        if (fs.existsSync(componentPath)) {
+          console.log(`Adding component: ${component.file}`);
+          const componentContent = fs.readFileSync(componentPath, 'utf8');
+          templateContent = templateContent.replace(component.placeholder, componentContent);
+        } else {
+          console.warn(`Warning: Component file not found: ${componentPath}`);
+          templateContent = templateContent.replace(component.placeholder, `<!-- Component ${component.file} not found -->`);
+        }
+      }
+      
+      // Process JavaScript modules
+      console.log('Processing JavaScript modules...');
+      
+      // Define JavaScript module order
+      const jsModules = [
+        'state.js',
+        'connection.js',
+        'ui-controller.js',
+        'tab-manager.js',
+        'message-handler.js',
+        'main.js'
+      ];
+      
+      // Combine JS modules
+      let combinedJs = '';
+      
+      for (const jsModule of jsModules) {
+        const jsPath = path.join(JS_DIR, jsModule);
+        if (fs.existsSync(jsPath)) {
+          console.log(`Adding JavaScript module: ${jsModule}`);
+          const jsContent = fs.readFileSync(jsPath, 'utf8');
+          combinedJs += `/* ${jsModule} */\n${jsContent}\n\n`;
+        } else {
+          console.warn(`Warning: JavaScript module not found: ${jsPath}`);
+        }
+      }
+      
+      // Create script tag with combined JS
+      const scriptTag = `<script>\n${combinedJs}</script>`;
+      
+      // Replace script placeholder
+      templateContent = templateContent.replace('<!-- SCRIPTS_PLACEHOLDER -->', scriptTag);
       
       // Write to output file
-      fs.writeFileSync(outputPath, outputContent);
-      console.log('✅ Generated ui.html with embedded styles');
+      fs.writeFileSync(outputPath, templateContent);
+      console.log('✅ Generated ui.html with embedded styles, components, and scripts');
       
     } catch (error) {
       console.error('❌ Error generating ui.html:', error);

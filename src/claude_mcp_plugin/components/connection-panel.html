@@ -1,0 +1,33 @@
+<!-- Connection Panel Component -->
+<div id="content-connection" class="tab-content active">
+  <div class="section">
+    <label for="port">WebSocket Server Port</label>
+    <div class="input-container">
+      <input
+        type="number"
+        id="port"
+        placeholder="3055"
+        value="3055"
+        min="1024"
+        max="65535"
+      />
+      <button id="btn-connect" class="primary">Connect</button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="checkbox-container">
+      <input type="checkbox" id="auto-reconnect-toggle" checked>
+      <label for="auto-reconnect-toggle">Enable auto-reconnect</label>
+    </div>
+  </div>
+
+  <div id="connection-status" class="status disconnected">
+    Not connected to Claude MCP server
+  </div>
+
+  <div class="section">
+    <button id="btn-disconnect" class="secondary" disabled>
+      Disconnect
+    </button>
+  </div>
+</div>
