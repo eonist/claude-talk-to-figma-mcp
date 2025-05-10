@@ -201,12 +201,6 @@ function buildPlugin() {
       fs.writeFileSync(outputPath, outputContent);
       console.log('✅ Generated ui.html with embedded styles');
       
-      // Ensure dist directory exists for the ui.js file
-      const distDir = path.join(__dirname, 'dist');
-      if (!fs.existsSync(distDir)) {
-        fs.mkdirSync(distDir, { recursive: true });
-        console.log('✅ Created dist directory for UI script');
-      }
     } catch (error) {
       console.error('❌ Error generating ui.html:', error);
       process.exit(1);
