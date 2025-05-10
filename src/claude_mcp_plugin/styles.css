@@ -186,3 +186,22 @@ label {
 .operation-error {
   color: #ff9999;
 }
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: auto;
+  flex: none;
+  margin: 0;
+}
+
+.checkbox-container label {
+  flex: 1;
+  margin-left: 8px;
+  text-align: left;
+  display: block;
+}
