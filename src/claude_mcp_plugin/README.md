@@ -17,6 +17,9 @@ src/claude_mcp_plugin/
 ├── manifest.json       # Figma plugin manifest
 ├── ui-template.html    # Template for plugin UI
 ├── ui.html             # Generated plugin UI with inlined scripts and styles
+├── dist/               # Organized output directory
+│   ├── code.js         # Copy of bundled file for organization
+│   └── ui.html         # Copy of generated UI
 ├── components/         # HTML components for UI
 │   ├── header.html
 │   ├── tabs.html
@@ -55,7 +58,14 @@ src/claude_mcp_plugin/
 
 ### Build System
 
-The plugin uses a dual build system:
+The plugin uses a dual-output strategy with files generated in both the root directory and the `dist/` directory:
+
+- **Root Directory Files** (`code.js`, `ui.html`): Required by Figma for plugin loading
+- **Dist Directory Files** (`dist/code.js`, `dist/ui.html`): Duplicate copies for better code organization
+
+The build scripts handle this dual-output automatically to maintain both compatibility and organization.
+
+The plugin also uses a dual build system:
 
 1. **Plugin Core (`code.js`)**: 
    - Built using `build.js`
@@ -81,6 +91,20 @@ The plugin uses a dual build system:
 - `build:ui-legacy`: Legacy UI build using the original build.js approach
 - `watch:plugin`: Watch for changes and rebuild automatically
 - `build:all`: Build everything in one command (core + UI)
+
+### Cleanup
+
+A cleanup script is provided to remove temporary directories and backup files after building:
+
+```
+cd src/claude_mcp_plugin
+./cleanup.sh
+```
+
+This removes:
+- The `temp-dist` directory used for TypeScript compilation
+- The `temp` directory used by the direct-build script
+- Any `.bak` backup files created during the build process
 
 ### Development Workflow
 

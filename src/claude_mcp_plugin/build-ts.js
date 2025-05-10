@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const SRC_DIR = path.join(__dirname, 'src');
 const TEMP_DIST_DIR = path.join(__dirname, 'temp-dist');
 const UI_TEMPLATE_PATH = path.join(__dirname, 'ui-template.html');
-const UI_OUTPUT_PATH = path.join(__dirname, 'ui.html');
+const UI_OUTPUT_PATH = path.join(__dirname, 'dist', 'ui.html');
 
 /**
  * Compiles TypeScript files, combines the result, and inlines into ui.html
@@ -127,13 +127,19 @@ function buildTypeScript() {
       templateContent = templateContent.replace(scriptTag, inlineScript);
     }
     
-    // Write the final UI HTML with inlined script
+    // Write the final UI HTML with inlined script to both locations
     fs.writeFileSync(UI_OUTPUT_PATH, templateContent);
-    console.log(`✅ Generated ${UI_OUTPUT_PATH} with inlined TypeScript`);
+    fs.writeFileSync(path.join(__dirname, 'ui.html'), templateContent);
+    console.log(`✅ Generated UI HTML with inlined TypeScript in both root and dist directory`);
     
-    // Keep temporary files for debugging
-    // fs.rmSync(TEMP_DIST_DIR, { recursive: true, force: true });
-    console.log(`✅ Temporary files kept in ${TEMP_DIST_DIR} for debugging`);
+    // Clean up temporary files - use execSync to ensure proper cleanup
+    try {
+      console.log(`Cleaning up temporary files from ${TEMP_DIST_DIR}...`);
+      execSync(`rm -rf "${TEMP_DIST_DIR}"`, { stdio: 'inherit' });
+      console.log(`✅ Temporary files cleaned up from ${TEMP_DIST_DIR}`);
+    } catch (cleanupError) {
+      console.warn(`Warning: Could not clean up temporary files: ${cleanupError.message}`);
+    }
     
   } catch (error) {
     console.error('❌ Error building TypeScript:', error);

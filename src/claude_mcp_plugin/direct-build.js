@@ -33,7 +33,7 @@ const __dirname = path.dirname(__filename);
 const SRC_DIR = path.join(__dirname, 'src');
 const TEMP_DIR = path.join(__dirname, 'temp');
 const UI_TEMPLATE_PATH = path.join(__dirname, 'ui-template.html');
-const UI_OUTPUT_PATH = path.join(__dirname, 'ui.html');
+const UI_OUTPUT_PATH = path.join(__dirname, 'dist', 'ui.html');
 const BUNDLE_PATH = path.join(TEMP_DIR, 'bundle.js');
 
 // CSS and Components paths
@@ -188,9 +188,10 @@ function buildUI() {
       }
     }
     
-    // Step 7: Write the final HTML
+    // Step 7: Write the final HTML to both locations
     fs.writeFileSync(UI_OUTPUT_PATH, templateContent);
-    console.log(`✅ Generated ${UI_OUTPUT_PATH} with all components, styles, and scripts inlined`);
+    fs.writeFileSync(path.join(__dirname, 'ui.html'), templateContent);
+    console.log(`✅ Generated UI HTML with all components, styles, and scripts inlined in both root and dist directory`);
     
     // Clean up temporary files
     fs.rmSync(TEMP_DIR, { recursive: true, force: true });

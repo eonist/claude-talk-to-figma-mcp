@@ -32,7 +32,7 @@ const __dirname = path.dirname(__filename);
 const SRC_DIR = path.join(__dirname, 'src');         // Root source directory for plugin code
 const MODULES_DIR = path.join(SRC_DIR, 'modules');   // Contains feature-specific modules (shapes, text, etc.)
 const UTILS_DIR = path.join(MODULES_DIR, 'utils');   // Common utilities and helper functions
-const OUTPUT_FILE = path.join(__dirname, 'code.js'); // Final bundled output file for Figma
+const OUTPUT_FILE = path.join(__dirname, 'dist', 'code.js'); // Final bundled output file for Figma
 
 // UI component directories
 const COMPONENTS_DIR = path.join(__dirname, 'components'); // HTML components
@@ -172,8 +172,15 @@ async function buildPlugin() {
     output += '// ----- Main Plugin Code -----\n';
     output += indexContent;
     
-    // Write the aggregated content to the designated output file.
+    // Create the dist directory if it doesn't exist
+    const distDir = path.join(__dirname, 'dist');
+    if (!fs.existsSync(distDir)) {
+      fs.mkdirSync(distDir, { recursive: true });
+    }
+    
+    // Write the output to both locations
     fs.writeFileSync(OUTPUT_FILE, output);
+    fs.writeFileSync(path.join(__dirname, 'code.js'), output);
     
     // Generate the UI HTML file from template and CSS and components
     try {
@@ -183,7 +190,7 @@ async function buildPlugin() {
       const connectionPath = path.join(__dirname, 'connection.css');
       const tabsPath = path.join(__dirname, 'tabs.css');
       const progressPath = path.join(__dirname, 'progress.css');
-      const outputPath = path.join(__dirname, 'ui.html');
+      const outputPath = path.join(__dirname, 'dist', 'ui.html');
       
       // Check if template and CSS files exist
       if (!fs.existsSync(templatePath)) {
@@ -281,9 +288,10 @@ async function buildPlugin() {
       // Replace script placeholder
       templateContent = templateContent.replace('<!-- SCRIPTS_PLACEHOLDER -->', scriptTag);
       
-      // Write to output file
+      // Write to both output locations
       fs.writeFileSync(outputPath, templateContent);
-      console.log('✅ Generated ui.html with embedded styles, components, and scripts');
+      fs.writeFileSync(path.join(__dirname, 'ui.html'), templateContent);
+      console.log('✅ Generated ui.html with embedded styles, components, and scripts in both root and dist directory');
       
     } catch (error) {
       console.error('❌ Error generating ui.html:', error);
