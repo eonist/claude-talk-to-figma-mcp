@@ -212,6 +212,15 @@ export interface GetCssAsyncParams extends BaseCommandParams {
 /**
  * Map each FigmaCommand to its parameter interface.
  */
+export interface GenerateHtmlParams extends BaseCommandParams {
+  /** Target node ID */
+  nodeId: string;
+  /** HTML output format: 'semantic', 'div-based', or 'webcomponent' */
+  format?: "semantic" | "div-based" | "webcomponent";
+  /** CSS handling mode: 'inline', 'classes', or 'external' */
+  cssMode?: "inline" | "classes" | "external";
+}
+
 export interface CommandParamsMap {
   create_rectangle: CreateRectangleParams;
   create_frame: CreateFrameParams;
@@ -232,6 +241,7 @@ export interface CommandParamsMap {
   create_button: CreateButtonParams;
   convert_rectangle_to_frame: ConvertRectangleToFrameParams;
   apply_direct_gradient: ApplyDirectGradientParams;
+  generate_html: GenerateHtmlParams;
   // TODO: add mappings for all remaining Figma commands
   [command: string]: BaseCommandParams;
 }

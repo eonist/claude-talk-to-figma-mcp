@@ -24,6 +24,7 @@ import * as styleOperations from './styles.js';
 import * as componentOperations from './components.js';
 import * as layoutOperations from './layout.js';
 import * as renameOperations from './rename.js';
+import HTMLGenerator from './html-generator.js';
 import { insertSvgVector } from './svg.js';
 
 // Internal registry to store command handlers
@@ -350,6 +351,17 @@ export function initializeCommands() {
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
   
   // UI Component operations
+  // HTML export (lite)
+  registerCommand('generate_html', async ({ nodeId, format, cssMode }) => {
+    const node = figma.getNodeById(nodeId);
+    if (!node) throw new Error(`Node not found: ${nodeId}`);
+    const generator = new HTMLGenerator({
+      format,
+      cssMode,
+      cssExtractor: n => n.getCSSAsync()
+    });
+    return await generator.generate(node);
+  });
   registerCommand('create_button', createButton);
 }
 

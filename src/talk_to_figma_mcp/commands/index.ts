@@ -19,6 +19,7 @@ import { registerModifyCommands } from "./figma/modify.js";
 import { registerRenameCommands } from "./figma/rename.js";
 import { registerChannelCommand } from "./channel.js";
 import { logger } from "../utils/logger.js";
+import { registerHtmlCommands } from "./html-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.
@@ -46,6 +47,7 @@ export function registerAllCommands(server: McpServer): void {
     registerModifyCommands(server, figmaClient);
     registerRenameCommands(server, figmaClient);
     registerChannelCommand(server, figmaClient);
+    registerHtmlCommands(server, figmaClient);
 
     logger.info("All commands registered successfully");
   } catch (error) {

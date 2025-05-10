@@ -92,6 +92,7 @@ export type FigmaCommand =
   | "insert_images"
   | "create_button"
   | "convert_rectangle_to_frame"
+  | "generate_html"
   | "join";
 
 /**
