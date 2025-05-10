@@ -345,8 +345,12 @@ const pluginState = {
     channel: null,
     autoReconnect: true, // Track auto-reconnect setting, default to true
     reconnectAttempts: 0, // Track reconnection attempts
-    maxReconnectAttempts: 5, // Maximum reconnection attempts
+    maxReconnectAttempts: 5, // Maximum reconnection attempts with backoff
+    inPersistentRetryMode: false, // Track if we're in persistent retry mode (8 second interval)
+    persistentRetryDelay: 8000, // Persistent retry delay in ms (8 seconds)
     reconnectTimer: null, // Timer for reconnection attempts
+    countdownTimer: null, // Timer for updating the countdown display
+    countdownSeconds: 0, // Current countdown value in seconds
   },
   ui: {
     // UI state properties
@@ -388,6 +392,51 @@ function getReconnectDelay() {
   return delay;
 }
 
+// Start countdown timer for reconnection
+function startCountdownTimer(seconds) {
+  // Clear any existing countdown timer
+  clearCountdownTimer();
+  
+  // Set initial countdown value
+  pluginState.connection.countdownSeconds = seconds;
+  
+  // Update UI with initial countdown value
+  updateCountdownDisplay();
+  
+  // Set interval to update countdown every second
+  pluginState.connection.countdownTimer = setInterval(() => {
+    // Decrement countdown
+    pluginState.connection.countdownSeconds--;
+    
+    // Update UI with new countdown value
+    updateCountdownDisplay();
+    
+    // If countdown reaches 0, clear the interval
+    if (pluginState.connection.countdownSeconds <= 0) {
+      clearCountdownTimer();
+    }
+  }, 1000); // Update every second
+}
+
+// Clear countdown timer
+function clearCountdownTimer() {
+  if (pluginState.connection.countdownTimer) {
+    clearInterval(pluginState.connection.countdownTimer);
+    pluginState.connection.countdownTimer = null;
+  }
+}
+
+// Update the UI with current countdown value
+function updateCountdownDisplay() {
+  if (pluginState.connection.inPersistentRetryMode) {
+    const seconds = pluginState.connection.countdownSeconds;
+    updateConnectionStatus(
+      false, 
+      `Continuing to retry connection... Reconnecting in ${seconds} second${seconds !== 1 ? 's' : ''}...`
+    );
+  }
+}
+
 // Attempt to reconnect to the WebSocket server
 function attemptReconnect() {
   // Clear any existing reconnect timer
@@ -396,32 +445,51 @@ function attemptReconnect() {
     pluginState.connection.reconnectTimer = null;
   }
   
-  // If we've reached the max reconnect attempts, stop trying
-  if (pluginState.connection.reconnectAttempts >= pluginState.connection.maxReconnectAttempts) {
-    updateConnectionStatus(
-      false, 
-      `Reconnection failed after ${pluginState.connection.maxReconnectAttempts} attempts`
-    );
-    return;
+  // Clear any existing countdown timer
+  clearCountdownTimer();
+  
+  let delay;
+  let statusMessage;
+  
+  // Check if we've exhausted the initial exponential backoff attempts
+  if (pluginState.connection.reconnectAttempts >= pluginState.connection.maxReconnectAttempts && !pluginState.connection.inPersistentRetryMode) {
+    // Switch to persistent retry mode
+    pluginState.connection.inPersistentRetryMode = true;
+    delay = pluginState.connection.persistentRetryDelay;
+    statusMessage = `Initial reconnection attempts failed. Continuing to retry every ${Math.round(delay/1000)} seconds...`;
+  } 
+  else if (pluginState.connection.inPersistentRetryMode) {
+    // We're already in persistent retry mode
+    delay = pluginState.connection.persistentRetryDelay;
+    statusMessage = `Continuing to retry connection every ${Math.round(delay/1000)} seconds...`;
+  } 
+  else {
+    // Still in exponential backoff phase
+    pluginState.connection.reconnectAttempts++;
+    delay = getReconnectDelay();
+    statusMessage = `Connection lost. Reconnecting in ${Math.round(delay/1000)} seconds... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`;
   }
   
-  // Increment reconnect attempts
-  pluginState.connection.reconnectAttempts++;
-  
-  // Calculate delay with exponential backoff
-  const delay = getReconnectDelay();
-  
   // Update UI to show reconnection attempt
-  updateConnectionStatus(
-    false, 
-    `Connection lost. Reconnecting in ${Math.round(delay/1000)} seconds... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`
-  );
+  updateConnectionStatus(false, statusMessage);
   
   // Schedule reconnection
   pluginState.connection.reconnectTimer = setTimeout(() => {
-    updateConnectionStatus(false, `Attempting to reconnect... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`);
+    // Clear countdown timer before reconnection attempt
+    clearCountdownTimer();
+    
+    const attemptMessage = pluginState.connection.inPersistentRetryMode
+      ? `Attempting to reconnect... (persistent retry mode)`
+      : `Attempting to reconnect... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`;
+      
+    updateConnectionStatus(false, attemptMessage);
     connectToServer(pluginState.connection.serverPort);
   }, delay);
+  
+  // Start countdown timer if in persistent retry mode
+  if (pluginState.connection.inPersistentRetryMode) {
+    startCountdownTimer(Math.round(delay/1000));
+  }
 }
 
 // Connect to WebSocket server
@@ -442,8 +510,9 @@ async function connectToServer(port) {
     pluginState.connection.socket = new WebSocket(`ws://localhost:${port}`);
 
     pluginState.connection.socket.onopen = () => {
-      // Reset reconnection attempts on successful connection
+      // Reset reconnection state on successful connection
       pluginState.connection.reconnectAttempts = 0;
+      pluginState.connection.inPersistentRetryMode = false;
       
       // Generate random channel name
       const channelName = generateChannelName();
@@ -537,8 +606,12 @@ function disconnectFromServer() {
     pluginState.connection.reconnectTimer = null;
   }
   
-  // Reset reconnection attempts
+  // Clear any countdown timer
+  clearCountdownTimer();
+  
+  // Reset reconnection attempts and state
   pluginState.connection.reconnectAttempts = 0;
+  pluginState.connection.inPersistentRetryMode = false;
   
   if (pluginState.connection.socket) {
     // Use code 1000 for normal closure to indicate intentional disconnect

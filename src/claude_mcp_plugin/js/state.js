@@ -17,6 +17,8 @@ const pluginState = {
     inPersistentRetryMode: false, // Track if we're in persistent retry mode (8 second interval)
     persistentRetryDelay: 8000, // Persistent retry delay in ms (8 seconds)
     reconnectTimer: null, // Timer for reconnection attempts
+    countdownTimer: null, // Timer for updating the countdown display
+    countdownSeconds: 0, // Current countdown value in seconds
   },
   ui: {
     // UI state properties
