@@ -4,7 +4,12 @@
 // ----- Utils/plugin.js -----
 /**
  * Plugin utilities module.
- * Consolidates plugin configuration, state management, and progress reporting helpers.
+ *
+ * This module consolidates plugin configuration management, state tracking,
+ * and progress reporting helpers for the Claude MCP Figma plugin.
+ *
+ * It exposes the current plugin state, functions to send progress updates,
+ * initialize plugin settings on load, and update settings with persistence.
  *
  * Exposed functions:
  * - state: { serverPort: number, autoReconnect: boolean }
@@ -22,6 +27,20 @@ const state = {
 
 /**
  * Sends a progress update message to the plugin UI.
+ *
+ * This function constructs a progress update object with details about the
+ * current command execution status and sends it to the UI via postMessage.
+ *
+ * @param {string} commandId - Unique identifier for the command.
+ * @param {string} commandType - Type of command being executed.
+ * @param {string} status - Current status ('started', 'in_progress', 'completed', 'error').
+ * @param {number} progress - Progress percentage (0-100).
+ * @param {number} totalItems - Total number of items to process.
+ * @param {number} processedItems - Number of items processed so far.
+ * @param {string} message - Descriptive message about the progress.
+ * @param {object} [payload=null] - Optional additional data, including chunk info.
+ *
+ * @returns {object} The progress update object sent to the UI.
  */
 function sendProgressUpdate(
   commandId,
@@ -65,6 +84,11 @@ function sendProgressUpdate(
 
 /**
  * Initializes the plugin settings on load.
+ *
+ * Loads saved settings from client storage and updates the plugin state accordingly.
+ * Then notifies the UI with the initial settings to synchronize the front end.
+ *
+ * @returns {Promise<void>}
  */
 async function initializePlugin() {
   try {
@@ -92,6 +116,12 @@ async function initializePlugin() {
 
 /**
  * Updates plugin settings and persists them to storage.
+ *
+ * Validates and updates the plugin state with new settings, then saves them
+ * asynchronously to client storage. Logs errors if persistence fails.
+ *
+ * @param {object} settings - Settings object with optional serverPort and autoReconnect.
+ * @returns {void}
  */
 function updateSettings(settings) {
   if (settings.serverPort !== undefined) {

@@ -1,6 +1,8 @@
 /**
- * Client for connecting to and communicating with the MCP WebSocket server.
- * Provides functions to manage the WebSocket lifecycle and execute MCP tool commands.
+ * Client module for managing WebSocket communication with the MCP server.
+ * Provides functions to manage connection lifecycle, send commands, and handle responses.
+ *
+ * Supports automatic reconnection and progress update subscriptions.
  *
  * Exposed functions:
  * - connect(port: number): void
@@ -23,12 +25,12 @@
  */
 
 /**
- * Progress update data for a running command.
+ * Interface representing progress update data for a running command.
  * @interface ProgressData
- * @property {string} commandId - Unique ID of the command.
- * @property {number} progress - Progress percentage (0–100).
+ * @property {string} commandId - Unique identifier of the command.
+ * @property {number} progress - Progress percentage (0 to 100).
  * @property {'started' | 'in_progress' | 'completed' | 'error'} status - Current status of the command.
- * @property {string} [message] - Optional status message.
+ * @property {string} [message] - Optional descriptive status message.
  */
 import ReconnectingWebSocket from 'reconnecting-websocket';
 let autoReconnectEnabled = true;

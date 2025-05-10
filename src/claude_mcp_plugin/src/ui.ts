@@ -1,8 +1,11 @@
 /**
  * UI panel script for the Claude MCP plugin.
  *
- * Manages connection controls, tabs, and progress display within the plugin UI,
- * and communicates with the plugin code via postMessage.
+ * This script manages the user interface elements of the plugin,
+ * including connection controls (connect/disconnect buttons and port input),
+ * tab navigation, and progress display for ongoing commands.
+ * It communicates asynchronously with the plugin backend via postMessage,
+ * handling initialization of settings and real-time progress updates.
  *
  * Exposed functions:
  * - updateConnectionStatus(isConnected: boolean, message?: string): void
@@ -47,6 +50,9 @@ const progressPercentage = document.getElementById('progress-percentage')!;
  * updateConnectionStatus(true);
  * // Show error message
  * updateConnectionStatus(false, 'Failed to connect');
+ *
+ * This function updates the connection status text and styles,
+ * and enables/disables the connect/disconnect buttons and port input accordingly.
  */
 function updateConnectionStatus(isConnected: boolean, message?: string) {
   connectionStatus.innerHTML = message
@@ -67,6 +73,10 @@ function updateConnectionStatus(isConnected: boolean, message?: string) {
  * @example
  * // Called when progress event fires
  * onProgress(data => updateProgressUI(data));
+ *
+ * This function updates the progress bar width, percentage text,
+ * status message, and applies appropriate styling based on the progress status.
+ * It also hides the progress container after completion with a delay.
  */
 function updateProgressUI(data: ProgressData) {
   progressContainer.classList.remove('hidden');
@@ -90,6 +100,7 @@ function updateProgressUI(data: ProgressData) {
  // Hook client events
  onMessage((msg) => {
    if (msg.type === 'init-settings') {
+     // Initialize the auto reconnect toggle based on saved settings
      autoReconnectToggle.checked = msg.settings.autoReconnect;
      setAutoReconnect(msg.settings.autoReconnect);
      return;
