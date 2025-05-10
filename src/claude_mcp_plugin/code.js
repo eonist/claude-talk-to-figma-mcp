@@ -5695,12 +5695,11 @@ const commandOperations = {
  */
 
 
-// Track current theme and timeout for theme checking
+// Track current theme
 let currentTheme = figma.ui.getTheme();
-let themeCheckTimeoutId = null;
 
-// Function to check theme periodically
-function checkTheme() {
+// Function to check for theme changes
+function checkForThemeChange() {
   const newTheme = figma.ui.getTheme();
   
   if (newTheme !== currentTheme) {
@@ -5709,9 +5708,6 @@ function checkTheme() {
     currentTheme = newTheme;
     sendThemeToUI();
   }
-  
-  // Set up next check
-  themeCheckTimeoutId = setTimeout(checkTheme, 1000);
 }
 
 // Show the plugin UI with fixed dimensions
@@ -5719,9 +5715,6 @@ figma.showUI(__html__, { width: 350, height: 450 });
 
 // Register all available command handlers
 initializeCommands();
-
-// Start theme checking
-checkTheme();
 
 /**
  * Handles messages sent from the UI.
@@ -5738,6 +5731,9 @@ checkTheme();
  * figma.ui.postMessage({ pluginMessage: { type: 'notify', message: 'Hello' } });
  */
 figma.ui.onmessage = async (msg) => {
+  // Check theme on every message from UI
+  checkForThemeChange();
+  
   switch (msg.type) {
     case 'update-settings':
       updateSettings(msg);
@@ -5746,11 +5742,11 @@ figma.ui.onmessage = async (msg) => {
       figma.notify(msg.message);
       break;
     case 'close-plugin':
-      // Clear the theme check timeout before closing
-      if (themeCheckTimeoutId) {
-        clearTimeout(themeCheckTimeoutId);
-      }
       figma.closePlugin();
+      break;
+    case 'check-theme':
+      // Explicit request to check theme
+      checkForThemeChange();
       break;
     case 'execute-command':
       try {
