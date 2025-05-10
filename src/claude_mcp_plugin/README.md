@@ -89,8 +89,6 @@ The plugin uses a modular build system with specialized scripts:
 - `build:plugin`: Generate the main plugin code (`code.js`)
 - `build:ui`: Build the UI with all components, styles, and scripts inlined (recommended)
 - `build:ui-ts`: Alternative UI build using TypeScript compilation
-- `build:ui-old`: Legacy UI build that generates external JS files
-- `build:ui-legacy`: Legacy UI build using the original build.js approach
 - `watch:plugin`: Watch for changes and rebuild automatically
 - `build:all`: Build everything in one command (core + UI)
 
