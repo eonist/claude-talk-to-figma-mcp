@@ -38,30 +38,38 @@ function attemptReconnect() {
     pluginState.connection.reconnectTimer = null;
   }
   
-  // If we've reached the max reconnect attempts, stop trying
-  if (pluginState.connection.reconnectAttempts >= pluginState.connection.maxReconnectAttempts) {
-    updateConnectionStatus(
-      false, 
-      `Reconnection failed after ${pluginState.connection.maxReconnectAttempts} attempts`
-    );
-    return;
+  let delay;
+  let statusMessage;
+  
+  // Check if we've exhausted the initial exponential backoff attempts
+  if (pluginState.connection.reconnectAttempts >= pluginState.connection.maxReconnectAttempts && !pluginState.connection.inPersistentRetryMode) {
+    // Switch to persistent retry mode
+    pluginState.connection.inPersistentRetryMode = true;
+    delay = pluginState.connection.persistentRetryDelay;
+    statusMessage = `Initial reconnection attempts failed. Continuing to retry every ${Math.round(delay/1000)} seconds...`;
+  } 
+  else if (pluginState.connection.inPersistentRetryMode) {
+    // We're already in persistent retry mode
+    delay = pluginState.connection.persistentRetryDelay;
+    statusMessage = `Continuing to retry connection every ${Math.round(delay/1000)} seconds...`;
+  } 
+  else {
+    // Still in exponential backoff phase
+    pluginState.connection.reconnectAttempts++;
+    delay = getReconnectDelay();
+    statusMessage = `Connection lost. Reconnecting in ${Math.round(delay/1000)} seconds... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`;
   }
   
-  // Increment reconnect attempts
-  pluginState.connection.reconnectAttempts++;
-  
-  // Calculate delay with exponential backoff
-  const delay = getReconnectDelay();
-  
   // Update UI to show reconnection attempt
-  updateConnectionStatus(
-    false, 
-    `Connection lost. Reconnecting in ${Math.round(delay/1000)} seconds... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`
-  );
+  updateConnectionStatus(false, statusMessage);
   
   // Schedule reconnection
   pluginState.connection.reconnectTimer = setTimeout(() => {
-    updateConnectionStatus(false, `Attempting to reconnect... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`);
+    const attemptMessage = pluginState.connection.inPersistentRetryMode
+      ? `Attempting to reconnect... (persistent retry mode)`
+      : `Attempting to reconnect... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`;
+      
+    updateConnectionStatus(false, attemptMessage);
     connectToServer(pluginState.connection.serverPort);
   }, delay);
 }
@@ -84,8 +92,9 @@ async function connectToServer(port) {
     pluginState.connection.socket = new WebSocket(`ws://localhost:${port}`);
 
     pluginState.connection.socket.onopen = () => {
-      // Reset reconnection attempts on successful connection
+      // Reset reconnection state on successful connection
       pluginState.connection.reconnectAttempts = 0;
+      pluginState.connection.inPersistentRetryMode = false;
       
       // Generate random channel name
       const channelName = generateChannelName();

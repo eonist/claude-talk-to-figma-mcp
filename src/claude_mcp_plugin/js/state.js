@@ -13,7 +13,9 @@ const pluginState = {
     channel: null,
     autoReconnect: true, // Track auto-reconnect setting, default to true
     reconnectAttempts: 0, // Track reconnection attempts
-    maxReconnectAttempts: 5, // Maximum reconnection attempts
+    maxReconnectAttempts: 5, // Maximum reconnection attempts with backoff
+    inPersistentRetryMode: false, // Track if we're in persistent retry mode (8 second interval)
+    persistentRetryDelay: 8000, // Persistent retry delay in ms (8 seconds)
     reconnectTimer: null, // Timer for reconnection attempts
   },
   ui: {
