@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "latest",
+    "reconnecting-websocket": "^4.4.0",
     "uuid": "latest",
     "ws": "latest",
     "zod": "latest"

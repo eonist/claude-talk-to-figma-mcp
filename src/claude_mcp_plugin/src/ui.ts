@@ -19,7 +19,7 @@
  * connect(3055);
  * onProgress(data => updateProgressUI(data));
  */
-import { connect, disconnect, send, onMessage, onProgress, ProgressData } from './client';
+import { connect, disconnect, send, onMessage, onProgress, ProgressData, setAutoReconnect } from './client';
 
 // UI Elements
 const portInput = document.getElementById('port') as HTMLInputElement;
@@ -28,6 +28,7 @@ const disconnectButton = document.getElementById('btn-disconnect') as HTMLButton
 const connectionStatus = document.getElementById('connection-status') as HTMLElement;
 const tabs = Array.from(document.querySelectorAll('.tab')) as HTMLDivElement[];
 const tabContents = Array.from(document.querySelectorAll('.tab-content')) as HTMLDivElement[];
+const autoReconnectToggle = document.getElementById('auto-reconnect-toggle') as HTMLInputElement;
 
 // Progress UI
 const progressContainer = document.getElementById('progress-container')!;
@@ -86,11 +87,16 @@ function updateProgressUI(data: ProgressData) {
   }
 }
 
-// Hook client events
-onMessage((msg) => {
-  // Forward execution results or errors back to Figma plugin code
-  parent.postMessage({ pluginMessage: msg }, '*');
-});
+ // Hook client events
+ onMessage((msg) => {
+   if (msg.type === 'init-settings') {
+     autoReconnectToggle.checked = msg.settings.autoReconnect;
+     setAutoReconnect(msg.settings.autoReconnect);
+     return;
+   }
+   // Forward execution results or errors back to Figma plugin code
+   parent.postMessage({ pluginMessage: msg }, '*');
+ });
 onProgress(updateProgressUI);
 
 // Tab switching
@@ -105,6 +111,7 @@ tabs.forEach((tab) => {
 });
 
 // Connect / Disconnect
+autoReconnectToggle.addEventListener('change', () => { setAutoReconnect(autoReconnectToggle.checked); });
 connectButton.addEventListener('click', () => {
   updateConnectionStatus(false, 'Connecting…');
   connect(parseInt(portInput.value, 10) || 3055);

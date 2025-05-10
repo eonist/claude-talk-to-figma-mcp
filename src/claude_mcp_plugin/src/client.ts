@@ -30,6 +30,10 @@
  * @property {'started' | 'in_progress' | 'completed' | 'error'} status - Current status of the command.
  * @property {string} [message] - Optional status message.
  */
+import ReconnectingWebSocket from 'reconnecting-websocket';
+let autoReconnectEnabled = true;
+export function setAutoReconnect(flag: boolean): void { autoReconnectEnabled = flag; }
+
 export interface ProgressData {
   commandId: string;
   progress: number;
@@ -86,7 +90,15 @@ function generateChannelName(): string {
 export function connect(port: number): void {
   if (connected || socket) return;
   serverPort = port;
-  socket = new (globalThis as any).WebSocket(`ws://localhost:${port}`);
+  socket = autoReconnectEnabled
+    ? new ReconnectingWebSocket(`ws://localhost:${port}`, [], {
+        maxReconnectionDelay: 10000,
+        minReconnectionDelay: 1500,
+        reconnectionDelayGrowFactor: 1.3,
+        connectionTimeout: 4000,
+        maxRetries: Infinity
+      })
+    : new (globalThis as any).WebSocket(`ws://localhost:${port}`);
   const chan = generateChannelName();
   channel = chan;
 
