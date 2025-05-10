@@ -107,11 +107,12 @@ initializePlugin();
 // Send initial theme to UI directly (without using the function)
 try {
   const initialTheme = figma.ui.getTheme();
+  console.log(`Initial Figma theme: ${initialTheme}`);
+  
   figma.ui.postMessage({
     type: 'theme-update',
     theme: initialTheme
   });
-  console.log(`Sent initial theme to UI: ${initialTheme}`);
 } catch (error) {
   console.error('Error sending initial theme:', error);
 }

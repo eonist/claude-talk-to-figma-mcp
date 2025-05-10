@@ -157,11 +157,12 @@ export function sendThemeToUI() {
   // Get the current theme from Figma
   const theme = figma.ui.getTheme(); // 'light' or 'dark'
   
+  // Simple logging of the theme value
+  console.log(`Figma theme detected: ${theme}`);
+  
   // Send theme info to the UI
   figma.ui.postMessage({
     type: 'theme-update',
     theme: theme
   });
-  
-  console.log(`Sent theme update to UI: ${theme}`);
 }

@@ -80,7 +80,10 @@ function initMessageListener() {
         sendProgressUpdateToServer(message);
         break;
       case "theme-update":
-        // Update UI theme based on Figma's current theme
+        // Log Figma's actual theme but always apply light theme
+        console.log(`Figma's actual theme is: ${message.theme} (Plugin will use light theme)`);
+        
+        // Update UI theme (always using light theme)
         applyThemeToUI(message.theme);
         break;
     }

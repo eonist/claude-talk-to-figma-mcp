@@ -1074,7 +1074,10 @@ function initMessageListener() {
         sendProgressUpdateToServer(message);
         break;
       case "theme-update":
-        // Update UI theme based on Figma's current theme
+        // Log Figma's actual theme but always apply light theme
+        console.log(`Figma's actual theme is: ${message.theme} (Plugin will use light theme)`);
+        
+        // Update UI theme (always using light theme)
         applyThemeToUI(message.theme);
         break;
     }
@@ -1102,8 +1105,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Apply light theme explicitly on plugin startup
   applyThemeToUI('light');
   
+  // Request Figma's actual theme information
+  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
+  
   console.log('Claude MCP Figma plugin UI initialized with light theme');
 });
+
+// Add global function to help debugging theme issues
+window.checkFigmaTheme = function() {
+  console.log('Checking Figma theme...');
+  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
+};
 
 
 </script>

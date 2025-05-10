@@ -161,13 +161,14 @@ function sendThemeToUI() {
   // Get the current theme from Figma
   const theme = figma.ui.getTheme(); // 'light' or 'dark'
   
+  // Simple logging of the theme value
+  console.log(`Figma theme detected: ${theme}`);
+  
   // Send theme info to the UI
   figma.ui.postMessage({
     type: 'theme-update',
     theme: theme
   });
-  
-  console.log(`Sent theme update to UI: ${theme}`);
 }
 
 
@@ -5772,11 +5773,12 @@ initializePlugin();
 // Send initial theme to UI directly (without using the function)
 try {
   const initialTheme = figma.ui.getTheme();
+  console.log(`Initial Figma theme: ${initialTheme}`);
+  
   figma.ui.postMessage({
     type: 'theme-update',
     theme: initialTheme
   });
-  console.log(`Sent initial theme to UI: ${initialTheme}`);
 } catch (error) {
   console.error('Error sending initial theme:', error);
 }

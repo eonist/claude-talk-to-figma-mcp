@@ -17,5 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Apply light theme explicitly on plugin startup
   applyThemeToUI('light');
   
+  // Request Figma's actual theme information
+  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
+  
   console.log('Claude MCP Figma plugin UI initialized with light theme');
 });
+
+// Add global function to help debugging theme issues
+window.checkFigmaTheme = function() {
+  console.log('Checking Figma theme...');
+  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
+};
