@@ -12,7 +12,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../clients/figma-client.js";
 import { logger } from "../utils/logger.js";
-import { joinChannel } from "../server/websocket.js";
+import { joinChannel, connectToFigma, isConnectedToFigma } from "../server/websocket.js";
 
 /**
  * Registers channel-related commands for the MCP server.
@@ -63,6 +63,15 @@ export function registerChannelCommand(server: McpServer, figmaClient: FigmaClie
           };
         }
 
+        if (!isConnectedToFigma()) {
+          connectToFigma("localhost", 3055, 2000);
+          const start = Date.now();
+          const timeoutMs = 10000;
+          const intervalMs = 200;
+          while (!isConnectedToFigma() && Date.now() - start < timeoutMs) {
+            await new Promise(res => setTimeout(res, intervalMs));
+          }
+        }
         await joinChannel(channel);
         return {
           content: [
