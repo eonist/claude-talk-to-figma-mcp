@@ -79,6 +79,10 @@ function initMessageListener() {
         // Forward progress update to server
         sendProgressUpdateToServer(message);
         break;
+      case "theme-update":
+        // Update UI theme based on Figma's current theme
+        applyThemeToUI(message.theme);
+        break;
     }
   };
 }

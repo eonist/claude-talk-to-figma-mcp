@@ -16,6 +16,7 @@
  * - sendProgressUpdate(...)
  * - initializePlugin(): Promise<void>
  * - updateSettings(settings: { serverPort?: number, autoReconnect?: boolean }): void
+ * - sendThemeToUI(): void
  *
  * @module modules/utils/plugin
  */
@@ -145,6 +146,28 @@ function updateSettings(settings) {
     .catch(error => {
       console.error('Failed to persist settings:', error);
     });
+}
+
+/**
+ * Sends the current Figma UI theme to the plugin UI.
+ * 
+ * This function detects the current Figma UI theme (light or dark)
+ * and sends it to the plugin UI via postMessage for syncing the plugin's
+ * appearance with Figma's.
+ * 
+ * @returns {void}
+ */
+function sendThemeToUI() {
+  // Get the current theme from Figma
+  const theme = figma.ui.getTheme(); // 'light' or 'dark'
+  
+  // Send theme info to the UI
+  figma.ui.postMessage({
+    type: 'theme-update',
+    theme: theme
+  });
+  
+  console.log(`Sent theme update to UI: ${theme}`);
 }
 
 
@@ -5678,6 +5701,11 @@ figma.showUI(__html__, { width: 350, height: 450 });
 // Register all available command handlers
 initializeCommands();
 
+// Set up theme change listener
+figma.on('themechange', () => {
+  sendThemeToUI();
+});
+
 /**
  * Handles messages sent from the UI.
  *
@@ -5741,3 +5769,6 @@ figma.on('run', ({ command }) => {
 
 // Perform initial plugin setup and notify the UI of current settings
 initializePlugin();
+
+// Send initial theme to UI
+sendThemeToUI();

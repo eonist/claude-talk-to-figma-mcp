@@ -1,15 +1,32 @@
+/* Progress bar colors */
+:root {
+  --progress-container-bg: #444;
+  --progress-bar-color: #18a0fb;
+  --operation-complete-color: #4ade80;
+  --operation-error-color: #ff9999;
+}
+
+/* Light theme progress colors */
+body.theme-light {
+  --progress-container-bg: #dddddd;
+  --progress-bar-color: #18a0fb;
+  --operation-complete-color: #0d9f4f;
+  --operation-error-color: #e64c4c;
+}
+
 .progress-bar-container {
   width: 100%;
-  background-color: #444;
+  background-color: var(--progress-container-bg);
   border-radius: 4px;
   margin-top: 8px;
+  transition: background-color 0.3s ease;
 }
 .progress-bar-inner {
   width: 0%;
   height: 8px;
-  background-color: #18a0fb;
+  background-color: var(--progress-bar-color);
   border-radius: 4px;
-  transition: width 0.3s;
+  transition: width 0.3s, background-color 0.3s ease;
 }
 .progress-details {
   display: flex;
@@ -18,8 +35,10 @@
   font-size: 12px;
 }
 .operation-complete {
-  color: #4ade80;
+  color: var(--operation-complete-color);
+  transition: color 0.3s ease;
 }
 .operation-error {
-  color: #ff9999;
+  color: var(--operation-error-color);
+  transition: color 0.3s ease;
 }

@@ -114,3 +114,18 @@ function resetProgressUI() {
   progressStatus.className = "";
   progressPercentage.textContent = "0%";
 }
+
+/**
+ * Apply Figma's theme to the plugin UI
+ * 
+ * @param {string} theme - The theme from Figma ('dark' or 'light')
+ */
+function applyThemeToUI(theme) {
+  console.log(`Applying ${theme} theme to UI`);
+  
+  // Remove existing theme classes
+  document.body.classList.remove('theme-dark', 'theme-light');
+  
+  // Add the appropriate theme class
+  document.body.classList.add(`theme-${theme}`);
+}

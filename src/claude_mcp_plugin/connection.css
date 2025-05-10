@@ -1,3 +1,27 @@
+/* Status and connection colors */
+:root {
+  --header-logo-bg: #333;
+  --header-text-secondary: #999999;
+  --status-connected-bg: #1a472a;
+  --status-connected-text: #4ade80;
+  --status-disconnected-bg: #471a1a;
+  --status-disconnected-text: #ff9999;
+  --status-info-bg: #1a3147;
+  --status-info-text: #66b3ff;
+}
+
+/* Light theme status colors */
+body.theme-light {
+  --header-logo-bg: #e0e0e0;
+  --header-text-secondary: #666666;
+  --status-connected-bg: #d6f5de;
+  --status-connected-text: #0d6831;
+  --status-disconnected-bg: #ffdede;
+  --status-disconnected-text: #c42b2b;
+  --status-info-bg: #d6ebff;
+  --status-info-text: #0057b3;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -10,7 +34,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 16px;
-  background-color: #333;
+  background-color: var(--header-logo-bg);
 }
 .header-logo-image {
   width: 100%;
@@ -25,7 +49,7 @@
 .header-text p {
   margin: 4px 0 0 0;
   font-size: 12px;
-  color: #999999;
+  color: var(--header-text-secondary);
 }
 .input-container {
   display: flex;
@@ -52,16 +76,17 @@
   padding: 12px;
   border-radius: 6px;
   font-size: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 .status.connected {
-  background-color: #1a472a;
-  color: #4ade80;
+  background-color: var(--status-connected-bg);
+  color: var(--status-connected-text);
 }
 .status.disconnected {
-  background-color: #471a1a;
-  color: #ff9999;
+  background-color: var(--status-disconnected-bg);
+  color: var(--status-disconnected-text);
 }
 .status.info {
-  background-color: #1a3147;
-  color: #66b3ff;
+  background-color: var(--status-info-bg);
+  color: var(--status-info-text);
 }

@@ -26,7 +26,8 @@ import { initializeCommands, handleCommand } from './modules/commands.js';
 import {
   sendProgressUpdate,
   initializePlugin,
-  updateSettings
+  updateSettings,
+  sendThemeToUI
 } from './modules/utils/plugin.js';
 
 // Show the plugin UI with fixed dimensions
@@ -34,6 +35,11 @@ figma.showUI(__html__, { width: 350, height: 450 });
 
 // Register all available command handlers
 initializeCommands();
+
+// Set up theme change listener
+figma.on('themechange', () => {
+  sendThemeToUI();
+});
 
 /**
  * Handles messages sent from the UI.
@@ -98,3 +104,6 @@ figma.on('run', ({ command }) => {
 
 // Perform initial plugin setup and notify the UI of current settings
 initializePlugin();
+
+// Send initial theme to UI
+sendThemeToUI();
