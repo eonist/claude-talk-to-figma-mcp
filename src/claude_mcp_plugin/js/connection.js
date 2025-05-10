@@ -18,6 +18,54 @@ function generateChannelName() {
   return result;
 }
 
+// Calculate reconnect delay with exponential backoff
+function getReconnectDelay() {
+  // Start with 1 second, then exponential backoff up to 30 seconds
+  const baseDelay = 1000; 
+  const maxDelay = 30000; // 30 seconds max
+  const delay = Math.min(
+    baseDelay * Math.pow(1.5, pluginState.connection.reconnectAttempts),
+    maxDelay
+  );
+  return delay;
+}
+
+// Attempt to reconnect to the WebSocket server
+function attemptReconnect() {
+  // Clear any existing reconnect timer
+  if (pluginState.connection.reconnectTimer) {
+    clearTimeout(pluginState.connection.reconnectTimer);
+    pluginState.connection.reconnectTimer = null;
+  }
+  
+  // If we've reached the max reconnect attempts, stop trying
+  if (pluginState.connection.reconnectAttempts >= pluginState.connection.maxReconnectAttempts) {
+    updateConnectionStatus(
+      false, 
+      `Reconnection failed after ${pluginState.connection.maxReconnectAttempts} attempts`
+    );
+    return;
+  }
+  
+  // Increment reconnect attempts
+  pluginState.connection.reconnectAttempts++;
+  
+  // Calculate delay with exponential backoff
+  const delay = getReconnectDelay();
+  
+  // Update UI to show reconnection attempt
+  updateConnectionStatus(
+    false, 
+    `Connection lost. Reconnecting in ${Math.round(delay/1000)} seconds... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`
+  );
+  
+  // Schedule reconnection
+  pluginState.connection.reconnectTimer = setTimeout(() => {
+    updateConnectionStatus(false, `Attempting to reconnect... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`);
+    connectToServer(pluginState.connection.serverPort);
+  }, delay);
+}
+
 // Connect to WebSocket server
 async function connectToServer(port) {
   try {
@@ -26,10 +74,19 @@ async function connectToServer(port) {
       return;
     }
 
+    // Clear any existing socket
+    if (pluginState.connection.socket) {
+      pluginState.connection.socket.close();
+      pluginState.connection.socket = null;
+    }
+
     pluginState.connection.serverPort = port;
     pluginState.connection.socket = new WebSocket(`ws://localhost:${port}`);
 
     pluginState.connection.socket.onopen = () => {
+      // Reset reconnection attempts on successful connection
+      pluginState.connection.reconnectAttempts = 0;
+      
       // Generate random channel name
       const channelName = generateChannelName();
       console.log("Joining channel:", channelName);
@@ -82,17 +139,28 @@ async function connectToServer(port) {
       }
     };
 
-    pluginState.connection.socket.onclose = () => {
+    pluginState.connection.socket.onclose = (event) => {
+      console.log(`WebSocket closed with code: ${event.code}, reason: ${event.reason || 'No reason provided'}`);
       pluginState.connection.connected = false;
-      pluginState.connection.socket = null;
-      updateConnectionStatus(false, "Disconnected from server");
+
+      // If auto-reconnect is enabled and this wasn't an intentional disconnect
+      if (pluginState.connection.autoReconnect && event.code !== 1000) {
+        // Attempt to reconnect
+        attemptReconnect();
+      } else {
+        // Otherwise, just update status to disconnected
+        pluginState.connection.socket = null;
+        updateConnectionStatus(false, "Disconnected from server");
+      }
     };
 
     pluginState.connection.socket.onerror = (error) => {
       console.error("WebSocket error:", error);
       updateConnectionStatus(false, "Connection error");
       pluginState.connection.connected = false;
-      pluginState.connection.socket = null;
+      
+      // If auto-reconnect is enabled, the onclose handler will be triggered next
+      // and will handle reconnection attempts
     };
   } catch (error) {
     console.error("Connection error:", error);
@@ -105,8 +173,18 @@ async function connectToServer(port) {
 
 // Disconnect from websocket server
 function disconnectFromServer() {
+  // Clear any reconnection timers
+  if (pluginState.connection.reconnectTimer) {
+    clearTimeout(pluginState.connection.reconnectTimer);
+    pluginState.connection.reconnectTimer = null;
+  }
+  
+  // Reset reconnection attempts
+  pluginState.connection.reconnectAttempts = 0;
+  
   if (pluginState.connection.socket) {
-    pluginState.connection.socket.close();
+    // Use code 1000 for normal closure to indicate intentional disconnect
+    pluginState.connection.socket.close(1000, "User initiated disconnect");
     pluginState.connection.socket = null;
     pluginState.connection.connected = false;
     updateConnectionStatus(false, "Disconnected from server");

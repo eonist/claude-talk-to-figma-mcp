@@ -8,6 +8,7 @@ let portInput;
 let connectButton;
 let disconnectButton;
 let connectionStatus;
+let autoReconnectToggle;
 let progressContainer;
 let progressBar;
 let progressMessage;
@@ -20,6 +21,7 @@ function initUIElements() {
   connectButton = document.getElementById("btn-connect");
   disconnectButton = document.getElementById("btn-disconnect");
   connectionStatus = document.getElementById("connection-status");
+  autoReconnectToggle = document.getElementById("auto-reconnect-toggle");
   
   // Progress tracking elements
   progressContainer = document.getElementById("progress-container");
@@ -41,6 +43,15 @@ function initUIElements() {
     connectionStatus.className = "status info";
     disconnectFromServer();
   });
+  
+  // Set up auto-reconnect toggle listener
+  autoReconnectToggle.addEventListener("change", () => {
+    pluginState.connection.autoReconnect = autoReconnectToggle.checked;
+    console.log(`Auto-reconnect ${pluginState.connection.autoReconnect ? 'enabled' : 'disabled'}`);
+  });
+  
+  // Initialize auto-reconnect toggle state from pluginState
+  autoReconnectToggle.checked = pluginState.connection.autoReconnect;
 }
 
 // Update connection status UI
