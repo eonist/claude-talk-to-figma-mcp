@@ -127,10 +127,9 @@ function buildTypeScript() {
       templateContent = templateContent.replace(scriptTag, inlineScript);
     }
     
-    // Write the final UI HTML with inlined script to both locations
+    // Write the final UI HTML with inlined script to the dist directory
     fs.writeFileSync(UI_OUTPUT_PATH, templateContent);
-    fs.writeFileSync(path.join(__dirname, 'ui.html'), templateContent);
-    console.log(`✅ Generated UI HTML with inlined TypeScript in both root and dist directory`);
+    console.log(`✅ Generated UI HTML with inlined TypeScript in dist directory`);
     
     // Clean up temporary files - use execSync to ensure proper cleanup
     try {

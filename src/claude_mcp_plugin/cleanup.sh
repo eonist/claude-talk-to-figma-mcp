@@ -1,7 +1,7 @@
 #!/bin/bash
-# Script to clean up temporary build directories
+# Script to clean up temporary build directories and legacy files
 
-echo "Cleaning up temporary build directories..."
+echo "Cleaning up temporary build directories and legacy files..."
 
 # Remove temp-dist directory
 if [ -d "temp-dist" ]; then
@@ -17,5 +17,16 @@ fi
 
 # Remove any backup files
 find . -name "*.bak" -type f -exec rm {} \;
+
+# Remove legacy root files that are now only in dist/
+if [ -f "code.js" ]; then
+  echo "Removing legacy code.js from root directory..."
+  rm code.js
+fi
+
+if [ -f "ui.html" ]; then
+  echo "Removing legacy ui.html from root directory..."
+  rm ui.html
+fi
 
 echo "✅ Cleanup completed successfully"

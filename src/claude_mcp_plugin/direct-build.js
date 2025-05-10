@@ -188,10 +188,9 @@ function buildUI() {
       }
     }
     
-    // Step 7: Write the final HTML to both locations
+    // Step 7: Write the final HTML to the dist directory
     fs.writeFileSync(UI_OUTPUT_PATH, templateContent);
-    fs.writeFileSync(path.join(__dirname, 'ui.html'), templateContent);
-    console.log(`✅ Generated UI HTML with all components, styles, and scripts inlined in both root and dist directory`);
+    console.log(`✅ Generated UI HTML with all components, styles, and scripts inlined in dist directory`);
     
     // Clean up temporary files
     fs.rmSync(TEMP_DIR, { recursive: true, force: true });

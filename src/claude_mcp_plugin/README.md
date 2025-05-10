@@ -10,16 +10,14 @@ This plugin uses a modular architecture during development, while still complyin
 
 ```
 src/claude_mcp_plugin/
-├── code.js             # Final bundled file for Figma (generated)
 ├── build.js            # Build script to bundle the source code into code.js
 ├── direct-build.js     # Enhanced build script for UI generation
 ├── build-ts.js         # TypeScript build script (alternative approach)
 ├── manifest.json       # Figma plugin manifest
 ├── ui-template.html    # Template for plugin UI
-├── ui.html             # Generated plugin UI with inlined scripts and styles
-├── dist/               # Organized output directory
-│   ├── code.js         # Copy of bundled file for organization
-│   └── ui.html         # Copy of generated UI
+├── dist/               # Output directory 
+│   ├── code.js         # Final bundled file for Figma (generated)
+│   └── ui.html         # Generated plugin UI with inlined scripts and styles
 ├── components/         # HTML components for UI
 │   ├── header.html
 │   ├── tabs.html
@@ -58,12 +56,10 @@ src/claude_mcp_plugin/
 
 ### Build System
 
-The plugin uses a dual-output strategy with files generated in both the root directory and the `dist/` directory:
+The plugin outputs generated files directly to the `dist/` directory:
 
-- **Root Directory Files** (`code.js`, `ui.html`): Required by Figma for plugin loading
-- **Dist Directory Files** (`dist/code.js`, `dist/ui.html`): Duplicate copies for better code organization
-
-The build scripts handle this dual-output automatically to maintain both compatibility and organization.
+- **Dist Directory Files**: `dist/code.js` and `dist/ui.html`
+- The manifest.json points directly to these files in the dist directory
 
 The plugin uses a modular build system with specialized scripts:
 

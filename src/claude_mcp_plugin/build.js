@@ -178,9 +178,9 @@ async function buildPlugin() {
       fs.mkdirSync(distDir, { recursive: true });
     }
     
-    // Write the output to both locations
+    // Write the output to the dist directory
     fs.writeFileSync(OUTPUT_FILE, output);
-    fs.writeFileSync(path.join(__dirname, 'code.js'), output);
+    console.log(`✅ Generated code.js in dist directory`);
     
     // Generate the UI HTML file from template and CSS and components
     try {
@@ -288,10 +288,9 @@ async function buildPlugin() {
       // Replace script placeholder
       templateContent = templateContent.replace('<!-- SCRIPTS_PLACEHOLDER -->', scriptTag);
       
-      // Write to both output locations
+      // Write to the dist directory
       fs.writeFileSync(outputPath, templateContent);
-      fs.writeFileSync(path.join(__dirname, 'ui.html'), templateContent);
-      console.log('✅ Generated ui.html with embedded styles, components, and scripts in both root and dist directory');
+      console.log('✅ Generated ui.html with embedded styles, components, and scripts in dist directory');
       
     } catch (error) {
       console.error('❌ Error generating ui.html:', error);
