@@ -169,36 +169,46 @@ function buildPlugin() {
     // Write the aggregated content to the designated output file.
     fs.writeFileSync(OUTPUT_FILE, output);
     
-    // Embed CSS directly into the HTML file during build
+    // Generate the UI HTML file from template and CSS
     try {
-      const cssSourcePath = path.join(__dirname, 'styles.css');
-      const htmlPath = path.join(__dirname, 'ui.html');
+      // Define paths
+      const templatePath = path.join(__dirname, 'ui-template.html');
+      const cssPath = path.join(__dirname, 'styles.css');
+      const outputPath = path.join(__dirname, 'ui.html');
       
-      // Read the CSS and HTML files
-      const cssContent = fs.readFileSync(cssSourcePath, 'utf8');
-      const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+      // Check if template and CSS files exist
+      if (!fs.existsSync(templatePath)) {
+        throw new Error(`Template file not found: ${templatePath}`);
+      }
       
-      // Find the CSS placeholder or comment in the HTML
-      const cssPlaceholder = /<!-- CSS directly embedded during build process -->[\s\S]*?<\/style>|<!-- Will dynamically load the CSS file in script -->/;
+      if (!fs.existsSync(cssPath)) {
+        throw new Error(`CSS file not found: ${cssPath}`);
+      }
       
-      // Replace with a style tag containing the CSS content
-      const newContent = htmlContent.replace(cssPlaceholder, 
-        `<!-- CSS directly embedded during build process -->
-     <style>
-${cssContent}
-     </style>`);
+      // Read content from template and CSS files
+      console.log('Reading template and CSS files...');
+      const templateContent = fs.readFileSync(templatePath, 'utf8');
+      const cssContent = fs.readFileSync(cssPath, 'utf8');
       
-      // Write the updated HTML
-      fs.writeFileSync(htmlPath, newContent);
-      console.log('✅ CSS directly embedded into ui.html');
+      // Create style tag with CSS content
+      const styleTag = `<style>\n${cssContent}\n</style>`;
+      
+      // Replace placeholder with actual styles
+      const outputContent = templateContent.replace('<!-- STYLES_PLACEHOLDER -->', styleTag);
+      
+      // Write to output file
+      fs.writeFileSync(outputPath, outputContent);
+      console.log('✅ Generated ui.html with embedded styles');
       
       // Ensure dist directory exists for the ui.js file
       const distDir = path.join(__dirname, 'dist');
       if (!fs.existsSync(distDir)) {
         fs.mkdirSync(distDir, { recursive: true });
+        console.log('✅ Created dist directory for UI script');
       }
-    } catch (cssError) {
-      console.error('⚠️ Error embedding CSS:', cssError);
+    } catch (error) {
+      console.error('❌ Error generating ui.html:', error);
+      process.exit(1);
     }
     
     console.log('✅ Figma plugin built successfully!');
