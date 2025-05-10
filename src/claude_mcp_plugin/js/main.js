@@ -4,15 +4,16 @@
  */
 
 /**
- * Sets up periodic theme checking to keep UI in sync with Figma's theme
+ * Setup simple method to check theme
+ * This avoids complex setInterval functions and just uses a simple
+ * recursive setTimeout pattern which is more reliable in some environments
  */
-function setupThemeChecking() {
-  // Check theme every few seconds
-  setInterval(() => {
-    parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
-  }, 2000); // Check every 2 seconds
+function checkThemeOnce() {
+  // Request theme check from the plugin
+  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
   
-  console.log('Theme checking initialized');
+  // Schedule next check with simple timeout
+  setTimeout(checkThemeOnce, 3000); // Check every 3 seconds
 }
 
 // Initialize all UI components when the DOM is loaded
@@ -26,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize message listener for plugin communication
   initMessageListener();
   
-  // Setup theme checking
-  setupThemeChecking();
+  // Start simple theme checking (first check after a delay)
+  setTimeout(checkThemeOnce, 1000);
   
   console.log('Claude MCP Figma plugin UI initialized');
 });

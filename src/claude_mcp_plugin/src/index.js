@@ -30,21 +30,6 @@ import {
   sendThemeToUI
 } from './modules/utils/plugin.js';
 
-// Track current theme
-let currentTheme = figma.ui.getTheme();
-
-// Function to check for theme changes
-function checkForThemeChange() {
-  const newTheme = figma.ui.getTheme();
-  
-  if (newTheme !== currentTheme) {
-    // Theme has changed
-    console.log(`Theme changed from ${currentTheme} to ${newTheme}`);
-    currentTheme = newTheme;
-    sendThemeToUI();
-  }
-}
-
 // Show the plugin UI with fixed dimensions
 figma.showUI(__html__, { width: 350, height: 450 });
 
@@ -66,9 +51,6 @@ initializeCommands();
  * figma.ui.postMessage({ pluginMessage: { type: 'notify', message: 'Hello' } });
  */
 figma.ui.onmessage = async (msg) => {
-  // Check theme on every message from UI
-  checkForThemeChange();
-  
   switch (msg.type) {
     case 'update-settings':
       updateSettings(msg);
@@ -80,8 +62,12 @@ figma.ui.onmessage = async (msg) => {
       figma.closePlugin();
       break;
     case 'check-theme':
-      // Explicit request to check theme
-      checkForThemeChange();
+      // Send current theme to UI
+      const theme = figma.ui.getTheme();
+      figma.ui.postMessage({
+        type: 'theme-update',
+        theme: theme
+      });
       break;
     case 'execute-command':
       try {
@@ -122,5 +108,14 @@ figma.on('run', ({ command }) => {
 // Perform initial plugin setup and notify the UI of current settings
 initializePlugin();
 
-// Send initial theme to UI
-sendThemeToUI();
+// Send initial theme to UI directly (without using the function)
+try {
+  const initialTheme = figma.ui.getTheme();
+  figma.ui.postMessage({
+    type: 'theme-update',
+    theme: initialTheme
+  });
+  console.log(`Sent initial theme to UI: ${initialTheme}`);
+} catch (error) {
+  console.error('Error sending initial theme:', error);
+}
