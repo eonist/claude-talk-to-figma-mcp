@@ -1,11 +1,23 @@
 /**
- * Enhanced build script for the Claude MCP Figma plugin.
- * Combines the functionality of both build.js and build-ts.js:
- * 1. Compiles TypeScript using esbuild
- * 2. Processes CSS files and includes them in the template
- * 3. Includes component HTML files in the template
- * 4. Inlines JavaScript modules from js/ directory
- * 5. Combines everything into a single ui.html file
+ * Enhanced build script for the Claude MCP Figma plugin UI.
+ * 
+ * This script is specifically for building the plugin's UI (ui.html file).
+ * It does NOT generate code.js, which is produced by the build.js script.
+ * 
+ * It combines the functionality of both the UI part of build.js and build-ts.js:
+ * 1. Compiles TypeScript (ui.ts) using esbuild
+ * 2. Processes all CSS files (styles.css, connection.css, tabs.css, progress.css)
+ * 3. Includes all HTML components from the components/ directory
+ * 4. Includes all JavaScript modules from the js/ directory
+ * 5. Combines everything into a single ui.html file with no external dependencies
+ * 
+ * This approach eliminates the need for the external dist/ui.js file that was
+ * previously loaded by the HTML, improving load times and reliability.
+ * 
+ * Usage:
+ * node src/claude_mcp_plugin/direct-build.js
+ * or
+ * npm run build:ui
  */
 
 import fs from 'fs';
@@ -180,9 +192,9 @@ function buildUI() {
     fs.writeFileSync(UI_OUTPUT_PATH, templateContent);
     console.log(`✅ Generated ${UI_OUTPUT_PATH} with all components, styles, and scripts inlined`);
     
-    // Optionally clean up temporary files
-    // fs.rmSync(TEMP_DIR, { recursive: true, force: true });
-    // console.log('✅ Cleaned up temporary files');
+    // Clean up temporary files
+    fs.rmSync(TEMP_DIR, { recursive: true, force: true });
+    console.log('✅ Cleaned up temporary files');
     
   } catch (error) {
     console.error('❌ Error building UI:', error);
