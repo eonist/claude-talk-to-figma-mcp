@@ -16,11 +16,13 @@
   --label-color: #cccccc;
   --link-color: #18a0fb;
   --box-bg: #2a2a2a;
+  --header-bg: #252525;
+  --accent-color: #18a0fb;
 }
 
 /* Light theme */
 body.theme-light {
-  --bg-color: #f5f5f5;
+  --bg-color: #ffffff;
   --text-color: #333333;
   --heading-color: #000000;
   --button-primary: #18a0fb;
@@ -30,11 +32,13 @@ body.theme-light {
   --button-disabled: #cccccc;
   --button-disabled-text: #999999;
   --input-border: #cccccc;
-  --input-bg: #ffffff;
+  --input-bg: #f8f8f8;
   --input-text: #333333;
   --label-color: #555555;
   --link-color: #18a0fb;
-  --box-bg: #ffffff;
+  --box-bg: #f5f5f5;
+  --header-bg: #f0f0f0;
+  --accent-color: #18a0fb;
 }
 
 /* Base styles */
@@ -45,7 +49,13 @@ body {
   padding: 20px;
   color: var(--text-color);
   background-color: var(--bg-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle-container {
+  margin-left: auto;
+  padding-left: 10px;
 }
 .container {
   display: flex;

@@ -116,16 +116,13 @@ function resetProgressUI() {
 }
 
 /**
- * Apply Figma's theme to the plugin UI
+ * Apply theme to the plugin UI - always using light theme
+ * for compatibility with Figma
  * 
- * @param {string} theme - The theme from Figma ('dark' or 'light')
+ * @param {string} theme - The theme from Figma (ignored, always using 'light')
  */
 function applyThemeToUI(theme) {
-  console.log(`Applying ${theme} theme to UI`);
-  
-  // Remove existing theme classes
+  // Always use light theme regardless of Figma's theme
   document.body.classList.remove('theme-dark', 'theme-light');
-  
-  // Add the appropriate theme class
-  document.body.classList.add(`theme-${theme}`);
+  document.body.classList.add('theme-light');
 }

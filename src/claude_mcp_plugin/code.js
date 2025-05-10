@@ -5727,12 +5727,8 @@ figma.ui.onmessage = async (msg) => {
       figma.closePlugin();
       break;
     case 'check-theme':
-      // Send current theme to UI
-      const theme = figma.ui.getTheme();
-      figma.ui.postMessage({
-        type: 'theme-update',
-        theme: theme
-      });
+      // Send current theme to UI using the improved function
+      sendThemeToUI();
       break;
     case 'execute-command':
       try {

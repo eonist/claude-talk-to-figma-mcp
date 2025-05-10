@@ -35,11 +35,13 @@
   --label-color: #cccccc;
   --link-color: #18a0fb;
   --box-bg: #2a2a2a;
+  --header-bg: #252525;
+  --accent-color: #18a0fb;
 }
 
 /* Light theme */
 body.theme-light {
-  --bg-color: #f5f5f5;
+  --bg-color: #ffffff;
   --text-color: #333333;
   --heading-color: #000000;
   --button-primary: #18a0fb;
@@ -49,11 +51,13 @@ body.theme-light {
   --button-disabled: #cccccc;
   --button-disabled-text: #999999;
   --input-border: #cccccc;
-  --input-bg: #ffffff;
+  --input-bg: #f8f8f8;
   --input-text: #333333;
   --label-color: #555555;
   --link-color: #18a0fb;
-  --box-bg: #ffffff;
+  --box-bg: #f5f5f5;
+  --header-bg: #f0f0f0;
+  --accent-color: #18a0fb;
 }
 
 /* Base styles */
@@ -64,7 +68,13 @@ body {
   padding: 20px;
   color: var(--text-color);
   background-color: var(--bg-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle-container {
+  margin-left: auto;
+  padding-left: 10px;
 }
 .container {
   display: flex;
@@ -936,18 +946,15 @@ function resetProgressUI() {
 }
 
 /**
- * Apply Figma's theme to the plugin UI
+ * Apply theme to the plugin UI - always using light theme
+ * for compatibility with Figma
  * 
- * @param {string} theme - The theme from Figma ('dark' or 'light')
+ * @param {string} theme - The theme from Figma (ignored, always using 'light')
  */
 function applyThemeToUI(theme) {
-  console.log(`Applying ${theme} theme to UI`);
-  
-  // Remove existing theme classes
+  // Always use light theme regardless of Figma's theme
   document.body.classList.remove('theme-dark', 'theme-light');
-  
-  // Add the appropriate theme class
-  document.body.classList.add(`theme-${theme}`);
+  document.body.classList.add('theme-light');
 }
 
 
@@ -1081,19 +1088,6 @@ function initMessageListener() {
  * Initializes and coordinates all UI modules.
  */
 
-/**
- * Setup simple method to check theme
- * This avoids complex setInterval functions and just uses a simple
- * recursive setTimeout pattern which is more reliable in some environments
- */
-function checkThemeOnce() {
-  // Request theme check from the plugin
-  parent.postMessage({ pluginMessage: { type: 'check-theme' } }, '*');
-  
-  // Schedule next check with simple timeout
-  setTimeout(checkThemeOnce, 3000); // Check every 3 seconds
-}
-
 // Initialize all UI components when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize UI elements
@@ -1105,10 +1099,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize message listener for plugin communication
   initMessageListener();
   
-  // Start simple theme checking (first check after a delay)
-  setTimeout(checkThemeOnce, 1000);
+  // Apply light theme explicitly on plugin startup
+  applyThemeToUI('light');
   
-  console.log('Claude MCP Figma plugin UI initialized');
+  console.log('Claude MCP Figma plugin UI initialized with light theme');
 });
 
 
