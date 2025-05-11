@@ -50,33 +50,57 @@ function initUIElements() {
     console.log("Copy channel button clicked");
     
     if (pluginState.connection.channel) {
-      console.log(`Attempting to copy channel ID: "${pluginState.connection.channel}"`);
+      const channelId = pluginState.connection.channel;
+      console.log(`Attempting to copy channel ID: "${channelId}"`);
       
-      navigator.clipboard.writeText(pluginState.connection.channel)
-        .then(() => {
-          console.log("✓ Successfully copied to clipboard");
-          const originalText = copyChannelButton.textContent;
-          copyChannelButton.textContent = "Copied!";
-          
-          console.log("Sending notification to Figma");
-          // Send notification to Figma
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: "notify",
-                message: `Copied channel ID: ${pluginState.connection.channel}`,
-              },
+      // Create temporary textarea element
+      const textarea = document.createElement('textarea');
+      // Position off-screen
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '-9999px';
+      // Set value and make read-only to prevent mobile keyboard
+      textarea.value = channelId;
+      textarea.setAttribute('readonly', '');
+      
+      // Add to DOM
+      document.body.appendChild(textarea);
+      
+      // Select the text
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length); // For mobile devices
+      
+      let copySuccess = false;
+      try {
+        // Execute copy command
+        copySuccess = document.execCommand('copy');
+        console.log(copySuccess ? "✓ Successfully copied to clipboard using execCommand" : "❌ Copy command failed");
+        
+        // Update UI
+        const originalText = copyChannelButton.textContent;
+        copyChannelButton.textContent = "Copied!";
+        
+        // Send notification to Figma
+        console.log("Sending notification to Figma");
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "notify",
+              message: `Copied channel ID: ${channelId}`,
             },
-            "*"
-          );
-          
-          setTimeout(() => {
-            copyChannelButton.textContent = originalText;
-          }, 1500);
-        })
-        .catch(err => {
-          console.error("❌ Failed to copy channel ID:", err);
-        });
+          },
+          "*"
+        );
+        
+        setTimeout(() => {
+          copyChannelButton.textContent = originalText;
+        }, 1500);
+      } catch (err) {
+        console.error("❌ Failed to copy channel ID:", err);
+      }
+      
+      // Clean up
+      document.body.removeChild(textarea);
     } else {
       console.warn("No channel ID available to copy");
     }
