@@ -46,6 +46,62 @@ import { ensureNodeIdIsString } from "../../utils/node-utils.js";
  * @param {FigmaClient} figmaClient - The Figma client instance
  */
 export function registerReadCommands(server: McpServer, figmaClient: FigmaClient) {
+  // Custom debugging command to inspect raw responses
+  server.tool(
+    "debug_command",
+    "Execute any Figma command and view the raw response",
+    {
+      command: z.string().describe("The command to execute"),
+      params: z.any().optional().describe("Optional parameters for the command")
+    },
+    async ({ command, params = {} }) => {
+      try {
+        logger.info(`Executing debug command: ${command}`);
+        // Type assertion to allow any string command
+        const rawResult = await figmaClient.executeCommand(command as any, params);
+        
+        // Log the full raw result for inspection
+        logger.info(`RAW RESULT FROM ${command}: ${JSON.stringify(rawResult)}`);
+        
+        // Detailed response structure analysis
+        const resultType = typeof rawResult;
+        const isObject = resultType === 'object';
+        const hasProperties = isObject && rawResult !== null ? Object.keys(rawResult).join(', ') : 'none';
+        
+        const debugInfo = {
+          resultType,
+          isObject,
+          isNull: rawResult === null,
+          hasProperties,
+          resultSize: JSON.stringify(rawResult).length,
+          resultPreview: JSON.stringify(rawResult).substring(0, 500),
+          timestamp: new Date().toISOString()
+        };
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Debug Info: ${JSON.stringify(debugInfo)}`
+            },
+            {
+              type: "text",
+              text: `Raw Result: ${JSON.stringify(rawResult)}`
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error in debug command: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
   /**
    * Get Document Info Tool
    *
@@ -58,6 +114,10 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_document_info");
+        // Log result for debugging
+        logger.debug(`Document info result: ${JSON.stringify(result)}`);
+        
+        // Return the result but properly structured with the required content array
         return {
           content: [
             {
@@ -67,13 +127,14 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
           ]
         };
       } catch (error) {
+        logger.error(`Error in get_document_info: ${error instanceof Error ? error.message : String(error)}`);
         return {
           content: [
             {
               type: "text",
-              text: `Error getting document info: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
+              text: `Error getting document info: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
         };
       }
     }
@@ -91,6 +152,10 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_selection");
+        // Log result for debugging
+        logger.debug(`Selection result: ${JSON.stringify(result)}`);
+        
+        // Return the result but properly structured with the required content array
         return {
           content: [
             {
@@ -100,13 +165,14 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
           ]
         };
       } catch (error) {
+        logger.error(`Error in get_selection: ${error instanceof Error ? error.message : String(error)}`);
         return {
           content: [
             {
               type: "text",
-              text: `Error getting selection: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
+              text: `Error getting selection: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
         };
       }
     }

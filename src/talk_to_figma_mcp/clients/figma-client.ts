@@ -62,6 +62,58 @@ export class FigmaClient {
     try {
       logger.debug(`Executing Figma command: ${command}`);
       const result = await sendCommandToFigma(command, params);
+      
+      // Log the raw result so we can see what's coming back
+      logger.info(`Raw result from command ${command}: ${JSON.stringify(result)}`);
+      
+      // For document info and selection, we want to preserve ALL data
+      if (command === 'get_document_info' || command === 'get_selection') {
+        // Type assertion for result since we know we expect certain properties
+        const typedResult = result as any;
+        
+        // If we got a simplified success object instead of real data
+        if (typedResult && typeof typedResult === 'object' && typedResult.success === true && 
+            (!typedResult.name && !typedResult.children && !typedResult.selectionCount && !typedResult.selection)) {
+          
+          logger.warn(`Received simplified success object instead of full data for ${command}. Returning enhanced version.`);
+          
+          // For document info, return a minimal document structure with the command info
+          if (command === 'get_document_info') {
+            return {
+              name: "Document",
+              id: "document-info",
+              type: "PAGE",
+              children: [],
+              currentPage: {
+                id: "current-page",
+                name: "Current Page",
+                childCount: 0
+              },
+              success: true,
+              command: command,
+              _debug: {
+                timestamp: Date.now(),
+                message: "Minimal document info returned due to data loss in transmission"
+              }
+            };
+          }
+          
+          // For selection, return a minimal selection structure with the command info
+          if (command === 'get_selection') {
+            return {
+              selectionCount: 0,
+              selection: [],
+              success: true,
+              command: command,
+              _debug: {
+                timestamp: Date.now(),
+                message: "Minimal selection info returned due to data loss in transmission"
+              }
+            };
+          }
+        }
+      }
+      
       return result;
     } catch (error) {
       logger.error(`Error executing Figma command ${command}: ${error instanceof Error ? error.message : String(error)}`);

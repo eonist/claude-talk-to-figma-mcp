@@ -351,13 +351,40 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
           clearTimeout(matchedRequest.timeout);
           
           // If we have a result, use it, otherwise use an empty success response
-          const result = myResponse?.result || json.result || { success: true, command: commandType };
+          // Get the full result data
+          let result = myResponse?.result || json.result || json.message?.result || { success: true, command: commandType };
+          
+          // Detailed logging of result structure
+          logger.debug(`Full result structure before resolving: ${JSON.stringify(result)}`);
+          
+          // If we have full selection or document data, make sure to preserve it
+          if (commandType === 'get_selection' || commandType === 'get_document_info') {
+            // Check if we have result.result which is sometimes where the actual data is nested
+            if (result.result) {
+              logger.info(`Found nested result.result structure for ${commandType}, using that as top-level data`);
+              result = result.result;
+            }
+            
+            // Make sure the actual data is preserved
+            if (result.selectionCount !== undefined || result.selection !== undefined ||
+                result.name !== undefined || result.children !== undefined) {
+              logger.info(`Preserving detailed ${commandType} data in result`);
+            } else if (myResponse && typeof myResponse === 'object') {
+              // If the data is in myResponse directly, use that
+              if (myResponse.selectionCount !== undefined || myResponse.selection !== undefined ||
+                  myResponse.name !== undefined || myResponse.children !== undefined) {
+                logger.info(`Found ${commandType} data in myResponse, using that instead of simplified result`);
+                result = myResponse;
+              }
+            }
+          }
           
           // Add command type to result if not present
           if (typeof result === 'object' && result !== null && !result.command) {
             result.command = commandType;
           }
           
+          logger.info(`Resolving request with full data for ${commandType}`);
           matchedRequest.resolve(result);
           pendingRequests.delete(matchedId);
         } else {
