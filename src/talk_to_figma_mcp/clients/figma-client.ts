@@ -15,7 +15,7 @@
  * const info = await client.getDocumentInfo();
  * console.log(info);
  */
-import { filterFigmaNode } from "../utils/node-filter.js";
+import { filterFigmaNode } from "../utils/figma/filter-node.js";
 import { logger } from "../utils/logger.js";
 import { ensureNodeIdIsString } from "../utils/node-utils.js";
 import { FigmaCommand } from "../types/commands.js";

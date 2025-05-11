@@ -1,4 +1,4 @@
-import { rgbaToHex } from '../index.js';
+import { rgbaToHex } from '../color/index.js';
 
 /**
  * Filters and processes a Figma node for client consumption.

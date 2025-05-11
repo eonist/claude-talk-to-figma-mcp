@@ -1,4 +1,4 @@
-import { filterFigmaNode } from "../../utils/node-filter.js";
+import { filterFigmaNode } from "../../utils/figma/filter-node.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaCommand, BaseFigmaNode, DocumentInfo, SelectionInfo } from "./types.js";
 import type { FigmaClient } from "./index.js";

@@ -1,4 +1,8 @@
 /**
+ * Color conversion utilities.
+ */
+
+/**
  * Converts RGBA color values to hexadecimal string format.
  * 
  * @param {Object} color - RGBA color object
