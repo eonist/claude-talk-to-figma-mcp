@@ -21,7 +21,7 @@ body.theme-light {
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--tab-border-color);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   padding: 4px;
   background-color: var(--tab-inactive-bg);
   border-radius: 8px;

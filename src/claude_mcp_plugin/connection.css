@@ -31,7 +31,7 @@ body.theme-light {
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .header-logo {
   height: 50px;
@@ -59,7 +59,7 @@ body.theme-light {
 }
 .input-container {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 /* Capsule-shaped Toggle Switch */
 .switch {
@@ -114,7 +114,8 @@ input:checked + .slider:before {
 .toggle-group {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
+  margin-top: 6px;
 }
 
 .toggle-group span {
@@ -123,8 +124,9 @@ input:checked + .slider:before {
   color: var(--text-secondary);
 }
 .status {
-  margin-top: 16px;
-  padding: 15px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  padding: 12px;
   border-radius: 8px;
   font-size: 14px;
   line-height: 1.4;

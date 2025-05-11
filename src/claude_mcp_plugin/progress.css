@@ -15,16 +15,16 @@ body.theme-light {
 }
 
 #progress-container h2 {
-  font-size: 2.5rem;
+  font-size: 18px;
   margin-bottom: 10px;
   font-weight: bold;
   color: var(--text-primary);
 }
 
 #progress-message {
-  font-size: 1.5rem;
+  font-size: 16px;
   margin-top: 0;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   color: var(--text-secondary);
 }
 
@@ -48,7 +48,7 @@ body.theme-light {
 .progress-details {
   display: flex;
   justify-content: space-between;
-  font-size: 1.2rem;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 .operation-complete {
