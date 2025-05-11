@@ -61,12 +61,31 @@ export class FigmaClient {
   async executeCommand(command: FigmaCommand, params: any = {}): Promise<any> {
     try {
       logger.debug(`Executing Figma command: ${command}`);
-      const result = await sendCommandToFigma(command, params);
+      
+      // For document info and selection commands, automatically enhance with raw mode parameters
+      // if these parameters aren't already explicitly set
+      let enhancedParams = params;
+      
+      if ((command === 'get_document_info' || command === 'get_selection') && 
+          !params._rawMode && !params._bypassProcessing) {
+        logger.info(`Adding raw mode parameters for ${command} command`);
+        
+        // Add special debug parameters that have been shown to preserve data better
+        enhancedParams = {
+          ...params,
+          _rawMode: true,
+          _debug: true,
+          _returnFullRawResult: true,
+          _bypassProcessing: true
+        };
+      }
+      
+      const result = await sendCommandToFigma(command, enhancedParams);
       
       // Log the raw result so we can see what's coming back
       logger.info(`Raw result from command ${command}: ${JSON.stringify(result)}`);
       
-      // For document info and selection, we want to preserve ALL data
+      // For document info and selection, we want to preserve ALL data 
       if (command === 'get_document_info' || command === 'get_selection') {
         // Type assertion for result since we know we expect certain properties
         const typedResult = result as any;

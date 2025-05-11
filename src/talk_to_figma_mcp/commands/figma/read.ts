@@ -49,7 +49,7 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
   // Custom debugging command to inspect raw responses
   server.tool(
     "debug_command",
-    "Execute any Figma command and view the raw response",
+    "Execute any Figma command and view the raw response (internal use only)",
     {
       command: z.string().describe("The command to execute"),
       params: z.any().optional().describe("Optional parameters for the command")
@@ -113,16 +113,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        const result = await figmaClient.executeCommand("get_document_info");
-        // Log result for debugging
-        logger.debug(`Document info result: ${JSON.stringify(result)}`);
+        // Instead of using figmaClient, directly use the same execution path as debug_command
+        // by calling debug_command with get_document_info command
         
-        // Return the result but properly structured with the required content array
+        // This is the same code as in debug_command but hardcoded for get_document_info
+        logger.info(`Using direct execution path for get_document_info`);
+        const rawResult = await figmaClient.executeCommand("get_document_info", {
+          _rawMode: true,
+          _debug: true,
+          _returnFullRawResult: true,
+          _bypassProcessing: true,
+          _directExecutionPath: true // Add an extra flag to track this special execution path
+        });
+        
+        // Log the full raw result for inspection
+        logger.info(`DIRECT RAW RESULT FROM get_document_info: ${JSON.stringify(rawResult)}`);
+        
+        // Return the raw result directly like debug_command does
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(rawResult)
             }
           ]
         };
@@ -151,16 +163,26 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        const result = await figmaClient.executeCommand("get_selection");
-        // Log result for debugging
-        logger.debug(`Selection result: ${JSON.stringify(result)}`);
+        // Instead of using figmaClient, directly use the same execution path as debug_command
+        // Use the exact same approach as get_document_info
+        logger.info(`Using direct execution path for get_selection`);
+        const rawResult = await figmaClient.executeCommand("get_selection", {
+          _rawMode: true,
+          _debug: true,
+          _returnFullRawResult: true,
+          _bypassProcessing: true,
+          _directExecutionPath: true // Add an extra flag to track this special execution path
+        });
         
-        // Return the result but properly structured with the required content array
+        // Log the full raw result for inspection using the same format as debug_command
+        logger.info(`DIRECT RAW RESULT FROM get_selection: ${JSON.stringify(rawResult)}`);
+        
+        // Return the result directly like debug_command does
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(rawResult)
             }
           ]
         };

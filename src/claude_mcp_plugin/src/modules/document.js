@@ -120,7 +120,17 @@ export async function getDocumentInfo() {
     }
   };
   
+  // Add detailed debugging info about what's being returned
   console.log(`[DOCUMENT RESULT] Returning document data with ${result.children.length} children`);
+  
+  // Add additional metadata to assist with transport reliability
+  result._metadata = {
+    command: "getDocumentInfo",
+    timestamp: Date.now(),
+    childCount: result.children.length,
+    transportVersion: "1.0"
+  };
+  
   return result;
 }
 
@@ -181,6 +191,15 @@ export async function getSelection() {
   };
   
   console.log(`[SELECTION RESULT] Returning selection data:`, result);
+  
+  // Add additional metadata to assist with transport reliability
+  result._metadata = {
+    command: "getSelection",
+    timestamp: Date.now(),
+    selectionCount: selection.length,
+    transportVersion: "1.0"
+  };
+  
   return result;
 }
 
