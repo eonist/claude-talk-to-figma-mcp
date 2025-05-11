@@ -209,9 +209,22 @@ export interface GetCssAsyncParams extends BaseCommandParams {
   format?: "object" | "string" | "inline";
 }
 
-/**
- * Map each FigmaCommand to its parameter interface.
- */
+/** Parameters for get_node_info command */
+export interface GetNodeInfoParams extends BaseCommandParams {
+  nodeId: string;
+}
+
+/** Parameters for get_nodes_info command */
+export interface GetNodesInfoParams extends BaseCommandParams {
+  nodeIds: string[];
+}
+
+/** Parameters for join channel command */
+export interface JoinChannelParams extends BaseCommandParams {
+  channel: string;
+}
+
+/** Parameters for generate_html command */
 export interface GenerateHtmlParams extends BaseCommandParams {
   /** Target node ID */
   nodeId: string;
@@ -222,6 +235,14 @@ export interface GenerateHtmlParams extends BaseCommandParams {
 }
 
 export interface CommandParamsMap {
+  // Read commands
+  get_document_info: BaseCommandParams;
+  get_selection: BaseCommandParams;
+  get_node_info: GetNodeInfoParams;
+  get_nodes_info: GetNodesInfoParams;
+  get_css_async: GetCssAsyncParams;
+  
+  // Create commands
   create_rectangle: CreateRectangleParams;
   create_frame: CreateFrameParams;
   create_text: CreateTextParams;
@@ -229,6 +250,9 @@ export interface CommandParamsMap {
   create_ellipse: CreateEllipseParams;
   create_polygon: CreatePolygonParams;
   create_star: CreateStarParams;
+  create_button: CreateButtonParams;
+  
+  // Modify commands
   move_node: MoveNodeParams;
   move_nodes: MoveNodesParams;
   resize_node: ResizeNodeParams;
@@ -238,10 +262,15 @@ export interface CommandParamsMap {
   set_fill_color: SetFillColorParams;
   set_stroke_color: SetStrokeColorParams;
   set_text_content: SetTextContentParams;
-  create_button: CreateButtonParams;
   convert_rectangle_to_frame: ConvertRectangleToFrameParams;
   apply_direct_gradient: ApplyDirectGradientParams;
+  
+  // Channel commands
+  join: JoinChannelParams;
+  
+  // HTML commands
   generate_html: GenerateHtmlParams;
-  // TODO: add mappings for all remaining Figma commands
+  
+  // Allow for any other commands with base params
   [command: string]: BaseCommandParams;
 }

@@ -17,6 +17,7 @@ import { logger } from "./logger.js";
 
 /**
  * Standard error response shape for tools.
+ */
 export interface ToolErrorResponse {
   content: Array<{ type: string; text: string }>;
   error: {
@@ -72,7 +73,7 @@ export function handleToolError(
   err: any,
   moduleName: string,
   commandName: string
-) {
+): ToolErrorResponse {
   let code = "UNKNOWN_ERROR";
   let message = err.message ?? String(err);
   let recoverable = false;
@@ -90,6 +91,10 @@ export function handleToolError(
 
   return {
     content: [{ type: "text", text: `Error (${code}): ${message}` }],
-    isError: true
+    error: {
+      code,
+      message,
+      recoverable
+    }
   };
 }

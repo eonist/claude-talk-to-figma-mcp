@@ -120,200 +120,174 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
           type?: string;
           id?: string;
           message: any;
+          result?: any;
+          error?: any;
           [key: string]: any;
         };
         
         logger.debug(`Raw WS message: ${JSON.stringify(json)}`);
 
-        // If the message type indicates a progress update, handle it separately.
-        if (json.type === 'progress_update') {
-          // Extract the progress data and request identifier.
-          const progressData = json.message.data;
-          const requestId = json.id || '';
-
-          if (requestId && pendingRequests.has(requestId)) {
-            const request = pendingRequests.get(requestId)!;
-            // Record current activity time.
-            request.lastActivity = Date.now();
-
-            // Clear previous timeout and set up a new one to extend activity if command is long-running.
-            clearTimeout(request.timeout);
-            request.timeout = setTimeout(() => {
-              if (pendingRequests.has(requestId)) {
-                logger.error(`Request ${requestId} timed out after extended period of inactivity`);
-                pendingRequests.delete(requestId);
-                request.reject(new Error('Request to Figma timed out'));
-              }
-            }, 60000); // 60-second timeout extension during activity
-
-            // Log the progress update details.
-            logger.info(`Progress update for ${progressData.commandType}: ${progressData.progress}% - ${progressData.message}`);
-
-            // Optionally, you may resolve early if progress indicates 100% completion.
-            if (progressData.status === 'completed' && progressData.progress === 100) {
-              logger.info(`Operation ${progressData.commandType} completed, waiting for final result`);
-            }
-          }
-          // Exit early after handling progress updates.
+        // Handle progress updates
+        if (handleProgressUpdate(json)) {
           return;
         }
 
-        // Handle different response structures:
-        // 1. Direct response: json has result field
-        // 2. Nested response: json.message has result field
-        // 3. Response from another client: Check for matching ID in message field
-        
-        // Check for direct result structure
-        if (json.id && pendingRequests.has(json.id) && json.result !== undefined) {
-          const request = pendingRequests.get(json.id)!;
-          clearTimeout(request.timeout);
-          
-          if (json.error) {
-            logger.error(`Error from Figma (direct): ${json.error}`);
-            request.reject(new Error(json.error));
-          } else {
-            logger.info(`Resolving request ${json.id} with direct result`);
-            request.resolve(json.result);
-          }
-          pendingRequests.delete(json.id);
+        // Handle message responses in a structured way
+        if (handleMessageResponse(json)) {
           return;
-        }
-        
-        // Try to extract response from message field
-        const myResponse = json.message;
-        logger.debug(`Extracted message content: ${JSON.stringify(myResponse)}`);
-        
-        // Check if this message has an ID and if that ID matches a pending request
-        if (json.id && pendingRequests.has(json.id)) {
-          // This might be a response from another client that contains the result
-          if (myResponse && myResponse.result !== undefined) {
-            const request = pendingRequests.get(json.id)!;
-            clearTimeout(request.timeout);
-            
-            if (myResponse.error) {
-              logger.error(`Error from Figma (message): ${myResponse.error}`);
-              request.reject(new Error(myResponse.error));
-            } else {
-              logger.info(`Resolving request ${json.id} with message result`);
-              request.resolve(myResponse.result);
-            }
-            pendingRequests.delete(json.id);
-            return;
-          }
-        }
-        
-        // Check if the message itself has an ID and result that matches a pending request
-        if (myResponse && myResponse.id && pendingRequests.has(myResponse.id) && myResponse.result !== undefined) {
-          const request = pendingRequests.get(myResponse.id)!;
-          clearTimeout(request.timeout);
-          
-          if (myResponse.error) {
-            logger.error(`Error from Figma (nested): ${myResponse.error}`);
-            request.reject(new Error(myResponse.error));
-          } else {
-            logger.info(`Resolving request ${myResponse.id} with nested result`);
-            request.resolve(myResponse.result);
-          }
-          pendingRequests.delete(myResponse.id);
-          return;
-        }
-        
-        // Check if this might be a response that doesn't follow the expected pattern
-        // But contains a result that might match an existing request
-        if (json.id && pendingRequests.has(json.id)) {
-          logger.info(`Found request ${json.id} that might match this message, attempting to resolve`);
-          const request = pendingRequests.get(json.id)!;
-          
-          // If we have a result directly in the message
-          if (json.result !== undefined) {
-            logger.info(`Resolving request ${json.id} with direct json.result`);
-            clearTimeout(request.timeout);
-            request.resolve(json.result);
-            pendingRequests.delete(json.id);
-            return;
-          }
-          
-          // If we have any properties that might be useful as a result
-          if (typeof myResponse === 'object' && myResponse !== null) {
-            logger.info(`Treating message object as result for request ${json.id}`);
-            clearTimeout(request.timeout);
-            request.resolve(myResponse);
-            pendingRequests.delete(json.id);
-            return;
-          }
-        }
-        
-        // Last chance: try to find any request that might have timed out
-        // but has a matching response based on command pattern
-        for (const [id, request] of pendingRequests.entries()) {
-          if (id.includes(json.id || '') || (json.id || '').includes(id)) {
-            logger.info(`Possible partial ID match between ${id} and ${json.id}`);
-            if (myResponse && (myResponse.result !== undefined || json.result !== undefined)) {
-              logger.info(`Resolving request ${id} with fuzzy match result`);
-              clearTimeout(request.timeout);
-              request.resolve(myResponse?.result || json.result);
-              pendingRequests.delete(id);
-              return;
-            }
-          }
-        }
-        
-        // For broadcast messages or unassociated responses, log accordingly.
-        logger.info(`Received broadcast or unmatched message: ${JSON.stringify(json)}`);
-        
-        // If we've received a result that looks like document info, try to resolve any pending document info requests
-        if (myResponse && myResponse.result && 
-            myResponse.result.id && 
-            myResponse.result.type === "PAGE" && 
-            myResponse.result.children) {
-          
-          logger.info(`Found what looks like document info, checking for pending requests`);
-          
-          for (const [id, request] of pendingRequests.entries()) {
-            if (id.includes("document_info") || id.includes("get_document")) {
-              logger.info(`Resolving document info request ${id}`);
-              clearTimeout(request.timeout);
-              request.resolve(myResponse.result);
-              pendingRequests.delete(id);
-              break;
-            }
-          }
         }
 
-        // If this has a specific command type, try to resolve any pending requests of that type
-        const commandType = json.message?.command || myResponse?.command;
-        if (commandType && pendingRequests.size > 0) {
-          logger.info(`Looking for pending ${commandType} requests`);
-          
-          // Get the most recent pending request of this command type
-          let matchedRequest = null;
-          let matchedId = null;
-          let mostRecentTime = 0;
-          
-          for (const [id, request] of pendingRequests.entries()) {
-            // Check if request is recent (less than 60 seconds old)
-            if (request.lastActivity > mostRecentTime && id.includes(commandType)) {
-              mostRecentTime = request.lastActivity;
-              matchedRequest = request;
-              matchedId = id;
-            }
-          }
-          
-          if (matchedRequest && matchedId) {
-            logger.info(`Found matching ${commandType} request with ID ${matchedId}, resolving with result`);
-            clearTimeout(matchedRequest.timeout);
-            
-            // If we have a result, use it, otherwise use an empty success response
-            const result = myResponse?.result || json.result || { success: true, command: commandType };
-            matchedRequest.resolve(result);
-            pendingRequests.delete(matchedId);
-          }
-        }
       } catch (error) {
         // Log error details if JSON parsing or any processing fails.
         logger.error(`Error parsing message: ${error instanceof Error ? error.message : String(error)}`);
       }
     });
+
+    /**
+     * Handle progress update messages
+     * @param json The parsed JSON message
+     * @returns true if this was a progress update and was handled
+     */
+    function handleProgressUpdate(json: any): boolean {
+      if (json.type !== 'progress_update') {
+        return false;
+      }
+
+      const progressData = json.message?.data;
+      const requestId = json.id || '';
+
+      if (!requestId || !pendingRequests.has(requestId) || !progressData) {
+        return true; // Still a progress update but we couldn't process it
+      }
+
+      const request = pendingRequests.get(requestId)!;
+      
+      // Update activity timestamp and extend timeout
+      request.lastActivity = Date.now();
+      clearTimeout(request.timeout);
+      request.timeout = setTimeout(() => {
+        if (pendingRequests.has(requestId)) {
+          logger.error(`Request ${requestId} timed out after extended period of inactivity`);
+          pendingRequests.delete(requestId);
+          request.reject(new Error('Request to Figma timed out'));
+        }
+      }, 60000); // 60-second timeout extension
+
+      // Log progress update
+      logger.info(`Progress update for ${progressData.commandType}: ${progressData.progress}% - ${progressData.message}`);
+
+      // Note completion
+      if (progressData.status === 'completed' && progressData.progress === 100) {
+        logger.info(`Operation ${progressData.commandType} completed, waiting for final result`);
+      }
+
+      return true;
+    }
+    
+    /**
+     * Handle message responses in a structured way
+     * @param json The parsed JSON message 
+     * @returns true if a matching request was found and resolved
+     */
+    function handleMessageResponse(json: any): boolean {
+      // Extract key message components
+      const jsonId = json.id;
+      const messageObj = json.message;
+      const messageId = messageObj?.id;
+      const jsonResult = json.result;
+      const messageResult = messageObj?.result;
+      const jsonError = json.error;
+      const messageError = messageObj?.error;
+      const commandType = messageObj?.command;
+
+      // Case 1: Direct result structure (most common)
+      if (jsonId && pendingRequests.has(jsonId) && jsonResult !== undefined) {
+        resolveRequest(jsonId, jsonResult, jsonError, 'direct');
+        return true;
+      }
+      
+      // Case 2: Result in message field
+      if (jsonId && pendingRequests.has(jsonId) && messageResult !== undefined) {
+        resolveRequest(jsonId, messageResult, messageError, 'message');
+        return true;
+      }
+      
+      // Case 3: Nested ID in message matches a request
+      if (messageId && pendingRequests.has(messageId) && messageResult !== undefined) {
+        resolveRequest(messageId, messageResult, messageError, 'nested');
+        return true;
+      }
+      
+      // Case 4: Message is a general object response
+      if (jsonId && pendingRequests.has(jsonId) && typeof messageObj === 'object' && messageObj !== null) {
+        resolveRequest(jsonId, messageObj, undefined, 'object');
+        return true;
+      }
+      
+      // Case 5: Fuzzy ID matching (for partial/mismatched IDs)
+      for (const [id, request] of pendingRequests.entries()) {
+        if ((jsonId && id.includes(jsonId)) || (jsonId && jsonId.includes(id))) {
+          if (messageResult !== undefined || jsonResult !== undefined) {
+            resolveRequest(id, messageResult || jsonResult, messageError || jsonError, 'fuzzy');
+            return true;
+          }
+        }
+      }
+      
+      // Case 6: Looks like document info response
+      if (messageResult?.id && messageResult?.type === "PAGE" && messageResult?.children) {
+        for (const [id, request] of pendingRequests.entries()) {
+          if (id.includes("document_info") || id.includes("get_document")) {
+            resolveRequest(id, messageResult, undefined, 'document_info');
+            return true;
+          }
+        }
+      }
+      
+      // Case 7: Command type matching (last resort)
+      if (commandType && pendingRequests.size > 0) {
+        // Find most recent pending request of this command type
+        let matchedId = null;
+        let mostRecentTime = 0;
+        
+        for (const [id, request] of pendingRequests.entries()) {
+          if (request.lastActivity > mostRecentTime && id.includes(commandType)) {
+            mostRecentTime = request.lastActivity;
+            matchedId = id;
+          }
+        }
+        
+        if (matchedId) {
+          const result = messageResult || jsonResult || { success: true, command: commandType };
+          resolveRequest(matchedId, result, messageError || jsonError, 'command_type');
+          return true;
+        }
+      }
+      
+      // No matching request found
+      logger.info(`Received broadcast or unmatched message: ${JSON.stringify(json)}`);
+      return false;
+    }
+    
+    /**
+     * Helper to resolve a request with proper cleanup
+     */
+    function resolveRequest(id: string, result: any, error: any, matchType: string): void {
+      if (!pendingRequests.has(id)) return;
+      
+      const request = pendingRequests.get(id)!;
+      clearTimeout(request.timeout);
+      
+      if (error) {
+        logger.error(`Error from Figma (${matchType}): ${error}`);
+        request.reject(new Error(typeof error === 'string' ? error : JSON.stringify(error)));
+      } else {
+        logger.info(`Resolving request ${id} with ${matchType} result`);
+        request.resolve(result);
+      }
+      
+      pendingRequests.delete(id);
+    }
 
     ws.on('error', (error: any) => {
       // Log the WebSocket error detail to indicate an error occurred.
