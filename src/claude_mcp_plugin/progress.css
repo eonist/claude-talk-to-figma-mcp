@@ -1,38 +1,55 @@
 /* Progress bar colors */
 :root {
-  --progress-container-bg: #444;
-  --progress-bar-color: #18a0fb;
+  --progress-container-bg: #333333;
+  --progress-bar-color: #555555;
   --operation-complete-color: #4ade80;
   --operation-error-color: #ff9999;
 }
 
 /* Light theme progress colors */
 body.theme-light {
-  --progress-container-bg: #dddddd;
-  --progress-bar-color: #18a0fb;
+  --progress-container-bg: #e0e0e0;
+  --progress-bar-color: #555555;
   --operation-complete-color: #0d9f4f;
   --operation-error-color: #e64c4c;
+}
+
+#progress-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: var(--figma-color-text);
+}
+
+#progress-message {
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: var(--figma-color-text);
 }
 
 .progress-bar-container {
   width: 100%;
   background-color: var(--progress-container-bg);
-  border-radius: 4px;
+  border-radius: 6px;
   margin-top: 8px;
+  height: 12px;
+  overflow: hidden;
+  margin-bottom: 15px;
   transition: background-color 0.3s ease;
 }
 .progress-bar-inner {
   width: 0%;
-  height: 8px;
+  height: 100%;
   background-color: var(--progress-bar-color);
-  border-radius: 4px;
+  border-radius: 6px;
   transition: width 0.3s, background-color 0.3s ease;
 }
 .progress-details {
   display: flex;
   justify-content: space-between;
-  margin-top: 4px;
-  font-size: 12px;
+  font-size: 1.2rem;
+  color: var(--figma-color-text);
 }
 .operation-complete {
   color: var(--operation-complete-color);

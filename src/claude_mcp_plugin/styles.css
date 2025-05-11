@@ -1,108 +1,114 @@
-/* Theme is now handled by Figma's built-in CSS variables */
-:root {
-  /* Custom variables that don't have Figma equivalents */
-  --button-primary-hover: #0d8ee0;
-  --button-secondary-hover: #d0d0d0;
-  --box-bg: var(--figma-color-bg-secondary);
-  --header-bg: var(--figma-color-bg-secondary);
-  --accent-color: var(--figma-color-bg-brand);
-  --heading-color: var(--figma-color-text);
-}
-
-/* Base styles */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  width: 350px;
+  height: 500px;
+  box-sizing: border-box;
   color: var(--figma-color-text);
   background-color: var(--figma-color-bg);
-  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-/* Theme toggle button */
-.theme-toggle-container {
-  margin-left: auto;
-  padding-left: 10px;
-}
-.container {
+.plugin-container {
   display: flex;
   flex-direction: column;
+  padding: 16px;
   height: 100%;
+  box-sizing: border-box;
 }
-h1 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: var(--heading-color);
+
+.section {
+  margin-bottom: 20px;
 }
-h2 {
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
   font-size: 14px;
-  font-weight: 600;
-  margin-top: 20px;
-  margin-bottom: 8px;
-  color: var(--heading-color);
 }
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid var(--figma-color-border);
+  border-radius: 4px;
+  background-color: var(--figma-color-bg);
+  color: var(--figma-color-text);
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--figma-color-border-selected);
+}
+
 button {
-  background-color: var(--figma-color-bg-brand);
-  border: none;
-  color: var(--figma-color-text-on-brand);
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-top: 8px;
-  margin-bottom: 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.2s;
+  border-radius: 6px;
+  padding: 8px 16px;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
 }
-button:hover {
-  background-color: var(--button-primary-hover);
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
+
+button.primary {
+  background-color: var(--figma-color-bg-brand);
+  color: var(--figma-color-text-onbrand);
+}
+
+button.primary:hover:not(:disabled) {
+  background-color: var(--figma-color-bg-brand-hover);
+}
+
 button.secondary {
   background-color: var(--figma-color-bg-secondary);
   color: var(--figma-color-text);
 }
-button.secondary:hover {
-  background-color: var(--button-secondary-hover);
+
+button.secondary:hover:not(:disabled) {
+  background-color: var(--figma-color-bg-secondary-hover);
 }
-button:disabled {
-  background-color: var(--figma-color-bg-disabled);
-  color: var(--figma-color-text-disabled);
-  cursor: not-allowed;
-}
-input {
-  border: 1px solid var(--figma-color-border);
-  border-radius: 4px;
-  padding: 8px;
-  margin-bottom: 12px;
-  font-size: 14px;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: var(--figma-color-bg);
-  color: var(--figma-color-text);
-}
-label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--figma-color-text-secondary);
-}
-.section {
-  margin-bottom: 24px;
-}
-.hidden {
-  display: none;
-}
-.logo {
-  width: 50px;
-  height: 50px;
-}
+
 .link {
-  color: var(--figma-color-bg-brand);
+  color: var(--figma-color-text-brand);
   text-decoration: none;
   cursor: pointer;
 }
+
 .link:hover {
   text-decoration: underline;
+}
+
+.hidden {
+  display: none;
+}
+
+ol, ul {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+li {
+  margin-bottom: 8px;
 }

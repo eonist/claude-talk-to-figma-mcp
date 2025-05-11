@@ -7,6 +7,7 @@
 let portInput;
 let connectButton;
 let disconnectButton;
+let copyChannelButton;
 let connectionStatus;
 let autoReconnectToggle;
 let progressContainer;
@@ -15,11 +16,12 @@ let progressMessage;
 let progressStatus;
 let progressPercentage;
 
-// Initialize UI elements
+  // Initialize UI elements
 function initUIElements() {
   portInput = document.getElementById("port");
   connectButton = document.getElementById("btn-connect");
   disconnectButton = document.getElementById("btn-disconnect");
+  copyChannelButton = document.getElementById("btn-copy-channel");
   connectionStatus = document.getElementById("connection-status");
   autoReconnectToggle = document.getElementById("auto-reconnect-toggle");
   
@@ -42,6 +44,22 @@ function initUIElements() {
     updateConnectionStatus(false, "Disconnecting...");
     connectionStatus.className = "status info";
     disconnectFromServer();
+  });
+  
+  copyChannelButton.addEventListener("click", () => {
+    if (pluginState.connection.channel) {
+      navigator.clipboard.writeText(pluginState.connection.channel)
+        .then(() => {
+          const originalText = copyChannelButton.textContent;
+          copyChannelButton.textContent = "Copied!";
+          setTimeout(() => {
+            copyChannelButton.textContent = originalText;
+          }, 1500);
+        })
+        .catch(err => {
+          console.error("Failed to copy channel ID:", err);
+        });
+    }
   });
   
   // Set up auto-reconnect toggle listener
@@ -68,6 +86,7 @@ function updateConnectionStatus(isConnected, message) {
 
   connectButton.disabled = isConnected;
   disconnectButton.disabled = !isConnected;
+  copyChannelButton.disabled = !isConnected;
   portInput.disabled = isConnected;
 }
 

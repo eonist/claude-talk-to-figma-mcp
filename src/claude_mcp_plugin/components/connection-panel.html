@@ -15,9 +15,12 @@
     </div>
   </div>
   <div class="section">
-    <div class="checkbox-container">
-      <input type="checkbox" id="auto-reconnect-toggle" checked>
-      <label for="auto-reconnect-toggle">Enable auto-reconnect</label>
+    <div class="toggle-group">
+      <label class="switch">
+        <input type="checkbox" id="auto-reconnect-toggle" checked>
+        <span class="slider round"></span>
+      </label>
+      <span>Auto connect to server</span>
     </div>
   </div>
 
@@ -25,6 +28,12 @@
     Not connected to Claude MCP server
   </div>
 
+  <div class="section">
+    <button id="btn-copy-channel" class="secondary" disabled>
+      Copy channel-id
+    </button>
+  </div>
+  
   <div class="section">
     <button id="btn-disconnect" class="secondary" disabled>
       Disconnect

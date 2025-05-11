@@ -13,7 +13,14 @@ function setupThemeDetection() {
     const theme = isDarkTheme ? 'dark' : 'light';
     console.log(`Current Figma theme: ${theme}`);
     
-    // Additional theme-specific logic can go here if needed
+    // Apply our theme class to body
+    if (theme === 'light') {
+      document.body.classList.add('theme-light');
+      document.body.classList.remove('theme-dark');
+    } else {
+      document.body.classList.remove('theme-light');
+      document.body.classList.add('theme-dark');
+    }
   }
   
   // Detect initial theme
