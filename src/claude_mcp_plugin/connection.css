@@ -110,7 +110,9 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(20px);
+  left: auto;
+  right: 3px;
+  transform: none;
   background-color: var(--toggle-thumb-active-bg);
 }
 
