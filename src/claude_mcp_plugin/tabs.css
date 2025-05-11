@@ -4,7 +4,7 @@
   --tab-text-color: #8C8C8C;
   --tab-active-text: #FFFFFF;
   --tab-active-border: #FFFFFF;
-  --tab-active-bg: #171717;
+  --tab-active-bg: #1a1a1a;
   --tab-inactive-bg: #141414;
 }
 
@@ -20,14 +20,19 @@ body.theme-light {
 
 .tabs {
   display: flex;
-  border-bottom: 1px solid var(--tab-border-color);
+  /*border-bottom: 1px solid var(--tab-border-color);*/
   margin-bottom: 12px;
   margin-left: 16px;
   margin-right: 16px;
-  padding: 4px 16px;
   background-color: var(--tab-inactive-bg);
   border-radius: 8px;
-  transition: border-color 0.3s ease;
+  /*transition: border-color 0.3s ease;*/
+  /*box-shadow: 0 0 4px rgba(255, 255, 255, 0.08);*/ /* Dark mode shadow - very subtle white, nearly black */
+}
+
+/* Light mode shadow */
+body.theme-light .tabs {
+  /*box-shadow: 0 0 4px rgba(0, 0, 0, 0.06);*/ /* Light mode shadow - very subtle black, nearly white */
 }
 .tab {
   flex: 1;
@@ -39,12 +44,13 @@ body.theme-light {
   color: var(--tab-text-color);
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
   border-radius: 6px;
+  background-color: transparent; /* No background for inactive tabs */
 }
 .tab.active {
   background-color: var(--tab-active-bg); 
   color: var(--tab-active-text);
   font-weight: 600;
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  /*box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);*/
 }
 .tab-content {
   display: none;
