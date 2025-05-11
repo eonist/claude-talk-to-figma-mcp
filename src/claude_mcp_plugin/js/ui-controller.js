@@ -149,6 +149,9 @@ function updateConnectionStatus(isConnected, message) {
   // Update connect button text based on connection status
   connectButton.textContent = isConnected ? "Disconnect" : "Connect";
   
+  // Update copy channel button text based on connection status
+  copyChannelButton.textContent = isConnected ? "Copy channel-id" : "Channel id not available";
+  
   // Disable connect button if auto-reconnect is enabled, regardless of connection status
   connectButton.disabled = pluginState.connection.autoReconnect;
   
