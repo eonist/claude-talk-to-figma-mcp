@@ -70,6 +70,7 @@ body.theme-light {
   display: inline-block;
   width: 48px;
   height: 20px;
+  padding: 0;
 }
 
 .switch input {
@@ -88,6 +89,7 @@ body.theme-light {
   background-color: var(--toggle-track-off-bg);
   transition: .4s;
   border-radius: 10px;
+  padding: 0;
 }
 
 .slider:before {
@@ -101,6 +103,7 @@ body.theme-light {
   background-color: var(--toggle-thumb-bg);
   transition: .4s;
   border-radius: 50%;
+  padding: 0;
 }
 
 input:checked + .slider {
@@ -125,6 +128,21 @@ input:checked + .slider:before {
   align-items: center;
   margin-top: 6px;
   margin-bottom: 12px;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.switch {
+  margin: 0;
+  padding: 0;
+}
+
+.toggle-group label,
+.toggle-group input,
+.toggle-group .slider,
+.toggle-group .slider:before {
+  margin: 0;
+  padding: 0;
 }
 
 .toggle-group span {
