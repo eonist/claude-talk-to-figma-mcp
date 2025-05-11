@@ -47,18 +47,38 @@ function initUIElements() {
   });
   
   copyChannelButton.addEventListener("click", () => {
+    console.log("Copy channel button clicked");
+    
     if (pluginState.connection.channel) {
+      console.log(`Attempting to copy channel ID: "${pluginState.connection.channel}"`);
+      
       navigator.clipboard.writeText(pluginState.connection.channel)
         .then(() => {
+          console.log("✓ Successfully copied to clipboard");
           const originalText = copyChannelButton.textContent;
           copyChannelButton.textContent = "Copied!";
+          
+          console.log("Sending notification to Figma");
+          // Send notification to Figma
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: "notify",
+                message: `Copied channel ID: ${pluginState.connection.channel}`,
+              },
+            },
+            "*"
+          );
+          
           setTimeout(() => {
             copyChannelButton.textContent = originalText;
           }, 1500);
         })
         .catch(err => {
-          console.error("Failed to copy channel ID:", err);
+          console.error("❌ Failed to copy channel ID:", err);
         });
+    } else {
+      console.warn("No channel ID available to copy");
     }
   });
   
