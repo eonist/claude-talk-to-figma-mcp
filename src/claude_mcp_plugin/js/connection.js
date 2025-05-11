@@ -301,6 +301,27 @@ function sendSuccessResponse(id, result) {
     return;
   }
 
+  // Make sure we have a valid ID, otherwise log an error
+  if (!id || id === "undefined") {
+    console.error("Cannot send response: missing valid ID");
+    console.info("Response data:", result);
+    
+    // Try to find an appropriate ID for this result
+    if (result && typeof result === 'object' && result.command) {
+      const commandType = result.command;
+      id = findCommandId(commandType);
+      console.log(`Using recovered ID for ${commandType}: ${id}`);
+    }
+    
+    // If still no ID, cannot send response
+    if (!id) {
+      console.error("ID recovery failed, cannot send response");
+      return;
+    }
+  }
+
+  console.log(`Sending success response with ID: ${id}`);
+  
   pluginState.connection.socket.send(
     JSON.stringify({
       id,
@@ -320,13 +341,68 @@ function sendErrorResponse(id, errorMessage) {
     console.error("Cannot send error response: socket not connected");
     return;
   }
+  
+  // Make sure we have a valid ID
+  if (!id || id === "undefined") {
+    console.error("Cannot send error response: missing valid ID");
+    
+    // Try to get the most recent command ID of any type
+    if (window.commandIdMap) {
+      var allCommands = [];
+      var entries = Array.from(window.commandIdMap.entries());
+      for (var i = 0; i < entries.length; i++) {
+        var cmdEntries = entries[i][1];
+        for (var j = 0; j < cmdEntries.length; j++) {
+          allCommands.push(cmdEntries[j]);
+        }
+      }
+      allCommands.sort(function(a, b) { return b.timestamp - a.timestamp; });
+        
+      if (allCommands.length > 0) {
+        id = allCommands[0].id;
+        console.log(`Using recovered ID for error: ${id}`);
+      }
+    }
+    
+    if (!id) {
+      console.error("ID recovery failed, cannot send error response");
+      return;
+    }
+  }
 
+  console.log(`Sending error response with ID: ${id}`);
+  
   pluginState.connection.socket.send(
     JSON.stringify({
       id,
-      error: errorMessage,
+      type: "message",
+      channel: pluginState.connection.channel,
+      message: {
+        id,
+        error: errorMessage,
+      },
     })
   );
+}
+
+// Helper to find the most recent command ID (duplicated from message-handler.js for self-containment)
+function findCommandId(commandType) {
+  if (!window.commandIdMap || !window.commandIdMap.has(commandType)) {
+    console.warn(`No stored command IDs found for command type: ${commandType}`);
+    return null;
+  }
+  
+  const commandEntries = window.commandIdMap.get(commandType);
+  if (commandEntries.length === 0) {
+    console.warn(`Command entries array is empty for command type: ${commandType}`);
+    return null;
+  }
+  
+  // Sort by timestamp in descending order (most recent first)
+  commandEntries.sort((a, b) => b.timestamp - a.timestamp);
+  
+  // Return the most recent command ID
+  return commandEntries[0].id;
 }
 
 // Send operation progress update to server

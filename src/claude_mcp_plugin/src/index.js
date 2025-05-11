@@ -67,16 +67,42 @@ figma.ui.onmessage = async (msg) => {
     // Theme detection is now handled directly by Figma's themeColors
     case 'execute-command':
       try {
-        const result = await handleCommand(msg.command, msg.params);
+        console.log(`Executing command with ID: ${msg.id}`, msg.command, msg.params);
+        
+        // Store command ID in the params to preserve it
+        if (!msg.params) msg.params = {};
+        
+        // Clone params using Object.assign instead of spread operator
+        const paramsWithId = Object.assign({}, msg.params || {}, {
+          _originalCommandId: msg.id, // Store original ID
+          commandType: msg.command    // Store command type for recovery
+        });
+        
+        const result = await handleCommand(msg.command, paramsWithId);
+        
+        // Add command type to result for better ID recovery
+        let enhancedResult = result;
+        if (typeof result === 'object' && result !== null) {
+          enhancedResult = Object.assign({}, result, {
+            command: msg.command
+          });
+        }
+        
+        console.log(`Command execution complete. Sending result with ID: ${msg.id}`);
+        
         figma.ui.postMessage({
           type: 'command-result',
           id: msg.id,
-          result
+          command: msg.command, // Include command type in the response
+          result: enhancedResult
         });
       } catch (error) {
+        console.error(`Error executing command ${msg.command} with ID ${msg.id}:`, error);
+        
         figma.ui.postMessage({
           type: 'command-error',
           id: msg.id,
+          command: msg.command,
           error: error.message || 'Error executing command'
         });
       }
