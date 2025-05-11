@@ -68,7 +68,7 @@ body.theme-light {
 .switch {
   position: relative;
   display: inline-block;
-  width: 48px;
+  width: 40px;
   height: 20px;
   padding: 0;
 }
@@ -87,7 +87,7 @@ body.theme-light {
   right: 0;
   bottom: 0;
   background-color: var(--toggle-track-off-bg);
-  transition: .4s;
+  transition: background-color 0.25s;
   border-radius: 10px;
   padding: 0;
 }
@@ -101,7 +101,7 @@ body.theme-light {
   top: 0;
   bottom: 0;
   background-color: var(--toggle-thumb-bg);
-  transition: .4s;
+  transition: left 0.25s, background-color 0.25s;
   border-radius: 50%;
   padding: 0;
 }
@@ -115,11 +115,7 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  left: auto;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  transform: none;
+  left: 20px;
   background-color: var(--toggle-thumb-active-bg);
 }
 
