@@ -76,10 +76,6 @@ function initUIElements() {
         copySuccess = document.execCommand('copy');
         console.log(copySuccess ? "✓ Successfully copied to clipboard using execCommand" : "❌ Copy command failed");
         
-        // Update UI
-        const originalText = copyChannelButton.textContent;
-        copyChannelButton.textContent = "Copied!";
-        
         // Send notification to Figma
         console.log("Sending notification to Figma");
         parent.postMessage(
@@ -91,10 +87,6 @@ function initUIElements() {
           },
           "*"
         );
-        
-        setTimeout(() => {
-          copyChannelButton.textContent = originalText;
-        }, 1500);
       } catch (err) {
         console.error("❌ Failed to copy channel ID:", err);
       }
