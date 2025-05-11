@@ -139,23 +139,15 @@ button:disabled {
 }
 
 /* Ensure specific button IDs properly apply theme colors */
-#btn-connect {
+#btn-connect, #btn-disconnect, #btn-copy-channel {
   background-color: var(--button-primary-bg);
   color: var(--button-primary-text);
 }
 
-#btn-connect:hover:not(:disabled) {
+#btn-connect:hover:not(:disabled),
+#btn-disconnect:hover:not(:disabled),
+#btn-copy-channel:hover:not(:disabled) {
   background-color: var(--button-primary-hover-bg);
-}
-
-#btn-copy-channel, #btn-disconnect {
-  background-color: var(--button-secondary-bg);
-  color: var(--button-secondary-text);
-}
-
-#btn-copy-channel:hover:not(:disabled), 
-#btn-disconnect:hover:not(:disabled) {
-  background-color: var(--button-secondary-hover-bg);
 }
 
 .link {
