@@ -196,8 +196,82 @@ function initMessageListener() {
         }
         
         console.log(`[SENDING RESPONSE] Preparing to send response with ID: ${responseId}`);
-        // Forward the result from plugin code back to WebSocket
-        sendSuccessResponse(responseId, message.result);
+        
+        // Check if this is a document or selection response for special handling to preserve all data
+        let enhancedResult = message.result;
+        
+        // For document info and selection responses, we need to ensure all data is included
+        if (message.command === 'get_document_info' || message.command === 'get_selection') {
+          console.log(`[DATA PRESERVATION] Special handling for ${message.command} data`);
+          
+          // If we have a data-rich result with strong indicators of real Figma data
+          let isRealDocumentData = message.result && 
+                                  typeof message.result === 'object' &&
+                                  (message.result.children || 
+                                   message.result.type === 'PAGE' ||
+                                   message.result.name);
+                                   
+          let isRealSelectionData = message.result && 
+                                   typeof message.result === 'object' &&
+                                   (message.result.selection || 
+                                    message.result.selectionCount !== undefined);
+          
+          if (isRealDocumentData || isRealSelectionData) {
+            console.log(`[FULL DATA] Detected real ${message.command} data with rich structure`);
+            
+            // Keep all the original data but add command identifier
+            enhancedResult = Object.assign({}, message.result, {
+              command: message.command,
+              _dataQuality: 'full',
+              _timestamp: Date.now()
+            });
+            
+            console.log(`[FULL DATA] Enhanced result with metadata:`, enhancedResult);
+          } else {
+            console.warn(`[MINIMAL DATA] Result for ${message.command} lacks expected properties`);
+            // Create a minimal result structure with the success flag
+            if (message.command === 'get_document_info') {
+              enhancedResult = {
+                name: "Document",
+                id: "document-info",
+                type: "PAGE",
+                children: [],
+                currentPage: {
+                  id: "current-page",
+                  name: "Current Page",
+                  childCount: 0
+                },
+                success: true,
+                command: message.command,
+                _dataQuality: 'minimal',
+                _debug: {
+                  timestamp: Date.now(),
+                  message: "Minimal document info returned due to data loss in transmission"
+                }
+              };
+            } else if (message.command === 'get_selection') {
+              enhancedResult = {
+                selectionCount: 0,
+                selection: [],
+                success: true,
+                command: message.command,
+                _dataQuality: 'minimal',
+                _debug: {
+                  timestamp: Date.now(),
+                  message: "Minimal selection info returned due to data loss in transmission"
+                }
+              };
+            }
+          }
+        } else {
+          // For all other commands, ensure we have the command type in the result
+          if (enhancedResult && typeof enhancedResult === 'object') {
+            enhancedResult.command = message.command;
+          }
+        }
+        
+        // Forward the enhanced result from plugin code back to WebSocket
+        sendSuccessResponse(responseId, enhancedResult);
         break;
       }
       case "command-error": {

@@ -538,6 +538,17 @@ export function sendCommandToFigma(
     }
 
     const id = uuidv4();
+    
+    // For document info and selection, add special handling flags
+    const enhancedParams = {...(params as any)};
+    
+    if (command === 'get_document_info' || command === 'get_selection') {
+      logger.info(`Adding special handling flags for command: ${command}`);
+      enhancedParams._preserveAllData = true;
+      enhancedParams._enhancedRequest = true;
+      enhancedParams._requestTime = Date.now();
+    }
+    
     const request: WebSocketMessage = {
       id,
       type: command === "join" ? "join" : "message",
@@ -548,7 +559,7 @@ export function sendCommandToFigma(
         id,
         command,
         params: {
-          ...(params as any),
+          ...enhancedParams,
           commandId: id, // Include the command ID in params
         },
       },
