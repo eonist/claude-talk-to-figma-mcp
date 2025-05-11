@@ -170,6 +170,13 @@ Please resize all selected elements so their longest side is 20px.
 
 ## Changelog
 
+### 0.5.1 (2025-05-11)
+- Figma theme support & dark/light toggle
+- Countdown timer for persistent-retry mode
+- Optimized CLI heartbeat to stop CPU overheating
+- Fixed checkbox alignment
+- Resolved client-server communication issues
+
 ### 0.5.0 (2025-10-05)
 - Export Figma HTML: Enables exporting Figma designs as HTML code.
 - Export Figma CSS: Allows exporting design styles into CSS files.
