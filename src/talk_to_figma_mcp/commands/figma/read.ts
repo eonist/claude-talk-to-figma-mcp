@@ -113,28 +113,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        // Instead of using figmaClient, directly use the same execution path as debug_command
-        // by calling debug_command with get_document_info command
-        
-        // This is the same code as in debug_command but hardcoded for get_document_info
-        logger.info(`Using direct execution path for get_document_info`);
-        const rawResult = await figmaClient.executeCommand("get_document_info", {
-          _rawMode: true,
-          _debug: true,
-          _returnFullRawResult: true,
-          _bypassProcessing: true,
-          _directExecutionPath: true // Add an extra flag to track this special execution path
+        // Return a direct debug_command call, which seems to work more reliably
+        const debugResult = await figmaClient.executeCommand("debug_command" as any, {
+          command: "get_document_info",
+          params: {}
         });
         
-        // Log the full raw result for inspection
-        logger.info(`DIRECT RAW RESULT FROM get_document_info: ${JSON.stringify(rawResult)}`);
+        // Return the full debug result with minimal processing
+        const metaInfo = {
+          method: "debug_command direct passthrough",
+          timestamp: new Date().toISOString(),
+          originalCommand: "get_document_info"
+        };
         
-        // Return the raw result directly like debug_command does
+        // Return both the debug info and the complete result for analysis
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(rawResult)
+              text: JSON.stringify({ 
+                meta: metaInfo,
+                fullDebugOutput: debugResult 
+              })
             }
           ]
         };
@@ -163,26 +163,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        // Instead of using figmaClient, directly use the same execution path as debug_command
-        // Use the exact same approach as get_document_info
-        logger.info(`Using direct execution path for get_selection`);
-        const rawResult = await figmaClient.executeCommand("get_selection", {
-          _rawMode: true,
-          _debug: true,
-          _returnFullRawResult: true,
-          _bypassProcessing: true,
-          _directExecutionPath: true // Add an extra flag to track this special execution path
+        // Return a direct debug_command call, which seems to work more reliably
+        const debugResult = await figmaClient.executeCommand("debug_command" as any, {
+          command: "get_selection",
+          params: {}
         });
         
-        // Log the full raw result for inspection using the same format as debug_command
-        logger.info(`DIRECT RAW RESULT FROM get_selection: ${JSON.stringify(rawResult)}`);
+        // Return the full debug result with minimal processing
+        const metaInfo = {
+          method: "debug_command direct passthrough",
+          timestamp: new Date().toISOString(),
+          originalCommand: "get_selection"
+        };
         
-        // Return the result directly like debug_command does
+        // Return both the debug info and the complete result for analysis
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(rawResult)
+              text: JSON.stringify({ 
+                meta: metaInfo,
+                fullDebugOutput: debugResult 
+              })
             }
           ]
         };
@@ -217,12 +219,21 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
         const nodeIdString = ensureNodeIdIsString(nodeId);
         logger.debug(`Getting node info for ID: ${nodeIdString}`);
         
-        const result = await figmaClient.executeCommand("get_node_info", { nodeId: nodeIdString });
+        // Bypass the node filter for node info as well
+        logger.info(`[NODE INFO] Getting node info without filtering for ${nodeIdString}`);
+        const result = await figmaClient.executeCommand("get_node_info", { 
+          nodeId: nodeIdString,
+          _rawMode: true,
+          _returnFullData: true,
+          _bypassFiltering: true
+        });
+        
+        // Return without filtering
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(filterFigmaNode(result))
+              text: JSON.stringify(result)
             }
           ]
         };
@@ -256,12 +267,19 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
         const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
         logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
         
-        const results = await figmaClient.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings });
+        // Also bypass filtering for multiple nodes
+        logger.info(`[NODES INFO] Getting nodes info without filtering for ${nodeIdStrings.length} nodes`);
+        const results = await figmaClient.executeCommand("get_nodes_info", { 
+          nodeIds: nodeIdStrings,
+          _rawMode: true,
+          _returnFullData: true,
+          _bypassFiltering: true
+        });
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(results)
+              text:  results
             }
           ]
         };
