@@ -172,6 +172,14 @@ button:disabled {
   background-color: var(--button-primary-hover-bg);
 }
 
+/* Override disabled styles for these specific buttons */
+#btn-connect:disabled, #btn-copy-channel:disabled {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
 .link {
   color: var(--button-primary-bg);
   text-decoration: none;

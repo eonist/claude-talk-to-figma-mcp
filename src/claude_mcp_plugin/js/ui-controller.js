@@ -94,10 +94,10 @@ function initUIElements() {
       // Update status message with channel info if connected
       if (pluginState.connection.connected && pluginState.connection.channel) {
         updateConnectionStatus(true, 
-          `Auto-reconnect disabled. Connected to server on port ${pluginState.connection.serverPort} in channel: <strong>${pluginState.connection.channel}</strong>`);
+          `Connected to server on port ${pluginState.connection.serverPort} in channel: <strong>${pluginState.connection.channel}</strong>`);
       } else {
-        updateConnectionStatus(pluginState.connection.connected, 
-          "Auto-reconnect disabled");
+        // Just use the default message for the current connection state
+        updateConnectionStatus(pluginState.connection.connected);
       }
     }
     
