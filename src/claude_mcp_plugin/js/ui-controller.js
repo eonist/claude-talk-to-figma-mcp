@@ -101,8 +101,8 @@ function initUIElements() {
       }
     }
     
-    // Update button state when auto-reconnect changes
-    updateConnectionStatus(pluginState.connection.connected);
+    // Update connect button state without updating the status message
+    connectButton.disabled = autoReconnectToggle.checked;
   });
   
   // Initialize auto-reconnect toggle state from pluginState
@@ -124,11 +124,24 @@ function initUIElements() {
 // Update connection status UI
 function updateConnectionStatus(isConnected, message) {
   pluginState.connection.connected = isConnected;
-  connectionStatus.innerHTML =
-    message ||
-    (isConnected
-      ? "Connected to Claude MCP server"
-      : "Not connected to Claude MCP server");
+  
+  // Create default message based on connection state
+  let defaultMessage = "";
+  if (isConnected) {
+    if (pluginState.connection.channel) {
+      // If connected and we have a channel, show detailed information
+      defaultMessage = `Connected to server on port ${pluginState.connection.serverPort} in channel: <strong>${pluginState.connection.channel}</strong>`;
+    } else {
+      // If connected but no channel yet, show simple message
+      defaultMessage = "Connected to Claude MCP server";
+    }
+  } else {
+    // Not connected
+    defaultMessage = "Not connected to Claude MCP server";
+  }
+  
+  // Use provided message or default
+  connectionStatus.innerHTML = message || defaultMessage;
   connectionStatus.className = `status ${
     isConnected ? "connected" : "disconnected"
   }`;
