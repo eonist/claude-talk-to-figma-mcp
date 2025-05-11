@@ -280,35 +280,109 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
           }
         }
 
-        // If this has a specific command type, try to resolve any pending requests of that type
-        const commandType = json.message?.command || myResponse?.command;
-        if (commandType && pendingRequests.size > 0) {
-          logger.info(`Looking for pending ${commandType} requests`);
-          
-          // Get the most recent pending request of this command type
-          let matchedRequest = null;
-          let matchedId = null;
-          let mostRecentTime = 0;
-          
+      // If this has a specific command type, try to resolve any pending requests of that type
+      let commandType = json.message?.command || myResponse?.command;
+      
+      // Try to extract command type from result data if not explicitly provided
+      if (!commandType && myResponse?.result && typeof myResponse.result === 'object') {
+        if (myResponse.result.command) {
+          commandType = myResponse.result.command;
+          logger.info(`Extracted command type from result: ${commandType}`);
+        } else if (myResponse.result.type === 'PAGE') {
+          commandType = 'get_document_info';
+          logger.info(`Inferred command type from PAGE result: ${commandType}`);
+        }
+      }
+      
+      if (commandType && pendingRequests.size > 0) {
+        logger.info(`Looking for pending ${commandType} requests (${pendingRequests.size} total pending)`);
+        
+        // Get the most recent pending request of this command type
+        let matchedRequest = null;
+        let matchedId = null;
+        let mostRecentTime = 0;
+        
+        // For debugging, log all pending requests
+        logger.debug('Pending requests:');
+        for (const [id, request] of pendingRequests.entries()) {
+          const ageMs = Date.now() - request.lastActivity;
+          logger.debug(`  ID: ${id}, age: ${ageMs}ms`);
+        }
+        
+        for (const [id, request] of pendingRequests.entries()) {
+          // First try exact command match
+          if (id.includes(commandType)) {
+            if (request.lastActivity > mostRecentTime) {
+              mostRecentTime = request.lastActivity;
+              matchedRequest = request;
+              matchedId = id;
+              logger.info(`Found matching request by command type: ${id}`);
+            }
+          }
+        }
+        
+        // If still no match, try to match any recent request
+        if (!matchedRequest && commandType.includes('get_document')) {
+          logger.info('No direct match found, looking for any document-related requests');
           for (const [id, request] of pendingRequests.entries()) {
-            // Check if request is recent (less than 60 seconds old)
-            if (request.lastActivity > mostRecentTime && id.includes(commandType)) {
+            if ((id.includes('get_') || id.includes('document')) && request.lastActivity > mostRecentTime) {
+              mostRecentTime = request.lastActivity;
+              matchedRequest = request;
+              matchedId = id;
+              logger.info(`Found potential document request match: ${id}`);
+            }
+          }
+        }
+        
+        // Still no match? Take the most recent request of any type as a fallback
+        if (!matchedRequest) {
+          logger.info('No specific match found, defaulting to most recent request');
+          for (const [id, request] of pendingRequests.entries()) {
+            if (request.lastActivity > mostRecentTime) {
               mostRecentTime = request.lastActivity;
               matchedRequest = request;
               matchedId = id;
             }
           }
-          
-          if (matchedRequest && matchedId) {
-            logger.info(`Found matching ${commandType} request with ID ${matchedId}, resolving with result`);
-            clearTimeout(matchedRequest.timeout);
-            
-            // If we have a result, use it, otherwise use an empty success response
-            const result = myResponse?.result || json.result || { success: true, command: commandType };
-            matchedRequest.resolve(result);
-            pendingRequests.delete(matchedId);
-          }
         }
+        
+        if (matchedRequest && matchedId) {
+          logger.info(`Resolving request ${matchedId} (command: ${commandType})`);
+          clearTimeout(matchedRequest.timeout);
+          
+          // If we have a result, use it, otherwise use an empty success response
+          const result = myResponse?.result || json.result || { success: true, command: commandType };
+          
+          // Add command type to result if not present
+          if (typeof result === 'object' && result !== null && !result.command) {
+            result.command = commandType;
+          }
+          
+          matchedRequest.resolve(result);
+          pendingRequests.delete(matchedId);
+        } else {
+          logger.warn(`Could not find any matching request for command: ${commandType}`);
+        }
+      }
+      
+      // Periodic pending request cleanup
+      const now = Date.now();
+      if (now % 60000 < 1000) { // Run cleanup roughly once a minute
+        const startCount = pendingRequests.size;
+        if (startCount > 0) {
+          logger.info(`Running periodic cleanup of ${startCount} pending requests`);
+          for (const [id, request] of pendingRequests.entries()) {
+            const ageMs = now - request.lastActivity;
+            if (ageMs > 300000) { // 5 minutes
+              logger.info(`Auto-cleaning old request ${id} (age: ${ageMs}ms)`);
+              clearTimeout(request.timeout);
+              request.reject(new Error('Request automatically cleaned up due to age'));
+              pendingRequests.delete(id);
+            }
+          }
+          logger.info(`Cleanup complete: ${startCount} -> ${pendingRequests.size} requests`);
+        }
+      }
       } catch (error) {
         // Log error details if JSON parsing or any processing fails.
         logger.error(`Error parsing message: ${error instanceof Error ? error.message : String(error)}`);
