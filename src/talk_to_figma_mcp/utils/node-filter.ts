@@ -24,45 +24,7 @@ import { rgbaToHex } from './color.js';
  * @property {Array<Object>} [strokes] - Processed stroke styles
  * @property {Object} [style] - Cleaned text style properties
  */
-/**
- * Checks if the node appears to be a document info or selection info result.
- * 
- * @param {Object} node - The node object to check
- * @returns {boolean} True if this looks like document or selection data
- */
-function isDocumentOrSelectionData(node: any): boolean {
-  if (!node || typeof node !== 'object') return false;
-  
-  // Check for document info indicators
-  if (node.command === 'get_document_info' || 
-      (node.currentPage && node.children && node.type === 'PAGE')) {
-    return true;
-  }
-  
-  // Check for selection info indicators
-  if (node.command === 'get_selection' || 
-      (node.selectionCount !== undefined && node.selection && Array.isArray(node.selection))) {
-    return true;
-  }
-  
-  return false;
-}
-
-/**
- * Filters and processes Figma node data for client consumption.
- * If the node appears to be document info or selection data, it will be returned unfiltered
- * to preserve all data.
- * 
- * @param {any} node - Raw Figma node to filter
- * @returns {any} Filtered node data, or raw data for document/selection
- */
 export function filterFigmaNode(node: any) {
-  // For document info or selection data, return as-is with no filtering
-  if (isDocumentOrSelectionData(node)) {
-    console.log(`[NODE FILTER] Detected document or selection data, returning unfiltered`);
-    return node;
-  }
-  
   // Skip VECTOR type nodes
   if (node.type === "VECTOR") {
     return null;

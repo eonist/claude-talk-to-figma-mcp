@@ -46,62 +46,6 @@ import { ensureNodeIdIsString } from "../../utils/node-utils.js";
  * @param {FigmaClient} figmaClient - The Figma client instance
  */
 export function registerReadCommands(server: McpServer, figmaClient: FigmaClient) {
-  // Custom debugging command to inspect raw responses
-  server.tool(
-    "debug_command",
-    "Execute any Figma command and view the raw response (internal use only)",
-    {
-      command: z.string().describe("The command to execute"),
-      params: z.any().optional().describe("Optional parameters for the command")
-    },
-    async ({ command, params = {} }) => {
-      try {
-        logger.info(`Executing debug command: ${command}`);
-        // Type assertion to allow any string command
-        const rawResult = await figmaClient.executeCommand(command as any, params);
-        
-        // Log the full raw result for inspection
-        logger.info(`RAW RESULT FROM ${command}: ${JSON.stringify(rawResult)}`);
-        
-        // Detailed response structure analysis
-        const resultType = typeof rawResult;
-        const isObject = resultType === 'object';
-        const hasProperties = isObject && rawResult !== null ? Object.keys(rawResult).join(', ') : 'none';
-        
-        const debugInfo = {
-          resultType,
-          isObject,
-          isNull: rawResult === null,
-          hasProperties,
-          resultSize: JSON.stringify(rawResult).length,
-          resultPreview: JSON.stringify(rawResult).substring(0, 500),
-          timestamp: new Date().toISOString()
-        };
-        
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Debug Info: ${JSON.stringify(debugInfo)}`
-            },
-            {
-              type: "text",
-              text: `Raw Result: ${JSON.stringify(rawResult)}`
-            }
-          ]
-        };
-      } catch (error) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error in debug command: ${error instanceof Error ? error.message : String(error)}`
-            }
-          ]
-        };
-      }
-    }
-  );
   /**
    * Get Document Info Tool
    *
@@ -113,40 +57,23 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        // Return a direct debug_command call, which seems to work more reliably
-        const debugResult = await figmaClient.executeCommand("debug_command" as any, {
-          command: "get_document_info",
-          params: {}
-        });
-        
-        // Return the full debug result with minimal processing
-        const metaInfo = {
-          method: "debug_command direct passthrough",
-          timestamp: new Date().toISOString(),
-          originalCommand: "get_document_info"
-        };
-        
-        // Return both the debug info and the complete result for analysis
+        const result = await figmaClient.executeCommand("get_document_info");
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify({ 
-                meta: metaInfo,
-                fullDebugOutput: debugResult 
-              })
+              text: JSON.stringify(result)
             }
           ]
         };
       } catch (error) {
-        logger.error(`Error in get_document_info: ${error instanceof Error ? error.message : String(error)}`);
         return {
           content: [
             {
               type: "text",
-              text: `Error getting document info: ${error instanceof Error ? error.message : String(error)}`
-            }
-          ]
+              text: `Error getting document info: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ],
         };
       }
     }
@@ -163,40 +90,23 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
     {},
     async () => {
       try {
-        // Return a direct debug_command call, which seems to work more reliably
-        const debugResult = await figmaClient.executeCommand("debug_command" as any, {
-          command: "get_selection",
-          params: {}
-        });
-        
-        // Return the full debug result with minimal processing
-        const metaInfo = {
-          method: "debug_command direct passthrough",
-          timestamp: new Date().toISOString(),
-          originalCommand: "get_selection"
-        };
-        
-        // Return both the debug info and the complete result for analysis
+        const result = await figmaClient.executeCommand("get_selection");
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify({ 
-                meta: metaInfo,
-                fullDebugOutput: debugResult 
-              })
+              text: JSON.stringify(result)
             }
           ]
         };
       } catch (error) {
-        logger.error(`Error in get_selection: ${error instanceof Error ? error.message : String(error)}`);
         return {
           content: [
             {
               type: "text",
-              text: `Error getting selection: ${error instanceof Error ? error.message : String(error)}`
-            }
-          ]
+              text: `Error getting selection: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ],
         };
       }
     }
@@ -219,21 +129,12 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
         const nodeIdString = ensureNodeIdIsString(nodeId);
         logger.debug(`Getting node info for ID: ${nodeIdString}`);
         
-        // Bypass the node filter for node info as well
-        logger.info(`[NODE INFO] Getting node info without filtering for ${nodeIdString}`);
-        const result = await figmaClient.executeCommand("get_node_info", { 
-          nodeId: nodeIdString,
-          _rawMode: true,
-          _returnFullData: true,
-          _bypassFiltering: true
-        });
-        
-        // Return without filtering
+        const result = await figmaClient.executeCommand("get_node_info", { nodeId: nodeIdString });
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(filterFigmaNode(result))
             }
           ]
         };
@@ -267,19 +168,12 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
         const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
         logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
         
-        // Also bypass filtering for multiple nodes
-        logger.info(`[NODES INFO] Getting nodes info without filtering for ${nodeIdStrings.length} nodes`);
-        const results = await figmaClient.executeCommand("get_nodes_info", { 
-          nodeIds: nodeIdStrings,
-          _rawMode: true,
-          _returnFullData: true,
-          _bypassFiltering: true
-        });
+        const results = await figmaClient.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings });
         return {
           content: [
             {
               type: "text",
-              text:  results
+              text: JSON.stringify(results)
             }
           ]
         };

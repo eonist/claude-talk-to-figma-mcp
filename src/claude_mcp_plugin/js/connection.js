@@ -294,62 +294,59 @@ async function sendCommand(command, params) {
   });
 }
 
-// Send success response back to WebSocket with retry logic
-function sendSuccessResponse(id, result, retryCount = 0) {
+// Send success response back to WebSocket
+function sendSuccessResponse(id, result) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {
     console.error("Cannot send response: socket not connected");
     return;
   }
 
+  // Make sure we have a valid ID, otherwise log an error
   if (!id || id === "undefined") {
     console.error("Cannot send response: missing valid ID");
     console.info("Response data:", result);
     
+    // Try to find an appropriate ID for this result
     if (result && typeof result === 'object' && result.command) {
       const commandType = result.command;
       id = findCommandId(commandType);
       console.log(`Using recovered ID for ${commandType}: ${id}`);
     }
     
+    // If still no ID, cannot send response
     if (!id) {
       console.error("ID recovery failed, cannot send response");
       return;
     }
   }
 
-  const message = JSON.stringify({
-    id,
-    type: "message",
-    channel: pluginState.connection.channel,
-    message: {
+  console.log(`Sending success response with ID: ${id}`);
+  
+  pluginState.connection.socket.send(
+    JSON.stringify({
       id,
-      result,
-    },
-  });
-
-  try {
-    pluginState.connection.socket.send(message);
-    console.log(`Sent success response with ID: ${id}`);
-  } catch (error) {
-    console.error(`Failed to send success response with ID: ${id}, attempt ${retryCount + 1}`, error);
-    if (retryCount < 3) {
-      setTimeout(() => sendSuccessResponse(id, result, retryCount + 1), 1000 * (retryCount + 1));
-    } else {
-      console.error(`Giving up sending success response with ID: ${id} after 3 attempts`);
-    }
-  }
+      type: "message",
+      channel: pluginState.connection.channel,
+      message: {
+        id,
+        result,
+      },
+    })
+  );
 }
 
-// Send error response back to WebSocket with retry logic
-function sendErrorResponse(id, errorMessage, retryCount = 0) {
+// Send error response back to WebSocket
+function sendErrorResponse(id, errorMessage) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {
     console.error("Cannot send error response: socket not connected");
     return;
   }
   
+  // Make sure we have a valid ID
   if (!id || id === "undefined") {
     console.error("Cannot send error response: missing valid ID");
     
+    // Try to get the most recent command ID of any type
     if (window.commandIdMap) {
       var allCommands = [];
       var entries = Array.from(window.commandIdMap.entries());
@@ -373,27 +370,19 @@ function sendErrorResponse(id, errorMessage, retryCount = 0) {
     }
   }
 
-  const message = JSON.stringify({
-    id,
-    type: "message",
-    channel: pluginState.connection.channel,
-    message: {
+  console.log(`Sending error response with ID: ${id}`);
+  
+  pluginState.connection.socket.send(
+    JSON.stringify({
       id,
-      error: errorMessage,
-    },
-  });
-
-  try {
-    pluginState.connection.socket.send(message);
-    console.log(`Sent error response with ID: ${id}`);
-  } catch (error) {
-    console.error(`Failed to send error response with ID: ${id}, attempt ${retryCount + 1}`, error);
-    if (retryCount < 3) {
-      setTimeout(() => sendErrorResponse(id, errorMessage, retryCount + 1), 1000 * (retryCount + 1));
-    } else {
-      console.error(`Giving up sending error response with ID: ${id} after 3 attempts`);
-    }
-  }
+      type: "message",
+      channel: pluginState.connection.channel,
+      message: {
+        id,
+        error: errorMessage,
+      },
+    })
+  );
 }
 
 // Helper to find the most recent command ID (duplicated from message-handler.js for self-containment)

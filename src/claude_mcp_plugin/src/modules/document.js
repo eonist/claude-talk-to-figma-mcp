@@ -77,17 +77,7 @@ export function ensureNodeIdIsString(nodeId) {
  */
 export async function getDocumentInfo() {
   const page = figma.currentPage;
-  console.log(`[DOCUMENT DEBUG] Getting document info for page: ${page.name} (${page.id})`);
-  console.log(`[DOCUMENT DEBUG] Page has ${page.children.length} top-level nodes`);
-  
-  // Log child nodes for debugging
-  if (page.children.length > 0) {
-    page.children.forEach((node, index) => {
-      console.log(`[DOCUMENT DEBUG] Child ${index+1}: ID=${node.id}, Name=${node.name}, Type=${node.type}`);
-    });
-  }
-  
-  const result = {
+  return {
     name: page.name,
     id: page.id,
     type: "PAGE",
@@ -95,17 +85,11 @@ export async function getDocumentInfo() {
       id: node.id,
       name: node.name,
       type: node.type || "UNKNOWN",
-      x: node.x,
-      y: node.y,
-      width: node.width,
-      height: node.height,
-      visible: node.visible
     })),
     currentPage: {
       id: page.id,
       name: page.name,
       childCount: page.children.length,
-      backgroundColor: (page.backgrounds && page.backgrounds.length > 0 && page.backgrounds[0].color) ? page.backgrounds[0].color : null
     },
     pages: [
       {
@@ -114,24 +98,7 @@ export async function getDocumentInfo() {
         childCount: page.children.length,
       },
     ],
-    _debug: {
-      timestamp: Date.now(),
-      command: "getDocumentInfo"
-    }
   };
-  
-  // Add detailed debugging info about what's being returned
-  console.log(`[DOCUMENT RESULT] Returning document data with ${result.children.length} children`);
-  
-  // Add additional metadata to assist with transport reliability
-  result._metadata = {
-    command: "getDocumentInfo",
-    timestamp: Date.now(),
-    childCount: result.children.length,
-    transportVersion: "1.0"
-  };
-  
-  return result;
 }
 
 /**
@@ -163,44 +130,15 @@ export async function getDocumentInfo() {
 export async function getSelection() {
   // Getting the selection from figma.currentPage.selection if available
   const selection = figma.currentPage.selection || [];
-  console.log(`[SELECTION DEBUG] Found ${selection.length} selected items`);
-  
-  // Log each selected node for debugging
-  if (selection.length > 0) {
-    selection.forEach((node, index) => {
-      console.log(`[SELECTION DEBUG] Item ${index+1}: ID=${node.id}, Name=${node.name}, Type=${node.type}`);
-    });
-  }
-  
-  const result = {
+  return {
     selectionCount: selection.length,
     selection: selection.map((node) => ({
       id: node.id,
       name: node.name,
       type: node.type || "UNKNOWN",
       visible: node.visible,
-      x: node.x,
-      y: node.y,
-      width: node.width,
-      height: node.height
     })),
-    _debug: {
-      timeStamp: Date.now(),
-      command: "getSelection"
-    }
   };
-  
-  console.log(`[SELECTION RESULT] Returning selection data:`, result);
-  
-  // Add additional metadata to assist with transport reliability
-  result._metadata = {
-    command: "getSelection",
-    timestamp: Date.now(),
-    selectionCount: selection.length,
-    transportVersion: "1.0"
-  };
-  
-  return result;
 }
 
 /**

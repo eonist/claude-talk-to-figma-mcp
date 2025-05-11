@@ -67,7 +67,7 @@ figma.ui.onmessage = async (msg) => {
     // Theme detection is now handled directly by Figma's themeColors
     case 'execute-command':
       try {
-        console.log(`[COMMAND START] Executing command with ID: ${msg.id}`, msg.command, msg.params);
+        console.log(`Executing command with ID: ${msg.id}`, msg.command, msg.params);
         
         // Store command ID in the params to preserve it
         if (!msg.params) msg.params = {};
@@ -75,59 +75,36 @@ figma.ui.onmessage = async (msg) => {
         // Clone params using Object.assign instead of spread operator
         const paramsWithId = Object.assign({}, msg.params || {}, {
           _originalCommandId: msg.id, // Store original ID
-          commandType: msg.command,    // Store command type for recovery
-          _startTime: Date.now()       // Add timestamp for tracking
+          commandType: msg.command    // Store command type for recovery
         });
         
-        // Add detailed execution tracking
-        console.log(`[COMMAND PROCESSING] About to call handleCommand for ${msg.command} with ID: ${msg.id}`);
         const result = await handleCommand(msg.command, paramsWithId);
-        console.log(`[COMMAND RESULT] Got result for ${msg.command} with ID: ${msg.id}:`, result);
-        
-        // Check if result is null or undefined
-        if (result === null || result === undefined) {
-          console.warn(`[COMMAND WARNING] Result is ${result === null ? 'null' : 'undefined'} for command ${msg.command} with ID: ${msg.id}`);
-        }
         
         // Add command type to result for better ID recovery
         let enhancedResult = result;
         if (typeof result === 'object' && result !== null) {
           enhancedResult = Object.assign({}, result, {
-            command: msg.command,
-            _traceId: `${msg.id}_${Date.now()}`, // Add trace ID
-            _executionTime: Date.now() - paramsWithId._startTime
+            command: msg.command
           });
         }
         
-        console.log(`[COMMAND COMPLETE] Execution complete for ${msg.command} with ID: ${msg.id}. Sending result back to UI.`);
+        console.log(`Command execution complete. Sending result with ID: ${msg.id}`);
         
-        // Log entire message being sent to UI
-        const uiMessage = {
+        figma.ui.postMessage({
           type: 'command-result',
           id: msg.id,
-          command: msg.command,
-          result: enhancedResult,
-          _timestamp: Date.now()
-        };
-        
-        console.log(`[UI MESSAGE] Sending message to UI:`, uiMessage);
-        figma.ui.postMessage(uiMessage);
-        console.log(`[UI MESSAGE SENT] Message sent to UI for ${msg.command} with ID: ${msg.id}`);
+          command: msg.command, // Include command type in the response
+          result: enhancedResult
+        });
       } catch (error) {
-        console.error(`[COMMAND ERROR] Error executing command ${msg.command} with ID ${msg.id}:`, error);
+        console.error(`Error executing command ${msg.command} with ID ${msg.id}:`, error);
         
-        // Log entire error message being sent
-        const errorMessage = {
+        figma.ui.postMessage({
           type: 'command-error',
           id: msg.id,
           command: msg.command,
-          error: error.message || 'Error executing command',
-          _timestamp: Date.now()
-        };
-        
-        console.log(`[UI ERROR MESSAGE] Sending error to UI:`, errorMessage);
-        figma.ui.postMessage(errorMessage);
-        console.log(`[UI ERROR SENT] Error message sent to UI for ${msg.command} with ID: ${msg.id}`);
+          error: error.message || 'Error executing command'
+        });
       }
       break;
     default:
