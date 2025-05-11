@@ -34,6 +34,7 @@ body.theme-light {
   display: flex;
   align-items: center;
   margin-bottom: 12px;
+  padding-left: 16px;
 }
 .header-logo {
   height: 50px;
@@ -122,8 +123,8 @@ input:checked + .slider:before {
 .toggle-group {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
   margin-top: 6px;
+  margin-bottom: 12px;
 }
 
 .toggle-group span {
@@ -133,8 +134,10 @@ input:checked + .slider:before {
 }
 .status {
   margin-top: 8px;
+  margin-right: 16px;
   margin-bottom: 12px;
-  padding: 12px;
+  margin-left: 16px;
+  padding: 12px 16px;
   border-radius: 8px;
   font-size: 14px;
   line-height: 1.4;
@@ -151,4 +154,9 @@ input:checked + .slider:before {
 .status.info {
   background-color: var(--status-info-bg);
   color: var(--status-info-text);
+}
+
+.tabs {
+  margin-left: 16px;
+  margin-right: 16px;
 }

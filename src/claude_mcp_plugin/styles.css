@@ -52,7 +52,7 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 16px 16px 16px 0;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -62,7 +62,7 @@ body {
 .plugin-container {
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 16px 16px 16px 0;
   height: 100%;
   box-sizing: border-box;
   background-color: var(--plugin-bg);
@@ -70,6 +70,7 @@ body {
 
 .section {
   margin-bottom: 12px;
+  padding-left: 16px;
 }
 
 h1, h2, h3, h4, h5, h6 {
