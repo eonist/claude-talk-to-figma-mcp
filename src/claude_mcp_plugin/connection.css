@@ -10,8 +10,8 @@
   --status-info-text: #66b3ff;
   --toggle-track-off-bg: #3C3C3C;
   --toggle-track-on-bg: #5C5C5C;
-  --toggle-thumb-bg: white;
-  --toggle-thumb-active-bg: black;
+  --toggle-thumb-bg: black;
+  --toggle-thumb-active-bg: white;
 }
 
 /* Light theme status colors */
