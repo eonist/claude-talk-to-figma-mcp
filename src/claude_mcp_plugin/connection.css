@@ -155,20 +155,18 @@ input:checked + .slider:before {
   border-radius: 8px;
   font-size: 14px;
   line-height: 1.4;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  background-color: #1a1a1a;
+  border: 1px solid #2F2F2F;
+  color: #A6A6A6;
 }
-.status.connected {
-  background-color: var(--status-connected-bg);
-  color: var(--status-connected-text);
+
+body.theme-light .status {
+  background-color: #ffffff;
+  border: 1px solid #CCCCCC;
+  color: #666666;
 }
-.status.disconnected {
-  background-color: var(--status-disconnected-bg);
-  color: var(--status-disconnected-text);
-}
-.status.info {
-  background-color: var(--status-info-bg);
-  color: var(--status-info-text);
-}
+
 
 .tabs {
   margin-left: 16px;

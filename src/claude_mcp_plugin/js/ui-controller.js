@@ -6,7 +6,6 @@
 // UI Elements
 let portInput;
 let connectButton;
-let disconnectButton;
 let copyChannelButton;
 let connectionStatus;
 let autoReconnectToggle;
@@ -20,7 +19,6 @@ let progressPercentage;
 function initUIElements() {
   portInput = document.getElementById("port");
   connectButton = document.getElementById("btn-connect");
-  disconnectButton = document.getElementById("btn-disconnect");
   copyChannelButton = document.getElementById("btn-copy-channel");
   connectionStatus = document.getElementById("connection-status");
   autoReconnectToggle = document.getElementById("auto-reconnect-toggle");
@@ -34,16 +32,18 @@ function initUIElements() {
   
   // Set up event listeners
   connectButton.addEventListener("click", () => {
-    const port = parseInt(portInput.value, 10) || 3055;
-    updateConnectionStatus(false, "Connecting...");
-    connectionStatus.className = "status info";
-    connectToServer(port);
-  });
-
-  disconnectButton.addEventListener("click", () => {
-    updateConnectionStatus(false, "Disconnecting...");
-    connectionStatus.className = "status info";
-    disconnectFromServer();
+    if (pluginState.connection.connected) {
+      // If connected, disconnect
+      updateConnectionStatus(false, "Disconnecting...");
+      connectionStatus.className = "status info";
+      disconnectFromServer();
+    } else {
+      // If disconnected, connect
+      const port = parseInt(portInput.value, 10) || 3055;
+      updateConnectionStatus(false, "Connecting...");
+      connectionStatus.className = "status info";
+      connectToServer(port);
+    }
   });
   
   copyChannelButton.addEventListener("click", () => {
@@ -66,10 +66,59 @@ function initUIElements() {
   autoReconnectToggle.addEventListener("change", () => {
     pluginState.connection.autoReconnect = autoReconnectToggle.checked;
     console.log(`Auto-reconnect ${pluginState.connection.autoReconnect ? 'enabled' : 'disabled'}`);
+    
+    // Trigger connection/disconnection based on toggle state
+    if (autoReconnectToggle.checked) {
+      // If auto-connect toggled ON and not connected, connect immediately
+      if (!pluginState.connection.connected) {
+        const port = parseInt(portInput.value, 10) || 3055;
+        updateConnectionStatus(false, "Auto-connecting...");
+        connectionStatus.className = "status info";
+        connectToServer(port);
+      }
+    } else {
+      // Stop any ongoing reconnection attempts
+      if (pluginState.connection.reconnectTimer) {
+        clearTimeout(pluginState.connection.reconnectTimer);
+        pluginState.connection.reconnectTimer = null;
+        
+        if (pluginState.connection.countdownTimer) {
+          clearInterval(pluginState.connection.countdownTimer);
+          pluginState.connection.countdownTimer = null;
+        }
+        
+        pluginState.connection.reconnectAttempts = 0;
+        pluginState.connection.inPersistentRetryMode = false;
+      }
+      
+      // Update status message with channel info if connected
+      if (pluginState.connection.connected && pluginState.connection.channel) {
+        updateConnectionStatus(true, 
+          `Auto-reconnect disabled. Connected to server on port ${pluginState.connection.serverPort} in channel: <strong>${pluginState.connection.channel}</strong>`);
+      } else {
+        updateConnectionStatus(pluginState.connection.connected, 
+          "Auto-reconnect disabled");
+      }
+    }
+    
+    // Update button state when auto-reconnect changes
+    updateConnectionStatus(pluginState.connection.connected);
   });
   
   // Initialize auto-reconnect toggle state from pluginState
   autoReconnectToggle.checked = pluginState.connection.autoReconnect;
+  
+  // Initialize connect button state based on auto-reconnect setting
+  // This ensures the button is properly disabled when auto-reconnect is enabled
+  updateConnectionStatus(pluginState.connection.connected);
+  
+  // If auto-reconnect is enabled at startup, attempt to connect immediately
+  if (pluginState.connection.autoReconnect && !pluginState.connection.connected) {
+    const port = parseInt(portInput.value, 10) || 3055;
+    updateConnectionStatus(false, "Auto-connecting on startup...");
+    connectionStatus.className = "status info";
+    connectToServer(port);
+  }
 }
 
 // Update connection status UI
@@ -84,8 +133,12 @@ function updateConnectionStatus(isConnected, message) {
     isConnected ? "connected" : "disconnected"
   }`;
 
-  connectButton.disabled = isConnected;
-  disconnectButton.disabled = !isConnected;
+  // Update connect button text based on connection status
+  connectButton.textContent = isConnected ? "Disconnect" : "Connect";
+  
+  // Disable connect button if auto-reconnect is enabled, regardless of connection status
+  connectButton.disabled = pluginState.connection.autoReconnect;
+  
   copyChannelButton.disabled = !isConnected;
   portInput.disabled = isConnected;
 }

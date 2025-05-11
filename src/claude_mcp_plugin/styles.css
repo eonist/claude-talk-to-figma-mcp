@@ -108,6 +108,17 @@ input[type="number"]:focus {
   border-color: var(--text-tertiary);
 }
 
+/* Port connection input specific styling */
+#port {
+  background-color: #1a1a1a;
+  border-color: #2F2F2F;
+}
+
+body.theme-light #port {
+  background-color: #ffffff;
+  border-color: #CCCCCC;
+}
+
 button {
   cursor: pointer;
   font-size: 14px;
