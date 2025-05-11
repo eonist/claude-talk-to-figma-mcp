@@ -120,7 +120,7 @@ input:checked + .slider:before {
 .toggle-group span {
   margin-left: 10px;
   font-size: 14px;
-  color: var(--figma-color-text);
+  color: var(--text-secondary);
 }
 .status {
   margin-top: 16px;

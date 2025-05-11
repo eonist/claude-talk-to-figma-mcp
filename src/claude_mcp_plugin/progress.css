@@ -18,14 +18,14 @@ body.theme-light {
   font-size: 2.5rem;
   margin-bottom: 10px;
   font-weight: bold;
-  color: var(--figma-color-text);
+  color: var(--text-primary);
 }
 
 #progress-message {
   font-size: 1.5rem;
   margin-top: 0;
   margin-bottom: 30px;
-  color: var(--figma-color-text);
+  color: var(--text-secondary);
 }
 
 .progress-bar-container {
@@ -49,7 +49,7 @@ body.theme-light {
   display: flex;
   justify-content: space-between;
   font-size: 1.2rem;
-  color: var(--figma-color-text);
+  color: var(--text-secondary);
 }
 .operation-complete {
   color: var(--operation-complete-color);
