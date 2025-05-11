@@ -115,6 +115,9 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
 
     ws.on("message", (data: any) => {
       try {
+        // Log the raw data for debugging
+        logger.info(`[CRITICAL] Raw WebSocket data received: ${data.toString().substring(0, 200)}...`);
+        
         // Attempt to parse the incoming data as JSON.
         const json = JSON.parse(data) as {
           type?: string;
@@ -123,7 +126,32 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
           [key: string]: any;
         };
         
-        logger.debug(`Raw WS message: ${JSON.stringify(json)}`);
+        logger.info(`[CRITICAL] Parsed WebSocket message structure keys: ${Object.keys(json).join(', ')}`);
+        if (json.message) {
+          logger.info(`[CRITICAL] Message structure keys: ${Object.keys(json.message).join(', ')}`);
+          
+          // DIRECT PAYLOAD CHECK: Look for a result object in the message
+          if (json.message.result) {
+            logger.info(`[CRITICAL] Found result object in message with keys: ${Object.keys(json.message.result).join(', ')}`);
+            
+            // Check for any special payload indicators
+            const result = json.message.result;
+            if (result._dataQuality === "full" || result._traceId || result._executionTime) {
+              logger.info(`[CRITICAL] Found high quality data indicators in message`);
+              
+              // Try to immediately resolve any pending request with this raw data
+              const messageId = json.id || json.message.id;
+              if (messageId && pendingRequests.has(messageId)) {
+                logger.info(`[CRITICAL] Direct resolution of request ${messageId} with full quality data`);
+                const request = pendingRequests.get(messageId)!;
+                clearTimeout(request.timeout);
+                request.resolve(result);
+                pendingRequests.delete(messageId);
+                return; // Skip all other processing
+              }
+            }
+          }
+        }
 
         // If the message type indicates a progress update, handle it separately.
         if (json.type === 'progress_update') {
@@ -182,6 +210,45 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
         // Try to extract response from message field
         const myResponse = json.message;
         logger.debug(`Extracted message content: ${JSON.stringify(myResponse)}`);
+        
+        // CRITICAL FIX: Check if we have rich document data in the message
+        if (json.message && json.message.result && 
+            json.message.result.children && 
+            Array.isArray(json.message.result.children) && 
+            json.message.result.children.length > 0) {
+          logger.info(`[CRITICAL] Found rich document data with ${json.message.result.children.length} children`);
+          
+          // Look for any pending document info requests
+          for (const [id, request] of pendingRequests.entries()) {
+            if (id.includes("document_info") || id.includes("get_document")) {
+              logger.info(`[CRITICAL] Resolving document info request ${id} with FULL rich data`);
+              clearTimeout(request.timeout);
+              // Don't process the data, return it directly to preserve all information
+              request.resolve(json.message.result);
+              pendingRequests.delete(id);
+              return; // Stop processing after handling this critical case
+            }
+          }
+        }
+        
+        // CRITICAL FIX: Check if we have rich selection data in the message
+        if (json.message && json.message.result && 
+            json.message.result.selection && 
+            Array.isArray(json.message.result.selection)) {
+          logger.info(`[CRITICAL] Found rich selection data with ${json.message.result.selection.length} selected items`);
+          
+          // Look for any pending selection requests
+          for (const [id, request] of pendingRequests.entries()) {
+            if (id.includes("selection") || id.includes("get_selection")) {
+              logger.info(`[CRITICAL] Resolving selection request ${id} with FULL rich data`);
+              clearTimeout(request.timeout);
+              // Don't process the data, return it directly to preserve all information
+              request.resolve(json.message.result);
+              pendingRequests.delete(id);
+              return; // Stop processing after handling this critical case
+            }
+          }
+        }
         
         // Check if this message has an ID and if that ID matches a pending request
         if (json.id && pendingRequests.has(json.id)) {
