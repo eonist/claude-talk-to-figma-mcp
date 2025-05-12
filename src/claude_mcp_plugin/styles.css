@@ -54,7 +54,8 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-left: 16px; /* Add left padding to header */
+  padding-left: 16px;
+  margin-bottom: 12px; /* Restore spacing between header and tabs */
 }
 
 .header > * {
@@ -63,14 +64,20 @@ body {
   box-sizing: border-box;
 }
 
-.header-text h1,
-.header-text p {
+.header-text {
+  /* Gap is already set on the header, so no margin needed */
+  margin-left: 0;
+}
+
+.header-text h1 {
   margin: 0;
-  padding: 0;
+  font-size: 16px;
 }
 
 .header-text p {
-  margin-top: 4px;
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: var(--header-text-secondary, #AAAAAA);
 }
 
 .header-logo {
