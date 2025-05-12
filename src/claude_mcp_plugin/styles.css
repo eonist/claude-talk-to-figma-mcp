@@ -83,7 +83,7 @@ body {
 .header-logo {
   width: 40px;
   height: 40px;
-  border-radius: 6px;
+  border-radius: 10px;
   background-color: #E7E7E7;
   display: flex;
   align-items: center;
@@ -121,6 +121,7 @@ body {
 .section {
   margin-bottom: 12px;
   padding-left: 16px;
+  padding-right: 16px; /* Add right padding to match left padding */
 }
 
 h1, h2, h3, h4, h5, h6 {
