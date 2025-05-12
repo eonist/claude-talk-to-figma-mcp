@@ -212,6 +212,137 @@ For UI changes:
 3. For TypeScript functionality, update files in the `src/conduit_mcp_plugin/src/` directory (specifically `ui.ts` or related files).
 4. Run `bun run build:ui` to rebuild the UI.
 
+## UI Implementation
+
+The plugin's user interface is built using standard web technologies (HTML, CSS, JavaScript) and runs within Figma's webview. It's designed to provide a clear interface for connecting to the MCP server and viewing command interactions.
+
+### Core UI Components
+
+The UI is composed of several key elements:
+
+1.  **Manifest Configuration (`manifest.json`)**:
+    The `manifest.json` file defines the entry point for the UI:
+
+    ```json
+    {
+      // ... other manifest fields
+      "ui": {
+        "html": "ui.html"
+        // Note: CSS is inlined in ui.html by the build process
+      }
+      // ... other manifest fields
+    }
+    ```
+    This tells Figma to load `dist/ui.html` (as configured by the build process) when the plugin UI is opened.
+
+2.  **HTML Structure (`ui.html`)**:
+    The `ui.html` file (generated from `ui-template.html` and components) provides the visual layout. Key parts include:
+
+    ```html
+    <div class="container">
+      <div id="status-bar" class="status-connected">
+        <span class="channel-id">Channel: {{channelId}}</span>
+        <button id="copy-button">Copy ID</button>
+      </div>
+      <div class="message-log" id="message-container"></div>
+    </div>
+    ```
+    This structure includes elements for displaying the connection status, the channel ID for connecting the MCP server, and a log area for messages and command feedback.
+
+3.  **CSS Styling**:
+    Styling is handled by CSS files (`styles.css`, `connection.css`, `tabs.css`, `progress.css`) which are combined and inlined into `ui.html` during the build process. The styling aims to provide a look and feel consistent with the native Figma interface.
+
+    ```css
+    .container {
+      padding: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+      /* ... other styles */
+    }
+
+    .status-connected {
+      background: #18A0FB; /* Example color */
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      /* ... other styles */
+    }
+
+    .message-log {
+      max-height: 300px; /* Example height */
+      overflow-y: auto;
+      margin-top: 12px;
+      /* ... other styles */
+    }
+    ```
+
+4.  **JavaScript Logic**:
+    The UI's interactivity and communication are managed by JavaScript files located in the `js/` directory and the bundled TypeScript from `src/ui.ts`. This code handles events, updates the DOM, and communicates with the plugin's core logic (`code.js`) and the MCP server (via WebSocket).
+
+    ```javascript
+    // Snippet illustrating communication flow (Simplified)
+    // In code.js (plugin core):
+    figma.ui.onmessage = async (message) => {
+      switch (message.type) {
+        case 'CONNECT_WS':
+          // Logic to connect to WebSocket server
+          break;
+        case 'EXECUTE_COMMAND':
+          // Logic to handle commands from UI
+          break;
+        // ... other message types
+      }
+    };
+
+    // In UI JavaScript (e.g., main.js or bundled ui.ts):
+    // Example of sending a message to the plugin core
+    parent.postMessage({ pluginMessage: { type: 'CONNECT_WS', channelId: '...' } }, '*');
+
+    // Example of receiving messages from the plugin core
+    window.onmessage = (event) => {
+      const pluginMessage = event.data.pluginMessage;
+      if (pluginMessage) {
+        switch (pluginMessage.type) {
+          case 'WS_RESPONSE':
+            // Update UI with response data
+            break;
+          // ... other message types
+        }
+      }
+    };
+    ```
+    This includes managing the WebSocket connection state and handling bidirectional message passing between the UI and the plugin's core `code.js`.
+
+### UI Interaction Flow
+
+The user interface follows a specific flow:
+
+1.  **Initialization Sequence**:
+    When the user opens the plugin, Figma loads the `manifest.json`, which points to `dist/ui.html` and `dist/code.js`. The browser loads `ui.html` (with inlined styles and UI scripts). The `code.js` script initializes and establishes communication with the UI. The UI then typically attempts to establish a WebSocket connection to the MCP server, and its status updates accordingly.
+
+2.  **Command Execution Flow**:
+    User interactions within the UI (e.g., clicking a button, typing text) trigger UI events. These events are handled by the UI's JavaScript, which sends a message to the plugin's core (`code.js`) using `parent.postMessage`. The `code.js` receives this message via `figma.ui.onmessage`, processes the request (e.g., sends a command to the WebSocket server), and handles the response.
+
+3.  **Real-time Feedback System**:
+    The UI provides real-time feedback through:
+    -   Connection status indicators (e.g., connected, disconnected, connecting).
+    -   A message log displaying commands sent and responses received from the MCP server.
+    -   Display of the unique channel ID for connecting the external MCP server.
+
+### Advanced UI Features
+
+The UI incorporates several advanced features for a better user experience:
+
+-   **Context-Aware Controls**: UI elements can dynamically adjust based on the current state of the Figma document, user permissions, or the connection status to the MCP server.
+-   **Performance Optimization**: Techniques like virtualized scrolling for the message log, WebSocket message batching, and debounced UI updates are used to maintain responsiveness, especially with frequent message exchanges.
+-   **Accessibility Features**: Efforts are made to ensure the UI is accessible, including support for keyboard navigation, screen reader compatibility, and appropriate color contrast.
+
+### Cross-Platform Considerations
+
+Developing for the Figma plugin environment involves considering differences between the Desktop and Web versions:
+
+-   **Figma Desktop vs Web**: There can be differences in file system access (more restricted in Web), WebSocket security policies, and performance characteristics. The plugin's implementation needs to account for these variations.
+-   **Multi-Instance Handling**: The plugin is designed to handle multiple instances running concurrently. Each instance uses a unique channel ID for WebSocket pairing to ensure messages are routed correctly to the specific plugin instance that initiated the command. Resource cleanup is managed when a plugin window is closed.
+
 ## Commands
 
 The plugin supports various commands organized into categories:
