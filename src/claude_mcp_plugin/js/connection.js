@@ -70,7 +70,7 @@ function updateCountdownDisplay() {
     const seconds = pluginState.connection.countdownSeconds;
     updateConnectionStatus(
       false, 
-      `Continuing to retry connection... Reconnecting in ${seconds} second${seconds !== 1 ? 's' : ''}...`
+      `Not connected. Next attempt in ${seconds} second${seconds !== 1 ? 's' : ''}`
     );
   }
 }
@@ -94,18 +94,18 @@ function attemptReconnect() {
     // Switch to persistent retry mode
     pluginState.connection.inPersistentRetryMode = true;
     delay = pluginState.connection.persistentRetryDelay;
-    statusMessage = `Initial reconnection attempts failed. Continuing to retry every ${Math.round(delay/1000)} seconds...`;
+    statusMessage = `Not connected. Next attempt in ${Math.round(delay/1000)} seconds`;
   } 
   else if (pluginState.connection.inPersistentRetryMode) {
     // We're already in persistent retry mode
     delay = pluginState.connection.persistentRetryDelay;
-    statusMessage = `Continuing to retry connection every ${Math.round(delay/1000)} seconds...`;
+    statusMessage = `Not connected. Next attempt in ${Math.round(delay/1000)} seconds`;
   } 
   else {
     // Still in exponential backoff phase
     pluginState.connection.reconnectAttempts++;
     delay = getReconnectDelay();
-    statusMessage = `Connection lost. Reconnecting in ${Math.round(delay/1000)} seconds... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`;
+    statusMessage = `Not connected. Retrying in ${Math.round(delay/1000)} seconds (Attempt ${pluginState.connection.reconnectAttempts} of ${pluginState.connection.maxReconnectAttempts})`;
   }
   
   // Update UI to show reconnection attempt
@@ -178,7 +178,7 @@ async function connectToServer(port) {
             const channelName = data.channel;
             updateConnectionStatus(
               true,
-              `Connected to server on port ${port} in channel: <strong>${channelName}</strong>`
+              `Connected: Server port ${port}, Channel ${channelName}`
             );
 
             // Notify the plugin code
@@ -215,7 +215,7 @@ async function connectToServer(port) {
       } else {
         // Otherwise, just update status to disconnected
         pluginState.connection.socket = null;
-        updateConnectionStatus(false, "Disconnected from server");
+        updateConnectionStatus(false, "Not connected");
       }
     };
 
@@ -256,7 +256,7 @@ function disconnectFromServer() {
     pluginState.connection.socket.close(1000, "User initiated disconnect");
     pluginState.connection.socket = null;
     pluginState.connection.connected = false;
-    updateConnectionStatus(false, "Disconnected from server");
+    updateConnectionStatus(false, "Not connected");
   }
 }
 

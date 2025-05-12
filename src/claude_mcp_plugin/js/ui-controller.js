@@ -130,7 +130,7 @@ function initUIElements() {
       // Update status message with channel info if connected
       if (pluginState.connection.connected && pluginState.connection.channel) {
         updateConnectionStatus(true, 
-          `Connected to server on port ${pluginState.connection.serverPort} in channel: <strong>${pluginState.connection.channel}</strong>`);
+          `Connected: Server port ${pluginState.connection.serverPort}, Channel ${pluginState.connection.channel}`);
       } else {
         // Just use the default message for the current connection state
         updateConnectionStatus(pluginState.connection.connected);
@@ -166,14 +166,14 @@ function updateConnectionStatus(isConnected, message) {
   if (isConnected) {
     if (pluginState.connection.channel) {
       // If connected and we have a channel, show detailed information
-      defaultMessage = `Connected to server on port ${pluginState.connection.serverPort} in channel: <strong>${pluginState.connection.channel}</strong>`;
+      defaultMessage = `Connected: Server port ${pluginState.connection.serverPort}, Channel ${pluginState.connection.channel}`;
     } else {
       // If connected but no channel yet, show simple message
-      defaultMessage = "Connected to Claude MCP server";
+      defaultMessage = "Connected";
     }
   } else {
     // Not connected
-    defaultMessage = "Not connected to Claude MCP server";
+    defaultMessage = "Not connected";
   }
   
   // Use provided message or default
