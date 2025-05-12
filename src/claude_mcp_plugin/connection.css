@@ -30,36 +30,8 @@ body.theme-light {
   --toggle-thumb-active-bg: black;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  padding-left: 16px;
-}
-.header-logo {
-  height: 50px;
-  width: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  background-color: var(--header-logo-bg);
-}
-.header-logo-image {
-  width: 100%;
-}
-.header-text {
-  margin-left: 12px;
-}
-.header-text h1 {
-  margin: 0;
-  font-size: 16px;
-}
-.header-text p {
-  margin: 4px 0 0 0;
-  font-size: 12px;
-  color: var(--header-text-secondary);
-}
+/* Header styles moved to styles.css */
+/* Header text styles moved to styles.css */
 .input-container {
   display: flex;
   gap: 10px;

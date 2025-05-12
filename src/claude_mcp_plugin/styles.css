@@ -53,7 +53,7 @@ body {
 .header {
   display: flex;
   align-items: center;
-  gap: 0px !important;
+  gap: 12px;
   padding-left: 16px; /* Add left padding to header */
 }
 
@@ -74,11 +74,10 @@ body {
 }
 
 .header-logo {
-  width: 40px !important;
-  height: 40px !important;
-  /**/
-  border-radius: 12px !important;
-  background-color:  #E7E7E7;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background-color: #E7E7E7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,13 +85,6 @@ body {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-}
-
-.theme-light .header-logo {
-  background-color: #E7E7E7; /* Same color for both themes now */
-}
-.theme-dark .header-logo {
-  background-color:#E7E7E7; /* Same color for both themes now */
 }
 
 .header-logo-image {
