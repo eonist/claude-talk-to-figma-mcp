@@ -116,11 +116,7 @@ function attemptReconnect() {
     // Clear countdown timer before reconnection attempt
     clearCountdownTimer();
     
-    const attemptMessage = pluginState.connection.inPersistentRetryMode
-      ? `Attempting to reconnect... (persistent retry mode)`
-      : `Attempting to reconnect... (Attempt ${pluginState.connection.reconnectAttempts}/${pluginState.connection.maxReconnectAttempts})`;
-      
-    updateConnectionStatus(false, attemptMessage);
+    // No longer setting intermediate "Attempting to reconnect..." message to avoid UI jitter
     connectToServer(pluginState.connection.serverPort);
   }, delay);
   
