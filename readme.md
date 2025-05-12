@@ -148,7 +148,11 @@ See MCP protocol design best pratice: https://gist.github.com/eonist/eb8d5628aad
 
 ## Changelog
 
-### 0.5.2 (2025-05-12)
+### 0.5.3 (2025-12-05)
+- Reorg project
+- Add to npm
+
+### 0.5.2 (2025-12-05)
 - Improved WebSocket reconnection for better connection stability
 - Redesigned UI with modern styling and improved layout
 - Added clipboard copy confirmation notifications
