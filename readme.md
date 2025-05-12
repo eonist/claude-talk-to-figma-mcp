@@ -1,22 +1,30 @@
-# Claude Talk to Figma MCP
-
-[![version](https://img.shields.io/badge/version-0.4.9-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
+[![version](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-A Figma plugin enabling seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP). This tool allows you to design and modify Figma elements through natural language commands processed by Claude.
+<img width="100" alt="img" src="logo.svg">
 
-<img width="640" alt="img" src="https://s4.gifyu.com/images/bLldl.gif">
+### Conduit
 
-> [!TIP]  
-> [Prompt overview](https://gist.github.com/eonist/1d18de2ecd2e18bacf36ddc669d3bddf) and [AI figma instructions and guidelines](https://gist.github.com/eonist/166bf55c1c61b99d5712e826c6df0d15)
-  
+> Design at the speed of thought
+
+### What is MCP?
+Model Context Protocol (MCP) is the framework that allows an AI agent to communicate with external applications. This implementation enables any AI agent to send commands to and receive information from Figma in real-time.
+
+## How it works
+
+```
++------------+     +-----+     +------------------------+     +--------------+
+| AI Agent   | <-> | MCP | <-> | Local WebSocket Server | <-> | Figma Plugin |
++------------+     +-----+     +------------------------+     +--------------+
+
+```
+
 ## Table of Contents
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Architecture](#architecture)
-- [Available Commands](#available-commands)
 - [Changelog](#changelog)
 - [Troubleshooting](#troubleshooting)
 - [Testing](#testing)
@@ -25,148 +33,99 @@ A Figma plugin enabling seamless communication between Anthropic's Claude AI and
 - [Authors](#authors)
 - [Acknowledgments](#acknowledgments)
 
-## Features
+### Features: 
 
-- **Powerful Commands**: Create, modify, or delete Figma elements.  
-- **Advanced Text & Font Control**: Customize typography with precision.  
-- **Bidirectional Communication**: Uses a real-time WebSocket channel.  
-- **Text Scanning**: Identify and edit text nodes.  
-- **Remote Components**: Access team library components.  
-- **Batch Rectangle Creation**: Create multiple rectangles in one call via `create_rectangles`.  
-- **Batch SVG Insertion**: Insert multiple SVGs as vectors in one operation via `insert_svg_vectors`.  
-- **Batch Polygon Creation**: Create multiple polygons in one call via `create_polygons`.
-- **Batch Ellipse Creation**: Create multiple ellipses in one call via `create_ellipses`.
-- **Gradient Support**: Create and apply gradient paint styles via `create_gradient_variable` and `apply_gradient_style`.
-- **Local Image Support**: Insert local images via MCP agent with `insert_local_image` (single) and `insert_local_images` (batch) commands, using file paths or Base64 data URIs.
+- **Text manipulation** - Enables AI-powered control to add, edit, and style text elements within your Figma designs.
+- **Gradient support** - Allows the AI to create and apply vibrant gradient fills to various design elements.
+- **Font support** - Provides the capability for the AI to access and apply a diverse range of fonts and typographic styles.
+- **AutoLayout** - Facilitates the automatic creation of responsive and adaptive layouts by leveraging Figma's AutoLayout feature.
+- **Batch operations** - Allows the AI to perform actions on multiple Figma elements simultaneously, enhancing workflow efficiency.
+- **Geometric shapes** - Enables the AI to generate common geometric shapes like rectangles, circles, and polygons as needed.
+- **SVG / Image support** - Supports the import and management of Scalable Vector Graphics (SVG) and raster images within Figma designs.
+- **Frame, Group, Component** - Allows the AI to structure designs effectively through the creation and management of frames, groups, and reusable components.
+- **Rename layers** - Provides the ability for the AI to programmatically rename layers, aiding in the organization of Figma files.
 
----
+### Compatibility
+
+- VSCode w/ GitHub Copilot agent (Sonnet 3.7) (50 free Sonnet 3.5 requests per month)
+- VSCode w/ Cline (Multiple LLM's available)
+- Claude Desktop Application (Sonnet 3.7)
+- Cursor agent (Sonnet 3.7)
 
 ## Prerequisites
 
-- [Cline for VS code](https://cline.bot/)  
-- [Figma Desktop](https://www.figma.com/downloads/)  
-- A [Figma](https://figma.com) account  
-- [Bun](https://bun.sh) v1.0.0 or higher  
-
-  - macOS/Linux:  
-    ```bash
-    curl -fsSL https://bun.sh/install | bash
-    ```
-  - Windows:  
-    ```powershell
-    irm bun.sh/install.ps1 | iex
-    ```
-
----
+- macOS/Linux:  
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+- Windows:  
+```powershell
+irm bun.sh/install.ps1 | iex
+```
 
 ## Installation
+ 
+### Step 1: Install the Figma Plugin
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/eonist/claude-talk-to-figma-mcp.git
-    cd claude-talk-to-figma-mcp
-    ```
-2. Install dependencies:
-    ```bash
-    bun install
-    ```
-3. Build the project:
-    ```bash
-    bun run build
-    ```
-4. Configure the CLI to point at the local build:
-    ```json
-    {
-      "mcpServers": {
-        "ClaudeTalkToFigma": {
-          "autoApprove": [],
-          "disabled": false,
-          "timeout": 30,
-          "command": "node",
-          "args": [
-            "/Users/<your-user-name>/claude-talk-to-figma-mcp/src/talk_to_figma_mcp/server.ts"
-          ],
-          "transportType": "stdio"
-        }
-      }
-    }
-    ```
-5. Install the Figma plugin:
-    - In Figma: **Menu > Plugins > Development > New Plugin**  
-    - Select “Import plugin from manifest” and choose:
-      ```
-      src/claude_mcp_plugin/manifest.json
-      ```
+1. Clone this repository:
+   ```
+   git clone https://github.com/eonist/conduit.git
+   ```
+2. Open Figma Desktop App
+3. Go to `Plugins > Development > Import plugin from manifest...`
+4. Navigate to conduit folder and select `conduit/src/plugin/manifest.json`
+ 
+### Step 2: Configure Agent
 
----
+1. Open Agent App (GitHub Copilot Agent, Cline, Cursor, Claude desktop)
+2. Find MCP settings in your agent app of choice
+4. Add a new MCP connection with the details you find in the about section of the plugin. 
 
-## Usage
+### Step 3: Start the server
 
-### Starting Up
+- Terminal: `cd path-to-conduit`
+- Terminal: `bun install` -> Installs dependencies
+- Terminal: `bun run build:all` -> Builds the Server and Plugin
+- Terminal: `bun socket` -> Starts the Server 
+- Start Figma plugin: Plugin -> Development -> Conduit 
+- AI Agent app: Ensure MCP “Conduit” is enabled.
+- AI Agent app: Talk to Figma on channel: (unique channel id)
 
-1. **Start the WebSocket server:**
-    ```bash
-    bun socket
-    ```
-    Verify at [http://localhost:3055/status](http://localhost:3055/status).  
-    Press `Ctrl+C` to stop.
+### Quick Example
 
-2. **Connect the Plugin:**
-   - Open the “Claude MCP Plugin” in Figma.  
-   - Supply the generated channel ID to Claude.
-
-3. **Using Cline in VS Code:**
-   - Ensure MCP “ClaudeTalkToFigma” is enabled.
-
-Ready to send commands to Figma from Claude.
-
-### Prompting Example
-
-After loading a UX/UI prompt, run:
 ```
-Talk to Figma, channel {channel-ID}
+User: "Create a responsive navigation bar with our brand color #3366FF and add 5 menu items"
+Claude: [executes commands in Figma and displays the results]
 ```
 
-#### Agent Invocation Example
+### Docs:
+- [Available_MCP_Commands.md](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/Available_MCP_Commands.md) 
+- [Server doc](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/src/talk_to_figma_mcp/README.md)
+- [Plugin doc](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/src/claude_mcp_plugin/README.md)
 
-To invoke batch local-image insertion directly from an MCP agent (no plugin UI required), send JSON over stdio to the MCP server. For example:
+## Troubleshooting
+
+- **Connection Error:** Ensure the WebSocket server is running (`bun socket`).  
+- **Plugin Not Appearing:** Verify the plugin import in Figma Development settings.  
+- **Execution or Font Loading Errors:** Check Figma’s development console for details.  
+
+## Testing
+
+To run integration tests:
 ```bash
-echo '{
-  "command": "insert_local_images",
-  "params": {
-    "images": [
-      { "imagePath": "/absolute/path/to/image1.png", "x": 10, "y": 20 },
-      { "imageData": "data:image/png;base64,iVBORw0KGgoAAAANS...", "x": 100, "y": 150 }
-    ]
-  }
-}' | node src/talk_to_figma_mcp/server.ts
+bun run test
 ```
+See [TESTING.md](TESTING.md) for more details.
 
----
+## Contributions
 
-## Architecture
+1. Fork the repository.  
+2. Create a branch (e.g., `feature/amazing-feature`).  
+3. Commit your changes.  
+4. Push to your branch.  
+5. Open a Pull Request.  
 
-```
-+----------------+     +-------+     +---------------+     +---------------+
-|                |     |       |     |               |     |               |
-| VS Code Cline  |<--->|  MCP  |<--->| WebSocket Srv |<--->| Figma Plugin  |
-|   (AI Agent)   |     |       |     |  (Port 3055)  |     |  (UI Plugin)  |
-+----------------+     +-------+     +---------------+     +---------------+
-```
-
----
-
-## Example prompts: 
-
-```markdown
-Talk to Figma, channel {channel-ID}
-Please resize all selected elements to fit within a 200x200px frame while maintaining their aspect ratios.
-```
-
-```markdown
-Talk to Figma, channel {channel-ID}
-Please resize all selected elements so their longest side is 20px.
-```
+See MCP protocol design best pratice: https://gist.github.com/eonist/eb8d5628aad07fc57ce339e518158c20
 
 ## Changelog
 
@@ -242,63 +201,15 @@ Please resize all selected elements so their longest side is 20px.
 - Ability to rename layers
 - Ability to read available tools
 
-### 0.4.0 (2025-04-11)
-- New tools for advanced shape creation.
-- Enhanced text and font manipulation.
-- Improved error handling and timeout management.
-- Added support for accessing team library components.
-
-### 0.3.0
-- Introduced `set_auto_layout` command with layout options.
-
-### 0.2.0
-- Initial public release with Claude Desktop support.
-
----
-
-## Troubleshooting
-
-- **Connection Error:** Ensure the WebSocket server is running (`bun socket`).  
-- **Plugin Not Appearing:** Verify the plugin import in Figma Development settings.  
-- **Execution or Font Loading Errors:** Check Figma’s development console for details.  
-
----
-
-## Testing
-
-To run integration tests:
-```bash
-bun run test
-```
-See [TESTING.md](TESTING.md) for more details.
-
----
-
-## Contributions
-
-1. Fork the repository.  
-2. Create a branch (e.g., `feature/amazing-feature`).  
-3. Commit your changes.  
-4. Push to your branch.  
-5. Open a Pull Request.  
-
-See MCP protocol design best pratice: https://gist.github.com/eonist/eb8d5628aad07fc57ce339e518158c20
-
----
-
 ## License
 
 MIT License – see the [LICENSE](LICENSE) file for details.
-
----
-
+ 
 ## Authors
 
-- **Xúlio Zé** – Adaptation for Claude | [GitHub](https://github.com/arinspunk)  
 - **Sonny Lazuardi** – Original implementation | [GitHub](https://github.com/sonnylazuardi)  
-- **André J** – Adoption for Cline with new features | [GitHub](https://github.com/eonist)  
-
----
+- **Xúlio Zé** – Adaptation for Claude | [GitHub](https://github.com/arinspunk)  
+- **André J** – Adoption for any agent with new features | [GitHub](https://github.com/eonist)
 
 ## Acknowledgments
 
