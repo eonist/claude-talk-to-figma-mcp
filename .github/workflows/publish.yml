@@ -22,6 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests
+        env:
+          CI: true
         run: npm test
       - name: Update all package.json files with tag version
         if: startsWith(github.ref, 'refs/tags/') # Only run for tag pushes
