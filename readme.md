@@ -1,5 +1,4 @@
-[![version](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases)
-![License](https://img.shields.io/badge/license-MIT-green)
+[![version](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <img width="100" alt="img" src="logo.svg">
 
