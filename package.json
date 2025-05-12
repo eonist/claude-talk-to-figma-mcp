@@ -1,7 +1,7 @@
 {
-  "name": "claude-talk-to-figma-mcp",
+  "name": "conduit-design",
   "description": "Claude Desktop Talk to Figma MCP",
-  "version": "0.4.9",
+  "version": "0.5.1",
   "module": "dist/talk_to_figma_mcp/server.js",
   "main": "dist/talk_to_figma_mcp/server.js",
   "bin": {
@@ -59,7 +59,7 @@
     "design",
     "automation"
   ],
-  "author": "Xúlio Zé",
+  "author": "André J",
   "license": "MIT",
   "repository": {
     "type": "git",
