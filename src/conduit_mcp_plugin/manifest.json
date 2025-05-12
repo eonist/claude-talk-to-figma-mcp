@@ -1,6 +1,6 @@
 {
   "name": "Conduit MCP Plugin",
-  "id": "claude-mcp-plugin",
+  "id": "conduit-mcp-plugin",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
