@@ -7,6 +7,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import readline from 'readline';
 
+// Check for CI environment
+const isCI = process.env.CI === 'true';
+
 // Get current file directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -120,14 +123,20 @@ async function checkClaudeConfig() {
   try {
     if (!fs.existsSync(configPath)) {
       log.warning('AI Agent configuration file not found');
-      const shouldConfigure = await askQuestion('Do you want to configure AI Agent now? (y/n)');
       
-      if (shouldConfigure.toLowerCase() === 'y') {
-        log.info('Running configuration script...');
-        execSync('bun run configure-claude', { stdio: 'inherit', cwd: rootDir });
-        log.success('Configuration completed');
+      if (isCI) {
+        log.info('CI environment detected, skipping AI Agent configuration prompt.');
+        log.warning('Configuration skipped in CI. MCP may not work correctly.');
       } else {
-        log.warning('Configuration skipped. MCP may not work correctly');
+        const shouldConfigure = await askQuestion('Do you want to configure AI Agent now? (y/n)');
+        
+        if (shouldConfigure.toLowerCase() === 'y') {
+          log.info('Running configuration script...');
+          execSync('bun run configure-claude', { stdio: 'inherit', cwd: rootDir });
+          log.success('Configuration completed');
+        } else {
+          log.warning('Configuration skipped. MCP may not work correctly');
+        }
       }
       return;
     }
@@ -137,14 +146,20 @@ async function checkClaudeConfig() {
       log.success('ClaudeTalkToFigma configuration found in AI Agent');
     } else {
       log.warning('ClaudeTalkToFigma is not configured in AI Agent');
-      const shouldConfigure = await askQuestion('Do you want to configure AI Agent now? (y/n)');
       
-      if (shouldConfigure.toLowerCase() === 'y') {
-        log.info('Running configuration script...');
-        execSync('bun run configure-claude', { stdio: 'inherit', cwd: rootDir });
-        log.success('Configuration completed');
+      if (isCI) {
+        log.info('CI environment detected, skipping AI Agent configuration prompt.');
+        log.warning('Configuration skipped in CI. MCP may not work correctly.');
       } else {
-        log.warning('Configuration skipped. MCP may not work correctly');
+        const shouldConfigure = await askQuestion('Do you want to configure AI Agent now? (y/n)');
+        
+        if (shouldConfigure.toLowerCase() === 'y') {
+          log.info('Running configuration script...');
+          execSync('bun run configure-claude', { stdio: 'inherit', cwd: rootDir });
+          log.success('Configuration completed');
+        } else {
+          log.warning('Configuration skipped. MCP may not work correctly');
+        }
       }
     }
   } catch (err) {
@@ -160,14 +175,19 @@ async function startWebSocketServer() {
   const portInUse = await isPortInUse(3055);
   if (portInUse) {
     log.warning('Port 3055 is already in use. Possibly the WebSocket server is already running.');
-    const shouldContinue = await askQuestion('Do you want to continue with tests? (y/n)');
-    if (shouldContinue.toLowerCase() !== 'y') {
-      log.info('Tests cancelled. Release port 3055 and try again.');
-      process.exit(0);
-    }
     
-    log.info('Continuing tests with existing WebSocket server');
-    return null;
+    if (isCI) {
+      log.error('CI environment detected. WebSocket server must not be running for tests.');
+      process.exit(1); // Exit if server is already running in CI
+    } else {
+      const shouldContinue = await askQuestion('Do you want to continue with tests? (y/n)');
+      if (shouldContinue.toLowerCase() !== 'y') {
+        log.info('Tests cancelled. Release port 3055 and try again.');
+        process.exit(0);
+      }
+      log.info('Continuing tests with existing WebSocket server');
+    }
+    return null; // Return null if using existing server or exiting
   }
   
   log.info('Starting WebSocket server on port 3055...');
@@ -181,7 +201,10 @@ async function startWebSocketServer() {
     if (message.includes('WebSocket server running')) {
       log.success('WebSocket server started successfully');
     }
-    console.log(`${colors.cyan}[WebSocket]${colors.reset} ${message}`);
+    // Only log WebSocket output in non-CI environments to keep CI logs cleaner
+    if (!isCI) {
+       console.log(`${colors.cyan}[WebSocket]${colors.reset} ${message}`);
+    }
   });
   
   wsServer.stderr.on('data', (data) => {
@@ -234,7 +257,10 @@ async function checkWebSocketStatus() {
     
     if (status) {
       log.success('WebSocket server is running');
-      log.info(`Statistics: ${JSON.stringify(status.stats)}`);
+      // Only log stats in non-CI environments
+      if (!isCI) {
+        log.info(`Statistics: ${JSON.stringify(status.stats)}`);
+      }
       return true;
     }
   } catch (err) {
@@ -252,24 +278,33 @@ async function checkFigmaPlugin() {
     log.info('The plugin code is located in the src/conduit_mcp_plugin directory');
     
     // Ask if the user has already installed the plugin
-    const isPluginInstalled = await askQuestion('Have you installed the Conduit MCP Plugin as a development plugin in Figma? (y/n)');
-    if (isPluginInstalled.toLowerCase() !== 'y') {
-      log.warning('Please install the plugin before continuing with tests');
-      log.info('1. Open Figma');
-      log.info('2. Go to Menu > Plugins > Development > New Plugin');
-      log.info('3. Select "Link existing plugin"');
-      log.info('4. Navigate to and select the folder `src/conduit_mcp_plugin` from this repository');
-      return false;
+    if (isCI) {
+      log.info('CI environment detected, skipping Figma plugin check prompt.');
+      // In CI, we can't check the Figma plugin directly.
+      // Assume it's handled by the test environment setup or skip this check.
+      // For now, we'll just log that we're skipping the interactive part.
+      log.warning('Figma plugin check skipped in CI.');
+      return true; // Assume success in CI for the workflow to proceed
     } else {
-      log.success('Plugin installed as per user');
+      const isPluginInstalled = await askQuestion('Have you installed the Conduit MCP Plugin as a development plugin in Figma? (y/n)');
+      if (isPluginInstalled.toLowerCase() !== 'y') {
+        log.warning('Please install the plugin before continuing with tests');
+        log.info('1. Open Figma');
+        log.info('2. Go to Menu > Plugins > Development > New Plugin');
+        log.info('3. Select "Link existing plugin"');
+        log.info('4. Navigate to and select the folder `src/conduit_mcp_plugin` from this repository');
+        return false;
+      } else {
+        log.success('Plugin installed as per user');
+      }
+      
+      log.info('\nTo use the plugin in Figma:');
+      log.info('1. Open Figma');
+      log.info('2. Go to Plugins > Development > Conduit MCP Plugin');
+      log.info('3. Enter port 3055 and connect to the WebSocket server');
+      
+      return true;
     }
-    
-    log.info('\nTo use the plugin in Figma:');
-    log.info('1. Open Figma');
-    log.info('2. Go to Plugins > Development > Conduit MCP Plugin');
-    log.info('3. Enter port 3055 and connect to the WebSocket server');
-    
-    return true;
   } catch (err) {
     log.error(`Error verifying plugin: ${err.message}`);
     return false;
@@ -296,38 +331,51 @@ async function runIntegrationTests() {
     process.exit(1);
   }
   
-  // Check Figma plugin
+  // Check Figma plugin (interactive part skipped in CI)
   await checkFigmaPlugin();
   
-  // Instructions for manual tests
-  log.step('Performing manual integration tests');
-  
-  log.info('\nTo complete integration tests, follow these steps:');
-  log.info('1. Open AI Agent');
-  log.info('2. Select "ClaudeTalkToFigma" in the MCP selector');
-  log.info('3. Open Figma and run the Conduit MCP Plugin from your Development plugins');
-  log.info('4. In the plugin, connect to WebSocket server (port 3055)');
-  log.info('5. Test these commands in AI Agent:');
-  log.info('   - "Connect to Figma using the default channel"');
-  log.info('   - "Get information about the current document"');
-  log.info('   - "Get information about the current selection"');
+  // Instructions for manual tests (only show in non-CI environments)
+  if (!isCI) {
+    log.step('Performing manual integration tests');
+    
+    log.info('\nTo complete integration tests, follow these steps:');
+    log.info('1. Open AI Agent');
+    log.info('2. Select "ClaudeTalkToFigma" in the MCP selector');
+    log.info('3. Open Figma and run the Conduit MCP Plugin from your Development plugins');
+    log.info('4. In the plugin, connect to WebSocket server (port 3055)');
+    log.info('5. Test these commands in AI Agent:');
+    log.info('   - "Connect to Figma using the default channel"');
+    log.info('   - "Get information about the current document"');
+    log.info('   - "Get information about the current selection"');
+  }
   
   log.title('TESTS COMPLETED');
-  log.info('The test script has completed all automated checks.');
-  log.info('Please continue manual tests according to the instructions above.');
   
-  // Ask if you want to keep the WebSocket server running
-  if (wsServer) {
-    const keepServerRunning = await askQuestion('Do you want to keep the WebSocket server running? (y/n)');
-    if (keepServerRunning.toLowerCase() !== 'y') {
+  if (isCI) {
+    log.success('Automated checks completed successfully in CI.');
+    // In CI, we don't keep the server running
+    if (wsServer) {
       log.info('Stopping WebSocket server...');
       wsServer.kill();
       log.success('WebSocket server stopped');
-    } else {
-      log.info('WebSocket server will continue running in the background.');
-      log.info('To stop it, press Ctrl+C in the terminal or use task manager.');
-      // Disconnect process from terminal so it continues running
-      wsServer.unref();
+    }
+  } else {
+    log.info('The test script has completed all automated checks.');
+    log.info('Please continue manual tests according to the instructions above.');
+    
+    // Ask if you want to keep the WebSocket server running (only in non-CI)
+    if (wsServer) {
+      const keepServerRunning = await askQuestion('Do you want to keep the WebSocket server running? (y/n)');
+      if (keepServerRunning.toLowerCase() !== 'y') {
+        log.info('Stopping WebSocket server...');
+        wsServer.kill();
+        log.success('WebSocket server stopped');
+      } else {
+        log.info('WebSocket server will continue running in the background.');
+        log.info('To stop it, press Ctrl+C in the terminal or use task manager.');
+        // Disconnect process from terminal so it continues running
+        wsServer.unref();
+      }
     }
   }
 }
