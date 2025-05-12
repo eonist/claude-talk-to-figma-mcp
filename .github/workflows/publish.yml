@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - v*.*.*
+  workflow_dispatch: # Add this line to enable manual triggers
 jobs:
   publish:
     runs-on: ubuntu-latest
