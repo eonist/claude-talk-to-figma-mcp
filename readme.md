@@ -80,8 +80,25 @@ irm bun.sh/install.ps1 | iex
 ### Step 2: Configure Agent
 
 1. Open Agent App (GitHub Copilot Agent, Cline, Cursor, Claude desktop)
-2. Find MCP settings in your agent app of choice
-4. Add a new MCP connection with the details you find in the about section of the plugin. 
+2. Find MCP settings in your agent app of choice. `~/.cursor/mcp.json`
+3. Add a new MCP connection with this config: 
+
+```swift
+{
+  "mcpServers": {
+    "ClaudeTalkToFigmaMCP": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 30,
+      "command": "node",
+      "args": [
+        "conduit-design@latest"
+      ],
+      "transportType": "stdio"
+    }
+  }
+}
+```
 
 ### Step 3: Start the server
 
