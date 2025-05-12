@@ -7,90 +7,90 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
 ## Command Categories
 
 ### Read Commands
-- get_document_info
-- get_selection
-- get_node_info
-- get_nodes_info
-- get_styles
-- get_local_components
-- get_remote_components
-- get_styled_text_segments
-- scan_text_nodes
-- get_css_async
+- [get_document_info](#get_document_info): Get detailed information about the current Figma document
+- [get_selection](#get_selection): Get information about the current selection in Figma
+- [get_node_info](#get_node_info): Get detailed information about a specific node
+- [get_nodes_info](#get_nodes_info): Get detailed information about multiple nodes
+- [get_styles](#get_styles): Get all styles from the current Figma document
+- [get_local_components](#get_local_components): Get all local components from the Figma document
+- [get_remote_components](#get_remote_components): Get available components from team libraries
+- [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling in a text node
+- [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected Figma node
+- [get_css_async](#get_css_async): Get CSS properties from a node
 
 ### Create Commands
-- create_frame
-- create_rectangles
-- create_rectangle
-- create_ellipses
-- create_ellipse
-- create_polygons
-- create_lines
-- create_line
-- create_text
-- create_bounded_text
-- create_vector
-- create_vectors
-- create_component_from_node
-- create_component_instance
-- create_component_instances
-- create_button
-- insert_image
-- insert_images
-- insert_local_image
-- insert_local_images
-- insert_svg_vector
-- insert_svg_vectors
+- [create_frame](#create_frame): Create a new frame in Figma
+- [create_rectangles](#create_rectangles): Create multiple rectangles in Figma
+- [create_rectangle](#create_rectangle): Create a new rectangle in Figma
+- [create_ellipses](#create_ellipses): Create multiple ellipses in Figma
+- [create_ellipse](#create_ellipse): Create a new ellipse in Figma
+- [create_polygons](#create_polygons): Create multiple polygons in Figma
+- [create_lines](#create_lines): Create multiple lines in Figma
+- [create_line](#create_line): Create a new line in Figma
+- [create_text](#create_text): Create a new text element in Figma
+- [create_bounded_text](#create_bounded_text): Create a bounded text box in Figma
+- [create_vector](#create_vector): Create a new vector in Figma
+- [create_vectors](#create_vectors): Create multiple vectors in Figma
+- [create_component_from_node](#create_component_from_node): Convert an existing node into a component
+- [create_component_instance](#create_component_instance): Create an instance of a component in Figma
+- [create_component_instances](#create_component_instances): Create multiple component instances in Figma
+- [create_button](#create_button): Create a complete button with background and text
+- [insert_image](#insert_image): Insert an image from a URL
+- [insert_images](#insert_images): Insert multiple images from URLs
+- [insert_local_image](#insert_local_image): Insert a local image via a file path or Base64 data URI
+- [insert_local_images](#insert_local_images): Insert multiple local images via file paths or Base64 data URIs
+- [insert_svg_vector](#insert_svg_vector): Insert an SVG as vector in Figma
+- [insert_svg_vectors](#insert_svg_vectors): Insert multiple SVG vectors in Figma
 
 ### Modify/Style Commands
-- set_fill_color
-- set_stroke_color
-- set_style
-- set_styles
-- create_gradient_variable
-- create_gradient_variables
-- apply_gradient_style
-- apply_gradient_styles
-- apply_direct_gradient
-- set_corner_radius
-- set_font_name
-- set_font_size
-- set_font_weight
-- set_letter_spacing
-- set_line_height
-- set_paragraph_spacing
-- set_text_case
-- set_text_decoration
-- load_font_async
-- set_effects
-- set_effect_style_id
-- set_auto_layout
-- set_auto_layout_resizing
-- export_node_as_image
+- [set_fill_color](#set_fill_color): Set the fill color of a node
+- [set_stroke_color](#set_stroke_color): Set the stroke color of a node
+- [set_style](#set_style): Set both fill and stroke properties for a node
+- [set_styles](#set_styles): Apply fill and/or stroke styles to multiple nodes
+- [create_gradient_variable](#create_gradient_variable): Create a gradient paint style
+- [create_gradient_variables](#create_gradient_variables): Batch create gradient variables
+- [apply_gradient_style](#apply_gradient_style): Apply a gradient style to a node
+- [apply_gradient_styles](#apply_gradient_styles): Batch apply gradient styles to nodes
+- [apply_direct_gradient](#apply_direct_gradient): Apply a gradient directly to a node without using styles
+- [set_corner_radius](#set_corner_radius): Set the corner radius of a node
+- [set_font_name](#set_font_name): Set the font name and style of a text node
+- [set_font_size](#set_font_size): Set the font size of a text node
+- [set_font_weight](#set_font_weight): Set the font weight of a text node
+- [set_letter_spacing](#set_letter_spacing): Set the letter spacing of a text node
+- [set_line_height](#set_line_height): Set the line height of a text node
+- [set_paragraph_spacing](#set_paragraph_spacing): Set the paragraph spacing of a text node
+- [set_text_case](#set_text_case): Set the text case of a text node
+- [set_text_decoration](#set_text_decoration): Set the text decoration of a text node
+- [load_font_async](#load_font_async): Load a font asynchronously in Figma
+- [set_effects](#set_effects): Set visual effects of a node
+- [set_effect_style_id](#set_effect_style_id): Apply an effect style to a node
+- [set_auto_layout](#set_auto_layout): Configure auto layout properties for a node
+- [set_auto_layout_resizing](#set_auto_layout_resizing): Set hug or fill sizing mode on an auto layout frame or child node
+- [export_node_as_image](#export_node_as_image): Export a node as an image
 
 ### Layer/Node Management
-- move_node
-- move_nodes
-- resize_node
-- resize_nodes
-- flatten_selection
-- union_selection
-- subtract_selection
-- intersect_selection
-- exclude_selection
-- group_nodes
-- ungroup_nodes
-- delete_node
+- [move_node](#move_node): Move a node to a new position
+- [move_nodes](#move_nodes): Move multiple nodes to a new absolute position
+- [resize_node](#resize_node): Resize a node
+- [resize_nodes](#resize_nodes): Resize multiple nodes
+- [flatten_selection](#flatten_selection): Flatten a selection of nodes
+- [union_selection](#union_selection): Union selected shapes
+- [subtract_selection](#subtract_selection): Subtract top shapes from bottom shape
+- [intersect_selection](#intersect_selection): Intersect selected shapes
+- [exclude_selection](#exclude_selection): Exclude overlapping areas of selected shapes
+- [group_nodes](#group_nodes): Group nodes in Figma
+- [ungroup_nodes](#ungroup_nodes): Ungroup a group node
+- [delete_node](#delete_node): Delete a node
 
 ### Rename/AI Commands
-- rename_layer
-- rename_layers
-- rename_multiple
-- ai_rename_layers
+- [rename_layer](#rename_layer): Rename a single node in Figma
+- [rename_layers](#rename_layers): Rename specified layers by exact name or pattern replace
+- [rename_multiple](#rename_multiple): Rename multiple layers with distinct new names
+- [ai_rename_layers](#ai_rename_layers): AI-powered rename of specified layers
 
 ### Channel/Interop/HTML
-- join_channel
-- generate_html
+- [join_channel](#join_channel): Join a specific channel to communicate with Figma
+- [generate_html](#generate_html): Generate HTML structure from Figma nodes
 
 ---
 
