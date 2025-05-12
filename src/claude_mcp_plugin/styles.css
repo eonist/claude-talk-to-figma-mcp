@@ -53,34 +53,57 @@ body {
 .header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0px !important;
+  padding-left: 16px; /* Add left padding to header */
+}
+
+.header > * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header-text h1,
+.header-text p {
+  margin: 0;
+  padding: 0;
+}
+
+.header-text p {
+  margin-top: 4px;
 }
 
 .header-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
-  background-color: #F0F0F0; /* Dark mode */
+  width: 40px !important;
+  height: 40px !important;
+  /**/
+  border-radius: 12px !important;
+  background-color:  #E7E7E7;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .theme-light .header-logo {
-  background-color: #1A1F29; /* Light mode */
+  background-color: #E7E7E7; /* Same color for both themes now */
+}
+.theme-dark .header-logo {
+  background-color:#E7E7E7; /* Same color for both themes now */
 }
 
 .header-logo-image {
   width: 100%;
   height: 100%;
-  padding: 5px; /* Add some padding to ensure the SVG doesn't touch the edges */
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  padding: 16px 16px 16px 0;
+  padding: 16px 0 16px 0; /* Remove left padding */
   height: 100%;
   width: 100%;
   box-sizing: border-box;
