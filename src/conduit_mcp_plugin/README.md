@@ -10,123 +10,207 @@ This plugin uses a modular architecture during development, while still complyin
 
 ```
 src/conduit_mcp_plugin/
-├── build.js            # Build script to bundle the source code into code.js
-├── direct-build.js     # Enhanced build script for UI generation
-├── build-ts.js         # TypeScript build script (alternative approach)
+├── ui-template.html      # Source template for the UI
+├── styles.css            # Base styling for the UI
+├── connection.css        # Styling for connection panel
+├── tabs.css              # Styling for tabs
+├── progress.css          # Styling for progress container
+├── build.js            # Node.js script to bundle plugin core (code.js)
+├── direct-build.js       # Node.js script to build UI (ui.html) using esbuild
+├── build-ts.js           # Alternative Node.js script for UI build using tsc
 ├── manifest.json       # Figma plugin manifest
-├── ui-template.html    # Template for plugin UI
-├── dist/               # Output directory 
-│   ├── code.js         # Final bundled file for Figma (generated)
-│   └── ui.html         # Generated plugin UI with inlined scripts and styles
-├── components/         # HTML components for UI
+├── dist/                 # Output directory
+│   ├── ui.html           # Final generated plugin UI
+│   └── code.js           # Final bundled plugin logic
+├── components/           # HTML components for UI
 │   ├── header.html
 │   ├── tabs.html
 │   ├── connection-panel.html
 │   ├── progress-container.html
 │   └── about-panel.html
-├── js/                 # JavaScript modules for UI
+├── js/                   # JavaScript modules for UI logic
 │   ├── state.js
 │   ├── connection.js
 │   ├── ui-controller.js
 │   ├── tab-manager.js
 │   ├── message-handler.js
 │   └── main.js
-└── src/                # Source code (modular)
-    ├── client.ts       # TypeScript for client communication
-    ├── ui.ts           # TypeScript for UI functionality
-    ├── index.js        # Main entry point
-    └── modules/        # Modular components
-        ├── commands.js        # Command routing
-        ├── components.js      # Component operations
-        ├── document.js        # Document operations
-        ├── shapes.js          # Shape operations
-        ├── styles.js          # Style operations
-        ├── text.js            # Text operations
-        ├── layout.js          # Layout operations
-        ├── rename.js          # Rename operations
-        ├── svg.js             # SVG operations
-        ├── html-generator.js  # HTML generation
-        ├── ui.js              # UI operations
-        └── utils/             # Utility functions
+└── src/                  # Source code for plugin core (TypeScript/JavaScript)
+    ├── client.ts         # TypeScript for client communication
+    ├── ui.ts             # TypeScript for UI functionality
+    ├── index.js          # Main entry point for plugin core
+    └── modules/          # Modular components for plugin core logic
+        ├── commands.js
+        ├── components.js
+        ├── document.js
+        ├── shapes.js
+        ├── styles.js
+        ├── text.js
+        ├── layout.js
+        ├── rename.js
+        ├── svg.js
+        ├── html-generator.js
+        ├── ui.js
+        └── utils/
             ├── plugin.js
             ├── encoding.js
             ├── helpers.js
             └── index.js
 ```
 
-### Build System
+### Core File Relationships
 
-The plugin outputs generated files directly to the `dist/` directory:
+Here's a visual representation of the core files and their relationships in the plugin build process:
 
-- **Dist Directory Files**: `dist/code.js` and `dist/ui.html`
-- The manifest.json points directly to these files in the dist directory
+```
+src/conduit_mcp_plugin/
+├── ui-template.html      # Source template for the UI
+├── styles.css            # Base styling for the UI
+├── connection.css        # Styling for connection panel
+├── tabs.css              # Styling for tabs
+├── progress.css          # Styling for progress container
+├── build.js            # Node.js script to bundle plugin core (code.js)
+├── direct-build.js       # Node.js script to build UI (ui.html) using esbuild
+├── build-ts.js           # Alternative Node.js script for UI build using tsc
+├── manifest.json       # Figma plugin manifest
+├── dist/                 # Output directory
+│   ├── ui.html           # Final generated plugin UI
+│   └── code.js           # Final bundled plugin logic
+├── components/           # HTML components for UI
+│   ├── header.html
+│   ├── tabs.html
+│   ├── connection-panel.html
+│   ├── progress-container.html
+│   └── about-panel.html
+├── js/                   # JavaScript modules for UI logic
+│   ├── state.js
+│   ├── connection.js
+│   ├── ui-controller.js
+│   ├── tab-manager.js
+│   ├── message-handler.js
+│   └── main.js
+└── src/                  # Source code for plugin core (TypeScript/JavaScript)
+    ├── client.ts         # TypeScript for client communication
+    ├── ui.ts             # TypeScript for UI functionality
+    ├── index.js          # Main entry point for plugin core
+    └── modules/          # Modular components for plugin core logic
+        ├── commands.js
+        ├── components.js
+        ├── document.js
+        ├── shapes.js
+        ├── styles.js
+        ├── text.js
+        ├── layout.js
+        ├── rename.js
+        ├── svg.js
+        ├── html-generator.js
+        ├── ui.js
+        └── utils/
+            ├── plugin.js
+            ├── encoding.js
+            ├── helpers.js
+            └── index.js
+```
 
-The plugin uses a modular build system with specialized scripts:
+### Detailed Build Pipeline Implementation
 
-1. **Plugin Core (`code.js`)**: 
-   - Built using `build.js`
-   - **Primary purpose**: Building code.js (the plugin logic)
-   - Combines all the JavaScript modules from `src/` into a single file that Figma loads
-   - Command: `bun run build:plugin`
+The plugin build process involves two main parts: the plugin core (`code.js`) and the UI (`ui.html`).
 
-2. **Plugin UI (`ui.html`)**: 
-   - Multiple build approaches available:
-     - `direct-build.js` (recommended)
-       - **Primary purpose**: UI generation with modern tools
-       - Uses esbuild for efficient TypeScript bundling
-       - Processes all CSS files and inlines them
-       - Includes all HTML components from components/
-       - Includes all JavaScript modules from js/
-       - Combines everything into a single ui.html file with no external dependencies
-     - `build-ts.js` (alternative)
-       - **Primary purpose**: TypeScript compilation
-       - Uses tsc for TypeScript compilation
-       - Inlines compiled JS into ui.html
-   - Command: `bun run build:ui` (uses direct-build.js)
+**1. Plugin Core Bundling (`code.js`)**
 
-### Available Build Scripts
+The `build.js` Node.js script is used to bundle the core plugin logic. It manually concatenates JavaScript files from `src/` and `src/modules/`, stripping import/export syntax to create a single `code.js` file.
 
-- `build:plugin`: Generate the main plugin code (`code.js`)
-- `build:ui`: Build the UI with all components, styles, and scripts inlined (recommended)
-- `build:ui-ts`: Alternative UI build using TypeScript compilation
-- `watch:plugin`: Watch for changes and rebuild automatically
-- `build:all`: Build everything in one command (core + UI)
+The primary command for this is:
+```bash
+bun run build:plugin
+```
+This script reads files in a specific order, starting with utilities, then feature modules, and finally the main `index.js`.
+
+**2. Plugin UI Generation (`ui.html`)**
+
+The recommended script for building the UI is `direct-build.js`. This Node.js script uses `esbuild` to handle TypeScript compilation and then manually inlines all necessary assets into `ui.html`.
+
+The command for this is:
+```bash
+bun run build:ui
+```
+
+This script performs the following steps:
+- Uses `esbuild` to bundle `src/ui.ts` into a temporary JavaScript file.
+- Reads `ui-template.html`.
+- Reads and combines all CSS files (`styles.css`, `connection.css`, `tabs.css`, `progress.css`) and inlines them into the template.
+- Reads and inlines all HTML component files from `components/` into their respective placeholders in the template.
+- Reads and combines all JavaScript files from `js/` and inlines them into the template.
+- Inlines the bundled JavaScript from `src/ui.ts` (generated by esbuild) into the template.
+- Writes the final combined content to `dist/ui.html`.
+- Cleans up temporary files.
+
+An alternative UI build script, `build-ts.js`, exists but `direct-build.js` is preferred as it handles all inlining steps.
+
+### File Interaction Matrix
+
+This matrix illustrates how source files are processed to create the final output files consumed by Figma:
+
+| Source File(s)                               | Build Script    | Output File   | Figma Consumption |
+|----------------------------------------------|-----------------|---------------|-------------------|
+| `src/index.js`, `src/modules/**/*.js`        | `build.js`      | `code.js`     | Plugin execution  |
+| `ui-template.html`, `*.css`, `components/*.html`, `js/*.js`, `src/ui.ts` | `direct-build.js` | `ui.html`     | Direct render     |
+| `manifest.json`                              | (Build process) | `manifest.json` | Plugin config     |
+
+### Available Build Scripts (from `package.json`)
+
+-   `build:plugin`: Generate the main plugin code (`code.js`) using `build.js`.
+-   `build:ui`: Build the UI (`ui.html`) using `direct-build.js` (recommended).
+-   `build:ui-ts`: Alternative UI build using `build-ts.js` (TypeScript compilation).
+-   `watch:plugin`: Watch for changes in `src/conduit_mcp_plugin/src` and rebuild `code.js` automatically using `nodemon` and `build.js`.
+-   `build:all`: Run `tsup` (for the server), then `build:plugin`, then `build:ui`.
+-   `dev:all`: Run `tsup --watch` and `watch:plugin` concurrently.
+
+### Critical Build Dependencies and Features
+
+-   **Bun**: Used to run the build scripts defined in `package.json`.
+-   **Node.js**: The custom build scripts (`build.js`, `direct-build.js`, `build-ts.js`) are Node.js scripts.
+-   **esbuild**: Used by `direct-build.js` for efficient TypeScript/JavaScript bundling.
+-   **nodemon**: Used in `watch:plugin` script for automatic rebuilding on file changes.
+-   **typescript**: For type checking and compilation.
+-   **concurrently**: Used in `dev:all` script to run multiple commands simultaneously.
+-   **tsup**: Used for building the main MCP server code (separate from the plugin build).
+
+### Development Workflow
+
+1.  Edit files in the `src/`, `js/`, or `components/` directories within `src/conduit_mcp_plugin/`.
+2.  Run `bun run build:all` to build both the plugin core and UI.
+3.  Alternatively, run `bun run dev:all` to automatically rebuild on changes (watches both server and plugin core).
+4.  Reload the plugin in Figma to see changes.
 
 ### Cleanup
 
 A cleanup script is provided to remove temporary directories and backup files after building:
 
-```
+```bash
 cd src/conduit_mcp_plugin
 ./cleanup.sh
 ```
 
 This removes:
-- The `temp-dist` directory used for TypeScript compilation
-- The `temp` directory used by the direct-build script
-- Any `.bak` backup files created during the build process
-
-### Development Workflow
-
-1. Edit files in the `src/`, `js/`, or `components/` directories
-2. Run `bun run build:all` to build both the plugin core and UI
-3. Or run `bun run watch:plugin` to automatically rebuild on changes
-4. Reload the plugin in Figma to see changes
+- The `temp-dist` directory used for TypeScript compilation (by `build-ts.js`)
+- The `temp` directory used by the `direct-build.js` script
+- Any `.bak` backup files created during the build process.
 
 ### Extending the Plugin
 
 When adding new functionality:
 
-1. Add your new functions to the appropriate module (or create a new module)
-2. Export your functions from the module
-3. Add them to the module's exported operations object
-4. Register them in the `commands.js` file to make them available via the command interface
+1. Add your new functions to the appropriate module (or create a new module) in `src/conduit_mcp_plugin/src/modules/`.
+2. Export your functions from the module.
+3. Add them to the module's exported operations object (if applicable).
+4. Register them in the `commands.js` file to make them available via the command interface.
 
 For UI changes:
-1. Modify the appropriate component in the `components/` directory
-2. Add any new JavaScript to the `js/` directory
-3. For TypeScript functionality, update files in the `src/` directory
-4. Run `bun run build:ui` to rebuild the UI
+1. Modify the appropriate component in the `src/conduit_mcp_plugin/components/` directory.
+2. Add any new JavaScript to the `src/conduit_mcp_plugin/js/` directory.
+3. For TypeScript functionality, update files in the `src/conduit_mcp_plugin/src/` directory (specifically `ui.ts` or related files).
+4. Run `bun run build:ui` to rebuild the UI.
 
 ## Commands
 
@@ -134,7 +218,7 @@ The plugin supports various commands organized into categories:
 
 - **Document**: `get_document_info`, `get_selection`, `get_node_info`, `get_nodes_info`
 - **Styles**: `get_styles`, `get_local_components`, `get_remote_components`
-- **Images**: 
+- **Images**:
   - Single from URL: `insert_image`
   - Batch from URLs: `insert_images`
   - Single local data: `insert_local_image`
@@ -155,16 +239,20 @@ This plugin works with Claude's Model Context Protocol to provide a bridge betwe
 
 If the plugin isn't working as expected:
 
-1. Check the browser console for errors
-2. Ensure the plugin has been bundled correctly:
-   - For code issues: `bun run build:plugin`
+1. Check the browser console for errors within Figma.
+2. Ensure the plugin has been bundled correctly by running the appropriate build commands:
+   - For core code issues: `bun run build:plugin`
    - For UI issues: `bun run build:ui`
 3. Try the all-in-one build: `bun run build:all`
-4. Verify that Figma has access to the compiled code files
-5. If UI elements are missing, ensure all component files and CSS are present
+4. Verify that Figma has access to the compiled code files in the `dist/` directory.
+5. If UI elements are missing or styles are incorrect, ensure all component files, CSS files, and JavaScript files in `js/` were processed correctly by `direct-build.js`.
 
 ## Dependencies
 
-- esbuild: For bundling TypeScript and JavaScript
-- nodemon: For watching and rebuilding on changes during development
-- typescript: For type checking and compilation
+-   **Bun**: JavaScript runtime and package manager.
+-   **Node.js**: Environment for running build scripts.
+-   **esbuild**: Used by `direct-build.js` for efficient TypeScript/JavaScript bundling.
+-   **nodemon**: Used in `watch:plugin` script for automatic rebuilding on file changes.
+-   **typescript**: For type checking and compilation.
+-   **concurrently**: Used in `dev:all` script to run multiple commands simultaneously.
+-   **tsup**: Used for building the main MCP server code (separate from the plugin build).
