@@ -15,7 +15,7 @@
  * previously loaded by the HTML, improving load times and reliability.
  * 
  * Usage:
- * node src/claude_mcp_plugin/direct-build.js
+ * node src/conduit_mcp_plugin/direct-build.js
  * or
  * npm run build:ui
  */

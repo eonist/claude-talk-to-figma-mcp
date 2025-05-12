@@ -9,7 +9,7 @@ This plugin uses a modular architecture during development, while still complyin
 ### Project Structure
 
 ```
-src/claude_mcp_plugin/
+src/conduit_mcp_plugin/
 ├── build.js            # Build script to bundle the source code into code.js
 ├── direct-build.js     # Enhanced build script for UI generation
 ├── build-ts.js         # TypeScript build script (alternative approach)
@@ -97,7 +97,7 @@ The plugin uses a modular build system with specialized scripts:
 A cleanup script is provided to remove temporary directories and backup files after building:
 
 ```
-cd src/claude_mcp_plugin
+cd src/conduit_mcp_plugin
 ./cleanup.sh
 ```
 

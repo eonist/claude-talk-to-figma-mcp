@@ -1,7 +1,7 @@
 node_modules/
 dist/
 docs/
-src/claude_mcp_plugin/code.js
+src/conduit_mcp_plugin/code.js
 src/claude_mcp_plugin/code.js
 src/claude_mcp_plugin/code.js
 src/claude_mcp_plugin/code.js

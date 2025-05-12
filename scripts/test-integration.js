@@ -249,7 +249,7 @@ async function checkFigmaPlugin() {
   
   try {
     log.info('This project uses a custom Claude MCP Plugin for Figma');
-    log.info('The plugin code is located in the src/claude_mcp_plugin directory');
+    log.info('The plugin code is located in the src/conduit_mcp_plugin directory');
     
     // Ask if the user has already installed the plugin
     const isPluginInstalled = await askQuestion('Have you installed the Claude MCP Plugin as a development plugin in Figma? (y/n)');
@@ -258,7 +258,7 @@ async function checkFigmaPlugin() {
       log.info('1. Open Figma');
       log.info('2. Go to Menu > Plugins > Development > New Plugin');
       log.info('3. Select "Link existing plugin"');
-      log.info('4. Navigate to and select the folder `src/claude_mcp_plugin` from this repository');
+      log.info('4. Navigate to and select the folder `src/conduit_mcp_plugin` from this repository');
       return false;
     } else {
       log.success('Plugin installed as per user');
@@ -336,4 +336,4 @@ async function runIntegrationTests() {
 runIntegrationTests().catch(err => {
   log.error(`Error during tests: ${err.message}`);
   process.exit(1);
-}); 
+});

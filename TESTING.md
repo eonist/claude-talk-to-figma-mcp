@@ -35,7 +35,7 @@ Before starting the tests, make sure you have:
 
 1. Open Figma and go to **Menu > Plugins > Development > New Plugin**
 2. Select "Link existing plugin"
-3. Navigate to and select the folder `src/claude_mcp_plugin` from this repository
+3. Navigate to and select the folder `src/conduit_mcp_plugin` from this repository
 
 #### Connect Plugin to WebSocket Server
 
@@ -146,4 +146,4 @@ Claude should be able to communicate with Figma and return information about the
 - [ ] Claude Desktop can modify existing elements
 - [ ] Claude Desktop can scan and modify text
 - [ ] The system recovers correctly from disconnections
-- [ ] Errors are handled and reported correctly 
+- [ ] Errors are handled and reported correctly
