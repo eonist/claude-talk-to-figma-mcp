@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/talk_to_figma_mcp/server.ts', 'src/socket.ts'],
+  entry: ['src/conduit_mcp_server/server.ts', 'src/socket.ts'],
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
@@ -11,4 +11,4 @@ export default defineConfig({
   minify: false,
   splitting: false,
   bundle: true,
-}); 
+});

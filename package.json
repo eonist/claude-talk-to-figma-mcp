@@ -2,10 +2,10 @@
   "name": "conduit-design",
   "description": "Claude Desktop Talk to Figma MCP",
   "version": "0.5.1",
-  "module": "dist/talk_to_figma_mcp/server.js",
-  "main": "dist/talk_to_figma_mcp/server.js",
+  "module": "dist/conduit_mcp_server/server.js",
+  "main": "dist/conduit_mcp_server/server.js",
   "bin": {
-    "claude-talk-to-figma-mcp": "dist/talk_to_figma_mcp/server.js",
+    "claude-talk-to-figma-mcp": "dist/conduit_mcp_server/server.js",
     "claude-talk-to-figma-mcp-socket": "dist/socket.js"
   },
   "files": [
@@ -16,10 +16,10 @@
   ],
   "type": "module",
   "scripts": {
-    "start": "bun run dist/talk_to_figma_mcp/server.js",
+    "start": "bun run dist/conduit_mcp_server/server.js",
     "socket": "bun run dist/socket.js",
     "setup": "./scripts/setup.sh",
-    "build": "tsup && chmod +x dist/talk_to_figma_mcp/server.js dist/socket.js",
+    "build": "tsup && chmod +x dist/conduit_mcp_server/server.js dist/socket.js",
     "build:watch": "tsup --watch",
     "build:plugin": "node src/conduit_mcp_plugin/build.js",
     "build:ui-ts": "node src/conduit_mcp_plugin/build-ts.js",

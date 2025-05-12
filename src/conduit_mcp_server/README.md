@@ -64,7 +64,7 @@ The server can be configured via command line arguments:
 
 Example:
 ```bash
-node src/talk_to_figma_mcp/server.ts --server=localhost --port=3055 --reconnect-interval=2000
+node src/conduit_mcp_server/server.ts --server=localhost --port=3055 --reconnect-interval=2000
 ```
 
 ## Usage
@@ -257,7 +257,7 @@ The server supports an extensive set of commands for working with Figma. These a
   4. Update this documentation to include the new command
 
 - **Logging:**  
-  The server uses a custom logger that prints messages to stderr. Review `src/talk_to_figma_mcp/utils/logger.ts` for details.
+  The server uses a custom logger that prints messages to stderr. Review `src/conduit_mcp_server/utils/logger.ts` for details.
 
 ## License
 

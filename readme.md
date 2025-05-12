@@ -102,7 +102,7 @@ Claude: [executes commands in Figma and displays the results]
 
 ### Docs:
 - [Available_MCP_Commands.md](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/Available_MCP_Commands.md) 
-- [Server doc](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/src/talk_to_figma_mcp/README.md)
+- [Server doc](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/src/conduit_mcp_server/README.md)
 - [Plugin doc](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/src/conduit_mcp_plugin/README.md)
 
 ## Troubleshooting
