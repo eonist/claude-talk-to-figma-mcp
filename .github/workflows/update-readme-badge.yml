@@ -1,0 +1,48 @@
+name: Update README Version Badge
+
+on:
+  workflow_run:
+    workflows: ["Publish Package to npm"] # Trigger after the publish workflow
+    types:
+      - completed # Only run after the workflow finishes
+    branches:
+      - main # Specify the branch to run on (adjust if your default branch is different)
+
+jobs:
+  update_badge:
+    # Only run if the publish workflow succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Grant write permission to update the README
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true # Fetch tags to get the latest version
+          # Use the GITHUB_TOKEN for authentication to allow pushing changes
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get latest tag
+        id: get_tag
+        run: echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${{ steps.get_tag.outputs.TAG }}" >> $GITHUB_OUTPUT # Assuming tag is like vX.Y.Z
+
+      - name: Update version badge in README
+        run: |
+          # Replace the version number in the badge URL
+          sed -i "s/version-[0-9]\+\.[0-9]\+\.[0-9]\+-blue\.svg/version-${{ steps.get_version.outputs.VERSION }}-blue.svg/g" readme.md
+          # Replace the old repository name in the badge link URL
+          sed -i "s/claude-talk-to-figma-mcp/conduit/g" readme.md
+
+      - name: Commit and push changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add readme.md
+          git commit -m "Update version badge to ${{ steps.get_version.outputs.VERSION }}"
+          git push
