@@ -1,6 +1,79 @@
 # Conduit MCP Figma Plugin
 
-A Figma plugin that integrates with the Model Context Protocol (MCP) to enable AI Agient to control Figma.
+A Figma plugin that integrates with the Model Context Protocol (MCP) to enable AI agents to control Figma.
+
+---
+
+## High-Level Architecture
+
+This project is an adaptation of Sonny Lazuardi's cursor-talk-to-figma-mcp, modified to work with Claude Desktop instead of Cursor. It enables seamless communication between Anthropic's Claude AI and Figma using the Model Context Protocol (MCP).
+
+```
++----------------+     +-------------------+     +-------------------+     +---------------+
+| VS Code Cline  |<--->| MCP Server        |<--->| WebSocket Server  |<--->| Figma Plugin  |
+| (AI Agent)     |     | (conduit_mcp_server)|   | (src/socket.ts)   |     | (UI Plugin)   |
++----------------+     +-------------------+     +-------------------+     +---------------+
+```
+
+- **VS Code Cline**: The AI agent (Claude) issues commands.
+- **MCP Server**: Receives commands from the AI agent and translates them into Figma operations.
+- **WebSocket Server**: Relays messages in real time between the MCP server and the Figma plugin.
+- **Figma Plugin**: Executes commands in the Figma environment and returns results.
+
+---
+
+## Communication Flow
+
+1. A user prompts Claude with a command to interact with Figma.
+2. Claude passes the command to the MCP server (`src/conduit_mcp_server/`).
+3. The MCP server sends the command to the WebSocket server (`src/socket.ts`).
+4. The WebSocket server forwards the command to the Figma plugin (`src/conduit_mcp_plugin/`).
+5. The Figma plugin executes the command using the Figma API.
+6. Results flow back through the same channels to Claude.
+
+---
+
+## Installation
+
+### 1. Build the Plugin and Servers
+
+From the project root:
+
+```bash
+bun run build:all
+```
+
+### 2. Start the WebSocket Server
+
+```bash
+bun run src/socket.ts
+```
+This starts the WebSocket server on port 3055.
+
+### 3. Start the MCP Server
+
+```bash
+node dist/conduit_mcp_server/server.js
+```
+You can pass `--server`, `--port`, and `--reconnect-interval` options as needed.
+
+### 4. Install the Plugin in Figma
+
+1. Go to **Menu > Plugins > Development > New Plugin**
+2. Select "Import plugin from manifest"
+3. Navigate to and select `src/conduit_mcp_plugin/manifest.json`
+
+---
+
+## Recent Updates
+
+- Robust WebSocket reconnection logic
+- Batch local-image insertion support
+- Rectangle-to-frame conversion
+- Gradient and remote image support
+- Separation of UI and protocol logic
+
+---
 
 ## Modular Architecture
 
@@ -348,6 +421,20 @@ The plugin supports various commands organized into categories:
 ## MCP Integration
 
 This plugin works with Claude's Model Context Protocol to provide a bridge between an AI Agent and Figma, allowing the AI Agent to create and manipulate design elements programmatically.
+
+---
+
+## WebSocket Server
+
+The WebSocket server (`src/socket.ts`) runs on port 3055 and acts as a real-time bridge between the MCP server and the Figma plugin. It manages channels, relays messages, and provides a `/status` endpoint for monitoring.
+
+---
+
+## MCP Server
+
+The MCP server (`src/conduit_mcp_server/server.ts`) is a CLI tool that connects to the WebSocket server and exposes Figma operations to the AI agent via the Model Context Protocol. It supports command-line options for host, port, and reconnect interval.
+
+---
 
 ## Troubleshooting
 
