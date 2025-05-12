@@ -145,8 +145,6 @@ This script performs the following steps:
 - Writes the final combined content to `dist/ui.html`.
 - Cleans up temporary files.
 
-An alternative UI build script, `build-ts.js`, exists but `direct-build.js` is preferred as it handles all inlining steps.
-
 ### File Interaction Matrix
 
 This matrix illustrates how source files are processed to create the final output files consumed by Figma:
@@ -161,7 +159,6 @@ This matrix illustrates how source files are processed to create the final outpu
 
 -   `build:plugin`: Generate the main plugin code (`code.js`) using `build.js`.
 -   `build:ui`: Build the UI (`ui.html`) using `direct-build.js` (recommended).
--   `build:ui-ts`: Alternative UI build using `build-ts.js` (TypeScript compilation).
 -   `watch:plugin`: Watch for changes in `src/conduit_mcp_plugin/src` and rebuild `code.js` automatically using `nodemon` and `build.js`.
 -   `build:all`: Run `tsup` (for the server), then `build:plugin`, then `build:ui`.
 -   `dev:all`: Run `tsup --watch` and `watch:plugin` concurrently.
@@ -182,20 +179,6 @@ This matrix illustrates how source files are processed to create the final outpu
 2.  Run `bun run build:all` to build both the plugin core and UI.
 3.  Alternatively, run `bun run dev:all` to automatically rebuild on changes (watches both server and plugin core).
 4.  Reload the plugin in Figma to see changes.
-
-### Cleanup
-
-A cleanup script is provided to remove temporary directories and backup files after building:
-
-```bash
-cd src/conduit_mcp_plugin
-./cleanup.sh
-```
-
-This removes:
-- The `temp-dist` directory used for TypeScript compilation (by `build-ts.js`)
-- The `temp` directory used by the `direct-build.js` script
-- Any `.bak` backup files created during the build process.
 
 ### Extending the Plugin
 
@@ -328,20 +311,20 @@ The user interface follows a specific flow:
     -   A message log displaying commands sent and responses received from the MCP server.
     -   Display of the unique channel ID for connecting the external MCP server.
 
-### Advanced UI Features
+### Advanced UI Considerations
 
-The UI incorporates several advanced features for a better user experience:
+The UI aims to provide a good user experience through:
 
--   **Context-Aware Controls**: UI elements can dynamically adjust based on the current state of the Figma document, user permissions, or the connection status to the MCP server.
--   **Performance Optimization**: Techniques like virtualized scrolling for the message log, WebSocket message batching, and debounced UI updates are used to maintain responsiveness, especially with frequent message exchanges.
--   **Accessibility Features**: Efforts are made to ensure the UI is accessible, including support for keyboard navigation, screen reader compatibility, and appropriate color contrast.
+-   **Context-Aware Controls**: UI elements may dynamically adjust based on the current state (e.g., connection status).
+-   **Performance Optimization**: The implementation considers performance to maintain responsiveness, especially with message exchanges.
+-   **Accessibility Features**: Standard accessibility practices like keyboard navigation and screen reader compatibility are considered.
 
 ### Cross-Platform Considerations
 
-Developing for the Figma plugin environment involves considering differences between the Desktop and Web versions:
+Development accounts for potential differences between Figma Desktop and Web environments:
 
--   **Figma Desktop vs Web**: There can be differences in file system access (more restricted in Web), WebSocket security policies, and performance characteristics. The plugin's implementation needs to account for these variations.
--   **Multi-Instance Handling**: The plugin is designed to handle multiple instances running concurrently. Each instance uses a unique channel ID for WebSocket pairing to ensure messages are routed correctly to the specific plugin instance that initiated the command. Resource cleanup is managed when a plugin window is closed.
+-   **Figma Desktop vs Web**: Variations in file system access, security policies, and performance are considered during development.
+-   **Multi-Instance Handling**: The plugin architecture supports multiple instances running concurrently, using unique channel IDs for WebSocket pairing and managing resource cleanup.
 
 ## Commands
 
