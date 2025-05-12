@@ -1,5 +1,21 @@
-<!-- Tabs Navigation Component -->
+<!--
+  tabs.html
+  Tabs Navigation Component for the Conduit MCP Plugin UI.
+
+  Provides navigation between different panels (e.g., Connection, About).
+  The active tab is highlighted and updated dynamically by JS.
+
+  Structure:
+    - Main container: .tabs
+    - Tab: .tab (active tab has .active)
+
+  @component Tabs
+-->
+
+<!-- Tabs container -->
 <div class="tabs">
+  <!-- Tab: Connection (default active) -->
   <div id="tab-connection" class="tab active">Connection</div>
+  <!-- Tab: About -->
   <div id="tab-about" class="tab">About</div>
 </div>

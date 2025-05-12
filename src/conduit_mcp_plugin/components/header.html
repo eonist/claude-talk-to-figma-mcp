@@ -1,5 +1,19 @@
-<!-- Header Component -->
+<!--
+  header.html
+  Header Component for the Conduit MCP Plugin UI.
+
+  Displays the plugin logo and title at the top of the UI.
+
+  Structure:
+    - Main container: .header
+    - Logo area: .header-logo (SVG)
+    - Text area: .header-text (title and subtitle)
+
+  @component Header
+-->
+
 <div class="header">
+  <!-- Logo area: plugin SVG logo -->
   <div class="header-logo">
     <svg class="header-logo-image" width="600" height="600" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="600" height="600" rx="200" fill="#E7E7E7" style="fill:#E7E7E7;fill:color(display-p3 0.9059 0.9059 0.9059);fill-opacity:1;"/>
@@ -14,6 +28,7 @@
       </defs>
     </svg>
   </div>
+  <!-- Text area: plugin title and subtitle -->
   <div class="header-text">
     <h1>Conduit</h1>
     <p>Design at the speed of thought</p>

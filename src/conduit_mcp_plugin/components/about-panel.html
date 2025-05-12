@@ -1,6 +1,22 @@
-<!-- About Panel Component -->
+<!--
+  about-panel.html
+  About Panel Component for the Conduit MCP Plugin UI.
+
+  Displays plugin information, credits, version, and usage instructions.
+  This panel is shown in the "About" tab.
+
+  Structure:
+    - Main container: #content-about.tab-content
+    - About section: plugin description and credits
+    - Version display
+    - Usage instructions: ordered list
+
+  @component AboutPanel
+-->
+
 <div id="content-about" class="tab-content">
   <div class="section">
+    <!-- About section: plugin description and credits -->
     <h2>About Conduit Conduit Plugin</h2>
     <p>
       This plugin allows an AI Agent to communicate with Figma, enabling
@@ -11,8 +27,10 @@
         >Sonny</a
       >
     </p>
+    <!-- Version display -->
     <p>Version: 0.5.3</p>
 
+    <!-- Usage instructions section -->
     <h2>How to Use</h2>
     <ol>
       <li>Make sure the MCP server is running in the AI Agent</li>

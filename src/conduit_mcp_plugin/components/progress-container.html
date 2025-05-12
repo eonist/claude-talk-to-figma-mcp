@@ -1,10 +1,29 @@
-<!-- Progress Container Component -->
+<!--
+  progress-container.html
+  Progress Container Component for the Conduit MCP Plugin UI.
+
+  Displays the progress of ongoing operations, including a message, progress bar,
+  and status/percentage details. This panel is shown/hidden dynamically.
+
+  Structure:
+    - Main container: #progress-container.section.hidden
+    - Title
+    - Progress message (updated by JS)
+    - Progress bar (animated by JS)
+    - Progress details: status and percentage
+
+  @component ProgressContainer
+-->
+
 <div id="progress-container" class="section hidden">
   <h2>Operation Progress</h2>
+  <!-- Progress message (updated dynamically) -->
   <div id="progress-message">No operation in progress</div>
+  <!-- Progress bar (width and color updated dynamically) -->
   <div class="progress-bar-container">
     <div id="progress-bar" class="progress-bar-inner"></div>
   </div>
+  <!-- Progress details: status and percentage (updated dynamically) -->
   <div class="progress-details">
     <div id="progress-status">Not started</div>
     <div id="progress-percentage">0%</div>

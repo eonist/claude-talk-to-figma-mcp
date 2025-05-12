@@ -1,5 +1,22 @@
-<!-- Connection Panel Component -->
+<!--
+  connection-panel.html
+  Connection Panel Component for the Conduit MCP Plugin UI.
+
+  Provides controls for connecting to the WebSocket server, toggling auto-reconnect,
+  displaying connection status, and copying the channel ID.
+
+  Structure:
+    - Main container: #content-connection.tab-content.active
+    - Port input and connect button
+    - Auto-reconnect toggle
+    - Connection status display
+    - Copy channel-id button
+
+  @component ConnectionPanel
+-->
+
 <div id="content-connection" class="tab-content active">
+  <!-- Section: Port input and connect button -->
   <div class="section">
     <label for="port">WebSocket Server Port</label>
     <div class="input-container">
@@ -14,6 +31,7 @@
       <button id="btn-connect" class="primary">Connect</button>
     </div>
   </div>
+  <!-- Section: Auto-reconnect toggle -->
   <div class="section">
     <div class="toggle-group">
       <label class="switch">
@@ -24,10 +42,12 @@
     </div>
   </div>
 
+  <!-- Section: Connection status display (updated dynamically) -->
   <div id="connection-status" class="status disconnected">
     Not connected
   </div>
 
+  <!-- Section: Copy channel-id button -->
   <div class="section">
     <button id="btn-copy-channel" class="primary" disabled>
       Copy channel-id
