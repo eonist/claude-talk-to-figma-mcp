@@ -129,6 +129,12 @@ See MCP protocol design best pratice: https://gist.github.com/eonist/eb8d5628aad
 
 ## Changelog
 
+### 0.5.2 (2025-05-12)
+- Improved WebSocket reconnection for better connection stability
+- Redesigned UI with modern styling and improved layout
+- Added clipboard copy confirmation notifications
+- Added SVG logo to the plugin header
+
 ### 0.5.1 (2025-05-11)
 - Figma theme support & dark/light toggle
 - Countdown timer for persistent-retry mode
