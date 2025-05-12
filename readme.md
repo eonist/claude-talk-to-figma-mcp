@@ -7,8 +7,6 @@
 
 > Design at the speed of thought
 
-![Demo video](./conduit_intro_video.mp4)
-
 ### What is MCP?
 Model Context Protocol (MCP) is the framework that allows an AI agent to communicate with external applications. This implementation enables any AI agent to send commands to and receive information from Figma in real-time.
 
