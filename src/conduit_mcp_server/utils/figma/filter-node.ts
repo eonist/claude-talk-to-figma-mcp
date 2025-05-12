@@ -3,8 +3,13 @@ import { rgbaToHex } from '../color/index.js';
 /**
  * Filters and processes a Figma node for client consumption.
  *
- * @param node - Raw Figma node to filter
- * @returns Filtered node data or null if the node should be excluded
+ * @param {any} node - Raw Figma node to filter.
+ * @returns {any|null} Filtered node data or null if the node should be excluded.
+ * @example
+ * // Returns filtered node object
+ * const filtered = filterFigmaNode({ id: "1", name: "Rect", type: "RECTANGLE", fills: [], strokes: [] });
+ * // Returns null for VECTOR nodes
+ * filterFigmaNode({ type: "VECTOR" }); // null
  */
 export function filterFigmaNode(node: any): any | null {
   if (node.type === 'VECTOR') {

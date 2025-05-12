@@ -10,6 +10,17 @@
  * import { ensureNodeIdIsString } from './node-utils.js';
  * const id = ensureNodeIdIsString(node.id);
  */
+/**
+ * Ensure a Figma node ID is a string.
+ *
+ * @param {any} nodeId - The node ID to validate and convert.
+ * @returns {string} The node ID as a string.
+ * @throws {Error} If nodeId is null, undefined, or an object.
+ * @example
+ * ensureNodeIdIsString(123); // "123"
+ * ensureNodeIdIsString("abc"); // "abc"
+ * ensureNodeIdIsString({}); // throws Error
+ */
 export function ensureNodeIdIsString(nodeId: any): string {
   if (nodeId === null || nodeId === undefined) {
     throw new Error("Node ID cannot be null or undefined");
