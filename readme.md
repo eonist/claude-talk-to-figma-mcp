@@ -1,4 +1,4 @@
-[![version](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/eonist/claude-talk-to-figma-mcp/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green)
+[![version](https://img.shields.io/badge/version--blue.svg)](https://github.com/eonist/conduit/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <img width="100" alt="img" src="logo.svg">
 
@@ -111,9 +111,9 @@ Claude: [executes commands in Figma and displays the results]
 ```
 
 ### Docs:
-- [Available_MCP_Commands.md](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/Available_MCP_Commands.md) 
-- [Server doc](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/src/conduit_mcp_server/README.md)
-- [Plugin doc](https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/src/conduit_mcp_plugin/README.md)
+- [Available_MCP_Commands.md](https://github.com/eonist/conduit/blob/main/Available_MCP_Commands.md) 
+- [Server doc](https://github.com/eonist/conduit/blob/main/src/conduit_mcp_server/README.md)
+- [Plugin doc](https://github.com/eonist/conduit/blob/main/src/conduit_mcp_plugin/README.md)
 
 ## Troubleshooting
 
