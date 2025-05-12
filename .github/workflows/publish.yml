@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - v*.*.*
-  workflow_dispatch: # Add this line to enable manual triggers
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions UI for testing
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,12 +24,12 @@ jobs:
       - name: Run tests
         env:
           CI: true
-        run: npm test
+        run: npm test # Ensure your test script handles the CI environment variable
       - name: Update all package.json files with tag version
         if: startsWith(github.ref, 'refs/tags/') # Only run for tag pushes
         run: |
           TAG="${GITHUB_REF#refs/tags/v}"
-          npm version "$TAG" --no-git-tag-version
+          npm version "$TAG" --no-git-tag-version # Update version without creating a new git tag
           cd src/conduit_mcp_server
           npm version "$TAG" --no-git-tag-version
           cd ../..
