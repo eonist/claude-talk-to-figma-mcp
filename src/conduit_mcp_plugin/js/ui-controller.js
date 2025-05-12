@@ -1,5 +1,5 @@
 /**
- * UI Controller for the Claude MCP Figma plugin.
+ * UI Controller for the Conduit MCP Figma plugin.
  * Handles UI state updates and interactions.
  */
 

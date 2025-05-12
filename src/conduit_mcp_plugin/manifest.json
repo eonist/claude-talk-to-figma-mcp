@@ -1,5 +1,5 @@
 {
-  "name": "Claude MCP Plugin",
+  "name": "Conduit MCP Plugin",
   "id": "claude-mcp-plugin",
   "api": "1.0.0",
   "main": "dist/code.js",

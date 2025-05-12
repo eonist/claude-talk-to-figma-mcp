@@ -1,5 +1,5 @@
 /**
- * Global state management for the Claude MCP Figma plugin.
+ * Global state management for the Condut MCP Figma plugin.
  * Provides a central store for application state that can be accessed by all modules.
  */
 

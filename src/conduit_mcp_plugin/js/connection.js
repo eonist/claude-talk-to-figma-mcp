@@ -1,5 +1,5 @@
 /**
- * WebSocket connection management for the Claude MCP Figma plugin.
+ * WebSocket connection management for the Conduit MCP Figma plugin.
  * Handles establishing and maintaining connections to the MCP server.
  */
 
@@ -182,7 +182,7 @@ async function connectToServer(port) {
               {
                 pluginMessage: {
                   type: "notify",
-                  message: `Connected to Claude MCP server on port ${port} in channel: ${channelName}`,
+                  message: `Connected to Conduit MCP server on port ${port} in channel: ${channelName}`,
                 },
               },
               "*"

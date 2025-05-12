@@ -1,5 +1,5 @@
 /**
- * UI panel script for the Claude MCP plugin.
+ * UI panel script for the Conduit MCP plugin.
  *
  * This script manages the user interface elements of the plugin,
  * including connection controls (connect/disconnect buttons and port input),
@@ -58,8 +58,8 @@ function updateConnectionStatus(isConnected: boolean, message?: string) {
   connectionStatus.innerHTML = message
     ? message
     : isConnected
-    ? 'Connected to Claude MCP server'
-    : 'Not connected to Claude MCP server';
+    ? 'Connected to Conduit MCP server'
+    : 'Not connected to Conduit MCP server';
   connectionStatus.className = 'status ' + (isConnected ? 'connected' : 'disconnected');
   connectButton.disabled = isConnected;
   disconnectButton.disabled = !isConnected;

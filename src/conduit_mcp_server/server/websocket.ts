@@ -1,5 +1,5 @@
 /**
- * WebSocket transport module for the Talk to Figma MCP server.
+ * WebSocket transport module for the Conduit MCP server.
  *
  * Manages connection lifecycle, command dispatch, response handling, and automatic reconnection.
  *

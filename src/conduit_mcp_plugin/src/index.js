@@ -1,5 +1,5 @@
 /**
- * Main entry point for the Claude MCP Figma plugin.
+ * Main entry point for the Conduit MCP Figma plugin.
  * Initializes the UI panel, registers command handlers, and mediates communication
  * between the Figma plugin environment and the Model Context Protocol server.
  *

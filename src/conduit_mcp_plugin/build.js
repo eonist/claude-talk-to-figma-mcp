@@ -1,5 +1,5 @@
 /**
- * Build script for the Claude MCP Figma plugin.
+ * Build script for the Conduit MCP Figma plugin.
  * Bundles individual module files into a single distributable `code.js` for Figma.
  *
  * Process overview:

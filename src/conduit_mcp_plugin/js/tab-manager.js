@@ -1,5 +1,5 @@
 /**
- * Tab Manager for the Claude MCP Figma plugin.
+ * Tab Manager for the Conduit MCP Figma plugin.
  * Handles tab switching functionality.
  */
 

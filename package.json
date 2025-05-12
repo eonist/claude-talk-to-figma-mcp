@@ -1,6 +1,6 @@
 {
   "name": "conduit-design",
-  "description": "Claude Desktop Talk to Figma MCP",
+  "description": "Conduit Figma MCP",
   "version": "0.5.2",
   "module": "dist/conduit_mcp_server/server.js",
   "main": "dist/conduit_mcp_server/server.js",
@@ -51,7 +51,8 @@
     "zod": "latest"
   },
   "keywords": [
-    "claude",
+    "conduit",
+    "cloude",
     "figma",
     "mcp",
     "plugin",
@@ -63,10 +64,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arinspunk/claude-talk-to-figma-mcp"
+    "url": "https://github.com/eonist/conduit"
   },
   "bugs": {
-    "url": "https://github.com/arinspunk/claude-talk-to-figma-mcp/issues"
+    "url": "https://github.com/eonist/conduit/issues"
   },
-  "homepage": "https://github.com/arinspunk/claude-talk-to-figma-mcp#readme"
+  "homepage": "https://conduit.design"
 }

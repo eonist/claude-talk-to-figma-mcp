@@ -1,10 +1,10 @@
-# MCP Commands for Claude Talk to Figma Integration
+# MCP Commands for Conduit Integration
 
-This comprehensive documentation outlines all available Model Context Protocol (MCP) commands for the Claude Talk to Figma integration. The commands enable AI-assisted design in Figma through natural language instructions processed by Claude.
+This comprehensive documentation outlines all available Model Context Protocol (MCP) commands for the Conduit integration. The commands enable AI-assisted design in Figma through natural language instructions processed by Claude.
 
 ## Introduction
 
-The Claude Talk to Figma MCP allows Claude to communicate with Figma, enabling powerful design capabilities through simple text commands. This document catalogs all available commands, their parameters, and usage examples to help you effectively leverage this integration.
+The Conduit allows an AI Agent to communicate with Figma, enabling powerful design capabilities through simple text commands. This document catalogs all available commands, their parameters, and usage examples to help you effectively leverage this integration.
 
 ## Basic Usage
 
@@ -15,7 +15,7 @@ Talk to Figma, channel {channel-ID}
 [Your natural language instruction]
 ```
 
-Claude will interpret your instruction and execute the appropriate commands in Figma.
+Conduit will interpret your instruction and execute the appropriate commands in Figma.
 
 ## Command Categories
 
@@ -1366,7 +1366,7 @@ Returns a list of all available MCP tools.
 
 1. **Use Batch Commands** - Whenever possible, use batch commands (e.g., `create_rectangles` instead of multiple `create_rectangle` calls) for better performance.
 
-2. **Name Your Layers** - Always name your layers for better organization and easier selection with Claude later.
+2. **Name Your Layers** - Always name your layers for better organization and easier selection with Conduit later.
 
 3. **Group Related Elements** - Use `group_nodes` to keep related elements together and maintain a clean layer hierarchy.
 
@@ -1386,66 +1386,10 @@ If you encounter issues with commands:
 
 4. **Command Format** - Verify your command JSON is properly formatted with all required parameters
 
-5. **Figma Plugin Status** - Confirm the Claude MCP Plugin is running in your Figma instance
+5. **Figma Plugin Status** - Confirm the Conduit MCP Plugin is running in your Figma instance
 
 ## Conclusion
 
-The Claude Talk to Figma MCP provides powerful capabilities for AI-assisted design in Figma. By mastering these commands, you can create sophisticated designs, automate repetitive tasks, and enhance your workflow through natural language instructions to Claude.
+Conduit provides powerful capabilities for AI-assisted design in Figma. By mastering these commands, you can create sophisticated designs, automate repetitive tasks, and enhance your workflow through natural language instructions to Claude.
 
 For updates and new features, check the changelog in the repository as this integration continues to evolve with regular additions to its capabilities.
-
-Sources
-[1] Available_MCP_Commands.md https://github.com/eonist/claude-talk-to-figma-mcp/blob/main/docs/Available_MCP_Commands.md
-[2] GitHub - eonist/claude-talk-to-figma-mcp: A Model Context Protocol (MCP) that allows any AI agent to interact directly with Figma https://github.com/eonist/claude-talk-to-figma-mcp
-[3] Figma - MCP Server - Magic Slides https://www.magicslides.app/mcps/matthewdailey-figma
-[4] The MCP's Commands https://www.astro.princeton.edu/~rhl/mcp/cmds.html
-[5] Talk to Figma MCP - UBOS.tech https://ubos.tech/mcp/talk-to-figma-mcp/
-[6] Claude MCP Server to work with figma - GitHub https://github.com/karthiks3000/figma-mcp-server
-[7] arinspunk/claude-talk-to-figma-mcp - GitHub https://github.com/arinspunk/claude-talk-to-figma-mcp
-[8] `RegisterCommand` function does not return `source` variable - Cfx.re https://forum.cfx.re/t/registercommand-function-does-not-return-source-variable/5167219
-[9] Unknown file extension ".ts" for a TypeScript file - Stack Overflow https://stackoverflow.com/questions/62096269/unknown-file-extension-ts-for-a-typescript-file
-[10] claude-talk-to-figma-mcp on NPM https://libraries.io/npm/claude-talk-to-figma-mcp
-[11] GitHub - smithery-ai/mcp-figma https://github.com/smithery-ai/mcp-figma
-[12] GitHub - MatthewDailey/figma-mcp: ModelContextProtocol for Figma's REST API https://github.com/MatthewDailey/figma-mcp
-[13] Converting Figma designs with Cursor MCP - YouTube https://www.youtube.com/watch?v=X-aX1TuGP0s
-[14] sonnylazuardi/cursor-talk-to-figma-mcp - GitHub https://github.com/sonnylazuardi/cursor-talk-to-figma-mcp
-[15] mcp-figma/USAGE.md at main - GitHub https://github.com/smithery-ai/mcp-figma/blob/main/USAGE.md
-[16] Claude Code designing in Figma with MCP server and plug-in https://www.linkedin.com/posts/sonnylazuardi_claude-code-designing-in-figma-with-mcp-server-activity-7308248516710027264-j_5K
-[17] GitHub - tonycueva/claude-figma-mcp https://github.com/tonycueva/claude-figma-mcp
-[18] Cursor Talk to Figma MCP Server - GenAI Works https://genai.works/mcp-servers/Cursor-Talk-to-Figma-MCP-Server
-[19] Trying the Cursor talk to figma plugin - YouTube https://www.youtube.com/watch?v=8XLcOJGllcU
-[20] Figma MCP Server https://mcp.so/zh/server/Figma-Context-MCP?tab=content
-[21] @chrusic/todoist-mcp-server-extended https://www.npmjs.com/package/@chrusic/todoist-mcp-server-extended?activeTab=code
-[22] Trying out MCP-GenUI with Figma - Sherizan https://www.sherizan.com/blog/01-figma-mcp
-[23] Talk to Figma MCP server for AI agents - Playbooks https://playbooks.com/mcp/yhc984-talk-to-figma
-[24] MCP - Connect your AI tool to Figma https://html.to.design/docs/mcp-tab/
-[25] Introduction to MinIO Client (MC) Commands https://www.youtube.com/watch?v=pukQgDdXfqA
-[26] Sonny Lazuardi's Post - LinkedIn https://www.linkedin.com/posts/sonnylazuardi_just-wanted-to-share-my-latest-experiment-activity-7307821553654657024-yrh8
-[27] Talk to Figma MCP server for AI agents - Playbooks https://playbooks.com/mcp/sonnylazuardi-talk-to-figma
-[28] Figma Context MCP - Claude MCP Servers https://www.claudemcp.com/servers/figma-context-mcp
-[29] GitHub - Cognitive-Stack/mcphub: Embeddable Model Context Protocol (MCP)… | Cognitive Stack https://www.linkedin.com/posts/cognitive-stack_github-cognitive-stackmcphub-embeddable-activity-7317479933729984512-i3SB
-[30] MCP for PMs: How To Automate Figma → Jira (Epics, Stories) in 10 ... https://www.productcompass.pm/p/mcp-case-study-jira-figma
-[31] arinspunk/claude-talk-to-figma-mcp - GitHub https://github.com/arinspunk/claude-talk-to-figma-mcp
-[32] Multiline text feature https://it.edu.is-best.net/?question=git-1746489518952&update=1746403200026
-[33] Question - Can't register command - PaperMC https://forums.papermc.io/threads/cant-register-command.802/
-[34] server.ts - angular/universal-starter - GitHub https://github.com/angular/universal-starter/blob/master/server.ts
-[35] How to seperate rectangles in tkinter using the canvas function? https://stackoverflow.com/questions/51680892
-[36] Issues · sonnylazuardi/cursor-talk-to-figma-mcp - GitHub https://github.com/sonnylazuardi/cursor-talk-to-figma-mcp/issues
-[37] server.ts - vivo-project/Vitro-angular - GitHub https://github.com/vivo-project/Vitro-angular/blob/main/server.ts
-[38] React Drawing Basic Shapes - KendoReact - Telerik.com https://www.telerik.com/kendo-react-ui/components/drawing/basic-shapes
-[39] tsup.config.ts - sonnylazuardi/cursor-talk-to-figma-mcp - GitHub https://github.com/sonnylazuardi/cursor-talk-to-figma-mcp/blob/main/tsup.config.ts
-[40] Recently Active 'rte' Questions - Page 1 - Stack Overflow https://stackoverflow.com/questions/tagged/rte?page=1&sort=Active&pageSize=%7Bpagesize%7D
-[41] I want to draw rectangle with double edges in Tkinter library in python? https://stackoverflow.com/questions/46418371/i-want-to-draw-rectangle-with-double-edges-in-tkinter-library-in-python
-[42] Implementation Plan for create_rectangles Feature - Education United https://en.edu.66ghz.com/?question=git-1746461047342&update=1746403200026
-[43] Tcl Tk Canvas Rectangle - Tutorialspoint https://www.tutorialspoint.com/tcl-tk/tk_canvas_rectangle.htm
-[44] #figma #claude #mcp #ai #claude #ai #vibecoding | 😺Juan Maguid https://www.linkedin.com/posts/temperamento_figma-claude-mcp-activity-7320462080447262720-BZ1d
-[45] figma-mcp/README.md at main · MatthewDailey/figma-mcp https://github.com/MatthewDailey/figma-mcp/blob/main/README.md
-[46] Building with AI - From Figma to Production - with Claude x Cursor & V0 https://www.youtube.com/watch?v=AYmV_DZf7Vw
-[47] GitHub - karthiks3000/figma-mcp-server: Claude MCP Server to work with figma https://github.com/karthiks3000/figma-mcp-server
-[48] Figma MCP Server https://ubos.tech/mcp/figma-mcp-server-8/
-[49] Claude Code designing in Figma with MCP server and plug-in | Sonny Lazuardi https://www.linkedin.com/posts/sonnylazuardi_claude-code-designing-in-figma-with-mcp-server-activity-7308248516710027264-j_5K
-[50] Claude Code 30-min Tutorial: Coding a Figma to Code Plugin https://www.youtube.com/watch?v=DAR2CPfu7oQ
-[51] HTML Canvas Rectangles - W3Schools https://www.w3schools.com/graphics/canvas_rectangles.asp
-[52] Claude Code designing in Figma with MCP server and plug-in https://www.youtube.com/watch?v=1L1tSwJk30Y
-[53] Figma - MCP Server https://www.magicslides.app/mcps/matthewdailey-figma
-[54] @hapins/figma-mcp https://www.npmjs.com/package/@hapins/figma-mcp

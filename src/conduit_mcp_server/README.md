@@ -1,6 +1,6 @@
-# Talk to Figma MCP Server
+# Conduit MCP Server
 
-This project implements the Talk to Figma MCP Server, which provides a Model Context Protocol (MCP) interface for interacting with Figma. The server uses WebSocket and stdio transports to relay commands between Figma and models (e.g., Claude), enabling capabilities such as document inspection, element modification, and real-time communication.
+This project implements the Conduit MCP Server, which provides a Model Context Protocol (MCP) interface for interacting with Figma. The server uses WebSocket and stdio transports to relay commands between Figma and models (e.g., Claude), enabling capabilities such as document inspection, element modification, and real-time communication.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This project implements the Talk to Figma MCP Server, which provides a Model Con
 
 ## Overview
 
-The Talk to Figma MCP Server connects to a Figma document and listens for commands from tools and AI models. It handles WebSocket connections, error recovery, command processing, and dispatching responses via stdio. The server also manages settings such as the backend server port and supports auto-reconnection strategies.
+The Conduit MCP Server connects to a Figma document and listens for commands from tools and AI models. It handles WebSocket connections, error recovery, command processing, and dispatching responses via stdio. The server also manages settings such as the backend server port and supports auto-reconnection strategies.
 
 ## Features
 
@@ -41,12 +41,12 @@ The Talk to Figma MCP Server connects to a Figma document and listens for comman
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/arinspunk/claude-talk-to-figma-mcp.git
+    git clone https://github.com/eonist/conduit.git
     ```
 
 2. Navigate to the project directory:
     ```bash
-    cd claude-talk-to-figma-mcp
+    cd conduit
     ```
 
 3. Install dependencies:
@@ -81,10 +81,10 @@ bun socket
 
 The server will attempt to connect to Figma and log messages to the console. Errors and connection statuses are handled automatically.
 
-To use with Claude Desktop:
-1. Install the Claude MCP Figma plugin in your Figma account
-2. Connect Claude Desktop to the MCP server
-3. Start creating and modifying Figma elements through Claude
+To use with an AI Agent:
+1. Install the Conduit MCP Figma plugin in your Figma account
+2. Connect An AI Agent to the MCP server
+3. Start creating and modifying Figma elements through the AI agent
 
 ## Build
 

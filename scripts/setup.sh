@@ -17,8 +17,8 @@ else
     npm install
 fi
 
-# Configure for Claude Desktop
-echo "Configuring for Claude Desktop..."
+# Configure for AI Agent
+echo "Configuring for AI Agent..."
 node scripts/configure-claude.js
 
 echo "Configuration completed."

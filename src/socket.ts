@@ -190,7 +190,7 @@ const server = Bun.serve({
     }
 
     // Return response for non-WebSocket requests
-    return new Response("Claude to Figma WebSocket server running. Try connecting with a WebSocket client.", {
+    return new Response("AI Agent to Figma WebSocket server running. Try connecting with a WebSocket client.", {
       headers: {
         "Content-Type": "text/plain",
         "Access-Control-Allow-Origin": "*",
@@ -392,7 +392,7 @@ const server = Bun.serve({
   }
 });
 
-logger.info(`Claude to Figma WebSocket server running on port ${server.port}`);
+logger.info(`AI Agent to Figma WebSocket server running on port ${server.port}`);
 logger.info(`Status endpoint available at http://localhost:${server.port}/status`);
 
 // Print server stats every 5 minutes

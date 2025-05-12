@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Module: Talk to Figma MCP Server CLI
+ * Module: Conduit MCP Server CLI
  *
  * @module server
  * @description
@@ -18,7 +18,7 @@
  */
 
 /**
- * @fileoverview CLI entry for the Talk to Figma MCP server module.
+ * @fileoverview CLI entry for the Conduit MCP server module.
  * Provides a Model Context Protocol interface for Figma through stdio transport.
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -28,7 +28,7 @@ import { registerAllCommands } from "./commands/index.js";
 import { logger } from "./utils/logger.js";
 
 /**
- * Main entry point for the Talk to Figma MCP server.
+ * Main entry point for the Conduit MCP server.
  *
  * This server provides a Model Context Protocol interface to Figma,
  * allowing models like Claude to interact with Figma documents via
@@ -69,7 +69,7 @@ async function main(): Promise<void> {
     const defaultPort = portArg ? parseInt(portArg.split('=')[1], 10) : 3055;
     const reconnectInterval = reconnectArg ? parseInt(reconnectArg.split('=')[1], 10) : 2000;
 
-    logger.info(`Starting Talk to Figma MCP server...`);
+    logger.info(`Starting Conduit MCP server...`);
     logger.info(`Server URL: ${serverUrl}`);
     logger.info(`Port: ${defaultPort}`);
     logger.info(`Reconnect interval: ${reconnectInterval}ms`);
@@ -91,9 +91,9 @@ async function main(): Promise<void> {
     // Start the MCP server using stdio transport
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    logger.info('Talk to Figma MCP server running on stdio');
+    logger.info('Conduit MCP server running on stdio');
   } catch (error) {
-    logger.error(`Error starting Talk to Figma MCP server: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error(`Error starting Conduit MCP server: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 }

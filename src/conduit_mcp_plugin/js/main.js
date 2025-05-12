@@ -1,5 +1,5 @@
 /**
- * Main entry point for the Claude MCP Figma plugin UI.
+ * Main entry point for the Conduit MCP Figma plugin UI.
  * Initializes and coordinates all UI modules.
  */
 
@@ -53,5 +53,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // Setup theme detection using Figma's built-in theme classes
   setupThemeDetection();
   
-  console.log('Claude MCP Figma plugin UI initialized');
+  console.log('Conduit MCP Figma plugin UI initialized');
 });

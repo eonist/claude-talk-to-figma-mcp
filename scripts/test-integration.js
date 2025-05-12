@@ -107,9 +107,9 @@ async function checkDependencies() {
   }
 }
 
-// Check Claude Desktop configuration
+// Check AI Agent configuration
 async function checkClaudeConfig() {
-  log.step('Verifying Claude Desktop configuration');
+  log.step('Verifying AI Agent configuration');
 
   const configPath = process.platform === 'darwin' 
     ? path.join(process.env.HOME, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json')
@@ -119,8 +119,8 @@ async function checkClaudeConfig() {
   
   try {
     if (!fs.existsSync(configPath)) {
-      log.warning('Claude Desktop configuration file not found');
-      const shouldConfigure = await askQuestion('Do you want to configure Claude Desktop now? (y/n)');
+      log.warning('AI Agent configuration file not found');
+      const shouldConfigure = await askQuestion('Do you want to configure AI Agent now? (y/n)');
       
       if (shouldConfigure.toLowerCase() === 'y') {
         log.info('Running configuration script...');
@@ -134,10 +134,10 @@ async function checkClaudeConfig() {
     
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     if (config.mcpServers && config.mcpServers['ClaudeTalkToFigma']) {
-      log.success('ClaudeTalkToFigma configuration found in Claude Desktop');
+      log.success('ClaudeTalkToFigma configuration found in AI Agent');
     } else {
-      log.warning('ClaudeTalkToFigma is not configured in Claude Desktop');
-      const shouldConfigure = await askQuestion('Do you want to configure Claude Desktop now? (y/n)');
+      log.warning('ClaudeTalkToFigma is not configured in AI Agent');
+      const shouldConfigure = await askQuestion('Do you want to configure AI Agent now? (y/n)');
       
       if (shouldConfigure.toLowerCase() === 'y') {
         log.info('Running configuration script...');
@@ -248,11 +248,11 @@ async function checkFigmaPlugin() {
   log.step('Verifying Figma plugin access');
   
   try {
-    log.info('This project uses a custom Claude MCP Plugin for Figma');
+    log.info('This project uses a custom Conduit MCP Plugin for Figma');
     log.info('The plugin code is located in the src/conduit_mcp_plugin directory');
     
     // Ask if the user has already installed the plugin
-    const isPluginInstalled = await askQuestion('Have you installed the Claude MCP Plugin as a development plugin in Figma? (y/n)');
+    const isPluginInstalled = await askQuestion('Have you installed the Conduit MCP Plugin as a development plugin in Figma? (y/n)');
     if (isPluginInstalled.toLowerCase() !== 'y') {
       log.warning('Please install the plugin before continuing with tests');
       log.info('1. Open Figma');
@@ -266,7 +266,7 @@ async function checkFigmaPlugin() {
     
     log.info('\nTo use the plugin in Figma:');
     log.info('1. Open Figma');
-    log.info('2. Go to Plugins > Development > Claude MCP Plugin');
+    log.info('2. Go to Plugins > Development > Conduit MCP Plugin');
     log.info('3. Enter port 3055 and connect to the WebSocket server');
     
     return true;
@@ -283,7 +283,7 @@ async function runIntegrationTests() {
   // Check dependencies
   await checkDependencies();
   
-  // Check Claude configuration
+  // Check AI Agent configuration
   await checkClaudeConfig();
   
   // Start and verify WebSocket server
@@ -303,11 +303,11 @@ async function runIntegrationTests() {
   log.step('Performing manual integration tests');
   
   log.info('\nTo complete integration tests, follow these steps:');
-  log.info('1. Open Claude Desktop');
+  log.info('1. Open AI Agent');
   log.info('2. Select "ClaudeTalkToFigma" in the MCP selector');
-  log.info('3. Open Figma and run the Claude MCP Plugin from your Development plugins');
+  log.info('3. Open Figma and run the Conduit MCP Plugin from your Development plugins');
   log.info('4. In the plugin, connect to WebSocket server (port 3055)');
-  log.info('5. Test these commands in Claude:');
+  log.info('5. Test these commands in AI Agent:');
   log.info('   - "Connect to Figma using the default channel"');
   log.info('   - "Get information about the current document"');
   log.info('   - "Get information about the current selection"');

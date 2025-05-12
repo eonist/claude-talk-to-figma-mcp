@@ -1,5 +1,5 @@
 /**
- * Enhanced build script for the Claude MCP Figma plugin UI.
+ * Enhanced build script for the Conduit MCP Figma plugin UI.
  * 
  * This script is specifically for building the plugin's UI (ui.html file).
  * It does NOT generate code.js, which is produced by the build.js script.

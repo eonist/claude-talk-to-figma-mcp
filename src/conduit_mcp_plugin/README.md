@@ -1,6 +1,6 @@
-# Claude MCP Figma Plugin
+# Conduit MCP Figma Plugin
 
-A Figma plugin that integrates with the Model Context Protocol (MCP) to enable Claude AI to control Figma.
+A Figma plugin that integrates with the Model Context Protocol (MCP) to enable AI Agient to control Figma.
 
 ## Modular Architecture
 
@@ -149,7 +149,7 @@ The plugin supports various commands organized into categories:
 
 ## MCP Integration
 
-This plugin works with Claude's Model Context Protocol to provide a bridge between Claude AI and Figma, allowing Claude to create and manipulate design elements programmatically.
+This plugin works with Claude's Model Context Protocol to provide a bridge between an AI Agent and Figma, allowing the AI Agent to create and manipulate design elements programmatically.
 
 ## Troubleshooting
 

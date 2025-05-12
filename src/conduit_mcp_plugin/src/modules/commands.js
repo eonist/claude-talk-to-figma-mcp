@@ -1,5 +1,5 @@
 /**
- * Command registry and handler module for the Claude MCP Figma plugin.
+ * Command registry and handler module for the Conduit MCP Figma plugin.
  * Centralizes registration and dispatch of all tool commands (read, create, modify, rename, styling).
  *
  * Exposed functions:

@@ -1,5 +1,5 @@
 /**
- * Message Handler for the Claude MCP Figma plugin.
+ * Message Handler for the Conduit MCP Figma plugin.
  * Processes incoming and outgoing messages between the WebSocket and plugin.
  */
 

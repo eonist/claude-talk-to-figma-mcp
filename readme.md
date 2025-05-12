@@ -91,7 +91,7 @@ irm bun.sh/install.ps1 | iex
 - Terminal: `bun socket` -> Starts the Server 
 - Start Figma plugin: Plugin -> Development -> Conduit 
 - AI Agent app: Ensure MCP “Conduit” is enabled.
-- AI Agent app: Talk to Figma on channel: (unique channel id)
+- AI Agent app: "Talk to Figma on channel: (unique channel id)"
 
 ### Quick Example
 

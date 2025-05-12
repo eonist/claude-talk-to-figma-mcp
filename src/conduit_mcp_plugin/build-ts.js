@@ -1,5 +1,5 @@
 /**
- * Enhanced build script for the Claude MCP Figma plugin.
+ * Enhanced build script for the AI Agent Figma plugin.
  * Compiles TypeScript and inlines it directly into ui.html.
  */
 

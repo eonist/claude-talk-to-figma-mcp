@@ -2,7 +2,7 @@
  * Plugin utilities module.
  *
  * This module consolidates plugin configuration management, state tracking,
- * and progress reporting helpers for the Claude MCP Figma plugin.
+ * and progress reporting helpers for the Conduit MCP Figma plugin.
  *
  * It exposes the current plugin state, functions to send progress updates,
  * initialize plugin settings on load, and update settings with persistence.

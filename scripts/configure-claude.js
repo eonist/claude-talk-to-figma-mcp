@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Determine the location of Claude Desktop configuration file
+// Determine the location of AI agent configuration file
 const configPath = os.platform() === 'darwin' 
   ? path.join(os.homedir(), 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json')
   : path.join(os.homedir(), 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json');
@@ -21,7 +21,7 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 const packageName = packageJson.name;
 const packageVersion = packageJson.version;
 
-console.log(`Configuring Claude Desktop for ${packageName} v${packageVersion}...`);
+console.log(`Configuring AI agent for ${packageName} v${packageVersion}...`);
 
 // Create backups
 function backupFile(filePath) {
@@ -79,9 +79,9 @@ try {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   console.log(`Configuration saved to ${configPath}`);
   console.log('\nConfiguration completed successfully.');
-  console.log('\nTo use this MCP in Claude Desktop:');
-  console.log('1. Restart Claude Desktop if it\'s running');
-  console.log('2. Open Claude Desktop and select "ClaudeTalkToFigma" from the MCPs list');
+  console.log('\nTo use this MCP in AI Agentp:');
+  console.log('1. Restart AI Agent if it\'s running');
+  console.log('2. Open AI Agent and select "ConduitMCPServer" from the MCPs list');
   console.log(`3. Start the WebSocket server: npx ${packageName}-socket`);
   console.log('4. Install and run the Figma plugin');
 } catch (e) {
