@@ -1,20 +1,37 @@
-/* Status and connection colors */
+/**
+ * connection.css
+ * Styles for connection status, toggle switches, and related UI elements.
+ * Includes dark and light theme variable overrides.
+ * 
+ * Sections:
+ * - Root variables for status and toggle colors
+ * - Light theme overrides
+ * - Toggle switch styles
+ * - Status indicator
+ * - Tabs container
+ */
+
+/* =========================
+   Root: Status & Toggle Colors
+   ========================= */
 :root {
   --header-logo-bg: #343434;
   --header-text-secondary: #AAAAAA;
-  --status-connected-bg: #1a472a;
-  --status-connected-text: #4ade80;
-  --status-disconnected-bg: #471a1a;
-  --status-disconnected-text: #ff9999;
-  --status-info-bg: #1a3147;
-  --status-info-text: #66b3ff;
-  --toggle-track-off-bg: #3C3C3C;
-  --toggle-track-on-bg: #5C5C5C;
-  --toggle-thumb-bg: black;
-  --toggle-thumb-active-bg: white;
+  --status-connected-bg: #1a472a;         /* Green background for connected status */
+  --status-connected-text: #4ade80;       /* Green text for connected status */
+  --status-disconnected-bg: #471a1a;      /* Red background for disconnected status */
+  --status-disconnected-text: #ff9999;    /* Red text for disconnected status */
+  --status-info-bg: #1a3147;              /* Blue background for info status */
+  --status-info-text: #66b3ff;            /* Blue text for info status */
+  --toggle-track-off-bg: #3C3C3C;         /* Toggle track (off) */
+  --toggle-track-on-bg: #5C5C5C;          /* Toggle track (on) */
+  --toggle-thumb-bg: black;                /* Toggle thumb (off) */
+  --toggle-thumb-active-bg: white;         /* Toggle thumb (on) */
 }
 
-/* Light theme status colors */
+/* =========================
+   Light Theme Overrides
+   ========================= */
 body.theme-light {
   --header-logo-bg: #E0E0E0;
   --header-text-secondary: #667380;
@@ -30,12 +47,19 @@ body.theme-light {
   --toggle-thumb-active-bg: black;
 }
 
+/* =========================
+   Layout & Input Container
+   ========================= */
 /* Header styles moved to styles.css */
 /* Header text styles moved to styles.css */
 .input-container {
   display: flex;
   gap: 10px;
 }
+
+/* =========================
+   Toggle Switch Styles
+   ========================= */
 /* Capsule-shaped Toggle Switch */
 .switch {
   position: relative;
@@ -46,7 +70,7 @@ body.theme-light {
 }
 
 .switch input {
-  opacity: 0;
+  opacity: 0; /* Hide the default checkbox */
   width: 0;
   height: 0;
 }
@@ -79,7 +103,7 @@ body.theme-light {
 }
 
 input:checked + .slider {
-  background-color: var(--toggle-track-on-bg);
+  background-color: var(--toggle-track-on-bg); /* Track color when checked */
 }
 
 input:focus + .slider {
@@ -87,10 +111,13 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  left: 20px;
+  left: 20px; /* Move thumb to right when checked */
   background-color: var(--toggle-thumb-active-bg);
 }
 
+/* =========================
+   Toggle Group Layout
+   ========================= */
 .toggle-group {
   display: flex;
   align-items: center;
@@ -118,6 +145,10 @@ input:checked + .slider:before {
   font-size: 14px;
   color: var(--text-secondary);
 }
+
+/* =========================
+   Status Indicator Styles
+   ========================= */
 .status {
   margin-top: 8px;
   margin-right: 16px;
@@ -139,7 +170,9 @@ body.theme-light .status {
   color: #666666;
 }
 
-
+/* =========================
+   Tabs Container
+   ========================= */
 .tabs {
   margin-left: 16px;
   margin-right: 16px;

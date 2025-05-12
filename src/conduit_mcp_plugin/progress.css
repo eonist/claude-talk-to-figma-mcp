@@ -1,12 +1,28 @@
-/* Progress bar colors */
+/**
+ * progress.css
+ * Styles for progress bar UI, including color variables and status indicators.
+ * Supports dark and light themes.
+ *
+ * Sections:
+ * - Root variables for progress bar and status colors
+ * - Light theme overrides
+ * - Progress bar container and inner bar
+ * - Progress details and status
+ */
+
+/* =========================
+   Root: Progress Bar & Status Colors
+   ========================= */
 :root {
-  --progress-container-bg: #333333;
-  --progress-bar-color: #555555;
-  --operation-complete-color: #4ade80;
-  --operation-error-color: #ff9999;
+  --progress-container-bg: #333333;         /* Background for progress bar container */
+  --progress-bar-color: #555555;            /* Default progress bar color */
+  --operation-complete-color: #4ade80;      /* Green for completed operations */
+  --operation-error-color: #ff9999;         /* Red for error state */
 }
 
-/* Light theme progress colors */
+/* =========================
+   Light Theme Overrides
+   ========================= */
 body.theme-light {
   --progress-container-bg: #e0e0e0;
   --progress-bar-color: #555555;
@@ -14,6 +30,9 @@ body.theme-light {
   --operation-error-color: #e64c4c;
 }
 
+/* =========================
+   Progress Container & Headings
+   ========================= */
 #progress-container h2 {
   font-size: 18px;
   margin-bottom: 10px;
@@ -21,6 +40,9 @@ body.theme-light {
   color: var(--text-primary);
 }
 
+/* =========================
+   Progress Message
+   ========================= */
 #progress-message {
   font-size: 16px;
   margin-top: 0;
@@ -28,9 +50,12 @@ body.theme-light {
   color: var(--text-secondary);
 }
 
+/* =========================
+   Progress Bar Styles
+   ========================= */
 .progress-bar-container {
   width: 100%;
-  background-color: var(--progress-container-bg);
+  background-color: var(--progress-container-bg); /* Uses theme variable */
   border-radius: 6px;
   margin-top: 8px;
   height: 12px;
@@ -41,10 +66,14 @@ body.theme-light {
 .progress-bar-inner {
   width: 0%;
   height: 100%;
-  background-color: var(--progress-bar-color);
+  background-color: var(--progress-bar-color); /* Uses theme variable */
   border-radius: 6px;
   transition: width 0.3s, background-color 0.3s ease;
 }
+
+/* =========================
+   Progress Details & Status
+   ========================= */
 .progress-details {
   display: flex;
   justify-content: space-between;
@@ -52,10 +81,10 @@ body.theme-light {
   color: var(--text-secondary);
 }
 .operation-complete {
-  color: var(--operation-complete-color);
+  color: var(--operation-complete-color); /* Green for success */
   transition: color 0.3s ease;
 }
 .operation-error {
-  color: var(--operation-error-color);
+  color: var(--operation-error-color);    /* Red for error */
   transition: color 0.3s ease;
 }

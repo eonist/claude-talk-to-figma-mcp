@@ -1,6 +1,22 @@
-/* Main theme variables */
+/**
+ * styles.css
+ * Main stylesheet for plugin UI, including theme variables, layout, header, containers,
+ * form elements, buttons, links, and utility classes.
+ * Supports both dark and light themes.
+ *
+ * Sections:
+ * - Theme variables (dark & light)
+ * - Layout and containers
+ * - Header and logo
+ * - Forms and inputs
+ * - Buttons and links
+ * - Utility classes
+ */
+
+/* =========================
+   Theme Variables: Dark Mode (Default)
+   ========================= */
 :root {
-  /* Dark mode (default) */
   --page-bg: #1A1A1A;
   --plugin-bg: #141414;
   --text-primary: #FFFFFF;
@@ -18,7 +34,9 @@
   --button-disabled-text: #666666;
 }
 
-/* Light theme colors */
+/* =========================
+   Theme Variables: Light Mode
+   ========================= */
 body.theme-light {
   --page-bg: #F5F5F5;
   --plugin-bg: #FFFFFF;
@@ -37,6 +55,9 @@ body.theme-light {
   --button-disabled-text: #AAAAAA;
 }
 
+/* =========================
+   Layout & Base Styles
+   ========================= */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
@@ -49,7 +70,9 @@ body {
   overflow: hidden;
 }
 
-/* Header styles */
+/* =========================
+   Header & Logo
+   ========================= */
 .header {
   display: flex;
   align-items: center;
@@ -97,6 +120,9 @@ body {
   height: 100%;
 }
 
+/* =========================
+   Containers & Layout
+   ========================= */
 .container {
   display: flex;
   flex-direction: column;
@@ -122,6 +148,9 @@ body {
   padding-right: 16px; /* Add right padding to match left padding */
 }
 
+/* =========================
+   Typography
+   ========================= */
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 8px;
@@ -133,6 +162,9 @@ p {
   line-height: 1.4;
 }
 
+/* =========================
+   Forms & Inputs
+   ========================= */
 label {
   display: block;
   margin-bottom: 4px;
@@ -168,6 +200,9 @@ body.theme-light #port {
   border-color: #CCCCCC;
 }
 
+/* =========================
+   Buttons & Button States
+   ========================= */
 button {
   cursor: pointer;
   font-size: 14px;
@@ -229,6 +264,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* =========================
+   Links & Utility Classes
+   ========================= */
 .link {
   color: var(--button-primary-bg);
   text-decoration: none;

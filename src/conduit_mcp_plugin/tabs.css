@@ -1,14 +1,30 @@
-/* Tab colors */
+/**
+ * tabs.css
+ * Styles for tab navigation UI, including color variables, tab container, and tab content.
+ * Supports both dark and light themes.
+ *
+ * Sections:
+ * - Tab color variables (dark & light)
+ * - Tabs container
+ * - Tab and active tab styles
+ * - Tab content display
+ */
+
+/* =========================
+   Tab Color Variables: Dark Mode (Default)
+   ========================= */
 :root {
-  --tab-border-color: #333333;
-  --tab-text-color: #8C8C8C;
-  --tab-active-text: #FFFFFF;
-  --tab-active-border: #FFFFFF;
-  --tab-active-bg: #1a1a1a;
-  --tab-inactive-bg: #141414;
+  --tab-border-color: #333333;         /* Border color for tabs */
+  --tab-text-color: #8C8C8C;           /* Inactive tab text */
+  --tab-active-text: #FFFFFF;           /* Active tab text */
+  --tab-active-border: #FFFFFF;         /* Active tab border */
+  --tab-active-bg: #1a1a1a;             /* Active tab background */
+  --tab-inactive-bg: #141414;           /* Inactive tab background */
 }
 
-/* Light theme tab colors */
+/* =========================
+   Tab Color Variables: Light Mode
+   ========================= */
 body.theme-light {
   --tab-border-color: #DDDDDD;
   --tab-text-color: #737373;
@@ -18,13 +34,16 @@ body.theme-light {
   --tab-inactive-bg: #F2F2F2;
 }
 
+/* =========================
+   Tabs Container
+   ========================= */
 .tabs {
   display: flex;
   /*border-bottom: 1px solid var(--tab-border-color);*/
   margin-bottom: 12px;
   margin-left: 16px;
   margin-right: 16px;
-  background-color: var(--tab-inactive-bg);
+  background-color: var(--tab-inactive-bg); /* Uses theme variable */
   border-radius: 8px;
   /*transition: border-color 0.3s ease;*/
   /*box-shadow: 0 0 4px rgba(255, 255, 255, 0.08);*/ /* Dark mode shadow - very subtle white, nearly black */
@@ -34,6 +53,10 @@ body.theme-light {
 body.theme-light .tabs {
   /*box-shadow: 0 0 4px rgba(0, 0, 0, 0.06);*/ /* Light mode shadow - very subtle black, nearly white */
 }
+
+/* =========================
+   Tab & Active Tab Styles
+   ========================= */
 .tab {
   flex: 1;
   padding: 10px 0;
@@ -52,6 +75,10 @@ body.theme-light .tabs {
   font-weight: 600;
   /*box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);*/
 }
+
+/* =========================
+   Tab Content Display
+   ========================= */
 .tab-content {
   display: none;
 }
