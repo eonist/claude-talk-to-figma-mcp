@@ -1,7 +1,7 @@
 {
   "name": "conduit-design",
   "description": "Conduit Figma MCP",
-  "version": "0.5.5",
+  "version": "0.5.8",
   "module": "dist/conduit_mcp_server/server.js",
   "main": "dist/conduit_mcp_server/server.js",
   "bin": {
@@ -18,7 +18,7 @@
   "scripts": {
     "prepare": "tsup",
     "start": "bun run dist/conduit_mcp_server/server.js",
-    "socket": "bun run dist/socket.js",
+    "socket": "bun run dist/socket.cjs",
     "setup": "./scripts/setup.sh",
     "build": "tsup && chmod +x dist/conduit_mcp_server/server.cjs dist/socket.cjs",
     "build:watch": "tsup --watch",

@@ -1,4 +1,4 @@
-[![version](https://img.shields.io/badge/version-0.5.5-blue.svg)](https://github.com/eonist/conduit/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green)
+[![version](https://img.shields.io/badge/version-0.5.8-blue.svg)](https://github.com/eonist/conduit/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <img width="100" alt="img" src="logo.svg">
 
@@ -82,7 +82,6 @@ irm bun.sh/install.ps1 | iex
 2. Find MCP settings in your agent app of choice. `~/.app-name/mcp.json`
 3. Add a new MCP connection with this config: 
 
-⚠️️ Use local path for now in the args bellow. "/Users/user-name/conduit/src/conduit_mcp_server/dist/server.js" (Will be fixed soon) ⚠️️ 
 ```swift
 {
   "mcpServers": {
