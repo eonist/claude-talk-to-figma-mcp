@@ -126,7 +126,7 @@ This will start the MCP server inside a Docker container, listening on port 3055
   "mcpServers": {
     "ConduitMCPServer": {
       "command": "bunx",
-      "args": ["https://github.com/username/conduit-design/tarball/main"]
+      "args": ["https://github.com/eonist/conduit/tarball/main"]
     }
   }
 }
@@ -138,7 +138,7 @@ This will start the MCP server inside a Docker container, listening on port 3055
   "mcpServers": {
     "ConduitMCPServer": {
       "command": "bunx",
-      "args": ["git+https://github.com/username/conduit-design.git#main"]
+      "args": ["git+https://github.com/eonist/conduit.git#main"]
     }
   }
 }
