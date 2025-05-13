@@ -35,7 +35,37 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
   // Register the "create_component_instance" tool for creating a single component instance in Figma.
   server.tool(
     "create_component_instance",
-    "Create an instance of a component in Figma",
+    `Create an instance of a component in Figma.
+
+Parameters:
+  - componentKey (string, required): The key of the component to instantiate.
+  - x (number, required): X coordinate for the instance.
+  - y (number, required): Y coordinate for the instance.
+
+Returns:
+  - content: Array containing a text message with the created component instance's node ID.
+    Example: { "content": [{ "type": "text", "text": "Created component instance 123:456" }] }
+
+Annotations:
+  - title: "Create Component Instance"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "componentKey": "abc123",
+      "x": 100,
+      "y": 200
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created component instance 123:456" }]
+    }
+`,
     {
       componentKey: z.string(),
       x: z.number(),
@@ -56,7 +86,39 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
   // Register the "create_component_instances" tool for creating multiple component instances in Figma.
   server.tool(
     "create_component_instances",
-    "Create multiple component instances in Figma",
+    `Create multiple component instances in Figma.
+
+Parameters:
+  - instances (array, required): An array of instance configuration objects. Each object should include:
+      - componentKey (string, required): The key of the component to instantiate.
+      - x (number, required): X coordinate for the instance.
+      - y (number, required): Y coordinate for the instance.
+
+Returns:
+  - content: Array containing a text message with the number of component instances created.
+    Example: { "content": [{ "type": "text", "text": "Created 3/3 component instances." }] }
+
+Annotations:
+  - title: "Create Component Instances (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "instances": [
+        { "componentKey": "abc123", "x": 100, "y": 200 },
+        { "componentKey": "def456", "x": 300, "y": 400 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 component instances." }]
+    }
+`,
     {
       instances: z.array(
         z.object({
@@ -88,7 +150,33 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
   // Register the "create_component_from_node" tool for converting an existing node into a component.
   server.tool(
     "create_component_from_node",
-    "Convert an existing node into a component",
+    `Convert an existing node into a component.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to convert.
+
+Returns:
+  - content: Array containing a text message with the created component's ID.
+    Example: { "content": [{ "type": "text", "text": "Created component 123:456" }] }
+
+Annotations:
+  - title: "Create Component from Node"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "456:789"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created component 123:456" }]
+    }
+`,
     { nodeId: z.string() },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async ({ nodeId }): Promise<any> => {
@@ -106,7 +194,48 @@ export function registerComponentCreationCommands(server: McpServer, figmaClient
   // Register the "create_button" tool for creating a complete button (frame, background, text) in Figma.
   server.tool(
     "create_button",
-    "Create a complete button with background and text in Figma",
+    `Create a complete button with background and text in Figma.
+
+Parameters:
+  - x (number, required): X coordinate for the button.
+  - y (number, required): Y coordinate for the button.
+  - width (number, optional): Width of the button (default 100).
+  - height (number, optional): Height of the button (default 40).
+  - text (string, optional): Button text (default "Button").
+  - background (object, optional): Background color (default { r: 0.19, g: 0.39, b: 0.85, a: 1 }).
+  - textColor (object, optional): Text color (default { r: 1, g: 1, b: 1, a: 1 }).
+  - fontSize (number, optional): Font size (default 14).
+  - fontWeight (number, optional): Font weight (default 500).
+  - cornerRadius (number, optional): Corner radius (default 4).
+  - name (string, optional): Name for the button node.
+  - parentId (string, optional): Figma node ID of the parent.
+
+Returns:
+  - content: Array containing a text message with the created button's frame, background, and text node IDs.
+    Example: { "content": [{ "type": "text", "text": "Created button with frame ID: 123, background ID: 456, text ID: 789" }] }
+
+Annotations:
+  - title: "Create Button"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "x": 100,
+      "y": 200,
+      "width": 120,
+      "height": 40,
+      "text": "Click Me"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created button with frame ID: 123, background ID: 456, text ID: 789" }]
+    }
+`,
     {
       x: z.number(),
       y: z.number(),
