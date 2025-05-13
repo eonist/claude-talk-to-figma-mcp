@@ -27,7 +27,35 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   // Set Text Content
   server.tool(
     "set_text_content",
-    "Set the text content of an existing text node in Figma",
+    `Set the text content of an existing text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node to update.
+  - text (string, required): The new text content.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Updated text of 123:456" }] }
+
+Annotations:
+  - title: "Set Text Content"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "text": "Updated text"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Updated text of 123:456" }]
+    }
+`,
     {
       nodeId: z.string(),
       text: z.string(),
@@ -42,7 +70,38 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   // Set Multiple Text Contents
   server.tool(
     "set_multiple_text_contents",
-    "Set multiple text contents parallelly in a node",
+    `Set multiple text contents parallelly in a node.
+
+Parameters:
+  - nodeId (string, required): The ID of the parent node.
+  - text (array, required): Array of objects with nodeId and text.
+
+Returns:
+  - content: Array containing a text message with the number of text nodes updated.
+    Example: { "content": [{ "type": "text", "text": "Updated 3 text nodes" }] }
+
+Annotations:
+  - title: "Set Multiple Text Contents"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "parent:123",
+      "text": [
+        { "nodeId": "child:1", "text": "A" },
+        { "nodeId": "child:2", "text": "B" }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
+    }
+`,
     {
       nodeId: z.string(),
       text: z.array(z.object({ nodeId: z.string(), text: z.string() })),
@@ -58,7 +117,36 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   // Set Corner Radius
   server.tool(
     "set_corner_radius",
-    "Set the corner radius of a node in Figma",
+    `Set the corner radius of a node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to update.
+  - radius (number, required): The new corner radius (>= 0).
+  - corners (array, optional): Array of booleans for each corner (length 4).
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Set corner radius for 123:456" }] }
+
+Annotations:
+  - title: "Set Corner Radius"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "radius": 8
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Set corner radius for 123:456" }]
+    }
+`,
     {
       nodeId: z.string(),
       radius: z.number().min(0),
@@ -74,7 +162,37 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   // Export Node As Image
   server.tool(
     "export_node_as_image",
-    "Export a node as an image from Figma",
+    `Export a node as an image from Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to export.
+  - format (string, optional): Image format ("PNG", "JPG", "SVG", "PDF").
+  - scale (number, optional): Export scale (> 0).
+
+Returns:
+  - content: Array containing an image object with the exported image data.
+    Example: { "content": [{ "type": "image", "data": "...", "mimeType": "image/png" }] }
+
+Annotations:
+  - title: "Export Node As Image"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "format": "PNG",
+      "scale": 2
+    }
+  Output:
+    {
+      "content": [{ "type": "image", "data": "...", "mimeType": "image/png" }]
+    }
+`,
     {
       nodeId: z.string(),
       format: z.enum(["PNG","JPG","SVG","PDF"]).optional(),
@@ -90,7 +208,37 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   // Font and Text Styling
   server.tool(
     "set_font_name",
-    "Set the font name and style of a text node in Figma",
+    `Set the font name and style of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - family (string, required): Font family.
+  - style (string, optional): Font style.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Font set for 123:456" }] }
+
+Annotations:
+  - title: "Set Font Name"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "family": "Roboto",
+      "style": "Bold"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), family: z.string(), style: z.string().optional() },
     async ({ nodeId, family, style }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -100,7 +248,35 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   );
   server.tool(
     "set_font_size",
-    "Set the font size of a text node in Figma",
+    `Set the font size of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - fontSize (number, required): Font size (> 0).
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Font size set for 123:456" }] }
+
+Annotations:
+  - title: "Set Font Size"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "fontSize": 16
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font size set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), fontSize: z.number().positive() },
     async ({ nodeId, fontSize }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -110,7 +286,35 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   );
   server.tool(
     "set_font_weight",
-    "Set the font weight of a text node in Figma",
+    `Set the font weight of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - weight (number, required): Font weight.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Font weight set for 123:456" }] }
+
+Annotations:
+  - title: "Set Font Weight"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "weight": 700
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font weight set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), weight: z.number() },
     async ({ nodeId, weight }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -120,7 +324,37 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   );
   server.tool(
     "set_letter_spacing",
-    "Set the letter spacing of a text node in Figma",
+    `Set the letter spacing of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - letterSpacing (number, required): Letter spacing value.
+  - unit (string, optional): Unit ("PIXELS" or "PERCENT").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }] }
+
+Annotations:
+  - title: "Set Letter Spacing"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "letterSpacing": 2,
+      "unit": "PIXELS"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), letterSpacing: z.number(), unit: z.enum(["PIXELS","PERCENT"]).optional() },
     async ({ nodeId, letterSpacing, unit }) => {
       const id = ensureNodeIdIsString(nodeId);
