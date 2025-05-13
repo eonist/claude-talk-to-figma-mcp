@@ -30,9 +30,55 @@ import { joinChannel, connectToFigma, isConnectedToFigma } from "../server/webso
 export function registerChannelCommand(server: McpServer, figmaClient: FigmaClient): void {
   server.tool(
     "join_channel",
-    "Join a specific channel to communicate with Figma",
+    `Join a specific channel to communicate with Figma.
+
+Parameters:
+  - channel (string, required): The name of the channel to join. Must be a non-empty string.
+
+Returns:
+  - content: Array containing a text message with the join status.
+    Example: { "content": [{ "type": "text", "text": "Successfully joined channel: my-channel" }] }
+
+Annotations:
+  - title: "Join Channel"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
     {
-      channel: z.string().describe("The name of the channel to join").default(""),
+      "channel": "my-channel"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Successfully joined channel: my-channel" }]
+    }
+
+Error Handling:
+  - Returns a prompt if channel is empty.
+  - Returns an error if unable to connect to Figma or join the channel.
+
+Security Notes:
+  - All inputs are validated and sanitized. Channel name must be a non-empty string.
+
+Output Schema:
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "<status message>"
+      }
+    ]
+  }
+`,
+    {
+      // Enforce non-empty string for channel name
+      channel: z.string()
+        .min(1)
+        .describe("The name of the channel to join. Must be a non-empty string."),
     },
     async ({ channel }) => {
       try {
