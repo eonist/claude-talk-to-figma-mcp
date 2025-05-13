@@ -5,8 +5,8 @@
   "module": "dist/conduit_mcp_server/server.js",
   "main": "dist/conduit_mcp_server/server.js",
   "bin": {
-    "claude-talk-to-figma-mcp": "dist/conduit_mcp_server/server.js",
-    "claude-talk-to-figma-mcp-socket": "dist/socket.js"
+    "conduit-design": "dist/conduit_mcp_server/server.js",
+    "conduit-mcp-socket": "dist/socket.js"
   },
   "files": [
     "dist",
