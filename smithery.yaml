@@ -21,6 +21,6 @@ startCommand:
 
       return {
         command: isBunAvailable ? 'bunx' : 'npx',
-        args: ['claude-talk-to-figma-mcp@latest']
+        args: ['conduit-design@latest']
       };
     }
