@@ -188,7 +188,10 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string().describe("The ID of the node to get information about"),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to get information about. Must be a string in the format '123:456'."),
     },
     async ({ nodeId }) => {
       try {
@@ -252,7 +255,15 @@ Usage Example:
     }
 `,
     {
-      nodeIds: z.array(z.string()).describe("Array of node IDs to get information about")
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to get information about. Must be a string in the format '123:456'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of Figma node IDs to get information about. Must contain 1 to 100 items."),
     },
     async ({ nodeIds }) => {
       try {
@@ -480,7 +491,11 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string().describe("The ID of the text node to analyze"),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to analyze. Must be a string in the format '123:456'."),
+      // Restrict property to allowed style properties
       property: z.enum([
         "fillStyleId", 
         "fontName", 
@@ -492,7 +507,7 @@ Usage Example:
         "letterSpacing", 
         "lineHeight", 
         "fontWeight"
-      ]).describe("The style property to analyze segments by"),
+      ]).describe("The style property to analyze segments by. Must be one of the allowed style property names."),
     },
     async ({ nodeId, property }) => {
       try {
@@ -564,7 +579,10 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string().describe("ID of the node to scan"),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to scan. Must be a string in the format '123:456'."),
     },
     async ({ nodeId }) => {
       try {
@@ -675,8 +693,15 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string().optional().describe("Optional ID of the node to get CSS from"),
-      format: z.enum(["object","string","inline"]).optional().describe("Format to return CSS in"),
+      // Enforce Figma node ID format if provided
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .optional()
+        .describe("Optional. The unique Figma node ID to get CSS from. If provided, must be a string in the format '123:456'."),
+      // Restrict format to allowed CSS output types
+      format: z.enum(["object","string","inline"])
+        .optional()
+        .describe('Optional. The format to return CSS in: "object", "string", or "inline".'),
     },
     async ({ nodeId, format }) => {
       try {
