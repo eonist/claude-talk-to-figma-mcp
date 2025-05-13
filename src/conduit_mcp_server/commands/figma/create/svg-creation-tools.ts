@@ -51,11 +51,36 @@ Usage Example:
     }
 `,
     {
-      svg: z.string(),
-      x: z.number().optional().default(0),
-      y: z.number().optional().default(0),
-      name: z.string().optional(),
-      parentId: z.string().optional()
+      // Enforce non-empty string for SVG content, reasonable length
+      svg: z.string()
+        .min(1)
+        .max(100000)
+        .describe("The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters."),
+      // Enforce reasonable X coordinate
+      x: z.number()
+        .min(-10000)
+        .max(10000)
+        .optional()
+        .default(0)
+        .describe("Optional. X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
+      // Enforce reasonable Y coordinate
+      y: z.number()
+        .min(-10000)
+        .max(10000)
+        .optional()
+        .default(0)
+        .describe("Optional. Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
+      // Enforce non-empty string for name if provided
+      name: z.string()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe("Optional. Name for the SVG node. If provided, must be a non-empty string up to 100 characters."),
+      // Enforce Figma node ID format for parentId if provided
+      parentId: z.string()
+        .regex(/^\d+:\d+$/)
+        .optional()
+        .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
     },
     async ({ svg, x, y, name, parentId }): Promise<any> => {
       try {
@@ -117,13 +142,41 @@ Usage Example:
     {
       svgs: z.array(
         z.object({
-          svg: z.string(),
-          x: z.number().optional().default(0),
-          y: z.number().optional().default(0),
-          name: z.string().optional(),
-          parentId: z.string().optional()
+          // Enforce non-empty string for SVG content, reasonable length
+          svg: z.string()
+            .min(1)
+            .max(100000)
+            .describe("The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters."),
+          // Enforce reasonable X coordinate
+          x: z.number()
+            .min(-10000)
+            .max(10000)
+            .optional()
+            .default(0)
+            .describe("Optional. X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
+          // Enforce reasonable Y coordinate
+          y: z.number()
+            .min(-10000)
+            .max(10000)
+            .optional()
+            .default(0)
+            .describe("Optional. Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
+          // Enforce non-empty string for name if provided
+          name: z.string()
+            .min(1)
+            .max(100)
+            .optional()
+            .describe("Optional. Name for the SVG node. If provided, must be a non-empty string up to 100 characters."),
+          // Enforce Figma node ID format for parentId if provided
+          parentId: z.string()
+            .regex(/^\d+:\d+$/)
+            .optional()
+            .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
         })
       )
+      .min(1)
+      .max(50)
+      .describe("Array of SVG configuration objects. Must contain 1 to 50 items."),
     },
     async ({ svgs }): Promise<any> => {
       try {

@@ -43,7 +43,17 @@ Usage Example:
       "content": [{ "type": "text", "text": "Flattened 3 nodes" }]
     }
 `,
-    { nodeIds: z.array(z.string()) },
+    {
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to flatten. Must be a string in the format '123:456'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of node IDs to flatten. Must contain 1 to 100 items."),
+    },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
       await figmaClient.executeCommand("flatten_selection", { nodeIds: ids });
@@ -81,7 +91,17 @@ Usage Example:
       "content": [{ "type": "text", "text": "Unioned 3 nodes" }]
     }
 `,
-    { nodeIds: z.array(z.string()) },
+    {
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to union. Must be a string in the format '123:456'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to union. Must contain at least 2 and at most 100 items."),
+    },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("union_selection", { nodeIds });
       return { content: [{ type: "text", text: `Unioned ${nodeIds.length} nodes` }] };
@@ -117,7 +137,17 @@ Usage Example:
       "content": [{ "type": "text", "text": "Subtracted 3 nodes" }]
     }
 `,
-    { nodeIds: z.array(z.string()) },
+    {
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to subtract. Must be a string in the format '123:456'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to subtract. Must contain at least 2 and at most 100 items."),
+    },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("subtract_selection", { nodeIds });
       return { content: [{ type: "text", text: `Subtracted ${nodeIds.length} nodes` }] };
@@ -153,7 +183,17 @@ Usage Example:
       "content": [{ "type": "text", "text": "Intersected 3 nodes" }]
     }
 `,
-    { nodeIds: z.array(z.string()) },
+    {
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to intersect. Must be a string in the format '123:456'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to intersect. Must contain at least 2 and at most 100 items."),
+    },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("intersect_selection", { nodeIds });
       return { content: [{ type: "text", text: `Intersected ${nodeIds.length} nodes` }] };
@@ -189,7 +229,17 @@ Usage Example:
       "content": [{ "type": "text", "text": "Excluded 3 nodes" }]
     }
 `,
-    { nodeIds: z.array(z.string()) },
+    {
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to exclude. Must be a string in the format '123:456'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to exclude. Must contain at least 2 and at most 100 items."),
+    },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("exclude_selection", { nodeIds });
       return { content: [{ type: "text", text: `Excluded ${nodeIds.length} nodes` }] };
@@ -229,8 +279,21 @@ Usage Example:
     }
 `,
     {
-      nodeIds: z.array(z.string()),
-      name: z.string().optional(),
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to group. Must be a string in the format '123:456'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to group. Must contain at least 2 and at most 100 items."),
+      // Enforce non-empty string for name if provided
+      name: z.string()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe("Optional. Name for the group. If provided, must be a non-empty string up to 100 characters."),
     },
     async ({ nodeIds, name }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
@@ -274,7 +337,12 @@ Usage Example:
       "content": [{ "type": "text", "text": "Ungrouped node 123:456, released 5 children." }]
     }
 `,
-    { nodeId: z.string() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma group node ID to ungroup. Must be a string in the format '123:456'."),
+    },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
       const result = await figmaClient.executeCommand("ungroup_nodes", { nodeId: id });
@@ -317,7 +385,12 @@ Usage Example:
       "content": [{ "type": "text", "text": "Deleted node 123:456" }]
     }
 `,
-    { nodeId: z.string() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to delete. Must be a string in the format '123:456'."),
+    },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("delete_node", { nodeId: id });

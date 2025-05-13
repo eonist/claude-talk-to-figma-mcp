@@ -43,9 +43,20 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string().describe("The ID of the node to move"),
-      x: z.number().describe("New X position"),
-      y: z.number().describe("New Y position"),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to move. Must be a string in the format '123:456'."),
+      // Enforce reasonable X coordinate
+      x: z.number()
+        .min(-10000)
+        .max(10000)
+        .describe("New X position. Must be between -10,000 and 10,000."),
+      // Enforce reasonable Y coordinate
+      y: z.number()
+        .min(-10000)
+        .max(10000)
+        .describe("New Y position. Must be between -10,000 and 10,000."),
     },
     async ({ nodeId, x, y }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -89,9 +100,25 @@ Usage Example:
     }
 `,
     {
-      nodeIds: z.array(z.string()).describe("Array of node IDs to move"),
-      x: z.number().describe("New X position"),
-      y: z.number().describe("New Y position"),
+      // Enforce array of Figma node IDs, each must match format
+      nodeIds: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to move. Must be a string in the format '123:456'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of node IDs to move. Must contain 1 to 100 items."),
+      // Enforce reasonable X coordinate
+      x: z.number()
+        .min(-10000)
+        .max(10000)
+        .describe("New X position. Must be between -10,000 and 10,000."),
+      // Enforce reasonable Y coordinate
+      y: z.number()
+        .min(-10000)
+        .max(10000)
+        .describe("New Y position. Must be between -10,000 and 10,000."),
     },
     async ({ nodeIds, x, y }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
