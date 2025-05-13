@@ -36,15 +36,95 @@ import { handleToolError } from "../../../utils/error-handling.js";
  * - create_polygons: Create multiple polygons in Figma
  */
 export function registerShapeCreationCommands(server: McpServer, figmaClient: FigmaClient) {
-  // Register the "create_rectangle" tool for creating a single rectangle in Figma.
+  /**
+   * MCP Tool: create_rectangle
+   * 
+   * Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height.
+   * Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
+   * This tool is useful for programmatically generating UI elements, backgrounds, or design primitives in Figma via MCP.
+   * 
+   * Parameters:
+   *   - x (number, required): The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
+   *   - y (number, required): The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
+   *   - width (number, required): The width of the rectangle in pixels. Must be > 0. Example: 300
+   *   - height (number, required): The height of the rectangle in pixels. Must be > 0. Example: 150
+   *   - name (string, optional): The name to assign to the rectangle node in Figma. Example: "Button Background"
+   *   - parentId (string, optional): The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
+   *   - cornerRadius (number, optional): The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
+   * 
+   * Returns:
+   *   - content: Array containing a text message with the created rectangle's node ID.
+   *     Example: { "content": [{ "type": "text", "text": "Created rectangle 123:456" }] }
+   * 
+   * Usage Example:
+   *   Input:
+   *     {
+   *       "x": 100,
+   *       "y": 200,
+   *       "width": 300,
+   *       "height": 150,
+   *       "name": "Button Background",
+   *       "cornerRadius": 8
+   *     }
+   *   Output:
+   *     {
+   *       "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
+   *     }
+   */
   server.tool(
     "create_rectangle",
-    "Create a new rectangle in Figma",
+    `Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height.
+Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
+This tool is useful for programmatically generating UI elements, backgrounds, or design primitives in Figma via MCP.
+
+Parameters:
+  - x (number, required): The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
+  - y (number, required): The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
+  - width (number, required): The width of the rectangle in pixels. Must be > 0. Example: 300
+  - height (number, required): The height of the rectangle in pixels. Must be > 0. Example: 150
+  - name (string, optional): The name to assign to the rectangle node in Figma. Example: "Button Background"
+  - parentId (string, optional): The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
+  - cornerRadius (number, optional): The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
+
+Returns:
+  - content: Array containing a text message with the created rectangle's node ID.
+    Example: { "content": [{ "type": "text", "text": "Created rectangle 123:456" }] }
+
+Annotations:
+  - title: "Create Rectangle (Figma)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+Usage Example:
+  Input:
     {
-      x: z.number(), y: z.number(),
-      width: z.number(), height: z.number(),
-      name: z.string().optional(), parentId: z.string().optional(),
-      cornerRadius: z.number().min(0).optional()
+      "x": 100,
+      "y": 200,
+      "width": 300,
+      "height": 150,
+      "name": "Button Background",
+      "cornerRadius": 8
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
+    }
+`,
+    {
+      x: z.number().min(0, "x must be >= 0")
+        .describe("The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100"),
+      y: z.number().min(0, "y must be >= 0")
+        .describe("The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200"),
+      width: z.number().positive("width must be > 0")
+        .describe("The width of the rectangle in pixels. Must be > 0. Example: 300"),
+      height: z.number().positive("height must be > 0")
+        .describe("The height of the rectangle in pixels. Must be > 0. Example: 150"),
+      name: z.string().describe("The name to assign to the rectangle node in Figma. Example: 'Button Background'").optional(),
+      parentId: z.string().describe("The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.").optional(),
+      cornerRadius: z.number().min(0, "cornerRadius must be >= 0")
+        .describe("The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8").optional()
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args, extra): Promise<any> => {
