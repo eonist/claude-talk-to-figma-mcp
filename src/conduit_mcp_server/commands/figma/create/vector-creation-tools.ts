@@ -13,7 +13,46 @@ export function registerVectorCreationCommands(server: McpServer, figmaClient: F
   // Single vector
   server.tool(
     "create_vector",
-    "Create a new vector in Figma",
+    `Create a new vector in Figma.
+
+Parameters:
+  - x (number, required): X coordinate for the vector.
+  - y (number, required): Y coordinate for the vector.
+  - width (number, required): Width in pixels.
+  - height (number, required): Height in pixels.
+  - name (string, optional): Name for the vector node.
+  - parentId (string, optional): Figma node ID of the parent.
+  - vectorPaths (array, required): Array of vector path objects ({ data: string, windingRule?: string }).
+  - fillColor (any, optional): Fill color for the vector.
+  - strokeColor (any, optional): Stroke color for the vector.
+  - strokeWeight (number, optional): Stroke weight for the vector.
+
+Returns:
+  - content: Array containing a text message with the created vector's node ID.
+    Example: { "content": [{ "type": "text", "text": "Created vector 123:456" }] }
+
+Annotations:
+  - title: "Create Vector"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "x": 100,
+      "y": 200,
+      "width": 50,
+      "height": 50,
+      "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created vector 123:456" }]
+    }
+`,
     {
       x: z.number(), y: z.number(),
       width: z.number(), height: z.number(),
@@ -38,7 +77,46 @@ export function registerVectorCreationCommands(server: McpServer, figmaClient: F
   // Batch vectors
   server.tool(
     "create_vectors",
-    "Create multiple vectors in Figma",
+    `Create multiple vectors in Figma.
+
+Parameters:
+  - vectors (array, required): An array of vector configuration objects. Each object should include:
+      - x (number, required): X coordinate for the vector.
+      - y (number, required): Y coordinate for the vector.
+      - width (number, required): Width in pixels.
+      - height (number, required): Height in pixels.
+      - name (string, optional): Name for the vector node.
+      - parentId (string, optional): Figma node ID of the parent.
+      - vectorPaths (array, required): Array of vector path objects ({ data: string, windingRule?: string }).
+      - fillColor (any, optional): Fill color for the vector.
+      - strokeColor (any, optional): Stroke color for the vector.
+      - strokeWeight (number, optional): Stroke weight for the vector.
+
+Returns:
+  - content: Array containing a text message with the number of vectors created.
+    Example: { "content": [{ "type": "text", "text": "Created 3/3 vectors." }] }
+
+Annotations:
+  - title: "Create Vectors (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "vectors": [
+        { "x": 10, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] },
+        { "x": 70, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 vectors." }]
+    }
+`,
     { vectors: z.array(z.object({
         x: z.number(), y: z.number(),
         width: z.number(), height: z.number(),
