@@ -283,7 +283,42 @@ Usage Example:
   // Register the "create_line" tool for creating a single line in Figma.
   server.tool(
     "create_line",
-    "Create a new line in Figma",
+    `Create a new line in Figma.
+
+Parameters:
+  - x1 (number, required): X coordinate for the start point.
+  - y1 (number, required): Y coordinate for the start point.
+  - x2 (number, required): X coordinate for the end point.
+  - y2 (number, required): Y coordinate for the end point.
+  - parentId (string, optional): Figma node ID of the parent.
+  - strokeColor (any, optional): Stroke color for the line.
+  - strokeWeight (number, optional): Stroke weight for the line.
+
+Returns:
+  - content: Array containing a text message with the created line's node ID.
+    Example: { "content": [{ "type": "text", "text": "Created line 123:456" }] }
+
+Annotations:
+  - title: "Create Line"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "x1": 10,
+      "y1": 20,
+      "x2": 110,
+      "y2": 20
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created line 123:456" }]
+    }
+`,
     {
       x1: z.number(), y1: z.number(),
       x2: z.number(), y2: z.number(),
@@ -301,7 +336,43 @@ Usage Example:
   // Register the "create_lines" tool for creating multiple lines in Figma.
   server.tool(
     "create_lines",
-    "Create multiple lines in Figma",
+    `Create multiple lines in Figma.
+
+Parameters:
+  - lines (array, required): An array of line configuration objects. Each object should include:
+      - x1 (number, required): X coordinate for the start point.
+      - y1 (number, required): Y coordinate for the start point.
+      - x2 (number, required): X coordinate for the end point.
+      - y2 (number, required): Y coordinate for the end point.
+      - parentId (string, optional): Figma node ID of the parent.
+      - strokeColor (any, optional): Stroke color for the line.
+      - strokeWeight (number, optional): Stroke weight for the line.
+
+Returns:
+  - content: Array containing a text message with the number of lines created.
+    Example: { "content": [{ "type": "text", "text": "Created 3/3 lines." }] }
+
+Annotations:
+  - title: "Create Lines (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "lines": [
+        { "x1": 10, "y1": 20, "x2": 110, "y2": 20 },
+        { "x1": 20, "y1": 30, "x2": 120, "y2": 30 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 lines." }]
+    }
+`,
     { lines: z.array(z.object({
         x1: z.number(), y1: z.number(),
         x2: z.number(), y2: z.number(),
@@ -327,7 +398,45 @@ Usage Example:
   // Register the "create_ellipse" tool for creating a single ellipse in Figma.
   server.tool(
     "create_ellipse",
-    "Create a new ellipse in Figma",
+    `Create a new ellipse in Figma.
+
+Parameters:
+  - x (number, required): X coordinate for the top-left corner.
+  - y (number, required): Y coordinate for the top-left corner.
+  - width (number, required): Width in pixels.
+  - height (number, required): Height in pixels.
+  - name (string, optional): Name for the ellipse node.
+  - parentId (string, optional): Figma node ID of the parent.
+  - fillColor (any, optional): Fill color for the ellipse.
+  - strokeColor (any, optional): Stroke color for the ellipse.
+  - strokeWeight (number, optional): Stroke weight for the ellipse.
+
+Returns:
+  - content: Array containing a text message with the created ellipse's node ID.
+    Example: { "content": [{ "type": "text", "text": "Created ellipse 123:456" }] }
+
+Annotations:
+  - title: "Create Ellipse"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "x": 60,
+      "y": 80,
+      "width": 120,
+      "height": 90,
+      "name": "Ellipse1"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created ellipse 123:456" }]
+    }
+`,
     {
       x: z.number(), y: z.number(),
       width: z.number(), height: z.number(),
@@ -351,7 +460,46 @@ Usage Example:
   // Register the "create_polygons" tool for creating multiple polygons in Figma.
   server.tool(
     "create_polygons",
-    "Create multiple polygons in Figma",
+    `Create multiple polygons in Figma.
+
+Parameters:
+  - polygons (array, required): An array of polygon configuration objects. Each object should include:
+      - x (number, required): X coordinate for the top-left corner.
+      - y (number, required): Y coordinate for the top-left corner.
+      - width (number, required): Width in pixels.
+      - height (number, required): Height in pixels.
+      - sides (number, required): Number of sides (minimum 3).
+      - name (string, optional): Name for the polygon node.
+      - parentId (string, optional): Figma node ID of the parent.
+      - fillColor (any, optional): Fill color for the polygon.
+      - strokeColor (any, optional): Stroke color for the polygon.
+      - strokeWeight (number, optional): Stroke weight for the polygon.
+
+Returns:
+  - content: Array containing a text message with the number of polygons created.
+    Example: { "content": [{ "type": "text", "text": "Created 3/3 polygons." }] }
+
+Annotations:
+  - title: "Create Polygons (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "polygons": [
+        { "x": 10, "y": 20, "width": 100, "height": 100, "sides": 5 },
+        { "x": 120, "y": 20, "width": 80, "height": 80, "sides": 6 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 polygons." }]
+    }
+`,
     { polygons: z.array(z.object({
         x: z.number(), y: z.number(),
         width: z.number(), height: z.number(),
@@ -378,7 +526,45 @@ Usage Example:
   // Register the "create_ellipses" tool for creating multiple ellipses in Figma.
   server.tool(
     "create_ellipses",
-    "Create multiple ellipses in Figma",
+    `Create multiple ellipses in Figma.
+
+Parameters:
+  - ellipses (array, required): An array of ellipse configuration objects. Each object should include:
+      - x (number, required): X coordinate for the top-left corner.
+      - y (number, required): Y coordinate for the top-left corner.
+      - width (number, required): Width in pixels.
+      - height (number, required): Height in pixels.
+      - name (string, optional): Name for the ellipse node.
+      - parentId (string, optional): Figma node ID of the parent.
+      - fillColor (any, optional): Fill color for the ellipse.
+      - strokeColor (any, optional): Stroke color for the ellipse.
+      - strokeWeight (number, optional): Stroke weight for the ellipse.
+
+Returns:
+  - content: Array containing a text message with the number of ellipses created.
+    Example: { "content": [{ "type": "text", "text": "Created 3/3 ellipses." }] }
+
+Annotations:
+  - title: "Create Ellipses (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "ellipses": [
+        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Ellipse1" },
+        { "x": 120, "y": 20, "width": 80, "height": 40 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 ellipses." }]
+    }
+`,
     { ellipses: z.array(z.object({
         x: z.number(), y: z.number(),
         width: z.number(), height: z.number(),
