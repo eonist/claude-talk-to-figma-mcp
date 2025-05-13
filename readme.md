@@ -82,6 +82,7 @@ irm bun.sh/install.ps1 | iex
 2. Find MCP settings in your agent app of choice. `~/.app-name/mcp.json`
 3. Add a new MCP connection with this config: 
 
+⚠️️ Use local path for now in the args bellow. "/Users/user-name/conduit/src/conduit_mcp_server/dist/server.js" (Will be fixed soon) ⚠️️ 
 ```swift
 {
   "mcpServers": {
