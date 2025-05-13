@@ -1,6 +1,7 @@
 name: Update Version Badge and Package Files
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["Publish Package to npm"] # Trigger after the publish workflow
     types:
