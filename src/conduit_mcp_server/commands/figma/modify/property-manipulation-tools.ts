@@ -140,8 +140,27 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string(),
-      text: z.array(z.object({ nodeId: z.string(), text: z.string() })),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma parent node ID. Must be a string in the format '123:456'."),
+      // Enforce array of objects with valid nodeId and non-empty text
+      text: z.array(
+        z.object({
+          // Enforce Figma node ID format for each child
+          nodeId: z.string()
+            .regex(/^\d+:\d+$/)
+            .describe("The unique Figma child text node ID to update. Must be a string in the format '123:456'."),
+          // Enforce non-empty string for text content
+          text: z.string()
+            .min(1)
+            .max(10000)
+            .describe("The new text content to set for the child node. Must be a non-empty string. Maximum length 10,000 characters."),
+        })
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of objects specifying nodeId and text for each child text node to update. Must contain 1 to 100 items."),
     },
     async ({ nodeId, text }) => {
       const parent = ensureNodeIdIsString(nodeId);
@@ -149,6 +168,40 @@ Usage Example:
       await figmaClient.executeCommand("set_multiple_text_contents", { nodeId: parent, text: payload });
       return { content: [{ type: "text", text: `Updated ${payload.length} text nodes` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "parent:123",
+          "text": [
+            { "nodeId": "child:1", "text": "A" },
+            { "nodeId": "child:2", "text": "B" }
+          ]
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
+        }
+
+    Error Handling:
+      - Returns an error if any nodeId is invalid or not found.
+      - Returns an error if any text is empty or exceeds maximum length.
+      - Returns an error if the array is empty or exceeds 100 items.
+
+    Security Notes:
+      - All inputs are validated and sanitized. All nodeIds must match the expected format.
+      - Text content is limited to 10,000 characters per node and 100 nodes per call.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Updated <N> text nodes"
+          }
+        ]
+      }
+    */
   );
 
   // Set Corner Radius
@@ -276,15 +329,55 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string(),
-      format: z.enum(["PNG","JPG","SVG","PDF"]).optional(),
-      scale: z.number().positive().optional(),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to export. Must be a string in the format '123:456'."),
+      // Restrict format to allowed image types
+      format: z.enum(["PNG", "JPG", "SVG", "PDF"]).optional()
+        .describe('Optional. The image format to export: "PNG", "JPG", "SVG", or "PDF". Defaults to "PNG" if omitted.'),
+      // Enforce positive scale for export
+      scale: z.number().positive().optional()
+        .describe("Optional. The export scale factor. Must be a positive number. Defaults to 1 if omitted."),
     },
     async ({ nodeId, format, scale }) => {
       const id = ensureNodeIdIsString(nodeId);
       const result = await figmaClient.executeCommand("export_node_as_image", { nodeId: id, format, scale });
       return { content: [{ type: "image", data: result.imageData, mimeType: result.mimeType }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "format": "SVG",
+          "scale": 2
+        }
+      Output:
+        {
+          "content": [{ "type": "image", "data": "...", "mimeType": "image/svg+xml" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if format is not one of the allowed values.
+      - Returns an error if scale is not a positive number.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - Exported image data is limited by Figma's API.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "image",
+            "data": "<base64 or binary>",
+            "mimeType": "<image mime type>"
+          }
+        ]
+      }
+    */
   );
 
   // Font and Text Styling
@@ -321,12 +414,59 @@ Usage Example:
       "content": [{ "type": "text", "text": "Font set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), family: z.string(), style: z.string().optional() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Enforce non-empty string for font family
+      family: z.string()
+        .min(1)
+        .max(100)
+        .describe("The font family to set. Must be a non-empty string. Maximum length 100 characters."),
+      // Enforce non-empty string for style if provided
+      style: z.string()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe("Optional. The font style to set (e.g., 'Bold', 'Italic'). If provided, must be a non-empty string. Maximum length 100 characters."),
+    },
     async ({ nodeId, family, style }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_font_name", { nodeId: id, family, style });
       return { content: [{ type: "text", text: `Font set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "family": "Roboto",
+          "style": "Bold"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Font set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if family or style is empty or exceeds maximum length.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - Font family and style are limited to 100 characters.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Font set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_font_size",
@@ -359,12 +499,52 @@ Usage Example:
       "content": [{ "type": "text", "text": "Font size set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), fontSize: z.number().positive() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Enforce positive font size, reasonable upper bound
+      fontSize: z.number()
+        .min(1)
+        .max(512)
+        .describe("The font size to set, in points. Must be a positive number between 1 and 512."),
+    },
     async ({ nodeId, fontSize }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_font_size", { nodeId: id, fontSize });
       return { content: [{ type: "text", text: `Font size set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "fontSize": 24
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Font size set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if fontSize is not between 1 and 512.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - fontSize is limited to a reasonable range for Figma.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Font size set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_font_weight",
@@ -397,12 +577,53 @@ Usage Example:
       "content": [{ "type": "text", "text": "Font weight set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), weight: z.number() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Enforce integer font weight, reasonable range
+      weight: z.number()
+        .int()
+        .min(100)
+        .max(1000)
+        .describe("The font weight to set. Must be an integer between 100 and 1000 (typical Figma font weight range)."),
+    },
     async ({ nodeId, weight }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_font_weight", { nodeId: id, weight });
       return { content: [{ type: "text", text: `Font weight set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "weight": 700
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Font weight set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if weight is not an integer between 100 and 1000.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - weight is limited to a typical Figma font weight range.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Font weight set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_letter_spacing",
