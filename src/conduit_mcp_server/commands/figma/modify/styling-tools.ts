@@ -15,7 +15,41 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Set Fill Color Tool
   server.tool(
     "set_fill_color",
-    "Set the fill color of a node in Figma",
+    `Set the fill color of a node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to update.
+  - r (number, required): Red channel (0-1).
+  - g (number, required): Green channel (0-1).
+  - b (number, required): Blue channel (0-1).
+  - a (number, optional): Alpha channel (0-1).
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Set fill 123:456" }] }
+
+Annotations:
+  - title: "Set Fill Color"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "r": 0.5,
+      "g": 0.5,
+      "b": 0.5,
+      "a": 1
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Set fill 123:456" }]
+    }
+`,
     {
       nodeId: z.string(),
       r: z.number().min(0).max(1),
@@ -33,7 +67,42 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Batch create gradient variables
   server.tool(
     "create_gradient_variables",
-    "Batch create gradient variables in Figma",
+    `Batch create gradient variables in Figma.
+
+Parameters:
+  - gradients (array, required): Array of gradient definition objects.
+
+Returns:
+  - content: Array containing a text message with the number of gradient variables created.
+    Example: { "content": [{ "type": "text", "text": "Batch created 3 gradient variables" }] }
+
+Annotations:
+  - title: "Create Gradient Variables (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "gradients": [
+        {
+          "name": "Primary Gradient",
+          "gradientType": "LINEAR",
+          "stops": [
+            { "position": 0, "color": [1, 0, 0, 1] },
+            { "position": 1, "color": [0, 0, 1, 1] }
+          ]
+        }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Batch created 1 gradient variables" }]
+    }
+`,
     {
       gradients: z.array(
         z.object({
@@ -87,7 +156,36 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Batch apply gradient styles
   server.tool(
     "apply_gradient_styles",
-    "Batch apply gradient styles to nodes in Figma",
+    `Batch apply gradient styles to nodes in Figma.
+
+Parameters:
+  - entries (array, required): Array of objects specifying nodeId, gradientStyleId, and applyTo.
+
+Returns:
+  - content: Array containing a text message with the number of gradients applied.
+    Example: { "content": [{ "type": "text", "text": "Batch applied gradients: 2/2 successes" }] }
+
+Annotations:
+  - title: "Apply Gradient Styles (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "entries": [
+        { "nodeId": "123:456", "gradientStyleId": "grad:1", "applyTo": "FILL" },
+        { "nodeId": "789:101", "gradientStyleId": "grad:2", "applyTo": "STROKE" }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Batch applied gradients: 2/2 successes" }]
+    }
+`,
     {
       entries: z.array(
         z.object({
@@ -120,7 +218,43 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Set Stroke Color Tool
   server.tool(
     "set_stroke_color",
-    "Set the stroke color of a node in Figma",
+    `Set the stroke color of a node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to update.
+  - r (number, required): Red channel (0-1).
+  - g (number, required): Green channel (0-1).
+  - b (number, required): Blue channel (0-1).
+  - a (number, optional): Alpha channel (0-1).
+  - weight (number, optional): Stroke weight.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Set stroke 123:456" }] }
+
+Annotations:
+  - title: "Set Stroke Color"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "r": 0.1,
+      "g": 0.2,
+      "b": 0.3,
+      "a": 1,
+      "weight": 2
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Set stroke 123:456" }]
+    }
+`,
     {
       nodeId: z.string(),
       r: z.number().min(0).max(1),
@@ -139,7 +273,37 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Set Style Tool
   server.tool(
     "set_style",
-    "Set both fill and stroke properties for a Figma node",
+    `Set both fill and stroke properties for a Figma node.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to update.
+  - fillProps (object, optional): Fill properties.
+  - strokeProps (object, optional): Stroke properties.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Styled 123:456" }] }
+
+Annotations:
+  - title: "Set Style"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "fillProps": { "color": [1, 0, 0, 1] },
+      "strokeProps": { "color": [0, 0, 1, 1], "weight": 2 }
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Styled 123:456" }]
+    }
+`,
     {
       nodeId: z.string(),
       fillProps: z.object({
@@ -169,7 +333,36 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Set Styles Tool
   server.tool(
     "set_styles",
-    "Apply fill and/or stroke styles to multiple nodes",
+    `Apply fill and/or stroke styles to multiple nodes.
+
+Parameters:
+  - entries (array, required): Array of objects specifying nodeId, fillProps, and strokeProps.
+
+Returns:
+  - content: Array containing a text message with the number of nodes styled.
+    Example: { "content": [{ "type": "text", "text": "Styled 3 nodes" }] }
+
+Annotations:
+  - title: "Set Styles (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "entries": [
+        { "nodeId": "123:456", "fillProps": { "color": [1, 0, 0, 1] } },
+        { "nodeId": "789:101", "strokeProps": { "color": [0, 0, 1, 1], "weight": 2 } }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Styled 2 nodes" }]
+    }
+`,
     {
       entries: z.array(
         z.object({
@@ -207,7 +400,40 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Create Gradient Variable
   server.tool(
     "create_gradient_variable",
-    "Create a gradient paint style in Figma",
+    `Create a gradient paint style in Figma.
+
+Parameters:
+  - name (string, required): Name for the gradient style.
+  - gradientType (string, required): Type of gradient ("LINEAR", "RADIAL", "ANGULAR", "DIAMOND").
+  - stops (array, required): Array of color stops.
+
+Returns:
+  - content: Array containing a text message with the created gradient's ID.
+    Example: { "content": [{ "type": "text", "text": "Created gradient 123:456" }] }
+
+Annotations:
+  - title: "Create Gradient Variable"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "name": "Primary Gradient",
+      "gradientType": "LINEAR",
+      "stops": [
+        { "position": 0, "color": [1, 0, 0, 1] },
+        { "position": 1, "color": [0, 0, 1, 1] }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created gradient 123:456" }]
+    }
+`,
     {
       name: z.string(),
       gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]),
@@ -227,7 +453,37 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Apply Gradient Style
   server.tool(
     "apply_gradient_style",
-    "Apply a gradient style to a node in Figma",
+    `Apply a gradient style to a node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to update.
+  - gradientStyleId (string, required): The ID of the gradient style to apply.
+  - applyTo (string, required): Where to apply the gradient ("FILL", "STROKE", "BOTH").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Applied gradient to 123:456" }] }
+
+Annotations:
+  - title: "Apply Gradient Style"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "gradientStyleId": "grad:1",
+      "applyTo": "FILL"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Applied gradient to 123:456" }]
+    }
+`,
     {
       nodeId: z.string(),
       gradientStyleId: z.string(),
@@ -243,7 +499,42 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   // Apply Direct Gradient (Style-free alternative)
   server.tool(
     "apply_direct_gradient",
-    "Apply a gradient directly to a node without using styles",
+    `Apply a gradient directly to a node without using styles.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to apply gradient to.
+  - gradientType (string, required): Type of gradient ("LINEAR", "RADIAL", "ANGULAR", "DIAMOND").
+  - stops (array, required): Array of color stops.
+  - applyTo (string, optional): Where to apply the gradient ("FILL", "STROKE", "BOTH").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Applied direct gradient to 123:456" }] }
+
+Annotations:
+  - title: "Apply Direct Gradient"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "gradientType": "LINEAR",
+      "stops": [
+        { "position": 0, "color": [1, 0, 0, 1] },
+        { "position": 1, "color": [0, 0, 1, 1] }
+      ],
+      "applyTo": "FILL"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Applied direct gradient to 123:456" }]
+    }
+`,
     {
       nodeId: z.string().describe("The ID of the node to apply gradient to"),
       gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]).describe("Type of gradient"),
