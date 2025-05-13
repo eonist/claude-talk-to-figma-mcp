@@ -57,9 +57,16 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string().describe("The ID of the node to rename"),
-      newName: z.string().describe("The new name for the node"),
-      setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename")
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to rename. Must be a string in the format '123:456'."),
+      // Enforce non-empty string for newName, reasonable length
+      newName: z.string()
+        .min(1)
+        .max(100)
+        .describe("The new name for the node. Must be a non-empty string up to 100 characters."),
+      setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename"),
     },
     async ({ nodeId, newName, setAutoRename }) => {
       try {
@@ -136,10 +143,22 @@ Usage Example:
     }
 `,
     {
-      layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
-      new_name: z.string().describe("New base name or pattern including tokens"),
+      // Enforce array of Figma node IDs, each must match format
+      layer_ids: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("IDs of layers to rename. Must contain 1 to 100 items."),
+      // Enforce non-empty string for new_name, reasonable length
+      new_name: z.string()
+        .min(1)
+        .max(100)
+        .describe("New base name or pattern including tokens. Must be a non-empty string up to 100 characters."),
       match_pattern: z.string().optional().describe("Regex to match in existing name"),
-      replace_with: z.string().optional().describe("Text to replace matched pattern")
+      replace_with: z.string().optional().describe("Text to replace matched pattern"),
     },
     async ({ layer_ids, new_name, match_pattern, replace_with }) => {
       try {
@@ -211,8 +230,25 @@ Usage Example:
     }
 `,
     {
-      layer_ids: z.array(z.string()).describe("Array of layer IDs to rename"),
-      new_names: z.array(z.string()).describe("Array of new names corresponding to each layer ID")
+      // Enforce array of Figma node IDs, each must match format
+      layer_ids: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of layer IDs to rename. Must contain 1 to 100 items."),
+      // Enforce array of non-empty strings for new_names, each reasonable length
+      new_names: z.array(
+        z.string()
+          .min(1)
+          .max(100)
+          .describe("A new name for a layer. Must be a non-empty string up to 100 characters.")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of new names corresponding to each layer ID. Must contain 1 to 100 items."),
     },
     async ({ layer_ids, new_names }) => {
       try {
@@ -290,8 +326,21 @@ Usage Example:
     }
 `,
     {
-      layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
-      context_prompt: z.string().optional().describe("Prompt for AI renaming")
+      // Enforce array of Figma node IDs, each must match format
+      layer_ids: z.array(
+        z.string()
+          .regex(/^\d+:\d+$/)
+          .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("IDs of layers to rename. Must contain 1 to 100 items."),
+      // Enforce non-empty string for context_prompt if provided, reasonable length
+      context_prompt: z.string()
+        .min(1)
+        .max(200)
+        .optional()
+        .describe("Prompt for AI renaming. If provided, must be a non-empty string up to 200 characters."),
     },
     async ({ layer_ids, context_prompt }) => {
       try {
