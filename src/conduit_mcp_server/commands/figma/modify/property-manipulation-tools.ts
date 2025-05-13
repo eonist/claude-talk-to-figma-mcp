@@ -57,14 +57,51 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string(),
-      text: z.string(),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Enforce non-empty string for text content (Figma API and user safety)
+      text: z.string()
+        .min(1)
+        .max(10000)
+        .describe("The new text content to set for the node. Must be a non-empty string. Maximum length 10,000 characters."),
     },
     async ({ nodeId, text }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_text_content", { nodeId: id, text });
       return { content: [{ type: "text", text: `Updated text of ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "text": "Hello, world!"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Updated text of 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if text is empty or exceeds maximum length.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format (e.g., "123:456").
+      - Text content is limited to 10,000 characters to prevent abuse.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Updated text of <nodeId>"
+          }
+        ]
+      }
+    */
   );
 
   // Set Multiple Text Contents
