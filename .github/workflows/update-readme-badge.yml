@@ -1,4 +1,4 @@
-name: Update README Version Badge
+name: Update Version Badge and Package Files
 
 on:
   workflow_run:
@@ -9,7 +9,7 @@ on:
       - main # Specify the branch to run on (adjust if your default branch is different)
 
 jobs:
-  update_badge:
+  update_version_and_badge:
     # Only run if the publish workflow succeeded
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
@@ -39,10 +39,22 @@ jobs:
           # Replace the old repository name in the badge link URL
           sed -i "s/claude-talk-to-figma-mcp/conduit/g" readme.md
 
+      - name: Update version in root package.json
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          VERSION=${VERSION#v}
+          jq ".version = \"$VERSION\"" package.json > tmp.json && mv tmp.json package.json
+
+      - name: Update version in src/conduit_mcp_server/package.json
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          VERSION=${VERSION#v}
+          jq ".version = \"$VERSION\"" src/conduit_mcp_server/package.json > tmp.json && mv tmp.json src/conduit_mcp_server/package.json
+
       - name: Commit and push changes
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add readme.md
-          git commit -m "Update version badge to ${{ steps.get_version.outputs.VERSION }}"
+          git add readme.md package.json src/conduit_mcp_server/package.json
+          git commit -m "Update version badge and package.json to ${{ steps.get_version.outputs.VERSION }}"
           git push
