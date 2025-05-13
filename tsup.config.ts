@@ -11,4 +11,7 @@ export default defineConfig({
   minify: false,
   splitting: false,
   bundle: true,
+  banner: {
+    js: '#!/usr/bin/env node'
+  }
 });
