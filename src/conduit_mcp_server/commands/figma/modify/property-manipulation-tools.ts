@@ -146,17 +146,62 @@ Usage Example:
     {
       "content": [{ "type": "text", "text": "Set corner radius for 123:456" }]
     }
+
+Additional Usage Example (with corners):
+  Input:
+    {
+      "nodeId": "123:456",
+      "radius": 8,
+      "corners": [true, false, true, false]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Set corner radius for 123:456" }]
+    }
+
+Error Handling:
+  - Returns an error if nodeId is invalid or not found.
+  - Returns an error if radius is negative or corners is not an array of four booleans.
+
+Security Notes:
+  - All inputs are validated and sanitized. nodeId must match the expected format (e.g., "123:456").
+  - Only non-negative radius values are accepted.
+
+Output Schema:
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "Set corner radius for <nodeId>"
+      }
+    ]
+  }
 `,
     {
-      nodeId: z.string(),
-      radius: z.number().min(0),
-      corners: z.array(z.boolean()).length(4).optional(),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Enforce non-negative radius for Figma API and user safety
+      radius: z.number().min(0)
+        .describe("The new corner radius to set, in pixels. Must be a non-negative number (>= 0)."),
+      // Enforce array of four booleans for explicit per-corner control (Figma API)
+      corners: z.array(z.boolean()).length(4).optional()
+        .describe("Optional. An array of four booleans indicating which corners to apply the radius to, in the order: [top-left, top-right, bottom-right, bottom-left]. If omitted, applies to all corners."),
     },
     async ({ nodeId, radius, corners }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_corner_radius", { nodeId: id, radius, corners });
       return { content: [{ type: "text", text: `Set corner radius for ${id}` }] };
     }
+    // If the MCP server supports metadata/annotations as a separate argument, add here (non-breaking)
+    // {
+    //   title: "Set Corner Radius",
+    //   idempotentHint: true,
+    //   destructiveHint: false,
+    //   readOnlyHint: false,
+    //   openWorldHint: false
+    // }
   );
 
   // Export Node As Image
