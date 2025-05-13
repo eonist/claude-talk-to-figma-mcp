@@ -53,7 +53,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_document_info",
-    "Get detailed information about the current Figma document",
+    `Get detailed information about the current Figma document.
+
+Parameters:
+  (none)
+
+Returns:
+  - content: Array containing a text message with the document info as JSON.
+
+Annotations:
+  - title: "Get Document Info"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...document info...}" }]
+    }
+`,
     {},
     async () => {
       try {
@@ -86,7 +107,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_selection",
-    "Get information about the current selection in Figma",
+    `Get information about the current selection in Figma.
+
+Parameters:
+  (none)
+
+Returns:
+  - content: Array containing a text message with the selection info as JSON.
+
+Annotations:
+  - title: "Get Selection"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...selection info...}" }]
+    }
+`,
     {},
     async () => {
       try {
@@ -119,7 +161,32 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_node_info",
-    "Get detailed information about a specific node in Figma",
+    `Get detailed information about a specific node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to get information about.
+
+Returns:
+  - content: Array containing a text message with the node info as JSON.
+
+Annotations:
+  - title: "Get Node Info"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...node info...}" }]
+    }
+`,
     {
       nodeId: z.string().describe("The ID of the node to get information about"),
     },
@@ -158,7 +225,32 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_nodes_info",
-    "Get detailed information about multiple nodes in Figma",
+    `Get detailed information about multiple nodes in Figma.
+
+Parameters:
+  - nodeIds (array, required): Array of node IDs to get information about.
+
+Returns:
+  - content: Array containing a text message with the nodes info as JSON.
+
+Annotations:
+  - title: "Get Nodes Info"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeIds": ["123:456", "789:101"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "[{...node1 info...}, {...node2 info...}]" }]
+    }
+`,
     {
       nodeIds: z.array(z.string()).describe("Array of node IDs to get information about")
     },
@@ -197,7 +289,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_styles",
-    "Get all styles from the current Figma document",
+    `Get all styles from the current Figma document.
+
+Parameters:
+  (none)
+
+Returns:
+  - content: Array containing a text message with the styles info as JSON.
+
+Annotations:
+  - title: "Get Styles"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...styles info...}" }]
+    }
+`,
     {},
     async () => {
       try {
@@ -230,7 +343,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_local_components",
-    "Get all local components from the Figma document",
+    `Get all local components from the Figma document.
+
+Parameters:
+  (none)
+
+Returns:
+  - content: Array containing a text message with the local components info as JSON.
+
+Annotations:
+  - title: "Get Local Components"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...local components info...}" }]
+    }
+`,
     {},
     async () => {
       try {
@@ -263,7 +397,28 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_remote_components",
-    "Get available components from team libraries in Figma",
+    `Get available components from team libraries in Figma.
+
+Parameters:
+  (none)
+
+Returns:
+  - content: Array containing a text message with the remote components info as JSON.
+
+Annotations:
+  - title: "Get Remote Components"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...remote components info...}" }]
+    }
+`,
     {},
     async () => {
       try {
@@ -296,7 +451,34 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_styled_text_segments",
-    "Get text segments with specific styling in a text node",
+    `Get text segments with specific styling in a text node.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node to analyze.
+  - property (string, required): The style property to analyze segments by.
+
+Returns:
+  - content: Array containing a text message with the styled text segments as JSON.
+
+Annotations:
+  - title: "Get Styled Text Segments"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "property": "fontSize"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "[{...styled segments...}]" }]
+    }
+`,
     {
       nodeId: z.string().describe("The ID of the text node to analyze"),
       property: z.enum([
@@ -351,7 +533,36 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "scan_text_nodes",
-    "Scan all text nodes in the selected Figma node",
+    `Scan all text nodes in the selected Figma node.
+
+Parameters:
+  - nodeId (string, required): ID of the node to scan.
+
+Returns:
+  - content: Array containing text messages with the scan status and results.
+
+Annotations:
+  - title: "Scan Text Nodes"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456"
+    }
+  Output:
+    {
+      "content": [
+        { "type": "text", "text": "Starting text node scanning. This may take a moment for large designs..." },
+        { "type": "text", "text": "Scan completed: - Found 10 text nodes - Processed in 1 chunks" },
+        { "type": "text", "text": "[{...text nodes...}]" }
+      ]
+    }
+`,
     {
       nodeId: z.string().describe("ID of the node to scan"),
     },
@@ -435,7 +646,34 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
    */
   server.tool(
     "get_css_async",
-    "Get CSS properties from a node",
+    `Get CSS properties from a node.
+
+Parameters:
+  - nodeId (string, optional): Optional ID of the node to get CSS from.
+  - format (string, optional): Format to return CSS in ("object", "string", "inline").
+
+Returns:
+  - content: Array containing a text message with the CSS properties as JSON.
+
+Annotations:
+  - title: "Get CSS Async"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "format": "string"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...css string...}" }]
+    }
+`,
     {
       nodeId: z.string().optional().describe("Optional ID of the node to get CSS from"),
       format: z.enum(["object","string","inline"]).optional().describe("Format to return CSS in"),
