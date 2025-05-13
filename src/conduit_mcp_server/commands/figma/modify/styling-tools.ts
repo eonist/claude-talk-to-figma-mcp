@@ -51,11 +51,15 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string(),
-      r: z.number().min(0).max(1),
-      g: z.number().min(0).max(1),
-      b: z.number().min(0).max(1),
-      a: z.number().min(0).max(1).optional(),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Enforce color channels in [0,1]
+      r: z.number().min(0).max(1).describe("Red channel (0-1)"),
+      g: z.number().min(0).max(1).describe("Green channel (0-1)"),
+      b: z.number().min(0).max(1).describe("Blue channel (0-1)"),
+      a: z.number().min(0).max(1).optional().describe("Optional. Alpha channel (0-1)"),
     },
     async ({ nodeId, r, g, b, a }: { nodeId: string; r: number; g: number; b: number; a?: number }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -106,10 +110,16 @@ Usage Example:
     {
       gradients: z.array(
         z.object({
-          name: z.string().describe("The name for the gradient style"),
+          // Enforce non-empty string for name, reasonable length
+          name: z.string()
+            .min(1)
+            .max(100)
+            .describe("The name for the gradient style. Must be a non-empty string up to 100 characters."),
+          // Restrict gradientType to allowed values
           gradientType: z
             .enum(["LINEAR","RADIAL","ANGULAR","DIAMOND"])
             .describe("Type of gradient"),
+          // Enforce array of stops, each with position in [0,1] and RGBA color
           stops: z.array(
             z.object({
               position: z.number().min(0).max(1).describe("Position of color stop (0-1)"),
@@ -122,7 +132,10 @@ Usage Example:
                 ])
                 .describe("RGBA color for the stop")
             })
-          ).describe("Array of gradient stops"),
+          )
+          .min(2)
+          .max(10)
+          .describe("Array of gradient stops. Must contain 2 to 10 stops."),
           mode: z.string().optional().describe("Blend mode, e.g., NORMAL, DARKEN"),
           opacity: z.number().min(0).max(1).optional().describe("Overall opacity"),
           transformMatrix: z
@@ -130,7 +143,10 @@ Usage Example:
             .optional()
             .describe("Optional 2x3 transform matrix for gradient")
         })
-      ).describe("Array of gradient definitions")
+      )
+      .min(1)
+      .max(20)
+      .describe("Array of gradient definitions. Must contain 1 to 20 items."),
     },
     async ({ gradients }: { gradients: Array<{
       name: string;
@@ -189,13 +205,24 @@ Usage Example:
     {
       entries: z.array(
         z.object({
-          nodeId: z.string().describe("The ID of the node to style"),
-          gradientStyleId: z.string().describe("The ID of the gradient style to apply"),
+          // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+          nodeId: z.string()
+            .regex(/^\d+:\d+$/)
+            .describe("The unique Figma node ID to style. Must be a string in the format '123:456'."),
+          // Enforce non-empty string for gradientStyleId, reasonable length
+          gradientStyleId: z.string()
+            .min(1)
+            .max(100)
+            .describe("The ID of the gradient style to apply. Must be a non-empty string up to 100 characters."),
+          // Restrict applyTo to allowed values
           applyTo: z
             .enum(["FILL","STROKE","BOTH"])
             .describe("Apply to fill, stroke, or both")
         })
-      ).describe("Array of entries specifying nodeId, gradientStyleId, and applyTo")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of entries specifying nodeId, gradientStyleId, and applyTo. Must contain 1 to 100 items."),
     },
     async ({ entries }: { entries: Array<{
       nodeId: string;
@@ -256,12 +283,17 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string(),
-      r: z.number().min(0).max(1),
-      g: z.number().min(0).max(1),
-      b: z.number().min(0).max(1),
-      a: z.number().min(0).max(1).optional(),
-      weight: z.number().positive().optional(),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Enforce color channels in [0,1]
+      r: z.number().min(0).max(1).describe("Red channel (0-1)"),
+      g: z.number().min(0).max(1).describe("Green channel (0-1)"),
+      b: z.number().min(0).max(1).describe("Blue channel (0-1)"),
+      a: z.number().min(0).max(1).optional().describe("Optional. Alpha channel (0-1)"),
+      // Enforce positive stroke weight, reasonable upper bound
+      weight: z.number().min(0.1).max(100).optional().describe("Optional. Stroke weight. Must be between 0.1 and 100."),
     },
     async ({ nodeId, r, g, b, a, weight }: { nodeId: string; r: number; g: number; b: number; a?: number; weight?: number }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -305,15 +337,28 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string(),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
       fillProps: z.object({
-        color: z.tuple([z.number(), z.number(), z.number(), z.number()]).optional(),
+        color: z.tuple([
+          z.number().min(0).max(1),
+          z.number().min(0).max(1),
+          z.number().min(0).max(1),
+          z.number().min(0).max(1)
+        ]).optional(),
         visible: z.boolean().optional(),
         opacity: z.number().min(0).max(1).optional(),
       }).optional(),
       strokeProps: z.object({
-        color: z.tuple([z.number(), z.number(), z.number(), z.number()]).optional(),
-        weight: z.number().positive().optional(),
+        color: z.tuple([
+          z.number().min(0).max(1),
+          z.number().min(0).max(1),
+          z.number().min(0).max(1),
+          z.number().min(0).max(1)
+        ]).optional(),
+        weight: z.number().min(0.1).max(100).optional(),
       }).optional(),
     },
     async ({ nodeId, fillProps, strokeProps }) => {
@@ -366,20 +411,36 @@ Usage Example:
     {
       entries: z.array(
         z.object({
-          nodeId: z.string(),
+          // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+          nodeId: z.string()
+            .regex(/^\d+:\d+$/)
+            .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
           fillProps: z
             .object({
-              color: z.tuple([z.number(), z.number(), z.number(), z.number()]).optional(),
+              color: z.tuple([
+                z.number().min(0).max(1),
+                z.number().min(0).max(1),
+                z.number().min(0).max(1),
+                z.number().min(0).max(1)
+              ]).optional(),
             })
             .optional(),
           strokeProps: z
             .object({
-              color: z.tuple([z.number(), z.number(), z.number(), z.number()]).optional(),
-              weight: z.number().positive().optional(),
+              color: z.tuple([
+                z.number().min(0).max(1),
+                z.number().min(0).max(1),
+                z.number().min(0).max(1),
+                z.number().min(0).max(1)
+              ]).optional(),
+              weight: z.number().min(0.1).max(100).optional(),
             })
             .optional(),
         })
-      ),
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of style entries. Must contain 1 to 100 items."),
     },
     async ({ entries }) => {
       for (const e of entries) {
@@ -435,14 +496,28 @@ Usage Example:
     }
 `,
     {
-      name: z.string(),
+      // Enforce non-empty string for name, reasonable length
+      name: z.string()
+        .min(1)
+        .max(100)
+        .describe("Name for the gradient style. Must be a non-empty string up to 100 characters."),
+      // Restrict gradientType to allowed values
       gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]),
+      // Enforce array of stops, each with position in [0,1] and RGBA color
       stops: z.array(
         z.object({
           position: z.number().min(0).max(1),
-          color: z.tuple([z.number(), z.number(), z.number(), z.number()]),
+          color: z.tuple([
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1),
+            z.number().min(0).max(1)
+          ]),
         })
-      ),
+      )
+      .min(2)
+      .max(10)
+      .describe("Array of color stops. Must contain 2 to 10 stops."),
     },
     async ({ name, gradientType, stops }) => {
       const result = await figmaClient.executeCommand("create_gradient_variable", { name, gradientType, stops });
@@ -485,8 +560,16 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string(),
-      gradientStyleId: z.string(),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Enforce non-empty string for gradientStyleId, reasonable length
+      gradientStyleId: z.string()
+        .min(1)
+        .max(100)
+        .describe("The ID of the gradient style to apply. Must be a non-empty string up to 100 characters."),
+      // Restrict applyTo to allowed values
       applyTo: z.enum(["FILL", "STROKE", "BOTH"]),
     },
     async ({ nodeId, gradientStyleId, applyTo }) => {
@@ -536,8 +619,13 @@ Usage Example:
     }
 `,
     {
-      nodeId: z.string().describe("The ID of the node to apply gradient to"),
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to apply gradient to. Must be a string in the format '123:456'."),
+      // Restrict gradientType to allowed values
       gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]).describe("Type of gradient"),
+      // Enforce array of stops, each with position in [0,1] and RGBA color
       stops: z.array(
         z.object({
           position: z.number().min(0).max(1).describe("Position of color stop (0-1)"),
@@ -548,8 +636,12 @@ Usage Example:
             z.number().min(0).max(1)
           ]).describe("RGBA color for the stop")
         })
-      ).describe("Array of gradient stops"),
-      applyTo: z.enum(["FILL", "STROKE", "BOTH"]).default("FILL").describe("Apply to fill, stroke, or both")
+      )
+      .min(2)
+      .max(10)
+      .describe("Array of gradient stops. Must contain 2 to 10 stops."),
+      // Restrict applyTo to allowed values
+      applyTo: z.enum(["FILL", "STROKE", "BOTH"]).default("FILL").describe("Apply to fill, stroke, or both"),
     },
     async ({ nodeId, gradientType, stops, applyTo }) => {
       const id = ensureNodeIdIsString(nodeId);
