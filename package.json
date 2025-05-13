@@ -45,11 +45,11 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "latest",
+    "@modelcontextprotocol/sdk": "^1.11.0",
     "reconnecting-websocket": "^4.4.0",
     "uuid": "latest",
     "ws": "latest",
-    "zod": "latest"
+    "zod": "3.24.1"
   },
   "keywords": [
     "conduit",
