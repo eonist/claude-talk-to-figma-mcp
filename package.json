@@ -5,8 +5,8 @@
   "module": "dist/conduit_mcp_server/server.js",
   "main": "dist/conduit_mcp_server/server.js",
   "bin": {
-    "conduit-design": "dist/conduit_mcp_server/server.js",
-    "conduit-mcp-socket": "dist/socket.js"
+    "conduit-design": "dist/conduit_mcp_server/server.cjs",
+    "conduit-mcp-socket": "dist/socket.cjs"
   },
   "files": [
     "dist",
@@ -20,7 +20,7 @@
     "start": "bun run dist/conduit_mcp_server/server.js",
     "socket": "bun run dist/socket.js",
     "setup": "./scripts/setup.sh",
-    "build": "tsup && chmod +x dist/conduit_mcp_server/server.js dist/socket.js",
+    "build": "tsup && chmod +x dist/conduit_mcp_server/server.cjs dist/socket.cjs",
     "build:watch": "tsup --watch",
     "build:plugin": "node src/conduit_mcp_plugin/build.js",
     "build:ui-ts": "node src/conduit_mcp_plugin/build-ts.js",

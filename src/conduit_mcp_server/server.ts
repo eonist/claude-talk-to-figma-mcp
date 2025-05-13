@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Module: Conduit MCP Server CLI
  *
