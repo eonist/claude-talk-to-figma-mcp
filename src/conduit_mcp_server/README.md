@@ -93,6 +93,28 @@ The Conduit MCP Server connects to a Figma document and listens for commands fro
 
 ---
 
+### Running the MCP Server with Docker
+
+A `Dockerfile` is provided to run the Conduit MCP Server in a containerized environment.
+
+- **Base Image:** Uses the official Bun image (`oven/bun:latest`)
+- **Dependencies:** Installs all dependencies with `bun install`
+- **Port:** Exposes port `3055` for the server
+- **Startup:** Runs `bun src/conduit_mcp_server/server.ts` on container start
+
+**To build and run the server with Docker:**
+```bash
+# Build the Docker image
+docker build -t conduit-mcp-server .
+
+# Run the container
+docker run -p 3055:3055 conduit-mcp-server
+```
+
+This will start the MCP server inside a Docker container, listening on port 3055.
+
+---
+
 ### Using Latest Commit vs. Tagged Version for Server Path
 
 > **Note:**  
