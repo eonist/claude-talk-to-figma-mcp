@@ -17,7 +17,39 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
   // Insert a single SVG vector
   server.tool(
     "insert_svg_vector",
-    "Insert an SVG as vector in Figma",
+    `Insert an SVG as vector in Figma.
+
+Parameters:
+  - svg (string, required): The SVG content (raw SVG text or URL).
+  - x (number, optional): X coordinate (default 0).
+  - y (number, optional): Y coordinate (default 0).
+  - name (string, optional): Name for the SVG node.
+  - parentId (string, optional): Figma node ID of the parent.
+
+Returns:
+  - content: Array containing a text message with the inserted SVG vector's node ID.
+    Example: { "content": [{ "type": "text", "text": "Inserted SVG vector 123:456" }] }
+
+Annotations:
+  - title: "Insert SVG Vector"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "svg": "<svg>...</svg>",
+      "x": 10,
+      "y": 20
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted SVG vector 123:456" }]
+    }
+`,
     {
       svg: z.string(),
       x: z.number().optional().default(0),
@@ -47,7 +79,41 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
   // Batch insertion of multiple SVG vectors
   server.tool(
     "insert_svg_vectors",
-    "Insert multiple SVG vectors in Figma",
+    `Insert multiple SVG vectors in Figma.
+
+Parameters:
+  - svgs (array, required): An array of SVG configuration objects. Each object should include:
+      - svg (string, required): The SVG content (raw SVG text or URL).
+      - x (number, optional): X coordinate (default 0).
+      - y (number, optional): Y coordinate (default 0).
+      - name (string, optional): Name for the SVG node.
+      - parentId (string, optional): Figma node ID of the parent.
+
+Returns:
+  - content: Array containing a text message with the number of SVG vectors inserted.
+    Example: { "content": [{ "type": "text", "text": "Inserted 3/3 SVG vectors." }] }
+
+Annotations:
+  - title: "Insert SVG Vectors (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "svgs": [
+        { "svg": "<svg>...</svg>", "x": 10, "y": 20 },
+        { "svg": "<svg>...</svg>", "x": 120, "y": 20 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted 2/2 SVG vectors." }]
+    }
+`,
     {
       svgs: z.array(
         z.object({

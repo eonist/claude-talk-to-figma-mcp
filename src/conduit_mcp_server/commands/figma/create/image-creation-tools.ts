@@ -13,7 +13,41 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
   // Single image insertion
   server.tool(
     "insert_image",
-    "Insert an image from a URL",
+    `Insert an image from a URL.
+
+Parameters:
+  - url (string, required): The URL of the image to insert.
+  - x (number, optional): X coordinate (default 0).
+  - y (number, optional): Y coordinate (default 0).
+  - width (number, optional): Width of the image.
+  - height (number, optional): Height of the image.
+  - name (string, optional): Name for the image node.
+  - parentId (string, optional): Figma node ID of the parent.
+
+Returns:
+  - content: Array containing a text message with the inserted image's node ID.
+    Example: { "content": [{ "type": "text", "text": "Inserted image 123:456" }] }
+
+Annotations:
+  - title: "Insert Image"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "url": "https://example.com/image.png",
+      "x": 10,
+      "y": 20
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted image 123:456" }]
+    }
+`,
     {
       url: z.string(),
       x: z.number().optional().default(0),
@@ -36,7 +70,43 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
   // Batch image insertion
   server.tool(
     "insert_images",
-    "Insert multiple images from URLs",
+    `Insert multiple images from URLs.
+
+Parameters:
+  - images (array, required): An array of image configuration objects. Each object should include:
+      - url (string, required): The URL of the image to insert.
+      - x (number, optional): X coordinate (default 0).
+      - y (number, optional): Y coordinate (default 0).
+      - width (number, optional): Width of the image.
+      - height (number, optional): Height of the image.
+      - name (string, optional): Name for the image node.
+      - parentId (string, optional): Figma node ID of the parent.
+
+Returns:
+  - content: Array containing a text message with the number of images inserted.
+    Example: { "content": [{ "type": "text", "text": "Inserted 3/3 images." }] }
+
+Annotations:
+  - title: "Insert Images (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "images": [
+        { "url": "https://example.com/image1.png", "x": 10, "y": 20 },
+        { "url": "https://example.com/image2.png", "x": 120, "y": 20 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted 2/2 images." }]
+    }
+`,
     {
       images: z.array(
         z.object({
@@ -70,7 +140,42 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
   // Local image insertion command: supports both --imagePath and --imageData flags.
   server.tool(
     "insert_local_image",
-    "Insert a local image via a file path or a Base64 data URI",
+    `Insert a local image via a file path or a Base64 data URI.
+
+Parameters:
+  - imagePath (string, optional): Path to the local image file.
+  - imageData (string, optional): Base64 data URI of the image.
+  - x (number, optional): X coordinate (default 0).
+  - y (number, optional): Y coordinate (default 0).
+  - width (number, optional): Width of the image.
+  - height (number, optional): Height of the image.
+  - name (string, optional): Name for the image node.
+  - parentId (string, optional): Figma node ID of the parent.
+
+Returns:
+  - content: Array containing a text message with the inserted local image's node ID.
+    Example: { "content": [{ "type": "text", "text": "Inserted local image 123:456" }] }
+
+Annotations:
+  - title: "Insert Local Image"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "imagePath": "/path/to/image.png",
+      "x": 10,
+      "y": 20
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted local image 123:456" }]
+    }
+`,
     {
       imagePath: z.string().optional(),
       imageData: z.string().optional(),
@@ -115,7 +220,44 @@ export function registerImageCreationCommands(server: McpServer, figmaClient: Fi
   // Batch local image insertion
   server.tool(
     "insert_local_images",
-    "Insert multiple local images via file paths or Base64 data URIs",
+    `Insert multiple local images via file paths or Base64 data URIs.
+
+Parameters:
+  - images (array, required): An array of image configuration objects. Each object should include:
+      - imagePath (string, optional): Path to the local image file.
+      - imageData (string, optional): Base64 data URI of the image.
+      - x (number, optional): X coordinate (default 0).
+      - y (number, optional): Y coordinate (default 0).
+      - width (number, optional): Width of the image.
+      - height (number, optional): Height of the image.
+      - name (string, optional): Name for the image node.
+      - parentId (string, optional): Figma node ID of the parent.
+
+Returns:
+  - content: Array containing a text message with the number of local images inserted.
+    Example: { "content": [{ "type": "text", "text": "Inserted 3/3 local images." }] }
+
+Annotations:
+  - title: "Insert Local Images (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "images": [
+        { "imagePath": "/path/to/image1.png", "x": 10, "y": 20 },
+        { "imageData": "data:image/png;base64,...", "x": 120, "y": 20 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted 2/2 local images." }]
+    }
+`,
     {
       images: z.array(
         z.object({
