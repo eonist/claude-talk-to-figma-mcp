@@ -97,6 +97,7 @@ Annotations:
   - readOnlyHint: false
   - openWorldHint: false
 
+---
 Usage Example:
   Input:
     {
@@ -149,7 +150,43 @@ Usage Example:
   // Register the "create_rectangles" tool for creating multiple rectangles in Figma.
   server.tool(
     "create_rectangles",
-    "Create multiple rectangles in Figma",
+    `Create multiple rectangles in Figma.
+
+Parameters:
+  - rectangles (array, required): An array of rectangle configuration objects. Each object should include:
+      - x (number, required): X coordinate for the top-left corner.
+      - y (number, required): Y coordinate for the top-left corner.
+      - width (number, required): Width in pixels.
+      - height (number, required): Height in pixels.
+      - name (string, optional): Name for the rectangle node.
+      - parentId (string, optional): Figma node ID of the parent.
+      - cornerRadius (number, optional): Corner radius in pixels.
+
+Returns:
+  - content: Array containing a text message with the number of rectangles created.
+    Example: { "content": [{ "type": "text", "text": "Created 3/3 rectangles." }] }
+
+Annotations:
+  - title: "Create Rectangles (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "rectangles": [
+        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
+        { "x": 120, "y": 20, "width": 80, "height": 40 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
+    }
+`,
     { rectangles: z.array(z.object({
         x: z.number(), y: z.number(),
         width: z.number(), height: z.number(),
