@@ -364,7 +364,37 @@ Usage Example:
   );
   server.tool(
     "set_line_height",
-    "Set the line height of a text node in Figma",
+    `Set the line height of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - lineHeight (number, required): Line height value.
+  - unit (string, optional): Unit ("PIXELS", "PERCENT", "AUTO").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Line height set for 123:456" }] }
+
+Annotations:
+  - title: "Set Line Height"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "lineHeight": 24,
+      "unit": "PIXELS"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Line height set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), lineHeight: z.number(), unit: z.enum(["PIXELS","PERCENT","AUTO"]).optional() },
     async ({ nodeId, lineHeight, unit }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -374,7 +404,35 @@ Usage Example:
   );
   server.tool(
     "set_paragraph_spacing",
-    "Set the paragraph spacing of a text node in Figma",
+    `Set the paragraph spacing of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - paragraphSpacing (number, required): Paragraph spacing value.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }] }
+
+Annotations:
+  - title: "Set Paragraph Spacing"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "paragraphSpacing": 12
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), paragraphSpacing: z.number() },
     async ({ nodeId, paragraphSpacing }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -384,7 +442,35 @@ Usage Example:
   );
   server.tool(
     "set_text_case",
-    "Set the text case of a text node in Figma",
+    `Set the text case of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - textCase (string, required): Text case ("ORIGINAL", "UPPER", "LOWER", "TITLE").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Text case set for 123:456" }] }
+
+Annotations:
+  - title: "Set Text Case"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "textCase": "UPPER"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Text case set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), textCase: z.enum(["ORIGINAL","UPPER","LOWER","TITLE"]) },
     async ({ nodeId, textCase }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -394,7 +480,35 @@ Usage Example:
   );
   server.tool(
     "set_text_decoration",
-    "Set the text decoration of a text node in Figma",
+    `Set the text decoration of a text node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the text node.
+  - textDecoration (string, required): Text decoration ("NONE", "UNDERLINE", "STRIKETHROUGH").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Text decoration set for 123:456" }] }
+
+Annotations:
+  - title: "Set Text Decoration"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "textDecoration": "UNDERLINE"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Text decoration set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), textDecoration: z.enum(["NONE","UNDERLINE","STRIKETHROUGH"]) },
     async ({ nodeId, textDecoration }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -406,7 +520,35 @@ Usage Example:
   // Load Font Async
   server.tool(
     "load_font_async",
-    "Load a font asynchronously in Figma",
+    `Load a font asynchronously in Figma.
+
+Parameters:
+  - family (string, required): Font family.
+  - style (string, optional): Font style.
+
+Returns:
+  - content: Array containing a text message with the loaded font.
+    Example: { "content": [{ "type": "text", "text": "Font loaded: Roboto" }] }
+
+Annotations:
+  - title: "Load Font Async"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "family": "Roboto",
+      "style": "Bold"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font loaded: Roboto" }]
+    }
+`,
     { family: z.string(), style: z.string().optional() },
     async ({ family, style }) => {
       await figmaClient.executeCommand("load_font_async", { family, style });
@@ -417,7 +559,35 @@ Usage Example:
   // Effects
   server.tool(
     "set_effects",
-    "Set visual effects of a node in Figma",
+    `Set visual effects of a node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node.
+  - effects (array, required): Array of effect objects.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Effects set for 123:456" }] }
+
+Annotations:
+  - title: "Set Effects"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Effects set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), effects: z.array(z.any()) },
     async ({ nodeId, effects }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -427,7 +597,35 @@ Usage Example:
   );
   server.tool(
     "set_effect_style_id",
-    "Apply an effect style to a node in Figma",
+    `Apply an effect style to a node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node.
+  - effectStyleId (string, required): The ID of the effect style to apply.
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Effect style applied to 123:456" }] }
+
+Annotations:
+  - title: "Set Effect Style ID"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "effectStyleId": "effect:789"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
+    }
+`,
     { nodeId: z.string(), effectStyleId: z.string() },
     async ({ nodeId, effectStyleId }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -439,7 +637,35 @@ Usage Example:
   // Auto Layout
   server.tool(
     "set_auto_layout",
-    "Configure auto layout properties for a node in Figma",
+    `Configure auto layout properties for a node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node.
+  - layoutMode (string, required): Layout mode ("HORIZONTAL", "VERTICAL", "NONE").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Auto layout set for 123:456" }] }
+
+Annotations:
+  - title: "Set Auto Layout"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "layoutMode": "HORIZONTAL"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Auto layout set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), layoutMode: z.enum(["HORIZONTAL","VERTICAL","NONE"]) },
     async ({ nodeId, layoutMode }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -449,7 +675,37 @@ Usage Example:
   );
   server.tool(
     "set_auto_layout_resizing",
-    "Set hug or fill sizing mode on an auto layout frame or child node",
+    `Set hug or fill sizing mode on an auto layout frame or child node.
+
+Parameters:
+  - nodeId (string, required): The ID of the node.
+  - axis (string, required): Axis ("horizontal" or "vertical").
+  - mode (string, required): Sizing mode ("FIXED", "HUG", "FILL").
+
+Returns:
+  - content: Array containing a text message with the updated node's ID.
+    Example: { "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }] }
+
+Annotations:
+  - title: "Set Auto Layout Resizing"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "axis": "horizontal",
+      "mode": "HUG"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }]
+    }
+`,
     { nodeId: z.string(), axis: z.enum(["horizontal","vertical"]), mode: z.enum(["FIXED","HUG","FILL"]) },
     async ({ nodeId, axis, mode }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -461,7 +717,33 @@ Usage Example:
   // Detach Instance
   server.tool(
     "detach_instance",
-    "Detach a Figma component instance from its master",
+    `Detach a Figma component instance from its master.
+
+Parameters:
+  - instanceId (string, required): The ID of the instance to detach.
+
+Returns:
+  - content: Array containing a text message with the detached instance's ID.
+    Example: { "content": [{ "type": "text", "text": "Detached instance 123:456" }] }
+
+Annotations:
+  - title: "Detach Instance"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "instanceId": "123:456"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Detached instance 123:456" }]
+    }
+`,
     { instanceId: z.string() },
     async ({ instanceId }) => {
       const id = ensureNodeIdIsString(instanceId);
