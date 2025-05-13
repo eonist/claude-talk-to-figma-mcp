@@ -221,7 +221,45 @@ Usage Example:
   // Register the "create_frame" tool for creating a new frame in Figma.
   server.tool(
     "create_frame",
-    "Create a new frame in Figma",
+    `Create a new frame in Figma.
+
+Parameters:
+  - x (number, required): X coordinate for the top-left corner.
+  - y (number, required): Y coordinate for the top-left corner.
+  - width (number, required): Width in pixels.
+  - height (number, required): Height in pixels.
+  - name (string, optional): Name for the frame node.
+  - parentId (string, optional): Figma node ID of the parent.
+  - fillColor (any, optional): Fill color for the frame.
+  - strokeColor (any, optional): Stroke color for the frame.
+  - strokeWeight (number, optional): Stroke weight for the frame.
+
+Returns:
+  - content: Array containing a text message with the created frame's node ID.
+    Example: { "content": [{ "type": "text", "text": "Created frame 123:456" }] }
+
+Annotations:
+  - title: "Create Frame"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "x": 50,
+      "y": 100,
+      "width": 400,
+      "height": 300,
+      "name": "Main Frame"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created frame 123:456" }]
+    }
+`,
     {
       x: z.number(), y: z.number(),
       width: z.number(), height: z.number(),
