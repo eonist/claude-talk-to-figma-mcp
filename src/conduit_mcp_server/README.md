@@ -54,6 +54,48 @@ The Conduit MCP Server connects to a Figma document and listens for commands fro
     bun install
     ```
 
+---
+
+### Using Latest Commit vs. Tagged Version for Server Path
+
+> **Note:**  
+> Using `@latest` in your MCP server config will fetch the latest tagged version from npm, not the latest commit. To always use the latest commit, use a direct GitHub or git+https URL as shown below.
+
+**Option 1: Direct GitHub Tarball (latest commit on main)**
+```json
+{
+  "mcpServers": {
+    "ConduitMCPServer": {
+      "command": "bunx",
+      "args": ["https://github.com/username/conduit-design/tarball/main"]
+    }
+  }
+}
+```
+
+**Option 2: Git URL with Branch Reference**
+```json
+{
+  "mcpServers": {
+    "ConduitMCPServer": {
+      "command": "bunx",
+      "args": ["git+https://github.com/username/conduit-design.git#main"]
+    }
+  }
+}
+```
+
+**Automation:**  
+To keep your server always up-to-date with the latest commit, consider using a script or tool to periodically update your configuration.
+
+> ⚠️ **Warning:**  
+> Using the latest commit may introduce instability, as these commits may not be fully tested.
+
+**References:**  
+- [Perplexity: How to use npm with latest commit](https://www.perplexity.ai/search/pplx.ai/share)
+
+---
+
 ## Configuration
 
 The server can be configured via command line arguments:
