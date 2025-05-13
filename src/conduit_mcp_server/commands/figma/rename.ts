@@ -25,7 +25,37 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
    */
   server.tool(
     "rename_layer",
-    "Rename a single node in Figma with optional TextNode autoRename",
+    `Rename a single node in Figma with optional TextNode autoRename.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to rename.
+  - newName (string, required): The new name for the node.
+  - setAutoRename (boolean, optional): Whether to preserve TextNode autoRename.
+
+Returns:
+  - content: Array containing a text message with the original and new name.
+    Example: { "content": [{ "type": "text", "text": "Renamed node from \"Old\" to \"New\"" }] }
+
+Annotations:
+  - title: "Rename Layer"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "newName": "New Layer Name",
+      "setAutoRename": true
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Renamed node from \"Old\" to \"New\" with autoRename enabled" }]
+    }
+`,
     {
       nodeId: z.string().describe("The ID of the node to rename"),
       newName: z.string().describe("The new name for the node"),
@@ -72,7 +102,39 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
    */
   server.tool(
     "rename_layers",
-    "Rename specified layers by exact name or pattern replace",
+    `Rename specified layers by exact name or pattern replace.
+
+Parameters:
+  - layer_ids (array, required): IDs of layers to rename.
+  - new_name (string, required): New base name or pattern including tokens.
+  - match_pattern (string, optional): Regex to match in existing name.
+  - replace_with (string, optional): Text to replace matched pattern.
+
+Returns:
+  - content: Array containing a text message with the number of layers renamed.
+    Example: { "content": [{ "type": "text", "text": "Successfully renamed 5 layers" }] }
+
+Annotations:
+  - title: "Rename Layers"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "layer_ids": ["123:456", "789:101"],
+      "new_name": "BaseName",
+      "match_pattern": "Old",
+      "replace_with": "New"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Successfully renamed 2 layers" }]
+    }
+`,
     {
       layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
       new_name: z.string().describe("New base name or pattern including tokens"),
@@ -120,7 +182,34 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
    */
   server.tool(
     "rename_multiple",
-    "Rename multiple layers with distinct new names",
+    `Rename multiple layers with distinct new names.
+
+Parameters:
+  - layer_ids (array, required): Array of layer IDs to rename.
+  - new_names (array, required): Array of new names corresponding to each layer ID.
+
+Returns:
+  - content: Array containing a text message with the renamed layers as JSON.
+
+Annotations:
+  - title: "Rename Multiple Layers"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "layer_ids": ["123:456", "789:101"],
+      "new_names": ["Layer A", "Layer B"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Renamed multiple layers: { ... }" }]
+    }
+`,
     {
       layer_ids: z.array(z.string()).describe("Array of layer IDs to rename"),
       new_names: z.array(z.string()).describe("Array of new names corresponding to each layer ID")
@@ -172,7 +261,34 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
    */
   server.tool(
     "ai_rename_layers",
-    "AI-powered rename of specified layers",
+    `AI-powered rename of specified layers.
+
+Parameters:
+  - layer_ids (array, required): IDs of layers to rename.
+  - context_prompt (string, optional): Prompt for AI renaming.
+
+Returns:
+  - content: Array containing a text message with the AI renaming results.
+
+Annotations:
+  - title: "AI Rename Layers"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "layer_ids": ["123:456", "789:101"],
+      "context_prompt": "Rename for clarity"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "AI renaming completed successfully.\nNew names:\n- Layer 123:456: \"Header\"\n- Layer 789:101: \"Footer\"" }]
+    }
+`,
     {
       layer_ids: z.array(z.string()).describe("IDs of layers to rename"),
       context_prompt: z.string().optional().describe("Prompt for AI renaming")
