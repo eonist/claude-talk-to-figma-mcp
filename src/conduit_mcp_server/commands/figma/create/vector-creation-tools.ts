@@ -54,15 +54,59 @@ Usage Example:
     }
 `,
     {
-      x: z.number(), y: z.number(),
-      width: z.number(), height: z.number(),
-      name: z.string().optional(), parentId: z.string().optional(),
-      vectorPaths: z.array(z.object({
-        windingRule: z.string().optional(),
-        data: z.string()
-      })),
-      fillColor: z.any().optional(), strokeColor: z.any().optional(),
-      strokeWeight: z.number().optional()
+      // Enforce reasonable X coordinate
+      x: z.number()
+        .min(-10000)
+        .max(10000)
+        .describe("X coordinate for the vector. Must be between -10,000 and 10,000."),
+      // Enforce reasonable Y coordinate
+      y: z.number()
+        .min(-10000)
+        .max(10000)
+        .describe("Y coordinate for the vector. Must be between -10,000 and 10,000."),
+      // Enforce positive width, reasonable upper bound
+      width: z.number()
+        .min(1)
+        .max(2000)
+        .describe("Width of the vector in pixels. Must be between 1 and 2000."),
+      // Enforce positive height, reasonable upper bound
+      height: z.number()
+        .min(1)
+        .max(2000)
+        .describe("Height of the vector in pixels. Must be between 1 and 2000."),
+      // Enforce non-empty string for name if provided
+      name: z.string()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe("Optional. Name for the vector node. If provided, must be a non-empty string up to 100 characters."),
+      // Enforce Figma node ID format for parentId if provided
+      parentId: z.string()
+        .regex(/^\d+:\d+$/)
+        .optional()
+        .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
+      // Enforce array of vector path objects, each with non-empty data
+      vectorPaths: z.array(
+        z.object({
+          data: z.string()
+            .min(1)
+            .max(10000)
+            .describe("SVG path data string. Must be a non-empty string up to 10,000 characters."),
+          windingRule: z.string()
+            .optional()
+            .describe("Optional. Winding rule for the path (e.g., 'evenodd', 'nonzero').")
+        })
+      )
+      .min(1)
+      .max(50)
+      .describe("Array of vector path objects. Must contain 1 to 50 items."),
+      fillColor: z.any().optional().describe("Optional. Fill color for the vector."),
+      strokeColor: z.any().optional().describe("Optional. Stroke color for the vector."),
+      strokeWeight: z.number()
+        .min(0)
+        .max(100)
+        .optional()
+        .describe("Optional. Stroke weight for the vector. Must be between 0 and 100."),
     },
     async ({ x, y, width, height, name, parentId, vectorPaths, fillColor, strokeColor, strokeWeight }): Promise<any> => {
       try {
@@ -117,14 +161,67 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created 2/2 vectors." }]
     }
 `,
-    { vectors: z.array(z.object({
-        x: z.number(), y: z.number(),
-        width: z.number(), height: z.number(),
-        name: z.string().optional(), parentId: z.string().optional(),
-        vectorPaths: z.array(z.object({ data: z.string(), windingRule: z.string().optional() })),
-        fillColor: z.any().optional(), strokeColor: z.any().optional(),
-        strokeWeight: z.number().optional()
-      }))
+    {
+      vectors: z.array(
+        z.object({
+          // Enforce reasonable X coordinate
+          x: z.number()
+            .min(-10000)
+            .max(10000)
+            .describe("X coordinate for the vector. Must be between -10,000 and 10,000."),
+          // Enforce reasonable Y coordinate
+          y: z.number()
+            .min(-10000)
+            .max(10000)
+            .describe("Y coordinate for the vector. Must be between -10,000 and 10,000."),
+          // Enforce positive width, reasonable upper bound
+          width: z.number()
+            .min(1)
+            .max(2000)
+            .describe("Width of the vector in pixels. Must be between 1 and 2000."),
+          // Enforce positive height, reasonable upper bound
+          height: z.number()
+            .min(1)
+            .max(2000)
+            .describe("Height of the vector in pixels. Must be between 1 and 2000."),
+          // Enforce non-empty string for name if provided
+          name: z.string()
+            .min(1)
+            .max(100)
+            .optional()
+            .describe("Optional. Name for the vector node. If provided, must be a non-empty string up to 100 characters."),
+          // Enforce Figma node ID format for parentId if provided
+          parentId: z.string()
+            .regex(/^\d+:\d+$/)
+            .optional()
+            .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
+          // Enforce array of vector path objects, each with non-empty data
+          vectorPaths: z.array(
+            z.object({
+              data: z.string()
+                .min(1)
+                .max(10000)
+                .describe("SVG path data string. Must be a non-empty string up to 10,000 characters."),
+              windingRule: z.string()
+                .optional()
+                .describe("Optional. Winding rule for the path (e.g., 'evenodd', 'nonzero').")
+            })
+          )
+          .min(1)
+          .max(50)
+          .describe("Array of vector path objects. Must contain 1 to 50 items."),
+          fillColor: z.any().optional().describe("Optional. Fill color for the vector."),
+          strokeColor: z.any().optional().describe("Optional. Stroke color for the vector."),
+          strokeWeight: z.number()
+            .min(0)
+            .max(100)
+            .optional()
+            .describe("Optional. Stroke weight for the vector. Must be between 0 and 100."),
+        })
+      )
+      .min(1)
+      .max(50)
+      .describe("Array of vector configuration objects. Must contain 1 to 50 items."),
     },
     async ({ vectors }): Promise<any> => {
       try {
