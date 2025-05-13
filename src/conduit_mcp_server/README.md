@@ -1,5 +1,42 @@
 # Conduit MCP Server
 
+## Smithery Integration (`smithery.yaml`)
+
+This repository includes a `smithery.yaml` file at the project root to enable integration with [Smithery](https://smithery.ai/). Smithery uses this configuration to determine how to start the MCP server for local development or agent integration.
+
+### What is `smithery.yaml`?
+
+- `smithery.yaml` defines the command Smithery will use to launch the MCP server.
+- It specifies the CLI tool (e.g., `bunx`, `npx`) and the arguments (e.g., `conduit-design@latest`) to run the server, either from the published npm package or from local source.
+
+### Example configuration
+
+```yaml
+startCommand:
+  type: stdio
+  configSchema: {}
+  commandFunction: |-
+    (config) => ({
+      command: 'bunx',
+      args: ['conduit-design@latest']
+    })
+```
+
+- This example will run the latest published version of the Conduit MCP server from npm using Bun.
+
+### Usage
+
+- **To use the published npm package:**  
+  Set `command: 'bunx'` and `args: ['conduit-design@latest']` in `smithery.yaml`.
+- **To use your local development version:**  
+  Set `command: 'bun'` and `args: ['socket']` to run the server from your local source code.
+
+### When to update
+
+- Update `smithery.yaml` if you change the way the server is started, or if you want to switch between using the npm package and your local codebase.
+- Make sure the configuration matches your intended workflow and the instructions in the main project readme.
+
+For more details, see the [Smithery documentation](https://smithery.ai/docs/config#smitheryyaml).
 This project implements the Conduit MCP Server, which provides a Model Context Protocol (MCP) interface for interacting with Figma. The server uses WebSocket and stdio transports to relay commands between Figma and models (e.g., Claude), enabling capabilities such as document inspection, element modification, and real-time communication.
 
 ## Table of Contents
