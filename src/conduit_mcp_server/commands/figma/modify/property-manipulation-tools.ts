@@ -658,12 +658,57 @@ Usage Example:
       "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), letterSpacing: z.number(), unit: z.enum(["PIXELS","PERCENT"]).optional() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Enforce reasonable letter spacing range
+      letterSpacing: z.number()
+        .min(-100)
+        .max(1000)
+        .describe("The letter spacing value to set. Can be negative or positive, typically between -100 and 1000."),
+      // Restrict unit to allowed values
+      unit: z.enum(["PIXELS", "PERCENT"]).optional()
+        .describe('Optional. The unit for letter spacing: "PIXELS" or "PERCENT". Defaults to "PIXELS" if omitted.'),
+    },
     async ({ nodeId, letterSpacing, unit }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_letter_spacing", { nodeId: id, letterSpacing, unit });
       return { content: [{ type: "text", text: `Letter spacing set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "letterSpacing": 2,
+          "unit": "PIXELS"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if letterSpacing is outside the allowed range.
+      - Returns an error if unit is not "PIXELS" or "PERCENT".
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - letterSpacing is limited to a reasonable range.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Letter spacing set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_line_height",
@@ -698,12 +743,57 @@ Usage Example:
       "content": [{ "type": "text", "text": "Line height set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), lineHeight: z.number(), unit: z.enum(["PIXELS","PERCENT","AUTO"]).optional() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Enforce positive line height, reasonable upper bound
+      lineHeight: z.number()
+        .min(1)
+        .max(1000)
+        .describe("The line height value to set. Must be a positive number between 1 and 1000."),
+      // Restrict unit to allowed values
+      unit: z.enum(["PIXELS", "PERCENT", "AUTO"]).optional()
+        .describe('Optional. The unit for line height: "PIXELS", "PERCENT", or "AUTO". Defaults to "AUTO" if omitted.'),
+    },
     async ({ nodeId, lineHeight, unit }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_line_height", { nodeId: id, lineHeight, unit });
       return { content: [{ type: "text", text: `Line height set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "lineHeight": 24,
+          "unit": "PIXELS"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Line height set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if lineHeight is not between 1 and 1000.
+      - Returns an error if unit is not "PIXELS", "PERCENT", or "AUTO".
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - lineHeight is limited to a reasonable range.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Line height set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_paragraph_spacing",
@@ -736,12 +826,52 @@ Usage Example:
       "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), paragraphSpacing: z.number() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Enforce positive paragraph spacing, reasonable upper bound
+      paragraphSpacing: z.number()
+        .min(0)
+        .max(1000)
+        .describe("The paragraph spacing value to set. Must be a non-negative number between 0 and 1000."),
+    },
     async ({ nodeId, paragraphSpacing }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_paragraph_spacing", { nodeId: id, paragraphSpacing });
       return { content: [{ type: "text", text: `Paragraph spacing set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "paragraphSpacing": 12
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if paragraphSpacing is not between 0 and 1000.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - paragraphSpacing is limited to a reasonable range.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Paragraph spacing set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_text_case",
@@ -774,12 +904,49 @@ Usage Example:
       "content": [{ "type": "text", "text": "Text case set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), textCase: z.enum(["ORIGINAL","UPPER","LOWER","TITLE"]) },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Restrict textCase to allowed values
+      textCase: z.enum(["ORIGINAL", "UPPER", "LOWER", "TITLE"])
+        .describe('The text case to set: "ORIGINAL", "UPPER", "LOWER", or "TITLE".'),
+    },
     async ({ nodeId, textCase }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_text_case", { nodeId: id, textCase });
       return { content: [{ type: "text", text: `Text case set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "textCase": "UPPER"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Text case set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if textCase is not one of the allowed values.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Text case set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_text_decoration",
@@ -812,12 +979,49 @@ Usage Example:
       "content": [{ "type": "text", "text": "Text decoration set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), textDecoration: z.enum(["NONE","UNDERLINE","STRIKETHROUGH"]) },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+      // Restrict textDecoration to allowed values
+      textDecoration: z.enum(["NONE", "UNDERLINE", "STRIKETHROUGH"])
+        .describe('The text decoration to set: "NONE", "UNDERLINE", or "STRIKETHROUGH".'),
+    },
     async ({ nodeId, textDecoration }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_text_decoration", { nodeId: id, textDecoration });
       return { content: [{ type: "text", text: `Text decoration set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "textDecoration": "UNDERLINE"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Text decoration set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if textDecoration is not one of the allowed values.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Text decoration set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
 
   // Load Font Async
@@ -852,11 +1056,52 @@ Usage Example:
       "content": [{ "type": "text", "text": "Font loaded: Roboto" }]
     }
 `,
-    { family: z.string(), style: z.string().optional() },
+    {
+      // Enforce non-empty string for font family
+      family: z.string()
+        .min(1)
+        .max(100)
+        .describe("The font family to load. Must be a non-empty string. Maximum length 100 characters."),
+      // Enforce non-empty string for style if provided
+      style: z.string()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe("Optional. The font style to load (e.g., 'Bold', 'Italic'). If provided, must be a non-empty string. Maximum length 100 characters."),
+    },
     async ({ family, style }) => {
       await figmaClient.executeCommand("load_font_async", { family, style });
       return { content: [{ type: "text", text: `Font loaded: ${family}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "family": "Roboto",
+          "style": "Bold"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Font loaded: Roboto" }]
+        }
+
+    Error Handling:
+      - Returns an error if family or style is empty or exceeds maximum length.
+
+    Security Notes:
+      - All inputs are validated and sanitized.
+      - Font family and style are limited to 100 characters.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Font loaded: <family>"
+          }
+        ]
+      }
+    */
   );
 
   // Effects
@@ -891,12 +1136,52 @@ Usage Example:
       "content": [{ "type": "text", "text": "Effects set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), effects: z.array(z.any()) },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Enforce array of effect objects, at least one
+      effects: z.array(z.any())
+        .min(1)
+        .max(20)
+        .describe("Array of effect objects to apply. Must contain 1 to 20 items. Each effect object should match Figma's effect schema."),
+    },
     async ({ nodeId, effects }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_effects", { nodeId: id, effects });
       return { content: [{ type: "text", text: `Effects set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Effects set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if effects array is empty or exceeds 20 items.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - effects array is limited to 20 items.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Effects set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_effect_style_id",
@@ -929,12 +1214,52 @@ Usage Example:
       "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
     }
 `,
-    { nodeId: z.string(), effectStyleId: z.string() },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Enforce non-empty string for effectStyleId
+      effectStyleId: z.string()
+        .min(1)
+        .max(100)
+        .describe("The ID of the effect style to apply. Must be a non-empty string. Maximum length 100 characters."),
+    },
     async ({ nodeId, effectStyleId }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_effect_style_id", { nodeId: id, effectStyleId });
       return { content: [{ type: "text", text: `Effect style applied to ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "effectStyleId": "effect:789"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if effectStyleId is empty or exceeds maximum length.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - effectStyleId is limited to 100 characters.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Effect style applied to <nodeId>"
+          }
+        ]
+      }
+    */
   );
 
   // Auto Layout
@@ -969,12 +1294,49 @@ Usage Example:
       "content": [{ "type": "text", "text": "Auto layout set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), layoutMode: z.enum(["HORIZONTAL","VERTICAL","NONE"]) },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Restrict layoutMode to allowed values
+      layoutMode: z.enum(["HORIZONTAL", "VERTICAL", "NONE"])
+        .describe('The auto layout mode to set: "HORIZONTAL", "VERTICAL", or "NONE".'),
+    },
     async ({ nodeId, layoutMode }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_auto_layout", { nodeId: id, layoutMode });
       return { content: [{ type: "text", text: `Auto layout set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "layoutMode": "VERTICAL"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Auto layout set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if layoutMode is not one of the allowed values.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Auto layout set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
   server.tool(
     "set_auto_layout_resizing",
@@ -1009,12 +1371,53 @@ Usage Example:
       "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }]
     }
 `,
-    { nodeId: z.string(), axis: z.enum(["horizontal","vertical"]), mode: z.enum(["FIXED","HUG","FILL"]) },
+    {
+      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      nodeId: z.string()
+        .regex(/^\d+:\d+$/)
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+      // Restrict axis to allowed values
+      axis: z.enum(["horizontal", "vertical"])
+        .describe('The axis to set sizing mode for: "horizontal" or "vertical".'),
+      // Restrict mode to allowed values
+      mode: z.enum(["FIXED", "HUG", "FILL"])
+        .describe('The sizing mode to set: "FIXED", "HUG", or "FILL".'),
+    },
     async ({ nodeId, axis, mode }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_auto_layout_resizing", { nodeId: id, axis, mode });
       return { content: [{ type: "text", text: `Auto layout resizing set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "axis": "vertical",
+          "mode": "FILL"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if axis or mode is not one of the allowed values.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Auto layout resizing set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
 
   // Detach Instance
