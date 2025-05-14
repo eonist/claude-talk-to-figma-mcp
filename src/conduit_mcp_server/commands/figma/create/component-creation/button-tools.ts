@@ -11,25 +11,49 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 export function registerButtonTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     "create_button",
-    `Create a complete button with background and text in Figma.
+    `
+Creates a complete button with background and text in Figma at the specified coordinates. You can customize size, text, colors, font, corner radius, name, and parent node.
 
-Parameters:
-  - x (number, required): X coordinate for the button.
-  - y (number, required): Y coordinate for the button.
-  - width (number, optional): Width of the button (default 100).
-  - height (number, optional): Height of the button (default 40).
-  - text (string, optional): Button text (default "Button").
-  - background (object, optional): Background color (default { r: 0.19, g: 0.39, b: 0.85, a: 1 }).
-  - textColor (object, optional): Text color (default { r: 1, g: 1, b: 1, a: 1 }).
-  - fontSize (number, optional): Font size (default 14).
-  - fontWeight (number, optional): Font weight (default 500).
-  - cornerRadius (number, optional): Corner radius (default 4).
-  - name (string, optional): Name for the button node.
-  - parentId (string, optional): Figma node ID of the parent.
+**Parameters:**
+- \`x\` (number, required): **X Coordinate**. Required. X coordinate for the button. Must be between -10,000 and 10,000. Example: 100
+- \`y\` (number, required): **Y Coordinate**. Required. Y coordinate for the button. Must be between -10,000 and 10,000. Example: 200
+- \`width\` (number, optional): **Width**. Optional. Width of the button. Default 100. Must be between 1 and 2000.
+- \`height\` (number, optional): **Height**. Optional. Height of the button. Default 40. Must be between 1 and 2000.
+- \`text\` (string, optional): **Button Text**. Optional. Button text. Default "Button". Must be 1-200 characters.
+- \`background\` (object, optional): **Background Color**. Optional. Background color. Default { r: 0.19, g: 0.39, b: 0.85, a: 1 }.
+- \`textColor\` (object, optional): **Text Color**. Optional. Text color. Default { r: 1, g: 1, b: 1, a: 1 }.
+- \`fontSize\` (number, optional): **Font Size**. Optional. Font size. Default 14. Must be between 1 and 200.
+- \`fontWeight\` (number, optional): **Font Weight**. Optional. Font weight. Default 500. Must be between 100 and 1000.
+- \`cornerRadius\` (number, optional): **Corner Radius**. Optional. Corner radius. Default 4. Must be between 0 and 100.
+- \`name\` (string, optional): **Name**. Optional. Name for the button node. If provided, must be 1-100 characters.
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-Returns:
-  - content: Array containing a text message with the created button's frame, background, and text node IDs.
-    Example: { "content": [{ "type": "text", "text": "Created button with frame ID: 123, background ID: 456, text ID: 789" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created button's frame, background, and text node IDs.
+
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
+
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "x": 100,
+  "y": 200,
+  "width": 120,
+  "height": 40,
+  "text": "Click Me"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created button with frame ID: 123, background ID: 456, text ID: 789" }]
+}
+\`\`\`
 `,
     {
       x: z.number().min(-10000).max(10000),

@@ -20,41 +20,43 @@ export function registerTextTools(server: McpServer, figmaClient: FigmaClient) {
   // Register the "create_text" tool for creating a new text element in Figma.
   server.tool(
     "create_text",
-    `Create a new text element in Figma.
+    `
+Creates a new text element in Figma at the specified coordinates with the given text content. Optionally, you can set font size, weight, color, name, and parent node.
 
-Parameters:
-  - x (number, required): X coordinate for the text element.
-  - y (number, required): Y coordinate for the text element.
-  - text (string, required): The text content.
-  - fontSize (number, optional): Font size.
-  - fontWeight (number, optional): Font weight.
-  - fontColor (any, optional): Font color.
-  - name (string, optional): Name for the text node.
-  - parentId (string, optional): Figma node ID of the parent.
+**Parameters:**
+- \`x\` (number, required): **X Coordinate**. Required. X coordinate for the text element. Must be between -10,000 and 10,000. Example: 100
+- \`y\` (number, required): **Y Coordinate**. Required. Y coordinate for the text element. Must be between -10,000 and 10,000. Example: 200
+- \`text\` (string, required): **Text Content**. Required. The text content. Must be a non-empty string up to 10,000 characters. Example: "Hello, Figma!"
+- \`fontSize\` (number, optional): **Font Size**. Optional. Font size. Must be between 1 and 200.
+- \`fontWeight\` (number, optional): **Font Weight**. Optional. Font weight. Must be between 100 and 1000.
+- \`fontColor\` (any, optional): **Font Color**. Optional. Font color.
+- \`name\` (string, optional): **Name**. Optional. Name for the text node. If provided, must be a non-empty string up to 100 characters.
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-Returns:
-  - content: Array containing a text message with the created text node's ID.
-    Example: { "content": [{ "type": "text", "text": "Created text 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created text node's ID.
 
-Annotations:
-  - title: "Create Text"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "text": "Hello, Figma!"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created text 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "x": 100,
+  "y": 200,
+  "text": "Hello, Figma!"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created text 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce reasonable X coordinate
@@ -114,45 +116,47 @@ Usage Example:
   // Register the "create_bounded_text" tool for creating a bounded text box in Figma.
   server.tool(
     "create_bounded_text",
-    `Create a bounded text box in Figma.
+    `
+Creates a bounded text box in Figma at the specified coordinates and dimensions with the given text content. Optionally, you can set font size, weight, color, name, and parent node.
 
-Parameters:
-  - x (number, required): X coordinate for the text box.
-  - y (number, required): Y coordinate for the text box.
-  - width (number, required): Width of the text box.
-  - height (number, required): Height of the text box.
-  - text (string, required): The text content.
-  - fontSize (number, optional): Font size.
-  - fontWeight (number, optional): Font weight.
-  - fontColor (any, optional): Font color.
-  - name (string, optional): Name for the text node.
-  - parentId (string, optional): Figma node ID of the parent.
+**Parameters:**
+- \`x\` (number, required): **X Coordinate**. Required. X coordinate for the text box. Must be between -10,000 and 10,000. Example: 100
+- \`y\` (number, required): **Y Coordinate**. Required. Y coordinate for the text box. Must be between -10,000 and 10,000. Example: 200
+- \`width\` (number, required): **Width**. Required. Width of the text box. Must be between 1 and 2000. Example: 300
+- \`height\` (number, required): **Height**. Required. Height of the text box. Must be between 1 and 2000. Example: 100
+- \`text\` (string, required): **Text Content**. Required. The text content. Must be a non-empty string up to 10,000 characters. Example: "Bounded text example"
+- \`fontSize\` (number, optional): **Font Size**. Optional. Font size. Must be between 1 and 200.
+- \`fontWeight\` (number, optional): **Font Weight**. Optional. Font weight. Must be between 100 and 1000.
+- \`fontColor\` (any, optional): **Font Color**. Optional. Font color.
+- \`name\` (string, optional): **Name**. Optional. Name for the text node. If provided, must be a non-empty string up to 100 characters.
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-Returns:
-  - content: Array containing a text message with the created bounded text node's ID.
-    Example: { "content": [{ "type": "text", "text": "Created bounded text 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created bounded text node's ID.
 
-Annotations:
-  - title: "Create Bounded Text"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "width": 300,
-      "height": 100,
-      "text": "Bounded text example"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created bounded text 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "x": 100,
+  "y": 200,
+  "width": 300,
+  "height": 100,
+  "text": "Bounded text example"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created bounded text 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce reasonable X coordinate

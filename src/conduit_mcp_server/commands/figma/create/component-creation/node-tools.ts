@@ -17,32 +17,34 @@ export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Register the "create_component_from_node" tool for converting an existing node into a component.
   server.tool(
     "create_component_from_node",
-    `Convert an existing node into a component.
+    `
+Converts an existing node into a component in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node to convert.
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to convert. Must be a string in the format '123:456'. Example: "456:789"
 
-Returns:
-  - content: Array containing a text message with the created component's ID.
-    Example: { "content": [{ "type": "text", "text": "Created component 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created component's ID.
 
-Annotations:
-  - title: "Create Component from Node"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "456:789"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created component 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "456:789"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created component 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity

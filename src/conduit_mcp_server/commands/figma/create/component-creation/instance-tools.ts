@@ -35,36 +35,38 @@ export function registerInstanceTools(server: McpServer, figmaClient: FigmaClien
   // Register the "create_component_instance" tool for creating a single component instance in Figma.
   server.tool(
     "create_component_instance",
-    `Create an instance of a component in Figma.
+    `
+Creates an instance of a component in Figma at the specified coordinates.
 
-Parameters:
-  - componentKey (string, required): The key of the component to instantiate.
-  - x (number, required): X coordinate for the instance.
-  - y (number, required): Y coordinate for the instance.
+**Parameters:**
+- \`componentKey\` (string, required): **Component Key**. Required. The key of the component to instantiate. Must be a non-empty string. Maximum length 100 characters. Example: "abc123"
+- \`x\` (number, required): **X Coordinate**. Required. X coordinate for the instance. Must be between -10,000 and 10,000. Example: 100
+- \`y\` (number, required): **Y Coordinate**. Required. Y coordinate for the instance. Must be between -10,000 and 10,000. Example: 200
 
-Returns:
-  - content: Array containing a text message with the created component instance's node ID.
-    Example: { "content": [{ "type": "text", "text": "Created component instance 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created component instance's node ID.
 
-Annotations:
-  - title: "Create Component Instance"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "componentKey": "abc123",
-      "x": 100,
-      "y": 200
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created component instance 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "componentKey": "abc123",
+  "x": 100,
+  "y": 200
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created component instance 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce non-empty string for componentKey
@@ -98,38 +100,40 @@ Usage Example:
   // Register the "create_component_instances" tool for creating multiple component instances in Figma.
   server.tool(
     "create_component_instances",
-    `Create multiple component instances in Figma.
+    `
+Creates multiple component instances in Figma based on the provided array of instance configuration objects.
 
-Parameters:
-  - instances (array, required): An array of instance configuration objects. Each object should include:
-      - componentKey (string, required): The key of the component to instantiate.
-      - x (number, required): X coordinate for the instance.
-      - y (number, required): Y coordinate for the instance.
+**Parameters:**
+- \`instances\` (array, required): **Instances**. Required. An array of instance configuration objects. Each object should include:
+  - \`componentKey\` (string, required): The key of the component to instantiate. Must be a non-empty string. Maximum length 100 characters. Example: "abc123"
+  - \`x\` (number, required): X coordinate for the instance. Must be between -10,000 and 10,000. Example: 100
+  - \`y\` (number, required): Y coordinate for the instance. Must be between -10,000 and 10,000. Example: 200
 
-Returns:
-  - content: Array containing a text message with the number of component instances created.
-    Example: { "content": [{ "type": "text", "text": "Created 3/3 component instances." }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of component instances created.
 
-Annotations:
-  - title: "Create Component Instances (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "instances": [
-        { "componentKey": "abc123", "x": 100, "y": 200 },
-        { "componentKey": "def456", "x": 300, "y": 400 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 component instances." }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "instances": [
+    { "componentKey": "abc123", "x": 100, "y": 200 },
+    { "componentKey": "def456", "x": 300, "y": 400 }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created 2/2 component instances." }]
+}
+\`\`\`
 `,
     {
       // Enforce array of instance configs, each with validated fields

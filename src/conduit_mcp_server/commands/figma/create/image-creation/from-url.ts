@@ -14,40 +14,42 @@ export function registerFromUrlImageTools(server: McpServer, figmaClient: FigmaC
   // Single image insertion
   server.tool(
     "insert_image",
-    `Insert an image from a URL.
+    `
+Inserts an image from a URL into Figma at the specified coordinates. You can customize size, name, and parent node.
 
-Parameters:
-  - url (string, required): The URL of the image to insert.
-  - x (number, optional): X coordinate (default 0).
-  - y (number, optional): Y coordinate (default 0).
-  - width (number, optional): Width of the image.
-  - height (number, optional): Height of the image.
-  - name (string, optional): Name for the image node.
-  - parentId (string, optional): Figma node ID of the parent.
+**Parameters:**
+- \`url\` (string, required): **Image URL**. Required. The URL of the image to insert. Must be a valid URL. Example: "https://example.com/image.png"
+- \`x\` (number, optional): **X Coordinate**. Optional. X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+- \`y\` (number, optional): **Y Coordinate**. Optional. Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+- \`width\` (number, optional): **Width**. Optional. Width of the image. Must be between 1 and 10,000.
+- \`height\` (number, optional): **Height**. Optional. Height of the image. Must be between 1 and 10,000.
+- \`name\` (string, optional): **Name**. Optional. Name for the image node. If provided, must be a non-empty string up to 100 characters.
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-Returns:
-  - content: Array containing a text message with the inserted image's node ID.
-    Example: { "content": [{ "type": "text", "text": "Inserted image 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the inserted image's node ID.
 
-Annotations:
-  - title: "Insert Image"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "url": "https://example.com/image.png",
-      "x": 10,
-      "y": 20
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted image 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "url": "https://example.com/image.png",
+  "x": 10,
+  "y": 20
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Inserted image 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce valid URL for image
@@ -105,42 +107,44 @@ Usage Example:
   // Batch image insertion
   server.tool(
     "insert_images",
-    `Insert multiple images from URLs.
+    `
+Inserts multiple images from URLs into Figma based on the provided array of image configuration objects.
 
-Parameters:
-  - images (array, required): An array of image configuration objects. Each object should include:
-      - url (string, required): The URL of the image to insert.
-      - x (number, optional): X coordinate (default 0).
-      - y (number, optional): Y coordinate (default 0).
-      - width (number, optional): Width of the image.
-      - height (number, optional): Height of the image.
-      - name (string, optional): Name for the image node.
-      - parentId (string, optional): Figma node ID of the parent.
+**Parameters:**
+- \`images\` (array, required): **Images**. Required. An array of image configuration objects. Each object should include:
+  - \`url\` (string, required): The URL of the image to insert. Must be a valid URL. Example: "https://example.com/image1.png"
+  - \`x\` (number, optional): X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+  - \`y\` (number, optional): Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+  - \`width\` (number, optional): Width of the image. Must be between 1 and 10,000.
+  - \`height\` (number, optional): Height of the image. Must be between 1 and 10,000.
+  - \`name\` (string, optional): Name for the image node. If provided, must be a non-empty string up to 100 characters.
+  - \`parentId\` (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-Returns:
-  - content: Array containing a text message with the number of images inserted.
-    Example: { "content": [{ "type": "text", "text": "Inserted 3/3 images." }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of images inserted.
 
-Annotations:
-  - title: "Insert Images (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "images": [
-        { "url": "https://example.com/image1.png", "x": 10, "y": 20 },
-        { "url": "https://example.com/image2.png", "x": 120, "y": 20 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted 2/2 images." }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "images": [
+    { "url": "https://example.com/image1.png", "x": 10, "y": 20 },
+    { "url": "https://example.com/image2.png", "x": 120, "y": 20 }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Inserted 2/2 images." }]
+}
+\`\`\`
 `,
     {
       images: z.array(

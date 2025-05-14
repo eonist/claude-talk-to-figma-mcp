@@ -14,45 +14,47 @@ export function registerVectorCreationCommands(server: McpServer, figmaClient: F
   // Single vector
   server.tool(
     "create_vector",
-    `Create a new vector in Figma.
+    `
+Creates a new vector node in Figma at the specified coordinates and dimensions, with the given vector path data. Optionally, you can set name, parent node, fill/stroke color, and stroke weight.
 
-Parameters:
-  - x (number, required): X coordinate for the vector.
-  - y (number, required): Y coordinate for the vector.
-  - width (number, required): Width in pixels.
-  - height (number, required): Height in pixels.
-  - name (string, optional): Name for the vector node.
-  - parentId (string, optional): Figma node ID of the parent.
-  - vectorPaths (array, required): Array of vector path objects ({ data: string, windingRule?: string }).
-  - fillColor (any, optional): Fill color for the vector.
-  - strokeColor (any, optional): Stroke color for the vector.
-  - strokeWeight (number, optional): Stroke weight for the vector.
+**Parameters:**
+- \`x\` (number, required): **X Coordinate**. Required. X coordinate for the vector. Must be between -10,000 and 10,000. Example: 100
+- \`y\` (number, required): **Y Coordinate**. Required. Y coordinate for the vector. Must be between -10,000 and 10,000. Example: 200
+- \`width\` (number, required): **Width**. Required. Width in pixels. Must be between 1 and 2000. Example: 50
+- \`height\` (number, required): **Height**. Required. Height in pixels. Must be between 1 and 2000. Example: 50
+- \`name\` (string, optional): **Name**. Optional. Name for the vector node. If provided, must be a non-empty string up to 100 characters.
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'.
+- \`vectorPaths\` (array, required): **Vector Paths**. Required. Array of vector path objects ({ data: string, windingRule?: string }). Must contain 1 to 50 items. Example: [{ "data": "M0,0L50,0L50,50L0,50Z" }]
+- \`fillColor\` (any, optional): **Fill Color**. Optional. Fill color for the vector.
+- \`strokeColor\` (any, optional): **Stroke Color**. Optional. Stroke color for the vector.
+- \`strokeWeight\` (number, optional): **Stroke Weight**. Optional. Stroke weight for the vector. Must be between 0 and 100.
 
-Returns:
-  - content: Array containing a text message with the created vector's node ID.
-    Example: { "content": [{ "type": "text", "text": "Created vector 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created vector's node ID.
 
-Annotations:
-  - title: "Create Vector"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "width": 50,
-      "height": 50,
-      "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created vector 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "x": 100,
+  "y": 200,
+  "width": 50,
+  "height": 50,
+  "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created vector 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce reasonable X coordinate
@@ -122,45 +124,47 @@ Usage Example:
   // Batch vectors
   server.tool(
     "create_vectors",
-    `Create multiple vectors in Figma.
+    `
+Creates multiple vectors in Figma based on the provided array of vector configuration objects.
 
-Parameters:
-  - vectors (array, required): An array of vector configuration objects. Each object should include:
-      - x (number, required): X coordinate for the vector.
-      - y (number, required): Y coordinate for the vector.
-      - width (number, required): Width in pixels.
-      - height (number, required): Height in pixels.
-      - name (string, optional): Name for the vector node.
-      - parentId (string, optional): Figma node ID of the parent.
-      - vectorPaths (array, required): Array of vector path objects ({ data: string, windingRule?: string }).
-      - fillColor (any, optional): Fill color for the vector.
-      - strokeColor (any, optional): Stroke color for the vector.
-      - strokeWeight (number, optional): Stroke weight for the vector.
+**Parameters:**
+- \`vectors\` (array, required): **Vectors**. Required. An array of vector configuration objects. Each object should include:
+  - \`x\` (number, required): X coordinate for the vector. Must be between -10,000 and 10,000. Example: 10
+  - \`y\` (number, required): Y coordinate for the vector. Must be between -10,000 and 10,000. Example: 20
+  - \`width\` (number, required): Width in pixels. Must be between 1 and 2000. Example: 50
+  - \`height\` (number, required): Height in pixels. Must be between 1 and 2000. Example: 50
+  - \`name\` (string, optional): Name for the vector node. If provided, must be a non-empty string up to 100 characters.
+  - \`parentId\` (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
+  - \`vectorPaths\` (array, required): Array of vector path objects ({ data: string, windingRule?: string }). Must contain 1 to 50 items.
+  - \`fillColor\` (any, optional): Fill color for the vector.
+  - \`strokeColor\` (any, optional): Stroke color for the vector.
+  - \`strokeWeight\` (number, optional): Stroke weight for the vector. Must be between 0 and 100.
 
-Returns:
-  - content: Array containing a text message with the number of vectors created.
-    Example: { "content": [{ "type": "text", "text": "Created 3/3 vectors." }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of vectors created.
 
-Annotations:
-  - title: "Create Vectors (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "vectors": [
-        { "x": 10, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] },
-        { "x": 70, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 vectors." }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "vectors": [
+    { "x": 10, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] },
+    { "x": 70, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created 2/2 vectors." }]
+}
+\`\`\`
 `,
     {
       vectors: z.array(
