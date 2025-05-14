@@ -12,13 +12,6 @@ export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
     "set_fill_color",
     `Sets the fill color of a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - r (number, required): Red channel value (0-1). Example: 0.5
-  - g (number, required): Green channel value (0-1). Example: 0.5
-  - b (number, required): Blue channel value (0-1). Example: 0.5
-  - a (number, optional): Alpha channel value (0-1). Example: 1
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 

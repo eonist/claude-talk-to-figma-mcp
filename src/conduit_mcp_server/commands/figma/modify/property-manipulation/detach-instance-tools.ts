@@ -12,9 +12,6 @@ export function registerDetachInstanceTools(server: McpServer, figmaClient: Figm
     "detach_instance",
     `Detaches a Figma component instance from its master.
 
-Parameters:
-  - instanceId (string, required): The unique Figma instance ID to detach. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the detached instance's ID.
 

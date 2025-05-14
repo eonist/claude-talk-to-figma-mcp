@@ -14,10 +14,6 @@ export function registerTextContentTools(server: McpServer, figmaClient: FigmaCl
     "set_text_content",
     `Sets the text content of an existing text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - text (string, required): The new text content to set for the node. Must be a non-empty string. Maximum length 10,000 characters.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
@@ -60,12 +56,6 @@ Usage Example:
   server.tool(
     "set_multiple_text_contents",
     `Sets multiple text contents in parallel for child nodes of a parent node in Figma.
-
-Parameters:
-  - nodeId (string, required): The unique Figma parent node ID. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - text (array, required): Array of objects specifying nodeId and text for each child text node to update. Each object should include:
-    - nodeId (string, required): The unique Figma child text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-    - text (string, required): The new text content to set for the child node. Must be a non-empty string. Maximum length 10,000 characters.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of text nodes updated.
