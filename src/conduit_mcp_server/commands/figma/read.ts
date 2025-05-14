@@ -162,37 +162,42 @@ Usage Example:
    */
   server.tool(
     "get_node_info",
-    `Get detailed information about a specific node in Figma.
+    `
+Retrieves detailed information about a specific node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node to get information about.
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to get information about. Must be a string in the format \`"123:456"\` or \`"I422:10713;1082:2236"\`. Example: \`"123:456"\`.
 
-Returns:
-  - content: Array containing a text message with the node info as JSON.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the node info as JSON.
 
-Annotations:
-  - title: "Get Node Info"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...node info...}" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "{...node info...}" }
+  ]
+}
+\`\`\`
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to get information about. Must be a string in the format '123:456'."),
+        .describe("Node ID. Required. The unique Figma node ID to get information about. Must be a string in the format '123:456'. Example: '123:456'."),
     },
     async ({ nodeId }) => {
       try {
