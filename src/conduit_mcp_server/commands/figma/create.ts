@@ -14,11 +14,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client.js";
 import { logger } from "../../utils/logger.js";
 
-import { registerShapeCreationCommands } from "./create/shape-creation-tools.js";
-import { registerTextCreationCommands } from "./create/text-creation-tools.js";
+import { registerShapeCreationCommands } from "./create/shape-creation/index.js";
+import { registerTextCreationCommands } from "./create/text-creation/index.js";
 import { registerVectorCreationCommands } from "./create/vector-creation-tools.js";
-import { registerComponentCreationCommands } from "./create/component-creation-tools.js";
-import { registerImageCreationCommands } from "./create/image-creation-tools.js";
+import { registerComponentCreationCommands } from "./create/component-creation/index.js";
+import { registerImageCreationCommands } from "./create/image-creation/index.js";
 import { registerSvgCreationCommands } from "./create/svg-creation-tools.js";
 
 /**
