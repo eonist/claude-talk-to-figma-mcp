@@ -17,9 +17,6 @@ export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
     "get_node_info",
     `Get detailed information about a specific node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node to get information about.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the node info as JSON.
 
@@ -76,9 +73,6 @@ Usage Example:
   server.tool(
     "get_nodes_info",
     `Get detailed information about multiple nodes in Figma.
-
-Parameters:
-  - nodeIds (array, required): Array of node IDs to get information about.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the nodes info as JSON.

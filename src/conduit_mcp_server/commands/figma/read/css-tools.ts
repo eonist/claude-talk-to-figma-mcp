@@ -13,10 +13,6 @@ export function registerCssTools(server: McpServer, figmaClient: FigmaClient) {
     "get_css_async",
     `Get CSS properties from a node.
 
-Parameters:
-  - nodeId (string, optional): Optional ID of the node to get CSS from.
-  - format (string, optional): Format to return CSS in ("object", "string", "inline").
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the CSS properties as JSON.
 

@@ -21,11 +21,6 @@ export function registerFontTools(server: McpServer, figmaClient: FigmaClient) {
     "set_font_name",
     `Sets the font family and style of a text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - family (string, required): The font family to set. Must be a non-empty string. Maximum length 100 characters. Example: "Roboto"
-  - style (string, optional): The font style to set (e.g., "Bold", "Italic"). If provided, must be a non-empty string. Maximum length 100 characters.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
@@ -75,10 +70,6 @@ Usage Example:
     "set_font_size",
     `Set the font size of a text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node.
-  - fontSize (number, required): Font size (> 0).
-
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Font size set for 123:456" }] }
@@ -122,10 +113,6 @@ Usage Example:
   server.tool(
     "set_font_weight",
     `Set the font weight of a text node in Figma.
-
-Parameters:
-  - nodeId (string, required): The ID of the text node.
-  - weight (number, required): Font weight.
 
 Returns:
   - content: Array containing a text message with the updated node's ID.
@@ -171,11 +158,6 @@ Usage Example:
   server.tool(
     "set_letter_spacing",
     `Set the letter spacing of a text node in Figma.
-
-Parameters:
-  - nodeId (string, required): The ID of the text node.
-  - letterSpacing (number, required): Letter spacing value.
-  - unit (string, optional): Unit ("PIXELS" or "PERCENT").
 
 Returns:
   - content: Array containing a text message with the updated node's ID.
@@ -224,11 +206,6 @@ Usage Example:
     "set_line_height",
     `Set the line height of a text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node.
-  - lineHeight (number, required): Line height value.
-  - unit (string, optional): Unit ("PIXELS", "PERCENT", "AUTO").
-
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Line height set for 123:456" }] }
@@ -276,10 +253,6 @@ Usage Example:
     "set_paragraph_spacing",
     `Set the paragraph spacing of a text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node.
-  - paragraphSpacing (number, required): Paragraph spacing value.
-
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }] }
@@ -324,10 +297,6 @@ Usage Example:
     "set_text_case",
     `Set the text case of a text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node.
-  - textCase (string, required): Text case ("ORIGINAL", "UPPER", "LOWER", "TITLE").
-
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Text case set for 123:456" }] }
@@ -351,10 +320,6 @@ Returns:
     "set_text_decoration",
     `Set the text decoration of a text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node.
-  - textDecoration (string, required): Text decoration ("NONE", "UNDERLINE", "STRIKETHROUGH").
-
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Text decoration set for 123:456" }] }
@@ -377,10 +342,6 @@ Returns:
   server.tool(
     "load_font_async",
     `Load a font asynchronously in Figma.
-
-Parameters:
-  - family (string, required): Font family.
-  - style (string, optional): Font style.
 
 Returns:
   - content: Array containing a text message with the loaded font.

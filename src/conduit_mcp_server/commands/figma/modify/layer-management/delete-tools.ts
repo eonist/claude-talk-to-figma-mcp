@@ -13,9 +13,6 @@ export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient)
     "delete_node",
     `Deletes a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to delete. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the deleted node's ID.
 

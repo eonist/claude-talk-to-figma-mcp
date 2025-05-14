@@ -16,10 +16,6 @@ export function registerTextAnalysisTools(server: McpServer, figmaClient: FigmaC
     "get_styled_text_segments",
     `Get text segments with specific styling in a text node.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node to analyze.
-  - property (string, required): The style property to analyze segments by.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the styled text segments as JSON.
 
@@ -92,9 +88,6 @@ Usage Example:
   server.tool(
     "scan_text_nodes",
     `Scan all text nodes in the selected Figma node.
-
-Parameters:
-  - nodeId (string, required): ID of the node to scan.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the scan status and results.

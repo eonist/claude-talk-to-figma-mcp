@@ -17,13 +17,6 @@ export function registerGradientTools(server: McpServer, figmaClient: FigmaClien
     "create_gradient_variable",
     `Creates a gradient paint style in Figma.
 
-Parameters:
-  - name (string, required): Name for the gradient style. Must be a non-empty string up to 100 characters. Example: "Primary Gradient"
-  - gradientType (string, required): Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".
-  - stops (array, required): Array of color stops. Each stop is an object with:
-    - position (number, required): Position of the stop (0-1).
-    - color (tuple, required): RGBA color array (4 numbers, each 0-1).
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created gradient's ID.
 
@@ -55,21 +48,23 @@ Usage Example:
         .min(1)
         .max(100)
         .describe("Name for the gradient style. Must be a non-empty string up to 100 characters."),
-      gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]),
+      gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"])
+        .describe('Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".'),
       stops: z.array(
         z.object({
-          position: z.number().min(0).max(1),
+          position: z.number().min(0).max(1)
+            .describe("Position of the stop (0-1)."),
           color: z.tuple([
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1)
-          ]),
+            z.number().min(0).max(1).describe("Red channel (0-1)"),
+            z.number().min(0).max(1).describe("Green channel (0-1)"),
+            z.number().min(0).max(1).describe("Blue channel (0-1)"),
+            z.number().min(0).max(1).describe("Alpha channel (0-1)")
+          ]).describe("RGBA color array (4 numbers, each 0-1)."),
         })
       )
       .min(2)
       .max(10)
-      .describe("Array of color stops. Must contain 2 to 10 stops."),
+      .describe("Array of color stops. Each stop is an object with position and color. Must contain 2 to 10 stops."),
     },
     async ({ name, gradientType, stops }) => {
       const result = await figmaClient.executeCommand("create_gradient_variable", { name, gradientType, stops });
@@ -82,9 +77,6 @@ Usage Example:
     "create_gradient_variables",
     `Batch create gradient variables in Figma.
 
-Parameters:
-  - gradients (array, required): Array of gradient definition objects.
-
 Returns:
   - content: Array containing a text message with the number of gradient variables created.
     Example: { "content": [{ "type": "text", "text": "Batch created 3 gradient variables" }] }
@@ -92,24 +84,32 @@ Returns:
     {
       gradients: z.array(
         z.object({
-          name: z.string().min(1).max(100),
-          gradientType: z.enum(["LINEAR","RADIAL","ANGULAR","DIAMOND"]),
+          name: z.string().min(1).max(100)
+            .describe("Name for the gradient style. Must be a non-empty string up to 100 characters."),
+          gradientType: z.enum(["LINEAR","RADIAL","ANGULAR","DIAMOND"])
+            .describe('Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".'),
           stops: z.array(
             z.object({
-              position: z.number().min(0).max(1),
+              position: z.number().min(0).max(1)
+                .describe("Position of the stop (0-1)."),
               color: z.tuple([
-                z.number().min(0).max(1),
-                z.number().min(0).max(1),
-                z.number().min(0).max(1),
-                z.number().min(0).max(1)
-              ])
+                z.number().min(0).max(1).describe("Red channel (0-1)"),
+                z.number().min(0).max(1).describe("Green channel (0-1)"),
+                z.number().min(0).max(1).describe("Blue channel (0-1)"),
+                z.number().min(0).max(1).describe("Alpha channel (0-1)")
+              ]).describe("RGBA color array (4 numbers, each 0-1).")
             })
-          ).min(2).max(10),
-          mode: z.string().optional(),
-          opacity: z.number().min(0).max(1).optional(),
+          ).min(2).max(10)
+            .describe("Array of color stops. Each stop is an object with position and color. Must contain 2 to 10 stops."),
+          mode: z.string().optional()
+            .describe("Optional. Gradient mode."),
+          opacity: z.number().min(0).max(1).optional()
+            .describe("Optional. Opacity of the gradient (0-1)."),
           transformMatrix: z.array(z.array(z.number())).optional()
+            .describe("Optional. Transform matrix for the gradient."),
         })
-      ).min(1).max(20),
+      ).min(1).max(20)
+      .describe("Array of gradient definition objects. Must contain 1 to 20 items."),
     },
     async ({ gradients }) => {
       const results = await figmaClient.createGradientVariables({ gradients });
@@ -129,11 +129,6 @@ Returns:
   server.tool(
     "apply_gradient_style",
     `Apply a gradient style to a node in Figma.
-
-Parameters:
-  - nodeId (string, required): The ID of the node to update.
-  - gradientStyleId (string, required): The ID of the gradient style to apply.
-  - applyTo (string, required): Where to apply the gradient ("FILL", "STROKE", "BOTH").
 
 Returns:
   - content: Array containing a text message with the updated node's ID.
@@ -160,9 +155,6 @@ Returns:
   server.tool(
     "apply_gradient_styles",
     `Batch apply gradient styles to nodes in Figma.
-
-Parameters:
-  - entries (array, required): Array of objects specifying nodeId, gradientStyleId, and applyTo.
 
 Returns:
   - content: Array containing a text message with the number of gradients applied.
@@ -201,12 +193,6 @@ Returns:
     "apply_direct_gradient",
     `Apply a gradient directly to a node without using styles.
 
-Parameters:
-  - nodeId (string, required): The ID of the node to apply gradient to.
-  - gradientType (string, required): Type of gradient ("LINEAR", "RADIAL", "ANGULAR", "DIAMOND").
-  - stops (array, required): Array of color stops.
-  - applyTo (string, optional): Where to apply the gradient ("FILL", "STROKE", "BOTH").
-
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Applied direct gradient to 123:456" }] }
@@ -215,19 +201,23 @@ Returns:
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to apply gradient to. Must be a string in the format '123:456'."),
-      gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]).describe("Type of gradient"),
+      gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"])
+        .describe('Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".'),
       stops: z.array(
         z.object({
-          position: z.number().min(0).max(1),
+          position: z.number().min(0).max(1)
+            .describe("Position of the stop (0-1)."),
           color: z.tuple([
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1),
-            z.number().min(0).max(1)
-          ])
+            z.number().min(0).max(1).describe("Red channel (0-1)"),
+            z.number().min(0).max(1).describe("Green channel (0-1)"),
+            z.number().min(0).max(1).describe("Blue channel (0-1)"),
+            z.number().min(0).max(1).describe("Alpha channel (0-1)")
+          ]).describe("RGBA color array (4 numbers, each 0-1).")
         })
-      ).min(2).max(10),
-      applyTo: z.enum(["FILL", "STROKE", "BOTH"]).default("FILL"),
+      ).min(2).max(10)
+        .describe("Array of color stops. Each stop is an object with position and color. Must contain 2 to 10 stops."),
+      applyTo: z.enum(["FILL", "STROKE", "BOTH"]).default("FILL")
+        .describe('Optional. Where to apply the gradient: "FILL", "STROKE", or "BOTH". Defaults to "FILL".'),
     },
     async ({ nodeId, gradientType, stops, applyTo }) => {
       const id = ensureNodeIdIsString(nodeId);
