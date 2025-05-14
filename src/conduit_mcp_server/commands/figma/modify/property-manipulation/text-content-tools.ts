@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { BatchTextUpdateArraySchema } from "./batch-text-schema.js";
 
 /**
  * Registers property-manipulation-related modify commands:
@@ -86,20 +87,7 @@ Usage Example:
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma parent node ID. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      text: z.array(
-        z.object({
-          nodeId: z.string()
-            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-            .describe("The unique Figma child text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-          text: z.string()
-            .min(1)
-            .max(10000)
-            .describe("The new text content to set for the child node. Must be a non-empty string. Maximum length 10,000 characters."),
-        })
-      )
-      .min(1)
-      .max(100)
-      .describe("Array of objects specifying nodeId and text for each child text node to update. Must contain 1 to 100 items."),
+      text: BatchTextUpdateArraySchema,
     },
     async ({ nodeId, text }) => {
       const parent = ensureNodeIdIsString(nodeId);

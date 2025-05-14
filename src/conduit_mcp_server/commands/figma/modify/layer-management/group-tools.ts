@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
  * Registers group/ungroup commands:
@@ -38,14 +39,7 @@ Usage Example:
 `,
     {
       // Validate nodeIds as simple or complex Figma node IDs, preserving original description
-      nodeIds: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to group. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
-      )
-      .min(2)
-      .max(100)
-      .describe("Array of node IDs to group. Must contain at least 2 and at most 100 items."),
+      nodeIds: NodeIdsArraySchema(2, 100),
       // Enforce non-empty string for name if provided
       name: z.string()
         .min(1)

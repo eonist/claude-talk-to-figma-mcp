@@ -4,6 +4,7 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { NodeIdsArraySchema } from "./layer-management/node-ids-schema.js";
 
 /**
  * Registers rename commands for the MCP server
@@ -132,14 +133,7 @@ Usage Example:
 `,
     {
       // Enforce array of Figma node IDs, each must match format
-      layer_ids: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
-      )
-      .min(1)
-      .max(100)
-      .describe("IDs of layers to rename. Must contain 1 to 100 items."),
+      layer_ids: NodeIdsArraySchema(1, 100),
       // Enforce non-empty string for new_name, reasonable length
       new_name: z.string()
         .min(1)
@@ -215,14 +209,7 @@ Usage Example:
 `,
     {
       // Enforce array of Figma node IDs, each must match format
-      layer_ids: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
-      )
-      .min(1)
-      .max(100)
-      .describe("Array of layer IDs to rename. Must contain 1 to 100 items."),
+      layer_ids: NodeIdsArraySchema(1, 100),
       // Enforce array of non-empty strings for new_names, each reasonable length
       new_names: z.array(
         z.string()
@@ -307,14 +294,7 @@ Usage Example:
 `,
     {
       // Enforce array of Figma node IDs, each must match format
-      layer_ids: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
-      )
-      .min(1)
-      .max(100)
-      .describe("IDs of layers to rename. Must contain 1 to 100 items."),
+      layer_ids: NodeIdsArraySchema(1, 100),
       // Enforce non-empty string for context_prompt if provided, reasonable length
       context_prompt: z.string()
         .min(1)

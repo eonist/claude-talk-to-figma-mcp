@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
  * Registers delete node command:
@@ -44,6 +45,44 @@ Usage Example:
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("delete_node", { nodeId: id });
       return { content: [{ type: "text", text: `Deleted node ${id}` }] };
+    }
+  );
+
+  // Batch delete nodes
+  server.tool(
+    "delete_nodes",
+    `Deletes multiple nodes in Figma.
+
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes deleted.
+
+Annotations:
+  - title: "Delete Nodes"
+  - idempotentHint: true
+  - destructiveHint: true
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeIds": ["123:456", "789:101", "112:131"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Deleted 3 nodes" }]
+    }
+`,
+    {
+      nodeIds: NodeIdsArraySchema(1, 100),
+    },
+    async ({ nodeIds }) => {
+      const ids = nodeIds.map(ensureNodeIdIsString);
+      for (const nodeId of ids) {
+        await figmaClient.executeCommand("delete_node", { nodeId });
+      }
+      return { content: [{ type: "text", text: `Deleted ${ids.length} nodes` }] };
     }
   );
 }
