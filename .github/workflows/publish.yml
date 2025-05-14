@@ -33,12 +33,6 @@ jobs:
           cd src/conduit_mcp_server
           npm version "$TAG" --no-git-tag-version
           cd ../..
-      - name: Publish to npm
-        if: startsWith(github.ref, 'refs/tags/') # Only run for tag pushes
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
 
       - name: Get latest tag
         if: startsWith(github.ref, 'refs/tags/')
@@ -62,3 +56,10 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm
+        if: startsWith(github.ref, 'refs/tags/') # Only run for tag pushes
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
