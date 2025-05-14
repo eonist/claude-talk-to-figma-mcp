@@ -18,38 +18,40 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
   // Insert a single SVG vector
   server.tool(
     "insert_svg_vector",
-    `Insert an SVG as vector in Figma.
+    `
+Inserts an SVG as a vector in Figma at the specified coordinates. You can customize name and parent node.
 
-Parameters:
-  - svg (string, required): The SVG content (raw SVG text or URL).
-  - x (number, optional): X coordinate (default 0).
-  - y (number, optional): Y coordinate (default 0).
-  - name (string, optional): Name for the SVG node.
-  - parentId (string, optional): Figma node ID of the parent.
+**Parameters:**
+- \`svg\` (string, required): **SVG Content**. Required. The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters. Example: "<svg>...</svg>"
+- \`x\` (number, optional): **X Coordinate**. Optional. X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
+- \`y\` (number, optional): **Y Coordinate**. Optional. Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
+- \`name\` (string, optional): **Name**. Optional. Name for the SVG node. If provided, must be a non-empty string up to 100 characters.
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-Returns:
-  - content: Array containing a text message with the inserted SVG vector's node ID.
-    Example: { "content": [{ "type": "text", "text": "Inserted SVG vector 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the inserted SVG vector's node ID.
 
-Annotations:
-  - title: "Insert SVG Vector"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "svg": "<svg>...</svg>",
-      "x": 10,
-      "y": 20
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted SVG vector 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "svg": "<svg>...</svg>",
+  "x": 10,
+  "y": 20
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Inserted SVG vector 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce non-empty string for SVG content, reasonable length
@@ -105,40 +107,42 @@ Usage Example:
   // Batch insertion of multiple SVG vectors
   server.tool(
     "insert_svg_vectors",
-    `Insert multiple SVG vectors in Figma.
+    `
+Inserts multiple SVG vectors in Figma based on the provided array of SVG configuration objects.
 
-Parameters:
-  - svgs (array, required): An array of SVG configuration objects. Each object should include:
-      - svg (string, required): The SVG content (raw SVG text or URL).
-      - x (number, optional): X coordinate (default 0).
-      - y (number, optional): Y coordinate (default 0).
-      - name (string, optional): Name for the SVG node.
-      - parentId (string, optional): Figma node ID of the parent.
+**Parameters:**
+- \`svgs\` (array, required): **SVGs**. Required. An array of SVG configuration objects. Each object should include:
+  - \`svg\` (string, required): The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters. Example: "<svg>...</svg>"
+  - \`x\` (number, optional): X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
+  - \`y\` (number, optional): Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
+  - \`name\` (string, optional): Name for the SVG node. If provided, must be a non-empty string up to 100 characters.
+  - \`parentId\` (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-Returns:
-  - content: Array containing a text message with the number of SVG vectors inserted.
-    Example: { "content": [{ "type": "text", "text": "Inserted 3/3 SVG vectors." }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of SVG vectors inserted.
 
-Annotations:
-  - title: "Insert SVG Vectors (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "svgs": [
-        { "svg": "<svg>...</svg>", "x": 10, "y": 20 },
-        { "svg": "<svg>...</svg>", "x": 120, "y": 20 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted 2/2 SVG vectors." }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "svgs": [
+    { "svg": "<svg>...</svg>", "x": 10, "y": 20 },
+    { "svg": "<svg>...</svg>", "x": 120, "y": 20 }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Inserted 2/2 SVG vectors." }]
+}
+\`\`\`
 `,
     {
       svgs: z.array(
