@@ -573,41 +573,44 @@ Output:
    */
   server.tool(
     "scan_text_nodes",
-    `Scan all text nodes in the selected Figma node.
+    `
+Scans all text nodes in the selected Figma node.
 
-Parameters:
-  - nodeId (string, required): ID of the node to scan.
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to scan. Must be a string in the format \`"123:456"\` or \`"I422:10713;1082:2236"\`. Example: \`"123:456"\`.
 
-Returns:
-  - content: Array containing text messages with the scan status and results.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the scan status and results as JSON.
 
-Annotations:
-  - title: "Scan Text Nodes"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456"
-    }
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "Starting text node scanning. This may take a moment for large designs..." },
-        { "type": "text", "text": "Scan completed: - Found 10 text nodes - Processed in 1 chunks" },
-        { "type": "text", "text": "[{...text nodes...}]" }
-      ]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "Starting text node scanning. This may take a moment for large designs..." },
+    { "type": "text", "text": "Scan completed: - Found 10 text nodes - Processed in 1 chunks" },
+    { "type": "text", "text": "[{...text nodes...}]" }
+  ]
+}
+\`\`\`
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to scan. Must be a string in the format '123:456'."),
+        .describe("Node ID. Required. The unique Figma node ID to scan. Must be a string in the format '123:456'. Example: '123:456'."),
     },
     async ({ nodeId }) => {
       try {
@@ -689,44 +692,49 @@ Usage Example:
    */
   server.tool(
     "get_css_async",
-    `Get CSS properties from a node.
+    `
+Retrieves CSS properties from a Figma node in various formats.
 
-Parameters:
-  - nodeId (string, optional): Optional ID of the node to get CSS from.
-  - format (string, optional): Format to return CSS in ("object", "string", "inline").
+**Parameters:**
+- \`nodeId\` (string, optional): **Node ID**. Optional. The unique Figma node ID to get CSS from. If provided, must be a string in the format \`"123:456"\`. Example: \`"123:456"\`.
+- \`format\` (string, optional): **Format**. Optional. The format to return CSS in. Must be one of: "object", "string", "inline". Example: \`"string"\`.
 
-Returns:
-  - content: Array containing a text message with the CSS properties as JSON.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the CSS properties as JSON.
 
-Annotations:
-  - title: "Get CSS Async"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "format": "string"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...css string...}" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456",
+  "format": "string"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "{...css string...}" }
+  ]
+}
+\`\`\`
 `,
     {
       // Enforce Figma node ID format if provided
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .optional()
-        .describe("Optional. The unique Figma node ID to get CSS from. If provided, must be a string in the format '123:456'."),
+        .describe("Node ID. Optional. The unique Figma node ID to get CSS from. If provided, must be a string in the format '123:456'. Example: '123:456'."),
       // Restrict format to allowed CSS output types
       format: z.enum(["object","string","inline"])
         .optional()
-        .describe('Optional. The format to return CSS in: "object", "string", or "inline".'),
+        .describe('Format. Optional. The format to return CSS in: "object", "string", or "inline". Example: "string".'),
     },
     async ({ nodeId, format }) => {
       try {

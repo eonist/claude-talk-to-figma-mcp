@@ -54,45 +54,45 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
    */
   server.tool(
     "create_rectangle",
-    `Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height.
-Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
-This tool is useful for programmatically generating UI elements, backgrounds, or design primitives in Figma via MCP.
+    `
+Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
 
-Parameters:
-  - x (number, required): The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
-  - y (number, required): The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
-  - width (number, required): The width of the rectangle in pixels. Must be > 0. Example: 300
-  - height (number, required): The height of the rectangle in pixels. Must be > 0. Example: 150
-  - name (string, optional): The name to assign to the rectangle node in Figma. Example: "Button Background"
-  - parentId (string, optional): The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
-  - cornerRadius (number, optional): The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
+**Parameters:**
+- \`x\` (number, required): **X Coordinate**. Required. The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
+- \`y\` (number, required): **Y Coordinate**. Required. The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
+- \`width\` (number, required): **Width**. Required. The width of the rectangle in pixels. Must be > 0. Example: 300
+- \`height\` (number, required): **Height**. Required. The height of the rectangle in pixels. Must be > 0. Example: 150
+- \`name\` (string, optional): **Name**. Optional. The name to assign to the rectangle node in Figma. Example: "Button Background"
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
+- \`cornerRadius\` (number, optional): **Corner Radius**. Optional. The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
 
-Returns:
-  - content: Array containing a text message with the created rectangle's node ID.
-    Example: { "content": [{ "type": "text", "text": "Created rectangle 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created rectangle's node ID.
 
-Annotations:
-  - title: "Create Rectangle (Figma)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "width": 300,
-      "height": 150,
-      "name": "Button Background",
-      "cornerRadius": 8
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "x": 100,
+  "y": 200,
+  "width": 300,
+  "height": 150,
+  "name": "Button Background",
+  "cornerRadius": 8
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
+}
+\`\`\`
 `,
     {
       x: z.number().min(0, "x must be >= 0")
@@ -164,42 +164,44 @@ Usage Example:
    */
   server.tool(
     "create_rectangles",
-    `Create multiple rectangles in Figma.
+    `
+Creates multiple rectangles in Figma based on the provided array of rectangle configuration objects.
 
-Parameters:
-  - rectangles (array, required): An array of rectangle configuration objects. Each object should include:
-      - x (number, required): X coordinate for the top-left corner.
-      - y (number, required): Y coordinate for the top-left corner.
-      - width (number, required): Width in pixels.
-      - height (number, required): Height in pixels.
-      - name (string, optional): Name for the rectangle node.
-      - parentId (string, optional): Figma node ID of the parent.
-      - cornerRadius (number, optional): Corner radius in pixels.
+**Parameters:**
+- \`rectangles\` (array, required): **Rectangles**. Required. An array of rectangle configuration objects. Each object should include:
+  - \`x\` (number, required): X coordinate for the top-left corner. Example: 10
+  - \`y\` (number, required): Y coordinate for the top-left corner. Example: 20
+  - \`width\` (number, required): Width in pixels. Example: 100
+  - \`height\` (number, required): Height in pixels. Example: 50
+  - \`name\` (string, optional): Name for the rectangle node. Example: "Rect1"
+  - \`parentId\` (string, optional): Figma node ID of the parent.
+  - \`cornerRadius\` (number, optional): Corner radius in pixels.
 
-Returns:
-  - content: Array containing a text message with the number of rectangles created.
-    Example: { "content": [{ "type": "text", "text": "Created 3/3 rectangles." }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of rectangles created.
 
-Annotations:
-  - title: "Create Rectangles (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "rectangles": [
-        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
-        { "x": 120, "y": 20, "width": 80, "height": 40 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "rectangles": [
+    { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
+    { "x": 120, "y": 20, "width": 80, "height": 40 }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
+}
+\`\`\`
 `,
     { rectangles: z.array(z.object({
         x: z.number(), y: z.number(),

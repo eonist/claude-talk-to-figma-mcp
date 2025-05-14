@@ -40,41 +40,43 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 export function registerLinesTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     "create_line",
-    `Create a new line in Figma.
+    `
+Creates a new line node in the specified Figma document between the given start and end coordinates. Optionally, you can provide a parent node ID, stroke color, and stroke weight.
 
-Parameters:
-  - x1 (number, required): X coordinate for the start point.
-  - y1 (number, required): Y coordinate for the start point.
-  - x2 (number, required): X coordinate for the end point.
-  - y2 (number, required): Y coordinate for the end point.
-  - parentId (string, optional): Figma node ID of the parent.
-  - strokeColor (any, optional): Stroke color for the line.
-  - strokeWeight (number, optional): Stroke weight for the line.
+**Parameters:**
+- \`x1\` (number, required): **Start X**. Required. X coordinate for the start point. Example: 10
+- \`y1\` (number, required): **Start Y**. Required. Y coordinate for the start point. Example: 20
+- \`x2\` (number, required): **End X**. Required. X coordinate for the end point. Example: 110
+- \`y2\` (number, required): **End Y**. Required. Y coordinate for the end point. Example: 20
+- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent.
+- \`strokeColor\` (any, optional): **Stroke Color**. Optional. Stroke color for the line.
+- \`strokeWeight\` (number, optional): **Stroke Weight**. Optional. Stroke weight for the line.
 
-Returns:
-  - content: Array containing a text message with the created line's node ID.
-    Example: { "content": [{ "type": "text", "text": "Created line 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created line's node ID.
 
-Annotations:
-  - title: "Create Line"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "x1": 10,
-      "y1": 20,
-      "x2": 110,
-      "y2": 20
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created line 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "x1": 10,
+  "y1": 20,
+  "x2": 110,
+  "y2": 20
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created line 123:456" }]
+}
+\`\`\`
 `,
     {
       x1: z.number(), y1: z.number(),
@@ -126,42 +128,44 @@ Usage Example:
    */
   server.tool(
     "create_lines",
-    `Create multiple lines in Figma.
+    `
+Creates multiple lines in Figma based on the provided array of line configuration objects.
 
-Parameters:
-  - lines (array, required): An array of line configuration objects. Each object should include:
-      - x1 (number, required): X coordinate for the start point.
-      - y1 (number, required): Y coordinate for the start point.
-      - x2 (number, required): X coordinate for the end point.
-      - y2 (number, required): Y coordinate for the end point.
-      - parentId (string, optional): Figma node ID of the parent.
-      - strokeColor (any, optional): Stroke color for the line.
-      - strokeWeight (number, optional): Stroke weight for the line.
+**Parameters:**
+- \`lines\` (array, required): **Lines**. Required. An array of line configuration objects. Each object should include:
+  - \`x1\` (number, required): X coordinate for the start point. Example: 10
+  - \`y1\` (number, required): Y coordinate for the start point. Example: 20
+  - \`x2\` (number, required): X coordinate for the end point. Example: 110
+  - \`y2\` (number, required): Y coordinate for the end point. Example: 20
+  - \`parentId\` (string, optional): Figma node ID of the parent.
+  - \`strokeColor\` (any, optional): Stroke color for the line.
+  - \`strokeWeight\` (number, optional): Stroke weight for the line.
 
-Returns:
-  - content: Array containing a text message with the number of lines created.
-    Example: { "content": [{ "type": "text", "text": "Created 3/3 lines." }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of lines created.
 
-Annotations:
-  - title: "Create Lines (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "lines": [
-        { "x1": 10, "y1": 20, "x2": 110, "y2": 20 },
-        { "x1": 20, "y1": 30, "x2": 120, "y2": 30 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 lines." }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "lines": [
+    { "x1": 10, "y1": 20, "x2": 110, "y2": 20 },
+    { "x1": 20, "y1": 30, "x2": 120, "y2": 30 }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created 2/2 lines." }]
+}
+\`\`\`
 `,
     { lines: z.array(z.object({
         x1: z.number(), y1: z.number(),

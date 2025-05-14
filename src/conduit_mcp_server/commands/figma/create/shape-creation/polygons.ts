@@ -44,45 +44,47 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 export function registerPolygonsTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     "create_polygons",
-    `Create multiple polygons in Figma.
+    `
+Creates multiple polygons in Figma based on the provided array of polygon configuration objects.
 
-Parameters:
-  - polygons (array, required): An array of polygon configuration objects. Each object should include:
-      - x (number, required): X coordinate for the top-left corner.
-      - y (number, required): Y coordinate for the top-left corner.
-      - width (number, required): Width in pixels.
-      - height (number, required): Height in pixels.
-      - sides (number, required): Number of sides (minimum 3).
-      - name (string, optional): Name for the polygon node.
-      - parentId (string, optional): Figma node ID of the parent.
-      - fillColor (any, optional): Fill color for the polygon.
-      - strokeColor (any, optional): Stroke color for the polygon.
-      - strokeWeight (number, optional): Stroke weight for the polygon.
+**Parameters:**
+- \`polygons\` (array, required): **Polygons**. Required. An array of polygon configuration objects. Each object should include:
+  - \`x\` (number, required): X coordinate for the top-left corner. Example: 10
+  - \`y\` (number, required): Y coordinate for the top-left corner. Example: 20
+  - \`width\` (number, required): Width in pixels. Example: 100
+  - \`height\` (number, required): Height in pixels. Example: 100
+  - \`sides\` (number, required): Number of sides (minimum 3). Example: 5
+  - \`name\` (string, optional): Name for the polygon node.
+  - \`parentId\` (string, optional): Figma node ID of the parent.
+  - \`fillColor\` (any, optional): Fill color for the polygon.
+  - \`strokeColor\` (any, optional): Stroke color for the polygon.
+  - \`strokeWeight\` (number, optional): Stroke weight for the polygon.
 
-Returns:
-  - content: Array containing a text message with the number of polygons created.
-    Example: { "content": [{ "type": "text", "text": "Created 3/3 polygons." }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of polygons created.
 
-Annotations:
-  - title: "Create Polygons (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "polygons": [
-        { "x": 10, "y": 20, "width": 100, "height": 100, "sides": 5 },
-        { "x": 120, "y": 20, "width": 80, "height": 80, "sides": 6 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 polygons." }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "polygons": [
+    { "x": 10, "y": 20, "width": 100, "height": 100, "sides": 5 },
+    { "x": 120, "y": 20, "width": 80, "height": 80, "sides": 6 }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created 2/2 polygons." }]
+}
+\`\`\`
 `,
     { polygons: z.array(z.object({
         x: z.number(), y: z.number(),
