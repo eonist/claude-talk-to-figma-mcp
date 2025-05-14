@@ -161,44 +161,41 @@ Usage Example:
    */
   server.tool(
     "create_rectangles",
-    `
-Creates multiple rectangles in Figma based on the provided array of rectangle configuration objects.
+    `Creates multiple rectangles in Figma based on the provided array of rectangle configuration objects.
 
-**Parameters:**
-- \`rectangles\` (array, required): **Rectangles**. Required. An array of rectangle configuration objects. Each object should include:
-  - \`x\` (number, required): X coordinate for the top-left corner. Example: 10
-  - \`y\` (number, required): Y coordinate for the top-left corner. Example: 20
-  - \`width\` (number, required): Width in pixels. Example: 100
-  - \`height\` (number, required): Height in pixels. Example: 50
-  - \`name\` (string, optional): Name for the rectangle node. Example: "Rect1"
-  - \`parentId\` (string, optional): Figma node ID of the parent.
-  - \`cornerRadius\` (number, optional): Corner radius in pixels.
+Parameters:
+  - rectangles (array, required): An array of rectangle configuration objects. Each object should include:
+    - x (number, required): X coordinate for the top-left corner. Example: 10
+    - y (number, required): Y coordinate for the top-left corner. Example: 20
+    - width (number, required): Width in pixels. Example: 100
+    - height (number, required): Height in pixels. Example: 50
+    - name (string, optional): Name for the rectangle node. Example: "Rect1"
+    - parentId (string, optional): Figma node ID of the parent.
+    - cornerRadius (number, optional): Corner radius in pixels.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of rectangles created.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of rectangles created.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Create Rectangles"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "rectangles": [
-    { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
-    { "x": 120, "y": 20, "width": 80, "height": 40 }
-  ]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "rectangles": [
+        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
+        { "x": 120, "y": 20, "width": 80, "height": 40 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
+    }
 `,
     { rectangles: z.array(z.object({
         x: z.number(), y: z.number(),

@@ -12,38 +12,35 @@ export function registerPositioningCommands(server: McpServer, figmaClient: Figm
   // Move Node Tool
   server.tool(
     "move_node",
-    `
-Moves a node to a new position in Figma.
+    `Moves a node to a new position in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to move. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`x\` (number, required): **New X Position**. Required. New X position. Must be between -10,000 and 10,000. Example: 100
-- \`y\` (number, required): **New Y Position**. Required. New Y position. Must be between -10,000 and 10,000. Example: 200
+Parameters:
+  - nodeId (string, required): The unique Figma node ID to move. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - x (number, required): New X position. Must be between -10,000 and 10,000. Example: 100
+  - y (number, required): New Y position. Must be between -10,000 and 10,000. Example: 200
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the moved node's ID and new position.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the moved node's ID and new position.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Move Node"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "x": 100,
-  "y": 200
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Moved 123:456 to (100,200)" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "x": 100,
+      "y": 200
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Moved 123:456 to (100,200)" }]
+    }
 `,
     {
       // Validate nodeId as simple or complex Figma node ID, preserving original description
@@ -71,38 +68,35 @@ Output:
   // Move Multiple Nodes Tool
   server.tool(
     "move_nodes",
-    `
-Moves multiple nodes to a new absolute position in Figma.
+    `Moves multiple nodes to a new absolute position in Figma.
 
-**Parameters:**
-- \`nodeIds\` (array, required): **Node IDs**. Required. Array of node IDs to move. Each must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Must contain 1 to 100 items.
-- \`x\` (number, required): **New X Position**. Required. New X position. Must be between -10,000 and 10,000. Example: 100
-- \`y\` (number, required): **New Y Position**. Required. New Y position. Must be between -10,000 and 10,000. Example: 200
+Parameters:
+  - nodeIds (array, required): Array of node IDs to move. Each must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Must contain 1 to 100 items.
+  - x (number, required): New X position. Must be between -10,000 and 10,000. Example: 100
+  - y (number, required): New Y position. Must be between -10,000 and 10,000. Example: 200
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of nodes moved and new position.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes moved and new position.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Move Nodes"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeIds": ["123:456", "789:101", "112:131"],
-  "x": 100,
-  "y": 200
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Moved 3 nodes to (100,200)" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeIds": ["123:456", "789:101", "112:131"],
+      "x": 100,
+      "y": 200
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Moved 3 nodes to (100,200)" }]
+    }
 `,
     {
       // Enforce array of Figma node IDs, each must match format

@@ -36,8 +36,7 @@ Parameters:
   - channel (string, required): The name of the channel to join. Must be a non-empty string.
 
 Returns:
-  - content: Array containing a text message with the join status.
-    Example: { "content": [{ "type": "text", "text": "Successfully joined channel: my-channel" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the join status message.
 
 Annotations:
   - title: "Join Channel"
@@ -56,23 +55,6 @@ Usage Example:
     {
       "content": [{ "type": "text", "text": "Successfully joined channel: my-channel" }]
     }
-
-Error Handling:
-  - Returns a prompt if channel is empty.
-  - Returns an error if unable to connect to Figma or join the channel.
-
-Security Notes:
-  - All inputs are validated and sanitized. Channel name must be a non-empty string.
-
-Output Schema:
-  {
-    "content": [
-      {
-        "type": "text",
-        "text": "<status message>"
-      }
-    ]
-  }
 `,
     {
       // Enforce non-empty string for channel name

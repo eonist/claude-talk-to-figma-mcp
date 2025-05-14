@@ -12,38 +12,35 @@ export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) 
   // Set Style Tool
   server.tool(
     "set_style",
-    `
-Sets both fill and stroke properties for a Figma node.
+    `Sets both fill and stroke properties for a Figma node.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`fillProps\` (object, optional): **Fill Properties**. Optional. Object specifying fill color (RGBA array), visibility, and opacity.
-- \`strokeProps\` (object, optional): **Stroke Properties**. Optional. Object specifying stroke color (RGBA array) and weight.
+Parameters:
+  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - fillProps (object, optional): Object specifying fill color (RGBA array), visibility, and opacity.
+  - strokeProps (object, optional): Object specifying stroke color (RGBA array) and weight.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Style"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "fillProps": { "color": [0.5, 0.5, 0.5, 1], "visible": true, "opacity": 1 },
-  "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 }
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Styled 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "fillProps": { "color": [0.5, 0.5, 0.5, 1], "visible": true, "opacity": 1 },
+      "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 }
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Styled 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -86,47 +83,44 @@ Output:
   // Set Styles Tool
   server.tool(
     "set_styles",
-    `
-Applies fill and/or stroke styles to multiple nodes in Figma.
+    `Applies fill and/or stroke styles to multiple nodes in Figma.
 
-**Parameters:**
-- \`entries\` (array, required): **Style Entries**. Required. Array of objects specifying nodeId, fillProps, and strokeProps. Each object should include:
-  - \`nodeId\` (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - \`fillProps\` (object, optional): Object specifying fill color (RGBA array).
-  - \`strokeProps\` (object, optional): Object specifying stroke color (RGBA array) and weight.
+Parameters:
+  - entries (array, required): Array of objects specifying nodeId, fillProps, and strokeProps. Each object should include:
+    - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+    - fillProps (object, optional): Object specifying fill color (RGBA array).
+    - strokeProps (object, optional): Object specifying stroke color (RGBA array) and weight.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of nodes styled.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes styled.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Styles"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "entries": [
+---
+Usage Example:
+  Input:
     {
-      "nodeId": "123:456",
-      "fillProps": { "color": [0.5, 0.5, 0.5, 1] },
-      "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 }
-    },
-    {
-      "nodeId": "789:101",
-      "fillProps": { "color": [1, 0, 0, 1] }
+      "entries": [
+        {
+          "nodeId": "123:456",
+          "fillProps": { "color": [0.5, 0.5, 0.5, 1] },
+          "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 }
+        },
+        {
+          "nodeId": "789:101",
+          "fillProps": { "color": [1, 0, 0, 1] }
+        }
+      ]
     }
-  ]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Styled 2 nodes" }]
-}
-\`\`\`
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Styled 2 nodes" }]
+    }
 `,
     {
       entries: z.array(

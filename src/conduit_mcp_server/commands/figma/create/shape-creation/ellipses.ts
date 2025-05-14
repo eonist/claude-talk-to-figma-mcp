@@ -45,46 +45,43 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 export function registerEllipsesTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     "create_ellipse",
-    `
-Creates a new ellipse node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+    `Creates a new ellipse node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
 
-**Parameters:**
-- \`x\` (number, required): **X Coordinate**. Required. X coordinate for the top-left corner. Example: 60
-- \`y\` (number, required): **Y Coordinate**. Required. Y coordinate for the top-left corner. Example: 80
-- \`width\` (number, required): **Width**. Required. Width in pixels. Example: 120
-- \`height\` (number, required): **Height**. Required. Height in pixels. Example: 90
-- \`name\` (string, optional): **Name**. Optional. Name for the ellipse node. Example: "Ellipse1"
-- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent.
-- \`fillColor\` (any, optional): **Fill Color**. Optional. Fill color for the ellipse.
-- \`strokeColor\` (any, optional): **Stroke Color**. Optional. Stroke color for the ellipse.
-- \`strokeWeight\` (number, optional): **Stroke Weight**. Optional. Stroke weight for the ellipse.
+Parameters:
+  - x (number, required): X coordinate for the top-left corner. Example: 60
+  - y (number, required): Y coordinate for the top-left corner. Example: 80
+  - width (number, required): Width in pixels. Example: 120
+  - height (number, required): Height in pixels. Example: 90
+  - name (string, optional): Name for the ellipse node. Example: "Ellipse1"
+  - parentId (string, optional): Figma node ID of the parent.
+  - fillColor (any, optional): Fill color for the ellipse.
+  - strokeColor (any, optional): Stroke color for the ellipse.
+  - strokeWeight (number, optional): Stroke weight for the ellipse.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created ellipse's node ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created ellipse's node ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Create Ellipse"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "x": 60,
-  "y": 80,
-  "width": 120,
-  "height": 90,
-  "name": "Ellipse1"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created ellipse 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "x": 60,
+      "y": 80,
+      "width": 120,
+      "height": 90,
+      "name": "Ellipse1"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created ellipse 123:456" }]
+    }
 `,
     {
       x: z.number(), y: z.number(),
@@ -144,46 +141,43 @@ Output:
    */
   server.tool(
     "create_ellipses",
-    `
-Creates multiple ellipses in Figma based on the provided array of ellipse configuration objects.
+    `Creates multiple ellipses in Figma based on the provided array of ellipse configuration objects.
 
-**Parameters:**
-- \`ellipses\` (array, required): **Ellipses**. Required. An array of ellipse configuration objects. Each object should include:
-  - \`x\` (number, required): X coordinate for the top-left corner. Example: 10
-  - \`y\` (number, required): Y coordinate for the top-left corner. Example: 20
-  - \`width\` (number, required): Width in pixels. Example: 100
-  - \`height\` (number, required): Height in pixels. Example: 50
-  - \`name\` (string, optional): Name for the ellipse node. Example: "Ellipse1"
-  - \`parentId\` (string, optional): Figma node ID of the parent.
-  - \`fillColor\` (any, optional): Fill color for the ellipse.
-  - \`strokeColor\` (any, optional): Stroke color for the ellipse.
-  - \`strokeWeight\` (number, optional): Stroke weight for the ellipse.
+Parameters:
+  - ellipses (array, required): An array of ellipse configuration objects. Each object should include:
+    - x (number, required): X coordinate for the top-left corner. Example: 10
+    - y (number, required): Y coordinate for the top-left corner. Example: 20
+    - width (number, required): Width in pixels. Example: 100
+    - height (number, required): Height in pixels. Example: 50
+    - name (string, optional): Name for the ellipse node. Example: "Ellipse1"
+    - parentId (string, optional): Figma node ID of the parent.
+    - fillColor (any, optional): Fill color for the ellipse.
+    - strokeColor (any, optional): Stroke color for the ellipse.
+    - strokeWeight (number, optional): Stroke weight for the ellipse.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of ellipses created.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of ellipses created.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Create Ellipses"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "ellipses": [
-    { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Ellipse1" },
-    { "x": 120, "y": 20, "width": 80, "height": 40 }
-  ]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created 2/2 ellipses." }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "ellipses": [
+        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Ellipse1" },
+        { "x": 120, "y": 20, "width": 80, "height": 40 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 ellipses." }]
+    }
 `,
     { ellipses: z.array(z.object({
         x: z.number(), y: z.number(),

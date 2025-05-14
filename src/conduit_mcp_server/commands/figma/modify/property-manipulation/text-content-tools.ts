@@ -12,36 +12,33 @@ export function registerTextContentTools(server: McpServer, figmaClient: FigmaCl
   // Set Text Content
   server.tool(
     "set_text_content",
-    `
-Sets the text content of an existing text node in Figma.
+    `Sets the text content of an existing text node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`text\` (string, required): **Text Content**. Required. The new text content to set for the node. Must be a non-empty string. Maximum length 10,000 characters. Example: "Hello, world!"
+Parameters:
+  - nodeId (string, required): The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - text (string, required): The new text content to set for the node. Must be a non-empty string. Maximum length 10,000 characters.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Text Content"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "text": "Hello, world!"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Updated text of 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "text": "Hello, world!"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Updated text of 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -62,41 +59,38 @@ Output:
   // Set Multiple Text Contents
   server.tool(
     "set_multiple_text_contents",
-    `
-Sets multiple text contents in parallel for child nodes of a parent node in Figma.
+    `Sets multiple text contents in parallel for child nodes of a parent node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Parent Node ID**. Required. The unique Figma parent node ID. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "parent:123"
-- \`text\` (array, required): **Text Array**. Required. Array of objects specifying nodeId and text for each child text node to update. Each object should include:
-  - \`nodeId\` (string, required): The unique Figma child text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - \`text\` (string, required): The new text content to set for the child node. Must be a non-empty string. Maximum length 10,000 characters.
+Parameters:
+  - nodeId (string, required): The unique Figma parent node ID. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - text (array, required): Array of objects specifying nodeId and text for each child text node to update. Each object should include:
+    - nodeId (string, required): The unique Figma child text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+    - text (string, required): The new text content to set for the child node. Must be a non-empty string. Maximum length 10,000 characters.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of text nodes updated.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of text nodes updated.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Multiple Text Contents"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "parent:123",
-  "text": [
-    { "nodeId": "child:1", "text": "A" },
-    { "nodeId": "child:2", "text": "B" }
-  ]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "parent:123",
+      "text": [
+        { "nodeId": "child:1", "text": "A" },
+        { "nodeId": "child:2", "text": "B" }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
+    }
 `,
     {
       nodeId: z.string()

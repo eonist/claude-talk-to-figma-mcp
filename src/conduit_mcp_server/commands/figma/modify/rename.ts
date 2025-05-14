@@ -34,8 +34,7 @@ Parameters:
   - setAutoRename (boolean, optional): Whether to preserve TextNode autoRename.
 
 Returns:
-  - content: Array containing a text message with the original and new name.
-    Example: { "content": [{ "type": "text", "text": "Renamed node from \"Old\" to \"New\"" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the original and new name.
 
 Annotations:
   - title: "Rename Layer"
@@ -119,8 +118,7 @@ Parameters:
   - replace_with (string, optional): Text to replace matched pattern.
 
 Returns:
-  - content: Array containing a text message with the number of layers renamed.
-    Example: { "content": [{ "type": "text", "text": "Successfully renamed 5 layers" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of layers renamed.
 
 Annotations:
   - title: "Rename Layers"
@@ -209,7 +207,7 @@ Parameters:
   - new_names (array, required): Array of new names corresponding to each layer ID.
 
 Returns:
-  - content: Array containing a text message with the renamed layers as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the renamed layers as JSON.
 
 Annotations:
   - title: "Rename Multiple Layers"
@@ -305,7 +303,7 @@ Parameters:
   - context_prompt (string, optional): Prompt for AI renaming.
 
 Returns:
-  - content: Array containing a text message with the AI renaming results.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the AI renaming results.
 
 Annotations:
   - title: "AI Rename Layers"

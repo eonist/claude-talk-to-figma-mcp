@@ -11,38 +11,35 @@ export function registerExportTools(server: McpServer, figmaClient: FigmaClient)
   // Export Node As Image
   server.tool(
     "export_node_as_image",
-    `
-Exports a node as an image from Figma in the specified format and scale.
+    `Exports a node as an image from Figma in the specified format and scale.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to export. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`format\` (string, optional): **Image Format**. Optional. The image format to export: "PNG", "JPG", "SVG", or "PDF". Defaults to "PNG" if omitted.
-- \`scale\` (number, optional): **Export Scale**. Optional. The export scale factor. Must be a positive number. Defaults to 1 if omitted.
+Parameters:
+  - nodeId (string, required): The unique Figma node ID to export. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - format (string, optional): The image format to export: "PNG", "JPG", "SVG", or "PDF". Defaults to "PNG" if omitted.
+  - scale (number, optional): The export scale factor. Must be a positive number. Defaults to 1 if omitted.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains \`type: "image"\`, \`data\` (image data), and \`mimeType\` (image mime type).
+Returns:
+  - content: Array of objects. Each object contains type: "image", data (image data), and mimeType (image mime type).
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Export Node As Image"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "format": "PNG",
-  "scale": 2
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "image", "data": "...", "mimeType": "image/png" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "format": "PNG",
+      "scale": 2
+    }
+  Output:
+    {
+      "content": [{ "type": "image", "data": "...", "mimeType": "image/png" }]
+    }
 `,
     {
       nodeId: z.string()

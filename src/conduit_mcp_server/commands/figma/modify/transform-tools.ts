@@ -16,13 +16,12 @@ export function registerTransformCommands(server: McpServer, figmaClient: FigmaC
     `Resize a node in Figma.
 
 Parameters:
-  - nodeId (string, required): The ID of the node to resize.
-  - width (number, required): New width (> 0).
-  - height (number, required): New height (> 0).
+  - nodeId (string, required): The ID of the node to resize. Must be a valid Figma node ID (e.g., "123:456").
+  - width (number, required): The new width for the node, in pixels. Must be a positive number between 1 and 10,000.
+  - height (number, required): The new height for the node, in pixels. Must be a positive number between 1 and 10,000.
 
 Returns:
-  - content: Array containing a text message with the resized node's ID and new size.
-    Example: { "content": [{ "type": "text", "text": "Resized 123:456 to 100x200" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the resized node's ID and new size.
 
 Annotations:
   - title: "Resize Node"
@@ -104,12 +103,11 @@ Usage Example:
     `Resize multiple nodes in Figma.
 
 Parameters:
-  - nodeIds (array, required): Array of node IDs to resize. Each must be a string in the format '123:456'.
-  - targetSize (object, required): Object with width and height (> 0).
+  - nodeIds (array, required): Array of node IDs to resize. Each must be a valid Figma node ID (e.g., "123:456"). Must contain 1 to 100 items.
+  - targetSize (object, required): Object with width and height. Each must be a positive number between 1 and 10,000.
 
 Returns:
-  - content: Array containing a text message with the number of nodes resized.
-    Example: { "content": [{ "type": "text", "text": "Resized 3 nodes" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes resized.
 
 Annotations:
   - title: "Resize Nodes (Batch)"
@@ -129,36 +127,6 @@ Usage Example:
     {
       "content": [{ "type": "text", "text": "Resized 3 nodes" }]
     }
-
-Additional Usage Example:
-  Input:
-    {
-      "nodeIds": ["222:333", "444:555"],
-      "targetSize": { "width": 50, "height": 50 }
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Resized 2 nodes" }]
-    }
-
-Error Handling:
-  - Returns an error if any nodeId is invalid or not found.
-  - Returns an error if nodeIds array is empty or exceeds 100 items.
-  - Returns an error if width or height is not between 1 and 10,000.
-
-Security Notes:
-  - All inputs are validated and sanitized. All nodeIds must match the expected format.
-  - width and height are limited to a reasonable range.
-
-Output Schema:
-  {
-    "content": [
-      {
-        "type": "text",
-        "text": "Resized <N> nodes"
-      }
-    ]
-  }
 `,
     {
       // Enforce array of Figma node IDs, each must match format
