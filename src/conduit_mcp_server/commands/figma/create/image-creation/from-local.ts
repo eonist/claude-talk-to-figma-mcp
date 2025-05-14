@@ -24,43 +24,40 @@ export function registerFromLocalImageTools(server: McpServer, figmaClient: Figm
   // Local image insertion command: supports both --imagePath and --imageData flags.
   server.tool(
     "insert_local_image",
-    `
-Inserts a local image into Figma via a file path or a Base64 data URI at the specified coordinates. You can customize size, name, and parent node.
+    `Inserts a local image into Figma via a file path or a Base64 data URI at the specified coordinates. You can customize size, name, and parent node.
 
-**Parameters:**
-- \`imagePath\` (string, optional): **Image Path**. Optional. Path to the local image file. If provided, must be a non-empty string up to 500 characters. Example: "/path/to/image.png"
-- \`imageData\` (string, optional): **Image Data**. Optional. Base64 data URI of the image. If provided, must be a non-empty string.
-- \`x\` (number, optional): **X Coordinate**. Optional. X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-- \`y\` (number, optional): **Y Coordinate**. Optional. Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-- \`width\` (number, optional): **Width**. Optional. Width of the image. Must be between 1 and 10,000.
-- \`height\` (number, optional): **Height**. Optional. Height of the image. Must be between 1 and 10,000.
-- \`name\` (string, optional): **Name**. Optional. Name for the image node. If provided, must be a non-empty string up to 100 characters.
-- \`parentId\` (string, optional): **Parent Node ID**. Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'.
+Parameters:
+  - imagePath (string, optional): Path to the local image file. If provided, must be a non-empty string up to 500 characters. Example: "/path/to/image.png"
+  - imageData (string, optional): Base64 data URI of the image. If provided, must be a non-empty string.
+  - x (number, optional): X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+  - y (number, optional): Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+  - width (number, optional): Width of the image. Must be between 1 and 10,000.
+  - height (number, optional): Height of the image. Must be between 1 and 10,000.
+  - name (string, optional): Name for the image node. If provided, must be a non-empty string up to 100 characters.
+  - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the inserted local image's node ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the inserted local image's node ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Insert Local Image"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "imagePath": "/path/to/image.png",
-  "x": 10,
-  "y": 20
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Inserted local image 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "imagePath": "/path/to/image.png",
+      "x": 10,
+      "y": 20
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted local image 123:456" }]
+    }
 `,
     {
       // Enforce non-empty string for imagePath if provided
@@ -147,45 +144,42 @@ Output:
   // Batch local image insertion
   server.tool(
     "insert_local_images",
-    `
-Inserts multiple local images into Figma via file paths or Base64 data URIs based on the provided array of image configuration objects.
+    `Inserts multiple local images into Figma via file paths or Base64 data URIs based on the provided array of image configuration objects.
 
-**Parameters:**
-- \`images\` (array, required): **Images**. Required. An array of image configuration objects. Each object should include:
-  - \`imagePath\` (string, optional): Path to the local image file. If provided, must be a non-empty string up to 500 characters.
-  - \`imageData\` (string, optional): Base64 data URI of the image. If provided, must be a non-empty string.
-  - \`x\` (number, optional): X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-  - \`y\` (number, optional): Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-  - \`width\` (number, optional): Width of the image. Must be between 1 and 10,000.
-  - \`height\` (number, optional): Height of the image. Must be between 1 and 10,000.
-  - \`name\` (string, optional): Name for the image node. If provided, must be a non-empty string up to 100 characters.
-  - \`parentId\` (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
+Parameters:
+  - images (array, required): An array of image configuration objects. Each object should include:
+    - imagePath (string, optional): Path to the local image file. If provided, must be a non-empty string up to 500 characters.
+    - imageData (string, optional): Base64 data URI of the image. If provided, must be a non-empty string.
+    - x (number, optional): X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+    - y (number, optional): Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
+    - width (number, optional): Width of the image. Must be between 1 and 10,000.
+    - height (number, optional): Height of the image. Must be between 1 and 10,000.
+    - name (string, optional): Name for the image node. If provided, must be a non-empty string up to 100 characters.
+    - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of local images inserted.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of local images inserted.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Insert Local Images"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "images": [
-    { "imagePath": "/path/to/image1.png", "x": 10, "y": 20 },
-    { "imageData": "data:image/png;base64,...", "x": 120, "y": 20 }
-  ]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Inserted 2/2 local images." }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "images": [
+        { "imagePath": "/path/to/image1.png", "x": 10, "y": 20 },
+        { "imageData": "data:image/png;base64,...", "x": 120, "y": 20 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Inserted 2/2 local images." }]
+    }
 `,
     {
       images: z.array(
