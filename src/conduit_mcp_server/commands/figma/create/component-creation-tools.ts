@@ -18,6 +18,7 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 import { handleToolError } from "../../../utils/error-handling.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers component-creation-related commands with the MCP server.
@@ -208,7 +209,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to convert. Must be a string in the format '123:456'."),
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
@@ -350,7 +351,7 @@ Usage Example:
         .describe("Optional. Name for the button node. If provided, must be a non-empty string up to 100 characters."),
       // Enforce Figma node ID format for parentId if provided
       parentId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .optional()
         .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
     },

@@ -831,7 +831,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
       // Enforce positive paragraph spacing, reasonable upper bound
       paragraphSpacing: z.number()
@@ -909,7 +909,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
       // Restrict textCase to allowed values
       textCase: z.enum(["ORIGINAL", "UPPER", "LOWER", "TITLE"])
@@ -984,7 +984,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
       // Restrict textDecoration to allowed values
       textDecoration: z.enum(["NONE", "UNDERLINE", "STRIKETHROUGH"])
@@ -1376,7 +1376,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
       // Restrict axis to allowed values
       axis: z.enum(["horizontal", "vertical"])

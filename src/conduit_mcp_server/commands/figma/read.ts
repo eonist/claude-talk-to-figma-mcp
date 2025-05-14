@@ -16,6 +16,7 @@ import { FigmaClient } from "../../clients/figma-client/index.js";
 import { logger } from "../../utils/logger.js";
 import { filterFigmaNode } from "../../utils/figma/filter-node.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers read commands for the MCP server
@@ -190,7 +191,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to get information about. Must be a string in the format '123:456'."),
     },
     async ({ nodeId }) => {
@@ -258,7 +259,7 @@ Usage Example:
       // Enforce array of Figma node IDs, each must match format
       nodeIds: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
           .describe("A Figma node ID to get information about. Must be a string in the format '123:456'.")
       )
       .min(1)
@@ -493,7 +494,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to analyze. Must be a string in the format '123:456'."),
       // Restrict property to allowed style properties
       property: z.enum([
@@ -581,7 +582,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to scan. Must be a string in the format '123:456'."),
     },
     async ({ nodeId }) => {
@@ -695,7 +696,7 @@ Usage Example:
     {
       // Enforce Figma node ID format if provided
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .optional()
         .describe("Optional. The unique Figma node ID to get CSS from. If provided, must be a string in the format '123:456'."),
       // Restrict format to allowed CSS output types

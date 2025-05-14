@@ -3,6 +3,7 @@ import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers rename commands for the MCP server
@@ -59,7 +60,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to rename. Must be a string in the format '123:456'."),
       // Enforce non-empty string for newName, reasonable length
       newName: z.string()
@@ -146,7 +147,7 @@ Usage Example:
       // Enforce array of Figma node IDs, each must match format
       layer_ids: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
           .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
       )
       .min(1)
@@ -233,7 +234,7 @@ Usage Example:
       // Enforce array of Figma node IDs, each must match format
       layer_ids: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
           .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
       )
       .min(1)
@@ -329,7 +330,7 @@ Usage Example:
       // Enforce array of Figma node IDs, each must match format
       layer_ids: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
           .describe("A Figma node ID to rename. Must be a string in the format '123:456'.")
       )
       .min(1)
