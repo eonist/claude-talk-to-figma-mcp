@@ -10,9 +10,6 @@ export function registerSelectionTools(server: McpServer, figmaClient: FigmaClie
     "get_selection",
     `Get information about the current selection in Figma.
 
-Parameters:
-  (none)
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the selection info as JSON.
 

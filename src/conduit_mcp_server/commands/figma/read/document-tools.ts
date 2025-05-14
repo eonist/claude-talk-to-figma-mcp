@@ -10,9 +10,6 @@ export function registerDocumentTools(server: McpServer, figmaClient: FigmaClien
     "get_document_info",
     `Get detailed information about the current Figma document.
 
-Parameters:
-  (none)
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the document info as JSON.
 

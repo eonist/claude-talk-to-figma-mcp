@@ -12,9 +12,6 @@ export function registerComponentTools(server: McpServer, figmaClient: FigmaClie
     "get_local_components",
     `Get all local components from the Figma document.
 
-Parameters:
-  (none)
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the local components info as JSON.
 
@@ -62,9 +59,6 @@ Usage Example:
   server.tool(
     "get_remote_components",
     `Get available components from team libraries in Figma.
-
-Parameters:
-  (none)
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the remote components info as JSON.
