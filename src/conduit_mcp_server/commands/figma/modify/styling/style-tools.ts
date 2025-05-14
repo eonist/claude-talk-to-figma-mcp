@@ -14,11 +14,6 @@ export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) 
     "set_style",
     `Sets both fill and stroke properties for a Figma node.
 
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - fillProps (object, optional): Object specifying fill color (RGBA array), visibility, and opacity.
-  - strokeProps (object, optional): Object specifying stroke color (RGBA array) and weight.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
@@ -48,22 +43,32 @@ Usage Example:
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       fillProps: z.object({
         color: z.tuple([
-          z.number().min(0).max(1),
-          z.number().min(0).max(1),
-          z.number().min(0).max(1),
-          z.number().min(0).max(1)
-        ]).optional(),
-        visible: z.boolean().optional(),
-        opacity: z.number().min(0).max(1).optional(),
+          z.number().min(0).max(1).describe("Red channel (0-1)"),
+          z.number().min(0).max(1).describe("Green channel (0-1)"),
+          z.number().min(0).max(1).describe("Blue channel (0-1)"),
+          z.number().min(0).max(1).describe("Alpha channel (0-1)")
+        ])
+        .describe("RGBA color array for the fill. Each value must be between 0 and 1.")
+        .optional(),
+        visible: z.boolean()
+          .describe("Whether the fill is visible.")
+          .optional(),
+        opacity: z.number().min(0).max(1)
+          .describe("Opacity of the fill (0-1).")
+          .optional(),
       }).optional(),
       strokeProps: z.object({
         color: z.tuple([
-          z.number().min(0).max(1),
-          z.number().min(0).max(1),
-          z.number().min(0).max(1),
-          z.number().min(0).max(1)
-        ]).optional(),
-        weight: z.number().min(0.1).max(100).optional(),
+          z.number().min(0).max(1).describe("Red channel (0-1)"),
+          z.number().min(0).max(1).describe("Green channel (0-1)"),
+          z.number().min(0).max(1).describe("Blue channel (0-1)"),
+          z.number().min(0).max(1).describe("Alpha channel (0-1)")
+        ])
+        .describe("RGBA color array for the stroke. Each value must be between 0 and 1.")
+        .optional(),
+        weight: z.number().min(0.1).max(100)
+          .describe("Stroke weight. Must be between 0.1 and 100.")
+          .optional(),
       }).optional(),
     },
     async ({ nodeId, fillProps, strokeProps }) => {
@@ -84,12 +89,6 @@ Usage Example:
   server.tool(
     "set_styles",
     `Applies fill and/or stroke styles to multiple nodes in Figma.
-
-Parameters:
-  - entries (array, required): Array of objects specifying nodeId, fillProps, and strokeProps. Each object should include:
-    - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-    - fillProps (object, optional): Object specifying fill color (RGBA array).
-    - strokeProps (object, optional): Object specifying stroke color (RGBA array) and weight.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes styled.
@@ -131,22 +130,28 @@ Usage Example:
           fillProps: z
             .object({
               color: z.tuple([
-                z.number().min(0).max(1),
-                z.number().min(0).max(1),
-                z.number().min(0).max(1),
-                z.number().min(0).max(1)
-              ]).optional(),
+                z.number().min(0).max(1).describe("Red channel (0-1)"),
+                z.number().min(0).max(1).describe("Green channel (0-1)"),
+                z.number().min(0).max(1).describe("Blue channel (0-1)"),
+                z.number().min(0).max(1).describe("Alpha channel (0-1)")
+              ])
+              .describe("RGBA color array for the fill. Each value must be between 0 and 1.")
+              .optional(),
             })
             .optional(),
           strokeProps: z
             .object({
               color: z.tuple([
-                z.number().min(0).max(1),
-                z.number().min(0).max(1),
-                z.number().min(0).max(1),
-                z.number().min(0).max(1)
-              ]).optional(),
-              weight: z.number().min(0.1).max(100).optional(),
+                z.number().min(0).max(1).describe("Red channel (0-1)"),
+                z.number().min(0).max(1).describe("Green channel (0-1)"),
+                z.number().min(0).max(1).describe("Blue channel (0-1)"),
+                z.number().min(0).max(1).describe("Alpha channel (0-1)")
+              ])
+              .describe("RGBA color array for the stroke. Each value must be between 0 and 1.")
+              .optional(),
+              weight: z.number().min(0.1).max(100)
+                .describe("Stroke weight. Must be between 0.1 and 100.")
+                .optional(),
             })
             .optional(),
         })

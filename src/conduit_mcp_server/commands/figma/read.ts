@@ -159,9 +159,6 @@ Usage Example:
     `
 Retrieves detailed information about a specific node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to get information about. Must be a string in the format \`"123:456"\` or \`"I422:10713;1082:2236"\`. Example: \`"123:456"\`.
-
 **Returns:**
 - \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the node info as JSON.
 
