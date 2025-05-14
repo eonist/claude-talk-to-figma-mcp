@@ -83,11 +83,30 @@ Usage Example:
     }
 `,
     {
-      x: z.number(), y: z.number(),
-      width: z.number(), height: z.number(),
-      name: z.string().optional(), parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
-      fillColor: z.any().optional(), strokeColor: z.any().optional(),
-      strokeWeight: z.number().optional()
+      x: z.number()
+        .describe("X coordinate for the top-left corner. Example: 50"),
+      y: z.number()
+        .describe("Y coordinate for the top-left corner. Example: 100"),
+      width: z.number()
+        .describe("Width in pixels. Example: 400"),
+      height: z.number()
+        .describe("Height in pixels. Example: 300"),
+      name: z.string()
+        .describe("Name for the frame node. Example: 'Main Frame'")
+        .optional(),
+      parentId: z.string()
+        .describe("Figma node ID of the parent.")
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .optional(),
+      fillColor: z.any()
+        .describe("Fill color for the frame.")
+        .optional(),
+      strokeColor: z.any()
+        .describe("Stroke color for the frame.")
+        .optional(),
+      strokeWeight: z.number()
+        .describe("Stroke weight for the frame.")
+        .optional()
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {

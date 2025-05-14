@@ -46,19 +46,6 @@ export function registerPolygonsTools(server: McpServer, figmaClient: FigmaClien
     "create_polygons",
     `Creates multiple polygons in Figma based on the provided array of polygon configuration objects.
 
-Parameters:
-  - polygons (array, required): An array of polygon configuration objects. Each object should include:
-    - x (number, required): X coordinate for the top-left corner. Example: 10
-    - y (number, required): Y coordinate for the top-left corner. Example: 20
-    - width (number, required): Width in pixels. Example: 100
-    - height (number, required): Height in pixels. Example: 100
-    - sides (number, required): Number of sides (minimum 3). Example: 5
-    - name (string, optional): Name for the polygon node.
-    - parentId (string, optional): Figma node ID of the parent.
-    - fillColor (any, optional): Fill color for the polygon.
-    - strokeColor (any, optional): Stroke color for the polygon.
-    - strokeWeight (number, optional): Stroke weight for the polygon.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of polygons created.
 
@@ -84,12 +71,31 @@ Usage Example:
     }
 `,
     { polygons: z.array(z.object({
-        x: z.number(), y: z.number(),
-        width: z.number(), height: z.number(),
-        sides: z.number().min(3),
-        name: z.string().optional(), parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
-        fillColor: z.any().optional(), strokeColor: z.any().optional(),
-        strokeWeight: z.number().optional()
+        x: z.number()
+          .describe("X coordinate for the top-left corner. Example: 10"),
+        y: z.number()
+          .describe("Y coordinate for the top-left corner. Example: 20"),
+        width: z.number()
+          .describe("Width in pixels. Example: 100"),
+        height: z.number()
+          .describe("Height in pixels. Example: 100"),
+        sides: z.number().min(3)
+          .describe("Number of sides (minimum 3). Example: 5"),
+        name: z.string()
+          .describe("Name for the polygon node."),
+        parentId: z.string()
+          .describe("Figma node ID of the parent.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .optional(),
+        fillColor: z.any()
+          .describe("Fill color for the polygon.")
+          .optional(),
+        strokeColor: z.any()
+          .describe("Stroke color for the polygon.")
+          .optional(),
+        strokeWeight: z.number()
+          .describe("Stroke weight for the polygon.")
+          .optional()
       }))
     },
     // Tool handler: processes each polygon, calls Figma client, and returns batch results.

@@ -16,15 +16,6 @@ export function registerFromUrlImageTools(server: McpServer, figmaClient: FigmaC
     "insert_image",
     `Inserts an image from a URL into Figma at the specified coordinates. You can customize size, name, and parent node.
 
-Parameters:
-  - url (string, required): The URL of the image to insert. Must be a valid URL. Example: "https://example.com/image.png"
-  - x (number, optional): X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-  - y (number, optional): Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-  - width (number, optional): Width of the image. Must be between 1 and 10,000.
-  - height (number, optional): Height of the image. Must be between 1 and 10,000.
-  - name (string, optional): Name for the image node. If provided, must be a non-empty string up to 100 characters.
-  - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the inserted image's node ID.
 
@@ -105,16 +96,6 @@ Usage Example:
   server.tool(
     "insert_images",
     `Inserts multiple images from URLs into Figma based on the provided array of image configuration objects.
-
-Parameters:
-  - images (array, required): An array of image configuration objects. Each object should include:
-    - url (string, required): The URL of the image to insert. Must be a valid URL. Example: "https://example.com/image1.png"
-    - x (number, optional): X coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-    - y (number, optional): Y coordinate for the image. Must be between -10,000 and 10,000. Defaults to 0.
-    - width (number, optional): Width of the image. Must be between 1 and 10,000.
-    - height (number, optional): Height of the image. Must be between 1 and 10,000.
-    - name (string, optional): Name for the image node. If provided, must be a non-empty string up to 100 characters.
-    - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of images inserted.

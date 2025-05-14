@@ -16,18 +16,6 @@ export function registerVectorCreationCommands(server: McpServer, figmaClient: F
     "create_vector",
     `Creates a new vector node in Figma at the specified coordinates and dimensions, with the given vector path data. Optionally, you can set name, parent node, fill/stroke color, and stroke weight.
 
-Parameters:
-  - x (number, required): X coordinate for the vector. Must be between -10,000 and 10,000. Example: 100
-  - y (number, required): Y coordinate for the vector. Must be between -10,000 and 10,000. Example: 200
-  - width (number, required): Width in pixels. Must be between 1 and 2000. Example: 50
-  - height (number, required): Height in pixels. Must be between 1 and 2000. Example: 50
-  - name (string, optional): Name for the vector node. If provided, must be a non-empty string up to 100 characters.
-  - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
-  - vectorPaths (array, required): Array of vector path objects ({ data: string, windingRule?: string }). Must contain 1 to 50 items. Example: [{ "data": "M0,0L50,0L50,50L0,50Z" }]
-  - fillColor (any, optional): Fill color for the vector.
-  - strokeColor (any, optional): Stroke color for the vector.
-  - strokeWeight (number, optional): Stroke weight for the vector. Must be between 0 and 100.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created vector's node ID.
 
@@ -122,19 +110,6 @@ Usage Example:
   server.tool(
     "create_vectors",
     `Creates multiple vectors in Figma based on the provided array of vector configuration objects.
-
-Parameters:
-  - vectors (array, required): An array of vector configuration objects. Each object should include:
-    - x (number, required): X coordinate for the vector. Must be between -10,000 and 10,000. Example: 10
-    - y (number, required): Y coordinate for the vector. Must be between -10,000 and 10,000. Example: 20
-    - width (number, required): Width in pixels. Must be between 1 and 2000. Example: 50
-    - height (number, required): Height in pixels. Must be between 1 and 2000. Example: 50
-    - name (string, optional): Name for the vector node. If provided, must be a non-empty string up to 100 characters.
-    - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
-    - vectorPaths (array, required): Array of vector path objects ({ data: string, windingRule?: string }). Must contain 1 to 50 items.
-    - fillColor (any, optional): Fill color for the vector.
-    - strokeColor (any, optional): Stroke color for the vector.
-    - strokeWeight (number, optional): Stroke weight for the vector. Must be between 0 and 100.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of vectors created.

@@ -42,15 +42,6 @@ export function registerLinesTools(server: McpServer, figmaClient: FigmaClient) 
     "create_line",
     `Creates a new line node in the specified Figma document between the given start and end coordinates. Optionally, you can provide a parent node ID, stroke color, and stroke weight.
 
-Parameters:
-  - x1 (number, required): X coordinate for the start point. Example: 10
-  - y1 (number, required): Y coordinate for the start point. Example: 20
-  - x2 (number, required): X coordinate for the end point. Example: 110
-  - y2 (number, required): Y coordinate for the end point. Example: 20
-  - parentId (string, optional): Figma node ID of the parent.
-  - strokeColor (any, optional): Stroke color for the line.
-  - strokeWeight (number, optional): Stroke weight for the line.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created line's node ID.
 
@@ -76,11 +67,24 @@ Usage Example:
     }
 `,
     {
-      x1: z.number(), y1: z.number(),
-      x2: z.number(), y2: z.number(),
-      parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
-      strokeColor: z.any().optional(),
-      strokeWeight: z.number().optional()
+      x1: z.number()
+        .describe("X coordinate for the start point. Example: 10"),
+      y1: z.number()
+        .describe("Y coordinate for the start point. Example: 20"),
+      x2: z.number()
+        .describe("X coordinate for the end point. Example: 110"),
+      y2: z.number()
+        .describe("Y coordinate for the end point. Example: 20"),
+      parentId: z.string()
+        .describe("Figma node ID of the parent.")
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .optional(),
+      strokeColor: z.any()
+        .describe("Stroke color for the line.")
+        .optional(),
+      strokeWeight: z.number()
+        .describe("Stroke weight for the line.")
+        .optional()
     },
     // Tool handler: validates input, calls Figma client, and returns result.
     async ({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight }) => {
@@ -127,16 +131,6 @@ Usage Example:
     "create_lines",
     `Creates multiple lines in Figma based on the provided array of line configuration objects.
 
-Parameters:
-  - lines (array, required): An array of line configuration objects. Each object should include:
-    - x1 (number, required): X coordinate for the start point. Example: 10
-    - y1 (number, required): Y coordinate for the start point. Example: 20
-    - x2 (number, required): X coordinate for the end point. Example: 110
-    - y2 (number, required): Y coordinate for the end point. Example: 20
-    - parentId (string, optional): Figma node ID of the parent.
-    - strokeColor (any, optional): Stroke color for the line.
-    - strokeWeight (number, optional): Stroke weight for the line.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of lines created.
 
@@ -162,11 +156,24 @@ Usage Example:
     }
 `,
     { lines: z.array(z.object({
-        x1: z.number(), y1: z.number(),
-        x2: z.number(), y2: z.number(),
-        parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
-        strokeColor: z.any().optional(),
-        strokeWeight: z.number().optional()
+        x1: z.number()
+          .describe("X coordinate for the start point. Example: 10"),
+        y1: z.number()
+          .describe("Y coordinate for the start point. Example: 20"),
+        x2: z.number()
+          .describe("X coordinate for the end point. Example: 110"),
+        y2: z.number()
+          .describe("Y coordinate for the end point. Example: 20"),
+        parentId: z.string()
+          .describe("Figma node ID of the parent.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .optional(),
+        strokeColor: z.any()
+          .describe("Stroke color for the line.")
+          .optional(),
+        strokeWeight: z.number()
+          .describe("Stroke weight for the line.")
+          .optional()
       }))
     },
     // Tool handler: processes each line, calls Figma client, and returns batch results.

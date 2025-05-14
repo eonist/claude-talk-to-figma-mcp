@@ -14,11 +14,6 @@ export function registerPositioningCommands(server: McpServer, figmaClient: Figm
     "move_node",
     `Moves a node to a new position in Figma.
 
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to move. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - x (number, required): New X position. Must be between -10,000 and 10,000. Example: 100
-  - y (number, required): New Y position. Must be between -10,000 and 10,000. Example: 200
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the moved node's ID and new position.
 
@@ -69,11 +64,6 @@ Usage Example:
   server.tool(
     "move_nodes",
     `Moves multiple nodes to a new absolute position in Figma.
-
-Parameters:
-  - nodeIds (array, required): Array of node IDs to move. Each must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Must contain 1 to 100 items.
-  - x (number, required): New X position. Must be between -10,000 and 10,000. Example: 100
-  - y (number, required): New Y position. Must be between -10,000 and 10,000. Example: 200
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes moved and new position.

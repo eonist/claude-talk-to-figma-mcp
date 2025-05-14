@@ -20,13 +20,6 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
     "insert_svg_vector",
     `Inserts an SVG as a vector in Figma at the specified coordinates. You can customize name and parent node.
 
-Parameters:
-  - svg (string, required): The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters. Example: "<svg>...</svg>"
-  - x (number, optional): X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
-  - y (number, optional): Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
-  - name (string, optional): Name for the SVG node. If provided, must be a non-empty string up to 100 characters.
-  - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the inserted SVG vector's node ID.
 
@@ -105,14 +98,6 @@ Usage Example:
   server.tool(
     "insert_svg_vectors",
     `Inserts multiple SVG vectors in Figma based on the provided array of SVG configuration objects.
-
-Parameters:
-  - svgs (array, required): An array of SVG configuration objects. Each object should include:
-    - svg (string, required): The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters. Example: "<svg>...</svg>"
-    - x (number, optional): X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
-    - y (number, optional): Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0.
-    - name (string, optional): Name for the SVG node. If provided, must be a non-empty string up to 100 characters.
-    - parentId (string, optional): Figma node ID of the parent. If provided, must be a string in the format '123:456'.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of SVG vectors inserted.

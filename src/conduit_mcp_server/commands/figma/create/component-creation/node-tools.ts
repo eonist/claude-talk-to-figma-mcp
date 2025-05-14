@@ -20,19 +20,16 @@ export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
     `
 Converts an existing node into a component in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to convert. Must be a string in the format '123:456'. Example: "456:789"
+Returns:
+- content: Array of objects. Each object contains a type: "text" and a text field with the created component's ID.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created component's ID.
-
-**Security & Behavior:**
+Security & Behavior:
 - Idempotent: true
 - Destructive: false
 - Read-only: false
 - Open-world: false
 
-**Usage Example:**
+Usage Example:
 Input:
 \`\`\`json
 {

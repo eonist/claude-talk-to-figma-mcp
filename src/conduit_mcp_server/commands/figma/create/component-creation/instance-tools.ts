@@ -38,21 +38,16 @@ export function registerInstanceTools(server: McpServer, figmaClient: FigmaClien
     `
 Creates an instance of a component in Figma at the specified coordinates.
 
-**Parameters:**
-- \`componentKey\` (string, required): **Component Key**. Required. The key of the component to instantiate. Must be a non-empty string. Maximum length 100 characters. Example: "abc123"
-- \`x\` (number, required): **X Coordinate**. Required. X coordinate for the instance. Must be between -10,000 and 10,000. Example: 100
-- \`y\` (number, required): **Y Coordinate**. Required. Y coordinate for the instance. Must be between -10,000 and 10,000. Example: 200
+Returns:
+- content: Array of objects. Each object contains a type: "text" and a text field with the created component instance's node ID.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created component instance's node ID.
-
-**Security & Behavior:**
+Security & Behavior:
 - Idempotent: true
 - Destructive: false
 - Read-only: false
 - Open-world: false
 
-**Usage Example:**
+Usage Example:
 Input:
 \`\`\`json
 {
@@ -103,22 +98,16 @@ Output:
     `
 Creates multiple component instances in Figma based on the provided array of instance configuration objects.
 
-**Parameters:**
-- \`instances\` (array, required): **Instances**. Required. An array of instance configuration objects. Each object should include:
-  - \`componentKey\` (string, required): The key of the component to instantiate. Must be a non-empty string. Maximum length 100 characters. Example: "abc123"
-  - \`x\` (number, required): X coordinate for the instance. Must be between -10,000 and 10,000. Example: 100
-  - \`y\` (number, required): Y coordinate for the instance. Must be between -10,000 and 10,000. Example: 200
+Returns:
+- content: Array of objects. Each object contains a type: "text" and a text field with the number of component instances created.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of component instances created.
-
-**Security & Behavior:**
+Security & Behavior:
 - Idempotent: true
 - Destructive: false
 - Read-only: false
 - Open-world: false
 
-**Usage Example:**
+Usage Example:
 Input:
 \`\`\`json
 {
