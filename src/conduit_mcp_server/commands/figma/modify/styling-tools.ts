@@ -208,7 +208,7 @@ Usage Example:
         z.object({
           // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
           nodeId: z.string()
-            .regex(/^\d+:\d+$/)
+            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
             .describe("The unique Figma node ID to style. Must be a string in the format '123:456'."),
           // Enforce non-empty string for gradientStyleId, reasonable length
           gradientStyleId: z.string()
@@ -623,7 +623,7 @@ Usage Example:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to apply gradient to. Must be a string in the format '123:456'."),
       // Restrict gradientType to allowed values
       gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"]).describe("Type of gradient"),

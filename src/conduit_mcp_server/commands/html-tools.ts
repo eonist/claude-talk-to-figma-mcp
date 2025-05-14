@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../clients/figma-client.js";
+import { isValidNodeId } from "../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers HTML generation commands for the MCP server.
@@ -75,7 +76,7 @@ Output Schema:
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to generate HTML from. Must be a string in the format '123:456'."),
       // Restrict format to allowed HTML output types
       format: z
