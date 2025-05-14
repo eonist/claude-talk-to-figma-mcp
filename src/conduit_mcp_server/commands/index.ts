@@ -16,7 +16,6 @@ import { FigmaClient } from "../clients/figma-client.js";
 import { registerReadCommands } from "./figma/read.js";
 import { registerCreateCommands } from "./figma/create.js";
 import { registerModifyCommands } from "./figma/modify.js";
-import { registerRenameCommands } from "./figma/modify/rename.js";
 import { registerChannelCommand } from "./channel.js";
 import { logger } from "../utils/logger.js";
 import { registerHtmlCommands } from "./html-tools.js";
@@ -45,7 +44,6 @@ export function registerAllCommands(server: McpServer): void {
     registerReadCommands(server, figmaClient);
     registerCreateCommands(server, figmaClient);
     registerModifyCommands(server, figmaClient);
-    registerRenameCommands(server, figmaClient);
     registerChannelCommand(server, figmaClient);
     registerHtmlCommands(server, figmaClient);
 
