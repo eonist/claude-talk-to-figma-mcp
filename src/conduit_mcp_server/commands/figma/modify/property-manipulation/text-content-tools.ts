@@ -12,63 +12,36 @@ export function registerTextContentTools(server: McpServer, figmaClient: FigmaCl
   // Set Text Content
   server.tool(
     "set_text_content",
-    `Set the text content of an existing text node in Figma.
+    `
+Sets the text content of an existing text node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node to update.
-  - text (string, required): The new text content.
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
+- \`text\` (string, required): **Text Content**. Required. The new text content to set for the node. Must be a non-empty string. Maximum length 10,000 characters. Example: "Hello, world!"
 
-Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Updated text of 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
 
-Annotations:
-  - title: "Set Text Content"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "text": "Updated text"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Updated text of 123:456" }]
-    }
-
-Additional Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "text": "Hello, world!"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Updated text of 123:456" }]
-    }
-
-Error Handling:
-  - Returns an error if nodeId is invalid or not found.
-  - Returns an error if text is empty or exceeds maximum length.
-
-Security Notes:
-  - All inputs are validated and sanitized. nodeId must match the expected format (e.g., "123:456").
-  - Text content is limited to 10,000 characters to prevent abuse.
-
-Output Schema:
-  {
-    "content": [
-      {
-        "type": "text",
-        "text": "Updated text of <nodeId>"
-      }
-    ]
-  }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456",
+  "text": "Hello, world!"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Updated text of 123:456" }]
+}
+\`\`\`
 `,
     {
       nodeId: z.string()
@@ -89,56 +62,41 @@ Output Schema:
   // Set Multiple Text Contents
   server.tool(
     "set_multiple_text_contents",
-    `Set multiple text contents parallelly in a node.
+    `
+Sets multiple text contents in parallel for child nodes of a parent node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the parent node.
-  - text (array, required): Array of objects with nodeId and text.
+**Parameters:**
+- \`nodeId\` (string, required): **Parent Node ID**. Required. The unique Figma parent node ID. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "parent:123"
+- \`text\` (array, required): **Text Array**. Required. Array of objects specifying nodeId and text for each child text node to update. Each object should include:
+  - \`nodeId\` (string, required): The unique Figma child text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - \`text\` (string, required): The new text content to set for the child node. Must be a non-empty string. Maximum length 10,000 characters.
 
-Returns:
-  - content: Array containing a text message with the number of text nodes updated.
-    Example: { "content": [{ "type": "text", "text": "Updated 3 text nodes" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the number of text nodes updated.
 
-Annotations:
-  - title: "Set Multiple Text Contents"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "parent:123",
-      "text": [
-        { "nodeId": "child:1", "text": "A" },
-        { "nodeId": "child:2", "text": "B" }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
-    }
-
-Error Handling:
-  - Returns an error if any nodeId is invalid or not found.
-  - Returns an error if any text is empty or exceeds maximum length.
-  - Returns an error if the array is empty or exceeds 100 items.
-
-Security Notes:
-  - All inputs are validated and sanitized. All nodeIds must match the expected format.
-  - Text content is limited to 10,000 characters per node and 100 nodes per call.
-
-Output Schema:
-  {
-    "content": [
-      {
-        "type": "text",
-        "text": "Updated <N> text nodes"
-      }
-    ]
-  }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "parent:123",
+  "text": [
+    { "nodeId": "child:1", "text": "A" },
+    { "nodeId": "child:2", "text": "B" }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
+}
+\`\`\`
 `,
     {
       nodeId: z.string()
