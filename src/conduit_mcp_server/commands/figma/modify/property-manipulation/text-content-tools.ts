@@ -3,11 +3,6 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
-/**
- * Registers text content manipulation commands:
- * - set_text_content
- * - set_multiple_text_contents
- */
 export function registerTextContentTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Text Content
   server.tool(
@@ -21,6 +16,54 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Updated text of 123:456" }] }
+
+Annotations:
+  - title: "Set Text Content"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "text": "Updated text"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Updated text of 123:456" }]
+    }
+
+Additional Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "text": "Hello, world!"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Updated text of 123:456" }]
+    }
+
+Error Handling:
+  - Returns an error if nodeId is invalid or not found.
+  - Returns an error if text is empty or exceeds maximum length.
+
+Security Notes:
+  - All inputs are validated and sanitized. nodeId must match the expected format (e.g., "123:456").
+  - Text content is limited to 10,000 characters to prevent abuse.
+
+Output Schema:
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "Updated text of <nodeId>"
+      }
+    ]
+  }
 `,
     {
       nodeId: z.string()
@@ -50,6 +93,47 @@ Parameters:
 Returns:
   - content: Array containing a text message with the number of text nodes updated.
     Example: { "content": [{ "type": "text", "text": "Updated 3 text nodes" }] }
+
+Annotations:
+  - title: "Set Multiple Text Contents"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "parent:123",
+      "text": [
+        { "nodeId": "child:1", "text": "A" },
+        { "nodeId": "child:2", "text": "B" }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
+    }
+
+Error Handling:
+  - Returns an error if any nodeId is invalid or not found.
+  - Returns an error if any text is empty or exceeds maximum length.
+  - Returns an error if the array is empty or exceeds 100 items.
+
+Security Notes:
+  - All inputs are validated and sanitized. All nodeIds must match the expected format.
+  - Text content is limited to 10,000 characters per node and 100 nodes per call.
+
+Output Schema:
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "Updated <N> text nodes"
+      }
+    ]
+  }
 `,
     {
       nodeId: z.string()
