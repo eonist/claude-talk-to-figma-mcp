@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 import { handleToolError } from "../../../utils/error-handling.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers vector-creation-related commands:
@@ -82,7 +83,7 @@ Usage Example:
         .describe("Optional. Name for the vector node. If provided, must be a non-empty string up to 100 characters."),
       // Enforce Figma node ID format for parentId if provided
       parentId: z.string()
-        .regex(/^\d+:\d+$/)
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .optional()
         .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
       // Enforce array of vector path objects, each with non-empty data
@@ -192,7 +193,7 @@ Usage Example:
             .describe("Optional. Name for the vector node. If provided, must be a non-empty string up to 100 characters."),
           // Enforce Figma node ID format for parentId if provided
           parentId: z.string()
-            .regex(/^\d+:\d+$/)
+            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
             .optional()
             .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
           // Enforce array of vector path objects, each with non-empty data

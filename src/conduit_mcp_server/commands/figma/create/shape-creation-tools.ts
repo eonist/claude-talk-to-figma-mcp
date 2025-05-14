@@ -21,6 +21,7 @@ import { processBatch } from "../../../utils/batch-processor.js";
 import { CreateRectangleParams } from "../../../types/command-params.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../utils/error-handling.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers shape-creation-related commands with the MCP server.
@@ -123,7 +124,7 @@ Usage Example:
       height: z.number().positive("height must be > 0")
         .describe("The height of the rectangle in pixels. Must be > 0. Example: 150"),
       name: z.string().describe("The name to assign to the rectangle node in Figma. Example: 'Button Background'").optional(),
-      parentId: z.string().describe("The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.").optional(),
+      parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional().describe("The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root."),
       cornerRadius: z.number().min(0, "cornerRadius must be >= 0")
         .describe("The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8").optional()
     },
@@ -190,7 +191,7 @@ Usage Example:
     { rectangles: z.array(z.object({
         x: z.number(), y: z.number(),
         width: z.number(), height: z.number(),
-        name: z.string().optional(), parentId: z.string().optional(),
+        name: z.string().optional(), parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
         cornerRadius: z.number().min(0).optional()
       }))
     },
@@ -263,7 +264,7 @@ Usage Example:
     {
       x: z.number(), y: z.number(),
       width: z.number(), height: z.number(),
-      name: z.string().optional(), parentId: z.string().optional(),
+      name: z.string().optional(), parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
       fillColor: z.any().optional(), strokeColor: z.any().optional(),
       strokeWeight: z.number().optional()
     },
@@ -376,7 +377,7 @@ Usage Example:
     { lines: z.array(z.object({
         x1: z.number(), y1: z.number(),
         x2: z.number(), y2: z.number(),
-        parentId: z.string().optional(),
+        parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
         strokeColor: z.any().optional(),
         strokeWeight: z.number().optional()
       }))
@@ -440,7 +441,7 @@ Usage Example:
     {
       x: z.number(), y: z.number(),
       width: z.number(), height: z.number(),
-      name: z.string().optional(), parentId: z.string().optional(),
+      name: z.string().optional(), parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
       fillColor: z.any().optional(), strokeColor: z.any().optional(),
       strokeWeight: z.number().optional()
     },
@@ -504,7 +505,7 @@ Usage Example:
         x: z.number(), y: z.number(),
         width: z.number(), height: z.number(),
         sides: z.number().min(3),
-        name: z.string().optional(), parentId: z.string().optional(),
+        name: z.string().optional(), parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
         fillColor: z.any().optional(), strokeColor: z.any().optional(),
         strokeWeight: z.number().optional()
       }))
@@ -568,9 +569,9 @@ Usage Example:
     { ellipses: z.array(z.object({
         x: z.number(), y: z.number(),
         width: z.number(), height: z.number(),
-        name: z.string().optional(), parentId: z.string().optional(),
-        fillColor: z.any().optional(), strokeColor: z.any().optional(),
-        strokeWeight: z.number().optional()
+      name: z.string().optional(), parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
+      fillColor: z.any().optional(), strokeColor: z.any().optional(),
+      strokeWeight: z.number().optional()
       }))
     },
     // Tool handler: processes each ellipse, calls Figma client, and returns batch results.
