@@ -21,8 +21,7 @@ Parameters:
   - nodeIds (array, required): Array of node IDs to flatten.
 
 Returns:
-  - content: Array containing a text message with the number of nodes flattened.
-    Example: { "content": [{ "type": "text", "text": "Flattened 3 nodes" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes flattened.
 
 Annotations:
   - title: "Flatten Selection"
@@ -69,8 +68,7 @@ Parameters:
   - nodeIds (array, required): Array of node IDs to union.
 
 Returns:
-  - content: Array containing a text message with the number of nodes unioned.
-    Example: { "content": [{ "type": "text", "text": "Unioned 3 nodes" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes unioned.
 
 Annotations:
   - title: "Union Selection"
@@ -115,8 +113,7 @@ Parameters:
   - nodeIds (array, required): Array of node IDs to subtract.
 
 Returns:
-  - content: Array containing a text message with the number of nodes subtracted.
-    Example: { "content": [{ "type": "text", "text": "Subtracted 3 nodes" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes subtracted.
 
 Annotations:
   - title: "Subtract Selection"
@@ -161,8 +158,7 @@ Parameters:
   - nodeIds (array, required): Array of node IDs to intersect.
 
 Returns:
-  - content: Array containing a text message with the number of nodes intersected.
-    Example: { "content": [{ "type": "text", "text": "Intersected 3 nodes" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes intersected.
 
 Annotations:
   - title: "Intersect Selection"
@@ -207,8 +203,7 @@ Parameters:
   - nodeIds (array, required): Array of node IDs to exclude.
 
 Returns:
-  - content: Array containing a text message with the number of nodes excluded.
-    Example: { "content": [{ "type": "text", "text": "Excluded 3 nodes" }] }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes excluded.
 
 Annotations:
   - title: "Exclude Selection"
