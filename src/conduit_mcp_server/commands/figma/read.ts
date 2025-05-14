@@ -234,42 +234,47 @@ Output:
    */
   server.tool(
     "get_nodes_info",
-    `Get detailed information about multiple nodes in Figma.
+    `
+Retrieves detailed information about multiple nodes in Figma.
 
-Parameters:
-  - nodeIds (array, required): Array of node IDs to get information about.
+**Parameters:**
+- \`nodeIds\` (array of strings, required): **Node IDs**. Required. Array of Figma node IDs to get information about. Each must be a string in the format \`"123:456"\` or \`"I422:10713;1082:2236"\`. Must contain 1 to 100 items. Example: \`["123:456", "789:101"]\`.
 
-Returns:
-  - content: Array containing a text message with the nodes info as JSON.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the nodes info as JSON.
 
-Annotations:
-  - title: "Get Nodes Info"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "[{...node1 info...}, {...node2 info...}]" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeIds": ["123:456", "789:101"]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "[{...node1 info...}, {...node2 info...}]" }
+  ]
+}
+\`\`\`
 `,
     {
       // Enforce array of Figma node IDs, each must match format
       nodeIds: z.array(
         z.string()
           .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to get information about. Must be a string in the format '123:456'.")
+          .describe("Node ID. Each must be a string in the format '123:456'. Example: '123:456'.")
       )
       .min(1)
       .max(100)
-      .describe("Array of Figma node IDs to get information about. Must contain 1 to 100 items."),
+      .describe("Node IDs. Required. Array of Figma node IDs to get information about. Must contain 1 to 100 items. Example: ['123:456', '789:101']."),
     },
     async ({ nodeIds }) => {
       try {
@@ -306,27 +311,30 @@ Usage Example:
    */
   server.tool(
     "get_styles",
-    `Get all styles from the current Figma document.
+    `
+Retrieves all styles from the current Figma document.
 
-Parameters:
-  (none)
+**Parameters:**
+(none)
 
-Returns:
-  - content: Array containing a text message with the styles info as JSON.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the styles info as JSON.
 
-Annotations:
-  - title: "Get Styles"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...styles info...}" }]
-    }
+**Usage Example:**
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "{...styles info...}" }
+  ]
+}
+\`\`\`
 `,
     {},
     async () => {
@@ -360,27 +368,30 @@ Usage Example:
    */
   server.tool(
     "get_local_components",
-    `Get all local components from the Figma document.
+    `
+Retrieves all local components from the current Figma document.
 
-Parameters:
-  (none)
+**Parameters:**
+(none)
 
-Returns:
-  - content: Array containing a text message with the local components info as JSON.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the local components info as JSON.
 
-Annotations:
-  - title: "Get Local Components"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...local components info...}" }]
-    }
+**Usage Example:**
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "{...local components info...}" }
+  ]
+}
+\`\`\`
 `,
     {},
     async () => {
@@ -414,27 +425,30 @@ Usage Example:
    */
   server.tool(
     "get_remote_components",
-    `Get available components from team libraries in Figma.
+    `
+Retrieves available components from team libraries in Figma.
 
-Parameters:
-  (none)
+**Parameters:**
+(none)
 
-Returns:
-  - content: Array containing a text message with the remote components info as JSON.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the remote components info as JSON.
 
-Annotations:
-  - title: "Get Remote Components"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...remote components info...}" }]
-    }
+**Usage Example:**
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "{...remote components info...}" }
+  ]
+}
+\`\`\`
 `,
     {},
     async () => {
@@ -468,39 +482,44 @@ Usage Example:
    */
   server.tool(
     "get_styled_text_segments",
-    `Get text segments with specific styling in a text node.
+    `
+Retrieves text segments with specific styling in a text node.
 
-Parameters:
-  - nodeId (string, required): The ID of the text node to analyze.
-  - property (string, required): The style property to analyze segments by.
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma text node ID to analyze. Must be a string in the format \`"123:456"\` or \`"I422:10713;1082:2236"\`. Example: \`"123:456"\`.
+- \`property\` (string, required): **Style Property**. Required. The style property to analyze segments by. Must be one of: "fillStyleId", "fontName", "fontSize", "textCase", "textDecoration", "textStyleId", "fills", "letterSpacing", "lineHeight", "fontWeight". Example: \`"fontSize"\`.
 
-Returns:
-  - content: Array containing a text message with the styled text segments as JSON.
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the styled text segments as JSON.
 
-Annotations:
-  - title: "Get Styled Text Segments"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: true
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "property": "fontSize"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "[{...styled segments...}]" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456",
+  "property": "fontSize"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [
+    { "type": "text", "text": "[{...styled segments...}]" }
+  ]
+}
+\`\`\`
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to analyze. Must be a string in the format '123:456'."),
+        .describe("Node ID. Required. The unique Figma text node ID to analyze. Must be a string in the format '123:456'. Example: '123:456'."),
       // Restrict property to allowed style properties
       property: z.enum([
         "fillStyleId", 
@@ -513,7 +532,7 @@ Usage Example:
         "letterSpacing", 
         "lineHeight", 
         "fontWeight"
-      ]).describe("The style property to analyze segments by. Must be one of the allowed style property names."),
+      ]).describe("Style Property. Required. The style property to analyze segments by. Must be one of: fillStyleId, fontName, fontSize, textCase, textDecoration, textStyleId, fills, letterSpacing, lineHeight, fontWeight. Example: 'fontSize'."),
     },
     async ({ nodeId, property }) => {
       try {
