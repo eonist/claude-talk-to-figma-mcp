@@ -4,7 +4,7 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers boolean operation commands:
+ * Registers layer-management-related modify commands:
  * - flatten_selection
  * - union_selection
  * - subtract_selection
@@ -15,11 +15,43 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
   // Flatten Selection
   server.tool(
     "flatten_selection",
-    `Flatten a selection of nodes in Figma.`,
+    `Flatten a selection of nodes in Figma.
+
+Parameters:
+  - nodeIds (array, required): Array of node IDs to flatten.
+
+Returns:
+  - content: Array containing a text message with the number of nodes flattened.
+    Example: { "content": [{ "type": "text", "text": "Flattened 3 nodes" }] }
+
+Annotations:
+  - title: "Flatten Selection"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
     {
+      "nodeIds": ["123:456", "789:101", "112:131"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Flattened 3 nodes" }]
+    }
+`,
+    {
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
-        z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." })
-      ).min(1).max(100),
+        z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to flatten. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of node IDs to flatten. Must contain 1 to 100 items."),
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
@@ -28,14 +60,46 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
     }
   );
 
-  // Union Selection
+  // Boolean Operations
   server.tool(
     "union_selection",
-    `Union selected shapes.`,
+    `Union selected shapes.
+
+Parameters:
+  - nodeIds (array, required): Array of node IDs to union.
+
+Returns:
+  - content: Array containing a text message with the number of nodes unioned.
+    Example: { "content": [{ "type": "text", "text": "Unioned 3 nodes" }] }
+
+Annotations:
+  - title: "Union Selection"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
     {
+      "nodeIds": ["123:456", "789:101", "112:131"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Unioned 3 nodes" }]
+    }
+`,
+    {
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
-        z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." })
-      ).min(2).max(100),
+        z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to union. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to union. Must contain at least 2 and at most 100 items."),
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("union_selection", { nodeIds });
@@ -43,14 +107,45 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
     }
   );
 
-  // Subtract Selection
   server.tool(
     "subtract_selection",
-    `Subtract top shapes from bottom shape.`,
+    `Subtract top shapes from bottom shape.
+
+Parameters:
+  - nodeIds (array, required): Array of node IDs to subtract.
+
+Returns:
+  - content: Array containing a text message with the number of nodes subtracted.
+    Example: { "content": [{ "type": "text", "text": "Subtracted 3 nodes" }] }
+
+Annotations:
+  - title: "Subtract Selection"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
     {
+      "nodeIds": ["123:456", "789:101", "112:131"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Subtracted 3 nodes" }]
+    }
+`,
+    {
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
-        z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." })
-      ).min(2).max(100),
+        z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to subtract. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to subtract. Must contain at least 2 and at most 100 items."),
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("subtract_selection", { nodeIds });
@@ -58,14 +153,45 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
     }
   );
 
-  // Intersect Selection
   server.tool(
     "intersect_selection",
-    `Intersect selected shapes.`,
+    `Intersect selected shapes.
+
+Parameters:
+  - nodeIds (array, required): Array of node IDs to intersect.
+
+Returns:
+  - content: Array containing a text message with the number of nodes intersected.
+    Example: { "content": [{ "type": "text", "text": "Intersected 3 nodes" }] }
+
+Annotations:
+  - title: "Intersect Selection"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
     {
+      "nodeIds": ["123:456", "789:101", "112:131"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Intersected 3 nodes" }]
+    }
+`,
+    {
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
-        z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." })
-      ).min(2).max(100),
+        z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to intersect. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to intersect. Must contain at least 2 and at most 100 items."),
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("intersect_selection", { nodeIds });
@@ -73,14 +199,45 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
     }
   );
 
-  // Exclude Selection
   server.tool(
     "exclude_selection",
-    `Exclude overlapping areas of selected shapes.`,
+    `Exclude overlapping areas of selected shapes.
+
+Parameters:
+  - nodeIds (array, required): Array of node IDs to exclude.
+
+Returns:
+  - content: Array containing a text message with the number of nodes excluded.
+    Example: { "content": [{ "type": "text", "text": "Excluded 3 nodes" }] }
+
+Annotations:
+  - title: "Exclude Selection"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
     {
+      "nodeIds": ["123:456", "789:101", "112:131"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Excluded 3 nodes" }]
+    }
+`,
+    {
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
-        z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." })
-      ).min(2).max(100),
+        z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to exclude. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
+      )
+      .min(2)
+      .max(100)
+      .describe("Array of node IDs to exclude. Must contain at least 2 and at most 100 items."),
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("exclude_selection", { nodeIds });

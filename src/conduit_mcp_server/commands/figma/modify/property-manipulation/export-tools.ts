@@ -4,10 +4,11 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers export-related command:
+ * Registers property-manipulation-related modify commands:
  * - export_node_as_image
  */
 export function registerExportTools(server: McpServer, figmaClient: FigmaClient) {
+  // Export Node As Image
   server.tool(
     "export_node_as_image",
     `Export a node as an image from Figma.
@@ -20,6 +21,26 @@ Parameters:
 Returns:
   - content: Array containing an image object with the exported image data.
     Example: { "content": [{ "type": "image", "data": "...", "mimeType": "image/png" }] }
+
+Annotations:
+  - title: "Export Node As Image"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "format": "PNG",
+      "scale": 2
+    }
+  Output:
+    {
+      "content": [{ "type": "image", "data": "...", "mimeType": "image/png" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -35,5 +56,38 @@ Returns:
       const result = await figmaClient.executeCommand("export_node_as_image", { nodeId: id, format, scale });
       return { content: [{ type: "image", data: result.imageData, mimeType: result.mimeType }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "format": "SVG",
+          "scale": 2
+        }
+      Output:
+        {
+          "content": [{ "type": "image", "data": "...", "mimeType": "image/svg+xml" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if format is not one of the allowed values.
+      - Returns an error if scale is not a positive number.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - Exported image data is limited by Figma's API.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "image",
+            "data": "<base64 or binary>",
+            "mimeType": "<image mime type>"
+          }
+        ]
+      }
+    */
   );
 }

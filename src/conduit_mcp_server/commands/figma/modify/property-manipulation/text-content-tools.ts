@@ -3,6 +3,11 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
+/**
+ * Registers property-manipulation-related modify commands:
+ * - set_text_content
+ * - set_multiple_text_contents
+ */
 export function registerTextContentTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Text Content
   server.tool(

@@ -7,12 +7,42 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers ellipse creation commands:
- * - create_ellipse
- * - create_ellipses
+ * MCP Tool: create_ellipse
+ * 
+ * Creates a new ellipse node in the specified Figma document at the given coordinates, with the specified width and height.
+ * Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+ * This tool is useful for programmatically generating circles, ovals, or design primitives in Figma via MCP.
+ * 
+ * Parameters:
+ *   - x (number, required): X coordinate for the top-left corner. Example: 60
+ *   - y (number, required): Y coordinate for the top-left corner. Example: 80
+ *   - width (number, required): Width in pixels. Example: 120
+ *   - height (number, required): Height in pixels. Example: 90
+ *   - name (string, optional): Name for the ellipse node. Example: "Ellipse1"
+ *   - parentId (string, optional): Figma node ID of the parent.
+ *   - fillColor (any, optional): Fill color for the ellipse.
+ *   - strokeColor (any, optional): Stroke color for the ellipse.
+ *   - strokeWeight (number, optional): Stroke weight for the ellipse.
+ * 
+ * Returns:
+ *   - content: Array containing a text message with the created ellipse's node ID.
+ *     Example: { "content": [{ "type": "text", "text": "Created ellipse 123:456" }] }
+ * 
+ * Usage Example:
+ *   Input:
+ *     {
+ *       "x": 60,
+ *       "y": 80,
+ *       "width": 120,
+ *       "height": 90,
+ *       "name": "Ellipse1"
+ *     }
+ *   Output:
+ *     {
+ *       "content": [{ "type": "text", "text": "Created ellipse 123:456" }]
+ *     }
  */
 export function registerEllipsesTools(server: McpServer, figmaClient: FigmaClient) {
-  // Create Ellipse
   server.tool(
     "create_ellipse",
     `Create a new ellipse in Figma.
@@ -31,6 +61,28 @@ Parameters:
 Returns:
   - content: Array containing a text message with the created ellipse's node ID.
     Example: { "content": [{ "type": "text", "text": "Created ellipse 123:456" }] }
+
+Annotations:
+  - title: "Create Ellipse"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "x": 60,
+      "y": 80,
+      "width": 120,
+      "height": 90,
+      "name": "Ellipse1"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created ellipse 123:456" }]
+    }
 `,
     {
       x: z.number(), y: z.number(),
@@ -39,18 +91,55 @@ Returns:
       fillColor: z.any().optional(), strokeColor: z.any().optional(),
       strokeWeight: z.number().optional()
     },
+    // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {
         const params = { commandId: uuidv4(), ...args };
         const node = await figmaClient.createEllipse(params);
         return { content: [{ type: "text", text: `Created ellipse ${node.id}` }] };
       } catch (err) {
+        // Handle errors and return a formatted error response.
         return handleToolError(err, "shape-creation-tools", "create_ellipse") as any;
       }
     }
   );
 
-  // Create Ellipses (Batch)
+  /**
+   * MCP Tool: create_ellipses
+   * 
+   * Creates multiple ellipses in Figma based on the provided array of ellipse configuration objects.
+   * Each object should specify the coordinates, dimensions, and optional properties for an ellipse.
+   * This tool is useful for batch-generating circles, ovals, or design primitives in Figma via MCP.
+   * 
+   * Parameters:
+   *   - ellipses (array, required): An array of ellipse configuration objects. Each object should include:
+   *       - x (number, required): X coordinate for the top-left corner.
+   *       - y (number, required): Y coordinate for the top-left corner.
+   *       - width (number, required): Width in pixels.
+   *       - height (number, required): Height in pixels.
+   *       - name (string, optional): Name for the ellipse node.
+   *       - parentId (string, optional): Figma node ID of the parent.
+   *       - fillColor (any, optional): Fill color for the ellipse.
+   *       - strokeColor (any, optional): Stroke color for the ellipse.
+   *       - strokeWeight (number, optional): Stroke weight for the ellipse.
+   * 
+   * Returns:
+   *   - content: Array containing a text message with the number of ellipses created.
+   *     Example: { "content": [{ "type": "text", "text": "Created 3/3 ellipses." }] }
+   * 
+   * Usage Example:
+   *   Input:
+   *     {
+   *       "ellipses": [
+   *         { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Ellipse1" },
+   *         { "x": 120, "y": 20, "width": 80, "height": 40 }
+   *       ]
+   *     }
+   *   Output:
+   *     {
+   *       "content": [{ "type": "text", "text": "Created 2/2 ellipses." }]
+   *     }
+   */
   server.tool(
     "create_ellipses",
     `Create multiple ellipses in Figma.
@@ -70,6 +159,27 @@ Parameters:
 Returns:
   - content: Array containing a text message with the number of ellipses created.
     Example: { "content": [{ "type": "text", "text": "Created 3/3 ellipses." }] }
+
+Annotations:
+  - title: "Create Ellipses (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "ellipses": [
+        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Ellipse1" },
+        { "x": 120, "y": 20, "width": 80, "height": 40 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 ellipses." }]
+    }
 `,
     { ellipses: z.array(z.object({
         x: z.number(), y: z.number(),
@@ -79,6 +189,7 @@ Returns:
         strokeWeight: z.number().optional()
       }))
     },
+    // Tool handler: processes each ellipse, calls Figma client, and returns batch results.
     async ({ ellipses }) => {
       const results = await processBatch(
         ellipses,

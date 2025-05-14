@@ -4,7 +4,7 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers effects-related commands:
+ * Registers property-manipulation-related modify commands:
  * - set_effects
  * - set_effect_style_id
  */
@@ -21,6 +21,25 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Effects set for 123:456" }] }
+
+Annotations:
+  - title: "Set Effects"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Effects set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -36,6 +55,36 @@ Returns:
       await figmaClient.executeCommand("set_effects", { nodeId: id, effects });
       return { content: [{ type: "text", text: `Effects set for ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Effects set for 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if effects array is empty or exceeds 20 items.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - effects array is limited to 20 items.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Effects set for <nodeId>"
+          }
+        ]
+      }
+    */
   );
 
   // Set Effect Style ID
@@ -50,6 +99,25 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Effect style applied to 123:456" }] }
+
+Annotations:
+  - title: "Set Effect Style ID"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "effectStyleId": "effect:789"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -65,5 +133,35 @@ Returns:
       await figmaClient.executeCommand("set_effect_style_id", { nodeId: id, effectStyleId });
       return { content: [{ type: "text", text: `Effect style applied to ${id}` }] };
     }
+    /*
+    Additional Usage Example:
+      Input:
+        {
+          "nodeId": "123:456",
+          "effectStyleId": "effect:789"
+        }
+      Output:
+        {
+          "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
+        }
+
+    Error Handling:
+      - Returns an error if nodeId is invalid or not found.
+      - Returns an error if effectStyleId is empty or exceeds maximum length.
+
+    Security Notes:
+      - All inputs are validated and sanitized. nodeId must match the expected format.
+      - effectStyleId is limited to 100 characters.
+
+    Output Schema:
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Effect style applied to <nodeId>"
+          }
+        ]
+      }
+    */
   );
 }

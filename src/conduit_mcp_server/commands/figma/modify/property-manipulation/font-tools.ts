@@ -4,7 +4,7 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers font and text styling related commands:
+ * Registers property-manipulation-related modify commands:
  * - set_font_name
  * - set_font_size
  * - set_font_weight
@@ -29,6 +29,26 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Font set for 123:456" }] }
+
+Annotations:
+  - title: "Set Font Name"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "family": "Roboto",
+      "style": "Bold"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -63,6 +83,25 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Font size set for 123:456" }] }
+
+Annotations:
+  - title: "Set Font Size"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "fontSize": 16
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font size set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -92,6 +131,25 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Font weight set for 123:456" }] }
+
+Annotations:
+  - title: "Set Font Weight"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "weight": 700
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font weight set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -123,6 +181,26 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }] }
+
+Annotations:
+  - title: "Set Letter Spacing"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "letterSpacing": 2,
+      "unit": "PIXELS"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -155,6 +233,26 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Line height set for 123:456" }] }
+
+Annotations:
+  - title: "Set Line Height"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "lineHeight": 24,
+      "unit": "PIXELS"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Line height set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -186,6 +284,25 @@ Parameters:
 Returns:
   - content: Array containing a text message with the updated node's ID.
     Example: { "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }] }
+
+Annotations:
+  - title: "Set Paragraph Spacing"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "paragraphSpacing": 12
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()

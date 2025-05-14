@@ -5,8 +5,41 @@ import { processBatch } from "../../../../utils/batch-processor.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers polygon creation command:
- * - create_polygons
+ * MCP Tool: create_polygons
+ * 
+ * Creates multiple polygons in Figma based on the provided array of polygon configuration objects.
+ * Each object should specify the coordinates, dimensions, number of sides, and optional properties for a polygon.
+ * This tool is useful for batch-generating stars, polygons, or design primitives in Figma via MCP.
+ * 
+ * Parameters:
+ *   - polygons (array, required): An array of polygon configuration objects. Each object should include:
+ *       - x (number, required): X coordinate for the top-left corner.
+ *       - y (number, required): Y coordinate for the top-left corner.
+ *       - width (number, required): Width in pixels.
+ *       - height (number, required): Height in pixels.
+ *       - sides (number, required): Number of sides (minimum 3).
+ *       - name (string, optional): Name for the polygon node.
+ *       - parentId (string, optional): Figma node ID of the parent.
+ *       - fillColor (any, optional): Fill color for the polygon.
+ *       - strokeColor (any, optional): Stroke color for the polygon.
+ *       - strokeWeight (number, optional): Stroke weight for the polygon.
+ * 
+ * Returns:
+ *   - content: Array containing a text message with the number of polygons created.
+ *     Example: { "content": [{ "type": "text", "text": "Created 3/3 polygons." }] }
+ * 
+ * Usage Example:
+ *   Input:
+ *     {
+ *       "polygons": [
+ *         { "x": 10, "y": 20, "width": 100, "height": 100, "sides": 5 },
+ *         { "x": 120, "y": 20, "width": 80, "height": 80, "sides": 6 }
+ *       ]
+ *     }
+ *   Output:
+ *     {
+ *       "content": [{ "type": "text", "text": "Created 2/2 polygons." }]
+ *     }
  */
 export function registerPolygonsTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
@@ -29,6 +62,27 @@ Parameters:
 Returns:
   - content: Array containing a text message with the number of polygons created.
     Example: { "content": [{ "type": "text", "text": "Created 3/3 polygons." }] }
+
+Annotations:
+  - title: "Create Polygons (Batch)"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "polygons": [
+        { "x": 10, "y": 20, "width": 100, "height": 100, "sides": 5 },
+        { "x": 120, "y": 20, "width": 80, "height": 80, "sides": 6 }
+      ]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created 2/2 polygons." }]
+    }
 `,
     { polygons: z.array(z.object({
         x: z.number(), y: z.number(),
@@ -39,6 +93,7 @@ Returns:
         strokeWeight: z.number().optional()
       }))
     },
+    // Tool handler: processes each polygon, calls Figma client, and returns batch results.
     async ({ polygons }) => {
       const results = await processBatch(
         polygons,
