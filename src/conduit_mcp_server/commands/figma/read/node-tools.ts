@@ -1,0 +1,103 @@
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { logger } from "../../../utils/logger.js";
+import { filterFigmaNode } from "../../../utils/figma/filter-node.js";
+import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+
+/**
+ * Registers node info read commands:
+ * - get_node_info
+ * - get_nodes_info
+ */
+export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
+  // Get Node Info
+  server.tool(
+    "get_node_info",
+    `Get detailed information about a specific node in Figma.
+
+Parameters:
+  - nodeId (string, required): The ID of the node to get information about.
+
+Returns:
+  - content: Array containing a text message with the node info as JSON.
+`,
+    {
+      nodeId: z.string()
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to get information about. Must be a string in the format '123:456'."),
+    },
+    async ({ nodeId }) => {
+      try {
+        const nodeIdString = ensureNodeIdIsString(nodeId);
+        logger.debug(`Getting node info for ID: ${nodeIdString}`);
+        const result = await figmaClient.executeCommand("get_node_info", { nodeId: nodeIdString });
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(filterFigmaNode(result))
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error getting node info: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ],
+        };
+      }
+    }
+  );
+
+  // Get Nodes Info
+  server.tool(
+    "get_nodes_info",
+    `Get detailed information about multiple nodes in Figma.
+
+Parameters:
+  - nodeIds (array, required): Array of node IDs to get information about.
+
+Returns:
+  - content: Array containing a text message with the nodes info as JSON.
+`,
+    {
+      nodeIds: z.array(
+        z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to get information about. Must be a string in the format '123:456'.")
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of Figma node IDs to get information about. Must contain 1 to 100 items."),
+    },
+    async ({ nodeIds }) => {
+      try {
+        const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
+        logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
+        const results = await figmaClient.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings });
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(results)
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error getting nodes info: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
+        };
+      }
+    }
+  );
+}
