@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { CreateTextParams, CreateBoundedTextParams } from "../../../../types/command-params.js";
+import { BaseTextSchema, BoundedTextSchema } from "./text-schema.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
@@ -45,48 +46,7 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created text 123:456" }]
     }
 `,
-    {
-      // Enforce reasonable X coordinate
-      x: z.number()
-        .min(-10000)
-        .max(10000)
-        .describe("X coordinate for the text element. Must be between -10,000 and 10,000."),
-      // Enforce reasonable Y coordinate
-      y: z.number()
-        .min(-10000)
-        .max(10000)
-        .describe("Y coordinate for the text element. Must be between -10,000 and 10,000."),
-      // Enforce non-empty string for text, reasonable length
-      text: z.string()
-        .min(1)
-        .max(10000)
-        .describe("The text content. Must be a non-empty string up to 10,000 characters."),
-      // Enforce positive font size, reasonable upper bound
-      fontSize: z.number()
-        .min(1)
-        .max(200)
-        .optional()
-        .describe("Optional. Font size. Must be between 1 and 200."),
-      // Enforce reasonable font weight
-      fontWeight: z.number()
-        .min(100)
-        .max(1000)
-        .optional()
-        .describe("Optional. Font weight. Must be between 100 and 1000."),
-      // Accept any for fontColor (could be improved with stricter schema)
-      fontColor: z.any().optional().describe("Optional. Font color."),
-      // Enforce non-empty string for name if provided
-      name: z.string()
-        .min(1)
-        .max(100)
-        .optional()
-        .describe("Optional. Name for the text node. If provided, must be a non-empty string up to 100 characters."),
-      // Enforce Figma node ID format for parentId if provided
-      parentId: z.string()
-        .regex(/^\d+:\d+$/)
-        .optional()
-        .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
-    },
+    BaseTextSchema.shape,
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {
@@ -130,58 +90,7 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created bounded text 123:456" }]
     }
 `,
-    {
-      // Enforce reasonable X coordinate
-      x: z.number()
-        .min(-10000)
-        .max(10000)
-        .describe("X coordinate for the text box. Must be between -10,000 and 10,000."),
-      // Enforce reasonable Y coordinate
-      y: z.number()
-        .min(-10000)
-        .max(10000)
-        .describe("Y coordinate for the text box. Must be between -10,000 and 10,000."),
-      // Enforce positive width, reasonable upper bound
-      width: z.number()
-        .min(1)
-        .max(2000)
-        .describe("Width of the text box. Must be between 1 and 2000."),
-      // Enforce positive height, reasonable upper bound
-      height: z.number()
-        .min(1)
-        .max(2000)
-        .describe("Height of the text box. Must be between 1 and 2000."),
-      // Enforce non-empty string for text, reasonable length
-      text: z.string()
-        .min(1)
-        .max(10000)
-        .describe("The text content. Must be a non-empty string up to 10,000 characters."),
-      // Enforce positive font size, reasonable upper bound
-      fontSize: z.number()
-        .min(1)
-        .max(200)
-        .optional()
-        .describe("Optional. Font size. Must be between 1 and 200."),
-      // Enforce reasonable font weight
-      fontWeight: z.number()
-        .min(100)
-        .max(1000)
-        .optional()
-        .describe("Optional. Font weight. Must be between 100 and 1000."),
-      // Accept any for fontColor (could be improved with stricter schema)
-      fontColor: z.any().optional().describe("Optional. Font color."),
-      // Enforce non-empty string for name if provided
-      name: z.string()
-        .min(1)
-        .max(100)
-        .optional()
-        .describe("Optional. Name for the text node. If provided, must be a non-empty string up to 100 characters."),
-      // Enforce Figma node ID format for parentId if provided
-      parentId: z.string()
-        .regex(/^\d+:\d+$/)
-        .optional()
-        .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
-    },
+    BoundedTextSchema.shape,
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {
