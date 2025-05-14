@@ -29,7 +29,7 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
     `Rename a single node in Figma with optional TextNode autoRename.
 
 Parameters:
-  - nodeId (string, required): The ID of the node to rename.
+  - nodeId (string, required): The identifier of the node to rename.
   - newName (string, required): The new name for the node.
   - setAutoRename (boolean, optional): Whether to preserve TextNode autoRename.
 

@@ -360,6 +360,35 @@ The server supports an extensive set of commands for working with Figma. These a
 - **Logging:**  
   The server uses a custom logger that prints messages to stderr. Review `src/conduit_mcp_server/utils/logger.ts` for details.
 
+## MCP Host config:
+
+**Local MCP host config:**
+
+Use bun for command (npm can work too)
+
+```yaml
+ "ConduitMCPServerLocalDep": {
+    "command": "bun",
+    "args": [
+      "/Users/<user-name>/conduit/src/conduit_mcp_server/dist/server.js"
+    ]
+}
+```
+
+**Remote MCP host config:**
+
+Use bunx or npx for command. 
+
+```yaml
+"ConduitMCPServerRemoteDep": {
+  "command": "bunx",
+  "args": [
+    "conduit-design@latest"
+  ]
+}
+```
+
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).

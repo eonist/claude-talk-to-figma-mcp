@@ -54,45 +54,42 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
    */
   server.tool(
     "create_rectangle",
-    `
-Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
+    `Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
 
-**Parameters:**
-- \`x\` (number, required): **X Coordinate**. Required. The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
-- \`y\` (number, required): **Y Coordinate**. Required. The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
-- \`width\` (number, required): **Width**. Required. The width of the rectangle in pixels. Must be > 0. Example: 300
-- \`height\` (number, required): **Height**. Required. The height of the rectangle in pixels. Must be > 0. Example: 150
-- \`name\` (string, optional): **Name**. Optional. The name to assign to the rectangle node in Figma. Example: "Button Background"
-- \`parentId\` (string, optional): **Parent Node ID**. Optional. The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
-- \`cornerRadius\` (number, optional): **Corner Radius**. Optional. The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
+Parameters:
+  - x (number, required): The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
+  - y (number, required): The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
+  - width (number, required): The width of the rectangle in pixels. Must be > 0. Example: 300
+  - height (number, required): The height of the rectangle in pixels. Must be > 0. Example: 150
+  - name (string, optional): The name to assign to the rectangle node in Figma. Example: "Button Background"
+  - parentId (string, optional): The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
+  - cornerRadius (number, optional): The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created rectangle's node ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle's node ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Create Rectangle"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "x": 100,
-  "y": 200,
-  "width": 300,
-  "height": 150,
-  "name": "Button Background",
-  "cornerRadius": 8
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "x": 100,
+      "y": 200,
+      "width": 300,
+      "height": 150,
+      "name": "Button Background",
+      "cornerRadius": 8
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
+    }
 `,
     {
       x: z.number().min(0, "x must be >= 0")
