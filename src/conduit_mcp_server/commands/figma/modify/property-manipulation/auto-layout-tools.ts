@@ -12,34 +12,36 @@ export function registerAutoLayoutTools(server: McpServer, figmaClient: FigmaCli
   // Auto Layout
   server.tool(
     "set_auto_layout",
-    `Configure auto layout properties for a node in Figma.
+    `
+Configures auto layout properties for a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node.
-  - layoutMode (string, required): Layout mode ("HORIZONTAL", "VERTICAL", "NONE").
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
+- \`layoutMode\` (string, required): **Layout Mode**. Required. The auto layout mode to set: "HORIZONTAL", "VERTICAL", or "NONE".
 
-Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Auto layout set for 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
 
-Annotations:
-  - title: "Set Auto Layout"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "layoutMode": "HORIZONTAL"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Auto layout set for 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456",
+  "layoutMode": "HORIZONTAL"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Auto layout set for 123:456" }]
+}
+\`\`\`
 `,
     {
       // Validate nodeId as simple or complex Figma node ID, preserving original description
@@ -87,36 +89,38 @@ Usage Example:
   );
   server.tool(
     "set_auto_layout_resizing",
-    `Set hug or fill sizing mode on an auto layout frame or child node.
+    `
+Sets hug or fill sizing mode on an auto layout frame or child node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node.
-  - axis (string, required): Axis ("horizontal" or "vertical").
-  - mode (string, required): Sizing mode ("FIXED", "HUG", "FILL").
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456'. Example: "123:456"
+- \`axis\` (string, required): **Axis**. Required. The axis to set sizing mode for: "horizontal" or "vertical".
+- \`mode\` (string, required): **Sizing Mode**. Required. The sizing mode to set: "FIXED", "HUG", or "FILL".
 
-Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
 
-Annotations:
-  - title: "Set Auto Layout Resizing"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "axis": "horizontal",
-      "mode": "HUG"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456",
+  "axis": "horizontal",
+  "mode": "HUG"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }]
+}
+\`\`\`
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity

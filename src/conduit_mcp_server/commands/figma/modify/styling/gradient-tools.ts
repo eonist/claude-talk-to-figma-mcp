@@ -15,16 +15,43 @@ export function registerGradientTools(server: McpServer, figmaClient: FigmaClien
   // Create Gradient Variable
   server.tool(
     "create_gradient_variable",
-    `Create a gradient paint style in Figma.
+    `
+Creates a gradient paint style in Figma.
 
-Parameters:
-  - name (string, required): Name for the gradient style.
-  - gradientType (string, required): Type of gradient ("LINEAR", "RADIAL", "ANGULAR", "DIAMOND").
-  - stops (array, required): Array of color stops.
+**Parameters:**
+- \`name\` (string, required): **Gradient Name**. Required. Name for the gradient style. Must be a non-empty string up to 100 characters. Example: "Primary Gradient"
+- \`gradientType\` (string, required): **Gradient Type**. Required. Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".
+- \`stops\` (array, required): **Color Stops**. Required. Array of color stops. Each stop is an object with:
+  - \`position\` (number, required): Position of the stop (0-1).
+  - \`color\` (tuple, required): RGBA color array (4 numbers, each 0-1).
 
-Returns:
-  - content: Array containing a text message with the created gradient's ID.
-    Example: { "content": [{ "type": "text", "text": "Created gradient 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the created gradient's ID.
+
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
+
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "name": "Primary Gradient",
+  "gradientType": "LINEAR",
+  "stops": [
+    { "position": 0, "color": [1, 0, 0, 1] },
+    { "position": 1, "color": [0, 0, 1, 1] }
+  ]
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Created gradient 123:456" }]
+}
+\`\`\`
 `,
     {
       name: z.string()

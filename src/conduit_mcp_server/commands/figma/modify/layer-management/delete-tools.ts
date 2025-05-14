@@ -11,32 +11,34 @@ export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient)
   // Delete single node
   server.tool(
     "delete_node",
-    `Delete a node in Figma.
+    `
+Deletes a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node to delete.
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to delete. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
 
-Returns:
-  - content: Array containing a text message with the deleted node's ID.
-    Example: { "content": [{ "type": "text", "text": "Deleted node 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the deleted node's ID.
 
-Annotations:
-  - title: "Delete Node"
-  - idempotentHint: true
-  - destructiveHint: true
-  - readOnlyHint: false
-  - openWorldHint: false
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: true
+- Read-only: false
+- Open-world: false
 
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Deleted node 123:456" }]
-    }
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456"
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Deleted node 123:456" }]
+}
+\`\`\`
 `,
     {
       // Validate nodeId as simple or complex Figma node ID, preserving original description

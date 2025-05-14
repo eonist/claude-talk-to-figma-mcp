@@ -10,18 +10,42 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     "set_fill_color",
-    `Set the fill color of a node in Figma.
+    `
+Sets the fill color of a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node to update.
-  - r (number, required): Red channel (0-1).
-  - g (number, required): Green channel (0-1).
-  - b (number, required): Blue channel (0-1).
-  - a (number, optional): Alpha channel (0-1).
+**Parameters:**
+- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
+- \`r\` (number, required): **Red Channel**. Required. Red channel value (0-1). Example: 0.5
+- \`g\` (number, required): **Green Channel**. Required. Green channel value (0-1). Example: 0.5
+- \`b\` (number, required): **Blue Channel**. Required. Blue channel value (0-1). Example: 0.5
+- \`a\` (number, optional): **Alpha Channel**. Optional. Alpha channel value (0-1). Example: 1
 
-Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Set fill 123:456" }] }
+**Returns:**
+- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
+
+**Security & Behavior:**
+- Idempotent: true
+- Destructive: false
+- Read-only: false
+- Open-world: false
+
+**Usage Example:**
+Input:
+\`\`\`json
+{
+  "nodeId": "123:456",
+  "r": 0.5,
+  "g": 0.5,
+  "b": 0.5,
+  "a": 1
+}
+\`\`\`
+Output:
+\`\`\`json
+{
+  "content": [{ "type": "text", "text": "Set fill 123:456" }]
+}
+\`\`\`
 `,
     {
       nodeId: z.string()
