@@ -11,38 +11,35 @@ export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaC
   // Set Corner Radius
   server.tool(
     "set_corner_radius",
-    `
-Sets the corner radius of a node in Figma.
+    `Sets the corner radius of a node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`radius\` (number, required): **Corner Radius**. Required. The new corner radius to set, in pixels. Must be a non-negative number (>= 0). Example: 8
-- \`corners\` (array, optional): **Corners Array**. Optional. An array of four booleans indicating which corners to apply the radius to, in the order: [top-left, top-right, bottom-right, bottom-left]. If omitted, applies to all corners. Example: [true, false, true, false]
+Parameters:
+  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - radius (number, required): The new corner radius to set, in pixels. Must be a non-negative number (>= 0). Example: 8
+  - corners (array, optional): An array of four booleans indicating which corners to apply the radius to, in the order: [top-left, top-right, bottom-right, bottom-left]. If omitted, applies to all corners. Example: [true, false, true, false]
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Corner Radius"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "radius": 8,
-  "corners": [true, false, true, false]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Set corner radius for 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "radius": 8,
+      "corners": [true, false, true, false]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Set corner radius for 123:456" }]
+    }
 `,
     {
       // Validate nodeId as simple or complex Figma node ID, preserving original description

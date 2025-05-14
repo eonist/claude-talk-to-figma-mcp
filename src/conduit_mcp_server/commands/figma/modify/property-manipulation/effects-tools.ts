@@ -12,36 +12,33 @@ export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient
   // Set Effects
   server.tool(
     "set_effects",
-    `
-Sets visual effects of a node in Figma.
+    `Sets visual effects of a node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`effects\` (array, required): **Effects Array**. Required. Array of effect objects to apply. Must contain 1 to 20 items. Each effect object should match Figma's effect schema.
+Parameters:
+  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - effects (array, required): Array of effect objects to apply. Must contain 1 to 20 items. Each effect object should match Figma's effect schema.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Effects"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Effects set for 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Effects set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -92,36 +89,33 @@ Output:
   // Set Effect Style ID
   server.tool(
     "set_effect_style_id",
-    `
-Applies an effect style to a node in Figma.
+    `Applies an effect style to a node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`effectStyleId\` (string, required): **Effect Style ID**. Required. The ID of the effect style to apply. Must be a non-empty string up to 100 characters. Example: "effect:789"
+Parameters:
+  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - effectStyleId (string, required): The ID of the effect style to apply. Must be a non-empty string up to 100 characters.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Effect Style ID"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "effectStyleId": "effect:789"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "effectStyleId": "effect:789"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
+    }
 `,
     {
       nodeId: z.string()

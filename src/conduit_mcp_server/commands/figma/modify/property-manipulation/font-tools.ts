@@ -19,38 +19,35 @@ export function registerFontTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Font Name
   server.tool(
     "set_font_name",
-    `
-Sets the font family and style of a text node in Figma.
+    `Sets the font family and style of a text node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`family\` (string, required): **Font Family**. Required. The font family to set. Must be a non-empty string. Maximum length 100 characters. Example: "Roboto"
-- \`style\` (string, optional): **Font Style**. Optional. The font style to set (e.g., "Bold", "Italic"). If provided, must be a non-empty string. Maximum length 100 characters.
+Parameters:
+  - nodeId (string, required): The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
+  - family (string, required): The font family to set. Must be a non-empty string. Maximum length 100 characters. Example: "Roboto"
+  - style (string, optional): The font style to set (e.g., "Bold", "Italic"). If provided, must be a non-empty string. Maximum length 100 characters.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
+Annotations:
+  - title: "Set Font Name"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: false
+  - openWorldHint: false
 
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "family": "Roboto",
-  "style": "Bold"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Font set for 123:456" }]
-}
-\`\`\`
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "family": "Roboto",
+      "style": "Bold"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "Font set for 123:456" }]
+    }
 `,
     {
       nodeId: z.string()
