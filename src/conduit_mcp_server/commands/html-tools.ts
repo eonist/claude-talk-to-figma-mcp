@@ -14,11 +14,6 @@ export function registerHtmlCommands(server: McpServer, figmaClient: FigmaClient
     "generate_html",
     `Generates HTML structure from Figma nodes.
 
-Parameters:
-  - nodeId (string, required): The ID of the Figma node to generate HTML from. Must be a valid Figma node ID (e.g., "123:456").
-  - format (string, optional): HTML output format. One of "semantic", "div-based", or "webcomponent". Defaults to "semantic".
-  - cssMode (string, optional): CSS handling mode. One of "inline", "classes", or "external". Defaults to "classes".
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the generated HTML string.
 

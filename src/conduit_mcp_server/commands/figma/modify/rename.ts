@@ -28,11 +28,6 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
     "rename_layer",
     `Rename a single node in Figma with optional TextNode autoRename.
 
-Parameters:
-  - nodeId (string, required): The identifier of the node to rename.
-  - newName (string, required): The new name for the node.
-  - setAutoRename (boolean, optional): Whether to preserve TextNode autoRename.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the original and new name.
 
@@ -110,12 +105,6 @@ Usage Example:
   server.tool(
     "rename_layers",
     `Rename specified layers by exact name or pattern replace.
-
-Parameters:
-  - layer_ids (array, required): IDs of layers to rename.
-  - new_name (string, required): New base name or pattern including tokens.
-  - match_pattern (string, optional): Regex to match in existing name.
-  - replace_with (string, optional): Text to replace matched pattern.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of layers renamed.
@@ -201,10 +190,6 @@ Usage Example:
   server.tool(
     "rename_multiple",
     `Rename multiple layers with distinct new names.
-
-Parameters:
-  - layer_ids (array, required): Array of layer IDs to rename.
-  - new_names (array, required): Array of new names corresponding to each layer ID.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the renamed layers as JSON.
@@ -297,10 +282,6 @@ Usage Example:
   server.tool(
     "ai_rename_layers",
     `AI-powered rename of specified layers.
-
-Parameters:
-  - layer_ids (array, required): IDs of layers to rename.
-  - context_prompt (string, optional): Prompt for AI renaming.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the AI renaming results.

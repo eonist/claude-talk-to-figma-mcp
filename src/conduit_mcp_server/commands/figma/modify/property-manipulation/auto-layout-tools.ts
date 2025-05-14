@@ -15,20 +15,16 @@ export function registerAutoLayoutTools(server: McpServer, figmaClient: FigmaCli
     `
 Configures auto layout properties for a node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
-- \`layoutMode\` (string, required): **Layout Mode**. Required. The auto layout mode to set: "HORIZONTAL", "VERTICAL", or "NONE".
+Returns:
+- content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
-
-**Security & Behavior:**
+Security & Behavior:
 - Idempotent: true
 - Destructive: false
 - Read-only: false
 - Open-world: false
 
-**Usage Example:**
+Usage Example:
 Input:
 \`\`\`json
 {
@@ -92,21 +88,16 @@ Output:
     `
 Sets hug or fill sizing mode on an auto layout frame or child node in Figma.
 
-**Parameters:**
-- \`nodeId\` (string, required): **Node ID**. Required. The unique Figma node ID to update. Must be a string in the format '123:456'. Example: "123:456"
-- \`axis\` (string, required): **Axis**. Required. The axis to set sizing mode for: "horizontal" or "vertical".
-- \`mode\` (string, required): **Sizing Mode**. Required. The sizing mode to set: "FIXED", "HUG", or "FILL".
+Returns:
+- content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the updated node's ID.
-
-**Security & Behavior:**
+Security & Behavior:
 - Idempotent: true
 - Destructive: false
 - Read-only: false
 - Open-world: false
 
-**Usage Example:**
+Usage Example:
 Input:
 \`\`\`json
 {

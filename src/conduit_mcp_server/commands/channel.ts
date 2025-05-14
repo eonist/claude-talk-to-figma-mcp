@@ -32,9 +32,6 @@ export function registerChannelCommand(server: McpServer, figmaClient: FigmaClie
     "join_channel",
     `Join a specific channel to communicate with Figma.
 
-Parameters:
-  - channel (string, required): The name of the channel to join. Must be a non-empty string.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the join status message.
 

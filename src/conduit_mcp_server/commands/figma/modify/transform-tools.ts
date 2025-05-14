@@ -15,11 +15,6 @@ export function registerTransformCommands(server: McpServer, figmaClient: FigmaC
     "resize_node",
     `Resize a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The ID of the node to resize. Must be a valid Figma node ID (e.g., "123:456").
-  - width (number, required): The new width for the node, in pixels. Must be a positive number between 1 and 10,000.
-  - height (number, required): The new height for the node, in pixels. Must be a positive number between 1 and 10,000.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the resized node's ID and new size.
 
@@ -101,10 +96,6 @@ Usage Example:
   server.tool(
     "resize_nodes",
     `Resize multiple nodes in Figma.
-
-Parameters:
-  - nodeIds (array, required): Array of node IDs to resize. Each must be a valid Figma node ID (e.g., "123:456"). Must contain 1 to 100 items.
-  - targetSize (object, required): Object with width and height. Each must be a positive number between 1 and 10,000.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes resized.

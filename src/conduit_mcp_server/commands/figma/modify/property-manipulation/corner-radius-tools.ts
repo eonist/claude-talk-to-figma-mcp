@@ -13,11 +13,6 @@ export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaC
     "set_corner_radius",
     `Sets the corner radius of a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - radius (number, required): The new corner radius to set, in pixels. Must be a non-negative number (>= 0). Example: 8
-  - corners (array, optional): An array of four booleans indicating which corners to apply the radius to, in the order: [top-left, top-right, bottom-right, bottom-left]. If omitted, applies to all corners. Example: [true, false, true, false]
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
