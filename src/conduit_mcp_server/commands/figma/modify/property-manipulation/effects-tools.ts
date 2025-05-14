@@ -14,10 +14,6 @@ export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient
     "set_effects",
     `Sets visual effects of a node in Figma.
 
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - effects (array, required): Array of effect objects to apply. Must contain 1 to 20 items. Each effect object should match Figma's effect schema.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 
@@ -90,10 +86,6 @@ Usage Example:
   server.tool(
     "set_effect_style_id",
     `Applies an effect style to a node in Figma.
-
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - effectStyleId (string, required): The ID of the effect style to apply. Must be a non-empty string up to 100 characters.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.

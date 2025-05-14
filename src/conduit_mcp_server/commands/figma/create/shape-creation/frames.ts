@@ -46,17 +46,6 @@ export function registerFramesTools(server: McpServer, figmaClient: FigmaClient)
     "create_frame",
     `Creates a new frame node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID, and fill/stroke properties.
 
-Parameters:
-  - x (number, required): X coordinate for the top-left corner. Example: 50
-  - y (number, required): Y coordinate for the top-left corner. Example: 100
-  - width (number, required): Width in pixels. Example: 400
-  - height (number, required): Height in pixels. Example: 300
-  - name (string, optional): Name for the frame node. Example: "Main Frame"
-  - parentId (string, optional): Figma node ID of the parent.
-  - fillColor (any, optional): Fill color for the frame.
-  - strokeColor (any, optional): Stroke color for the frame.
-  - strokeWeight (number, optional): Stroke weight for the frame.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created frame's node ID.
 
