@@ -17,9 +17,6 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
     "flatten_selection",
     `Flatten a selection of nodes in Figma.
 
-Parameters:
-  - nodeIds (array, required): Array of node IDs to flatten.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes flattened.
 
@@ -64,9 +61,6 @@ Usage Example:
     "union_selection",
     `Union selected shapes.
 
-Parameters:
-  - nodeIds (array, required): Array of node IDs to union.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes unioned.
 
@@ -108,9 +102,6 @@ Usage Example:
   server.tool(
     "subtract_selection",
     `Subtract top shapes from bottom shape.
-
-Parameters:
-  - nodeIds (array, required): Array of node IDs to subtract.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes subtracted.
@@ -154,9 +145,6 @@ Usage Example:
     "intersect_selection",
     `Intersect selected shapes.
 
-Parameters:
-  - nodeIds (array, required): Array of node IDs to intersect.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes intersected.
 
@@ -198,9 +186,6 @@ Usage Example:
   server.tool(
     "exclude_selection",
     `Exclude overlapping areas of selected shapes.
-
-Parameters:
-  - nodeIds (array, required): Array of node IDs to exclude.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes excluded.

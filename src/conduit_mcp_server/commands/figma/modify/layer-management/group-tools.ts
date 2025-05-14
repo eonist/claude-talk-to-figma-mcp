@@ -14,10 +14,6 @@ export function registerGroupTools(server: McpServer, figmaClient: FigmaClient) 
     "group_nodes",
     `Groups nodes in Figma.
 
-Parameters:
-  - nodeIds (array, required): Array of node IDs to group. Each must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Must contain at least 2 and at most 100 items.
-  - name (string, optional): Name for the group. If provided, must be a non-empty string up to 100 characters. Example: "Group1"
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the group name and ID.
 
@@ -73,9 +69,6 @@ Usage Example:
   server.tool(
     "ungroup_nodes",
     `Ungroups a group node in Figma.
-
-Parameters:
-  - nodeId (string, required): The unique Figma group node ID to ungroup. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'. Example: "123:456"
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the ungrouped node's ID and number of children released.

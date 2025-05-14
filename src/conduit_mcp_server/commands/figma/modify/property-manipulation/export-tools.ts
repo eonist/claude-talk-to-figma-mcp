@@ -13,11 +13,6 @@ export function registerExportTools(server: McpServer, figmaClient: FigmaClient)
     "export_node_as_image",
     `Exports a node as an image from Figma in the specified format and scale.
 
-Parameters:
-  - nodeId (string, required): The unique Figma node ID to export. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.
-  - format (string, optional): The image format to export: "PNG", "JPG", "SVG", or "PDF". Defaults to "PNG" if omitted.
-  - scale (number, optional): The export scale factor. Must be a positive number. Defaults to 1 if omitted.
-
 Returns:
   - content: Array of objects. Each object contains type: "image", data (image data), and mimeType (image mime type).
 
