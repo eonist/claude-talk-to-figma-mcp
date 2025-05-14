@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers property-manipulation-related modify commands:
@@ -57,10 +58,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce non-empty string for text content (Figma API and user safety)
       text: z.string()
         .min(1)
@@ -140,17 +141,18 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma parent node ID. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma parent node ID. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce array of objects with valid nodeId and non-empty text
       text: z.array(
         z.object({
           // Enforce Figma node ID format for each child
+          // Validate nodeId as simple or complex Figma node ID, preserving original description
           nodeId: z.string()
-            .regex(/^\d+:\d+$/)
-            .describe("The unique Figma child text node ID to update. Must be a string in the format '123:456'."),
+            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+            .describe("The unique Figma child text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
           // Enforce non-empty string for text content
           text: z.string()
             .min(1)
@@ -268,10 +270,10 @@ Output Schema:
   }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce non-negative radius for Figma API and user safety
       radius: z.number().min(0)
         .describe("The new corner radius to set, in pixels. Must be a non-negative number (>= 0)."),
@@ -329,10 +331,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma node ID to export. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to export. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Restrict format to allowed image types
       format: z.enum(["PNG", "JPG", "SVG", "PDF"]).optional()
         .describe('Optional. The image format to export: "PNG", "JPG", "SVG", or "PDF". Defaults to "PNG" if omitted.'),
@@ -415,10 +417,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce non-empty string for font family
       family: z.string()
         .min(1)
@@ -500,10 +502,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce positive font size, reasonable upper bound
       fontSize: z.number()
         .min(1)
@@ -578,10 +580,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce integer font weight, reasonable range
       weight: z.number()
         .int()
@@ -659,10 +661,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce reasonable letter spacing range
       letterSpacing: z.number()
         .min(-100)
@@ -744,10 +746,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce positive line height, reasonable upper bound
       lineHeight: z.number()
         .min(1)
@@ -1137,10 +1139,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce array of effect objects, at least one
       effects: z.array(z.any())
         .min(1)
@@ -1215,10 +1217,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Enforce non-empty string for effectStyleId
       effectStyleId: z.string()
         .min(1)
