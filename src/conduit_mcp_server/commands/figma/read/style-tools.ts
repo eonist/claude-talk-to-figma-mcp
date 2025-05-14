@@ -10,9 +10,6 @@ export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) 
     "get_styles",
     `Get all styles from the current Figma document.
 
-Parameters:
-  (none)
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the styles info as JSON.
 
