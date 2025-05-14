@@ -56,15 +56,6 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
     "create_rectangle",
     `Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
 
-Parameters:
-  - x (number, required): The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
-  - y (number, required): The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
-  - width (number, required): The width of the rectangle in pixels. Must be > 0. Example: 300
-  - height (number, required): The height of the rectangle in pixels. Must be > 0. Example: 150
-  - name (string, optional): The name to assign to the rectangle node in Figma. Example: "Button Background"
-  - parentId (string, optional): The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
-  - cornerRadius (number, optional): The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle's node ID.
 
@@ -163,16 +154,6 @@ Usage Example:
     "create_rectangles",
     `Creates multiple rectangles in Figma based on the provided array of rectangle configuration objects.
 
-Parameters:
-  - rectangles (array, required): An array of rectangle configuration objects. Each object should include:
-    - x (number, required): X coordinate for the top-left corner. Example: 10
-    - y (number, required): Y coordinate for the top-left corner. Example: 20
-    - width (number, required): Width in pixels. Example: 100
-    - height (number, required): Height in pixels. Example: 50
-    - name (string, optional): Name for the rectangle node. Example: "Rect1"
-    - parentId (string, optional): Figma node ID of the parent.
-    - cornerRadius (number, optional): Corner radius in pixels.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of rectangles created.
 
@@ -197,12 +178,27 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
     }
 `,
-    { rectangles: z.array(z.object({
-        x: z.number(), y: z.number(),
-        width: z.number(), height: z.number(),
-        name: z.string().optional(), parentId: z.string().optional(),
-        cornerRadius: z.number().min(0).optional()
-      }))
+    { rectangles: z.array(
+        z.object({
+          x: z.number().min(0, "x must be >= 0")
+            .describe("The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100"),
+          y: z.number().min(0, "y must be >= 0")
+            .describe("The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200"),
+          width: z.number().positive("width must be > 0")
+            .describe("The width of the rectangle in pixels. Must be > 0. Example: 300"),
+          height: z.number().positive("height must be > 0")
+            .describe("The height of the rectangle in pixels. Must be > 0. Example: 150"),
+          name: z.string()
+            .describe("The name to assign to the rectangle node in Figma. Example: 'Button Background'")
+            .optional(),
+          parentId: z.string()
+            .describe("The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.")
+            .optional(),
+          cornerRadius: z.number().min(0, "cornerRadius must be >= 0")
+            .describe("The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8")
+            .optional()
+        })
+      ).describe("An array of rectangle configuration objects. Each object should include coordinates, dimensions, and optional properties for a rectangle.")
     },
     // Tool handler: processes each rectangle, calls Figma client, and returns batch results.
     async ({ rectangles }) => {
