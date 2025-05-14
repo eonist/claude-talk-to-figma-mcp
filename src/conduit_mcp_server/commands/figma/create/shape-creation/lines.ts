@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
+import { LineSchema } from "./line-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
@@ -66,26 +67,7 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created line 123:456" }]
     }
 `,
-    {
-      x1: z.number()
-        .describe("X coordinate for the start point. Example: 10"),
-      y1: z.number()
-        .describe("Y coordinate for the start point. Example: 20"),
-      x2: z.number()
-        .describe("X coordinate for the end point. Example: 110"),
-      y2: z.number()
-        .describe("Y coordinate for the end point. Example: 20"),
-      parentId: z.string()
-        .describe("Figma node ID of the parent.")
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .optional(),
-      strokeColor: z.any()
-        .describe("Stroke color for the line.")
-        .optional(),
-      strokeWeight: z.number()
-        .describe("Stroke weight for the line.")
-        .optional()
-    },
+    LineSchema.shape,
     // Tool handler: validates input, calls Figma client, and returns result.
     async ({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight }) => {
       const node = await figmaClient.createLine({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight });
@@ -155,26 +137,7 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created 2/2 lines." }]
     }
 `,
-    { lines: z.array(z.object({
-        x1: z.number()
-          .describe("X coordinate for the start point. Example: 10"),
-        y1: z.number()
-          .describe("Y coordinate for the start point. Example: 20"),
-        x2: z.number()
-          .describe("X coordinate for the end point. Example: 110"),
-        y2: z.number()
-          .describe("Y coordinate for the end point. Example: 20"),
-        parentId: z.string()
-          .describe("Figma node ID of the parent.")
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .optional(),
-        strokeColor: z.any()
-          .describe("Stroke color for the line.")
-          .optional(),
-        strokeWeight: z.number()
-          .describe("Stroke weight for the line.")
-          .optional()
-      }))
+    { lines: z.array(LineSchema)
     },
     // Tool handler: processes each line, calls Figma client, and returns batch results.
     async ({ lines }) => {

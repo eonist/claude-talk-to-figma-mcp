@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
+import { EllipseSchema } from "./ellipse-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
@@ -72,32 +73,7 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created ellipse 123:456" }]
     }
 `,
-    {
-      x: z.number()
-        .describe("X coordinate for the top-left corner. Example: 60"),
-      y: z.number()
-        .describe("Y coordinate for the top-left corner. Example: 80"),
-      width: z.number()
-        .describe("Width in pixels. Example: 120"),
-      height: z.number()
-        .describe("Height in pixels. Example: 90"),
-      name: z.string()
-        .describe("Name for the ellipse node. Example: 'Ellipse1'")
-        .optional(),
-      parentId: z.string()
-        .describe("Figma node ID of the parent.")
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .optional(),
-      fillColor: z.any()
-        .describe("Fill color for the ellipse.")
-        .optional(),
-      strokeColor: z.any()
-        .describe("Stroke color for the ellipse.")
-        .optional(),
-      strokeWeight: z.number()
-        .describe("Stroke weight for the ellipse.")
-        .optional()
-    },
+    EllipseSchema.shape,
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {
@@ -175,32 +151,7 @@ Usage Example:
       "content": [{ "type": "text", "text": "Created 2/2 ellipses." }]
     }
 `,
-    { ellipses: z.array(z.object({
-        x: z.number()
-          .describe("X coordinate for the top-left corner. Example: 10"),
-        y: z.number()
-          .describe("Y coordinate for the top-left corner. Example: 20"),
-        width: z.number()
-          .describe("Width in pixels. Example: 100"),
-        height: z.number()
-          .describe("Height in pixels. Example: 50"),
-        name: z.string()
-          .describe("Name for the ellipse node. Example: 'Ellipse1'")
-          .optional(),
-        parentId: z.string()
-          .describe("Figma node ID of the parent.")
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .optional(),
-        fillColor: z.any()
-          .describe("Fill color for the ellipse.")
-          .optional(),
-        strokeColor: z.any()
-          .describe("Stroke color for the ellipse.")
-          .optional(),
-        strokeWeight: z.number()
-          .describe("Stroke weight for the ellipse.")
-          .optional()
-      }))
+    { ellipses: z.array(EllipseSchema)
     },
     // Tool handler: processes each ellipse, calls Figma client, and returns batch results.
     async ({ ellipses }) => {
