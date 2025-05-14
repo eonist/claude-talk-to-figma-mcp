@@ -18,7 +18,26 @@ Parameters:
   - format (string, optional): Format to return CSS in ("object", "string", "inline").
 
 Returns:
-  - content: Array containing a text message with the CSS properties as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the CSS properties as JSON.
+
+Annotations:
+  - title: "Get CSS Async"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "format": "string"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...css...}" }]
+    }
 `,
     {
       nodeId: z.string()

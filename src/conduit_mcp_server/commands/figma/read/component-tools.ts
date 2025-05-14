@@ -16,7 +16,22 @@ Parameters:
   (none)
 
 Returns:
-  - content: Array containing a text message with the local components info as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the local components info as JSON.
+
+Annotations:
+  - title: "Get Local Components"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input: {}
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...local components info...}" }]
+    }
 `,
     {},
     async () => {
@@ -52,7 +67,22 @@ Parameters:
   (none)
 
 Returns:
-  - content: Array containing a text message with the remote components info as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the remote components info as JSON.
+
+Annotations:
+  - title: "Get Remote Components"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input: {}
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...remote components info...}" }]
+    }
 `,
     {},
     async () => {

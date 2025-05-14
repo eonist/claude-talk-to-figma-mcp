@@ -21,7 +21,25 @@ Parameters:
   - nodeId (string, required): The ID of the node to get information about.
 
 Returns:
-  - content: Array containing a text message with the node info as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the node info as JSON.
+
+Annotations:
+  - title: "Get Node Info"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...node info...}" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -63,7 +81,25 @@ Parameters:
   - nodeIds (array, required): Array of node IDs to get information about.
 
 Returns:
-  - content: Array containing a text message with the nodes info as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the nodes info as JSON.
+
+Annotations:
+  - title: "Get Nodes Info"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeIds": ["123:456", "789:101"]
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "[{...node1 info...}, {...node2 info...}]" }]
+    }
 `,
     {
       nodeIds: z.array(

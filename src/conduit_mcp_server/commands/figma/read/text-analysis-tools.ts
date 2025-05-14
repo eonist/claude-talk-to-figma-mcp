@@ -21,7 +21,26 @@ Parameters:
   - property (string, required): The style property to analyze segments by.
 
 Returns:
-  - content: Array containing a text message with the styled text segments as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the styled text segments as JSON.
+
+Annotations:
+  - title: "Get Styled Text Segments"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456",
+      "property": "fontWeight"
+    }
+  Output:
+    {
+      "content": [{ "type": "text", "text": "[{...styled segments...}]" }]
+    }
 `,
     {
       nodeId: z.string()
@@ -78,7 +97,29 @@ Parameters:
   - nodeId (string, required): ID of the node to scan.
 
 Returns:
-  - content: Array containing text messages with the scan status and results.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the scan status and results.
+
+Annotations:
+  - title: "Scan Text Nodes"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input:
+    {
+      "nodeId": "123:456"
+    }
+  Output:
+    {
+      "content": [
+        { "type": "text", "text": "Starting text node scanning. This may take a moment for large designs..." },
+        { "type": "text", "text": "Scan completed: - Found 10 text nodes - Processed in 2 chunks" },
+        { "type": "text", "text": "[{...text nodes...}]" }
+      ]
+    }
 `,
     {
       nodeId: z.string()

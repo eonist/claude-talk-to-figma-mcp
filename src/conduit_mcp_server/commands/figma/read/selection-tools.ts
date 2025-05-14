@@ -14,7 +14,22 @@ Parameters:
   (none)
 
 Returns:
-  - content: Array containing a text message with the selection info as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the selection info as JSON.
+
+Annotations:
+  - title: "Get Selection"
+  - idempotentHint: true
+  - destructiveHint: false
+  - readOnlyHint: true
+  - openWorldHint: false
+
+---
+Usage Example:
+  Input: {}
+  Output:
+    {
+      "content": [{ "type": "text", "text": "{...selection info...}" }]
+    }
 `,
     {},
     async () => {
