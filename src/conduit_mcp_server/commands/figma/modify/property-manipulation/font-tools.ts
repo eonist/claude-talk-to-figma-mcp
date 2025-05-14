@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { FontFamilyStyleSchema, FontSizeSchema, FontWeightSchema } from "./font-schema.js";
 
 /**
  * Registers property-manipulation-related modify commands:
@@ -48,15 +49,7 @@ Usage Example:
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      family: z.string()
-        .min(1)
-        .max(100)
-        .describe("The font family to set. Must be a non-empty string. Maximum length 100 characters."),
-      style: z.string()
-        .min(1)
-        .max(100)
-        .optional()
-        .describe("Optional. The font style to set (e.g., 'Bold', 'Italic'). If provided, must be a non-empty string. Maximum length 100 characters."),
+      ...FontFamilyStyleSchema.shape,
     },
     async ({ nodeId, family, style }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -97,10 +90,7 @@ Usage Example:
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      fontSize: z.number()
-        .min(1)
-        .max(512)
-        .describe("The font size to set, in points. Must be a positive number between 1 and 512."),
+      ...FontSizeSchema.shape,
     },
     async ({ nodeId, fontSize }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -141,11 +131,7 @@ Usage Example:
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      weight: z.number()
-        .int()
-        .min(100)
-        .max(1000)
-        .describe("The font weight to set. Must be an integer between 100 and 1000 (typical Figma font weight range)."),
+      ...FontWeightSchema.shape,
     },
     async ({ nodeId, weight }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -348,15 +334,7 @@ Returns:
     Example: { "content": [{ "type": "text", "text": "Font loaded: Roboto" }] }
 `,
     {
-      family: z.string()
-        .min(1)
-        .max(100)
-        .describe("The font family to load. Must be a non-empty string. Maximum length 100 characters."),
-      style: z.string()
-        .min(1)
-        .max(100)
-        .optional()
-        .describe("Optional. The font style to load (e.g., 'Bold', 'Italic'). If provided, must be a non-empty string. Maximum length 100 characters."),
+      ...FontFamilyStyleSchema.shape,
     },
     async ({ family, style }) => {
       await figmaClient.executeCommand("load_font_async", { family, style });

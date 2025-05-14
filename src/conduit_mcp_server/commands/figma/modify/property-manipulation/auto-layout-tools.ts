@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { AutoLayoutConfigSchema, AutoLayoutResizingSchema } from "./auto-layout-schema.js";
 
 /**
  * Registers property-manipulation-related modify commands:
@@ -40,13 +41,10 @@ Output:
 \`\`\`
 `,
     {
-      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      // Restrict layoutMode to allowed values
-      layoutMode: z.enum(["HORIZONTAL", "VERTICAL", "NONE"])
-        .describe('The auto layout mode to set: "HORIZONTAL", "VERTICAL", or "NONE".'),
+      ...AutoLayoutConfigSchema.shape,
     },
     async ({ nodeId, layoutMode }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -114,16 +112,10 @@ Output:
 \`\`\`
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
-      // Restrict axis to allowed values
-      axis: z.enum(["horizontal", "vertical"])
-        .describe('The axis to set sizing mode for: "horizontal" or "vertical".'),
-      // Restrict mode to allowed values
-      mode: z.enum(["FIXED", "HUG", "FILL"])
-        .describe('The sizing mode to set: "FIXED", "HUG", or "FILL".'),
+      ...AutoLayoutResizingSchema.shape,
     },
     async ({ nodeId, axis, mode }) => {
       const id = ensureNodeIdIsString(nodeId);

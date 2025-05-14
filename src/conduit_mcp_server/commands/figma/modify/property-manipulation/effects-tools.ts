@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { EffectsArraySchema } from "./effect-schema.js";
 
 /**
  * Registers property-manipulation-related modify commands:
@@ -40,10 +41,7 @@ Usage Example:
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      effects: z.array(z.any())
-        .min(1)
-        .max(20)
-        .describe("Array of effect objects to apply. Must contain 1 to 20 items. Each effect object should match Figma's effect schema."),
+      effects: EffectsArraySchema,
     },
     async ({ nodeId, effects }) => {
       const id = ensureNodeIdIsString(nodeId);
