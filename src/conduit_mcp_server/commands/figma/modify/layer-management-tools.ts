@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers layer-management-related modify commands:
@@ -44,11 +45,11 @@ Usage Example:
     }
 `,
     {
-      // Enforce array of Figma node IDs, each must match format
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
-          .describe("A Figma node ID to flatten. Must be a string in the format '123:456'.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to flatten. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
       )
       .min(1)
       .max(100)
@@ -92,11 +93,11 @@ Usage Example:
     }
 `,
     {
-      // Enforce array of Figma node IDs, each must match format
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
-          .describe("A Figma node ID to union. Must be a string in the format '123:456'.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to union. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
       )
       .min(2)
       .max(100)
@@ -138,11 +139,11 @@ Usage Example:
     }
 `,
     {
-      // Enforce array of Figma node IDs, each must match format
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
-          .describe("A Figma node ID to subtract. Must be a string in the format '123:456'.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to subtract. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
       )
       .min(2)
       .max(100)
@@ -184,11 +185,11 @@ Usage Example:
     }
 `,
     {
-      // Enforce array of Figma node IDs, each must match format
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
-          .describe("A Figma node ID to intersect. Must be a string in the format '123:456'.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to intersect. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
       )
       .min(2)
       .max(100)
@@ -230,11 +231,11 @@ Usage Example:
     }
 `,
     {
-      // Enforce array of Figma node IDs, each must match format
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
-          .describe("A Figma node ID to exclude. Must be a string in the format '123:456'.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to exclude. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
       )
       .min(2)
       .max(100)
@@ -279,11 +280,11 @@ Usage Example:
     }
 `,
     {
-      // Enforce array of Figma node IDs, each must match format
+      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: z.array(
         z.string()
-          .regex(/^\d+:\d+$/)
-          .describe("A Figma node ID to group. Must be a string in the format '123:456'.")
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("A Figma node ID to group. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
       )
       .min(2)
       .max(100)
@@ -338,10 +339,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma group node ID to ungroup. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma group node ID to ungroup. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -386,10 +387,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma node ID to delete. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to delete. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);

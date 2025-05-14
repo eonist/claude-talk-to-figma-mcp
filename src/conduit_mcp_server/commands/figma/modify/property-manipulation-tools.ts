@@ -1297,10 +1297,10 @@ Usage Example:
     }
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
+      // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
-        .regex(/^\d+:\d+$/)
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       // Restrict layoutMode to allowed values
       layoutMode: z.enum(["HORIZONTAL", "VERTICAL", "NONE"])
         .describe('The auto layout mode to set: "HORIZONTAL", "VERTICAL", or "NONE".'),
