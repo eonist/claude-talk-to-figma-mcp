@@ -26,7 +26,24 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          url: "https://example.com/image.png",
+          x: 100,
+          y: 200,
+          width: 300,
+          height: 150,
+          name: "Sample Image"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "URL must point to a valid image file.",
+        "Width and height must be positive if specified.",
+        "If parentId is invalid, the image will be added to the root.",
+        "Network errors or invalid URLs will cause failure."
+      ],
+      extraInfo: "Supports inserting images from remote URLs with custom size and position."
     },
     async ({ url, x, y, width, height, name, parentId }): Promise<any> => {
       try {
@@ -57,7 +74,22 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          images: [
+            { url: "https://example.com/image1.png", x: 10, y: 20 },
+            { url: "https://example.com/image2.png", x: 50, y: 60 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each image must have a valid URL.",
+        "Width and height must be positive if specified.",
+        "If parentId is invalid, images will be added to the root.",
+        "Network errors or invalid URLs will cause partial or total failure."
+      ],
+      extraInfo: "Batch insertion is efficient for adding multiple remote images at once."
     },
     async ({ images }): Promise<any> => {
       try {

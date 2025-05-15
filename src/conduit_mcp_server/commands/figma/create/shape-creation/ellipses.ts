@@ -57,7 +57,22 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x: 60,
+          y: 80,
+          width: 120,
+          height: 90,
+          name: "Ellipse1"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Width and height must be greater than zero.",
+        "If parentId is invalid, the ellipse will be added to the root.",
+        "Fill and stroke colors must be valid color objects."
+      ],
+      extraInfo: "Useful for generating circles, ovals, or design primitives programmatically."
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
@@ -122,7 +137,21 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          ellipses: [
+            { x: 10, y: 20, width: 100, height: 50, name: "Ellipse1" },
+            { x: 120, y: 20, width: 80, height: 40 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each ellipse must have positive width and height.",
+        "If parentId is invalid, ellipses will be added to the root.",
+        "Fill and stroke colors must be valid color objects."
+      ],
+      extraInfo: "Batch creation is efficient for generating multiple ellipses or circles at once."
     },
     // Tool handler: processes each ellipse, calls Figma client, and returns batch results.
     async ({ ellipses }) => {

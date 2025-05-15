@@ -32,7 +32,23 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x: 100,
+          y: 200,
+          text: "Hello, world!",
+          fontSize: 16,
+          fontWeight: 400,
+          name: "Greeting"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Text content must be a non-empty string.",
+        "Font size and weight must be within supported ranges.",
+        "If parentId is invalid, the text will be added to the root."
+      ],
+      extraInfo: "Useful for programmatically adding text labels, headings, or annotations."
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
@@ -61,7 +77,26 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x: 100,
+          y: 200,
+          width: 300,
+          height: 100,
+          text: "This is a bounded text box.",
+          fontSize: 14,
+          fontWeight: 500,
+          name: "Description"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Text content must be a non-empty string.",
+        "Width and height must be positive.",
+        "Font size and weight must be within supported ranges.",
+        "If parentId is invalid, the text will be added to the root."
+      ],
+      extraInfo: "Bounded text is useful for paragraphs, captions, or multi-line text blocks."
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {

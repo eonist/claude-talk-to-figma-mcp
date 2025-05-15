@@ -67,7 +67,29 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x: 100,
+          y: 200,
+          width: 120,
+          height: 40,
+          text: "Click Me",
+          background: { r: 0.2, g: 0.5, b: 0.8, a: 1 },
+          textColor: { r: 1, g: 1, b: 1, a: 1 },
+          fontSize: 16,
+          fontWeight: 600,
+          cornerRadius: 8,
+          name: "Primary Button"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Width and height must be within allowed range.",
+        "Text must be a non-empty string.",
+        "Color values must be between 0 and 1.",
+        "If parentId is invalid, the button will be added to the root."
+      ],
+      extraInfo: "Creates a visually complete button with customizable style and text."
     },
     async (args) => {
       try {

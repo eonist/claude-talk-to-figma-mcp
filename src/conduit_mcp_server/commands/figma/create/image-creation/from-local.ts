@@ -85,7 +85,29 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          imagePath: "/path/to/image.png",
+          x: 100,
+          y: 200,
+          width: 300,
+          height: 150,
+          name: "Sample Image"
+        },
+        {
+          imageData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...",
+          x: 0,
+          y: 0
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Either imagePath or imageData must be provided.",
+        "Width and height must be positive if specified.",
+        "If parentId is invalid, the image will be added to the root.",
+        "Image data must be a valid file or base64 string."
+      ],
+      extraInfo: "Supports both file path and base64 data URI for local image insertion."
     },
     async ({ imagePath, imageData, x, y, width, height, name, parentId }): Promise<any> => {
       try {
@@ -189,7 +211,22 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          images: [
+            { imagePath: "/path/to/image1.png", x: 10, y: 20 },
+            { imageData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...", x: 50, y: 60 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each image must have either imagePath or imageData.",
+        "Width and height must be positive if specified.",
+        "If parentId is invalid, images will be added to the root.",
+        "Image data must be a valid file or base64 string."
+      ],
+      extraInfo: "Batch insertion is efficient for adding multiple local images at once."
     },
     async ({ images }): Promise<any> => {
       try {

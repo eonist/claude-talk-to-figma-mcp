@@ -65,7 +65,23 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x: 100,
+          y: 200,
+          width: 300,
+          height: 150,
+          name: "Button Background",
+          cornerRadius: 8
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Width and height must be greater than zero.",
+        "Corner radius should not exceed half the smallest dimension.",
+        "If parentId is invalid, the rectangle will be added to the root."
+      ],
+      extraInfo: "Useful for generating UI elements, backgrounds, or design primitives programmatically."
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args, extra): Promise<any> => {
@@ -136,7 +152,21 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          rectangles: [
+            { x: 10, y: 20, width: 100, height: 50, name: "Rect1" },
+            { x: 120, y: 20, width: 80, height: 40 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each rectangle must have positive width and height.",
+        "Corner radius for each rectangle should not exceed half the smallest dimension.",
+        "If parentId is invalid, rectangles will be added to the root."
+      ],
+      extraInfo: "Batch creation is efficient for generating multiple design elements at once."
     },
     // Tool handler: processes each rectangle, calls Figma client, and returns batch results.
     async ({ rectangles }) => {

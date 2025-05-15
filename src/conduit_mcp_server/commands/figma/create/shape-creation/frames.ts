@@ -56,7 +56,22 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x: 50,
+          y: 100,
+          width: 400,
+          height: 300,
+          name: "Main Frame"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Width and height must be greater than zero.",
+        "If parentId is invalid, the frame will be added to the root.",
+        "Fill and stroke colors must be valid color objects."
+      ],
+      extraInfo: "Useful for generating UI containers, artboards, or design primitives programmatically."
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {

@@ -33,7 +33,18 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          nodeId: "123:456"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "If the node is not convertible, the command will fail.",
+        "The node must not already be a component."
+      ],
+      extraInfo: "Converts an existing node into a reusable component for design systems."
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async ({ nodeId }): Promise<any> => {

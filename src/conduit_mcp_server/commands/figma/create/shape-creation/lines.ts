@@ -52,7 +52,21 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x1: 10,
+          y1: 20,
+          x2: 110,
+          y2: 20
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Start and end points must not be identical.",
+        "If parentId is invalid, the line will be added to the root.",
+        "Stroke color must be a valid color object."
+      ],
+      extraInfo: "Useful for generating connectors, dividers, or design primitives programmatically."
     },
     // Tool handler: validates input, calls Figma client, and returns result.
     async ({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight }) => {
@@ -109,7 +123,21 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          lines: [
+            { x1: 10, y1: 20, x2: 110, y2: 20 },
+            { x1: 20, y1: 30, x2: 120, y2: 30 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each line must have distinct start and end points.",
+        "If parentId is invalid, lines will be added to the root.",
+        "Stroke color must be a valid color object."
+      ],
+      extraInfo: "Batch creation is efficient for generating multiple lines or connectors at once."
     },
     // Tool handler: processes each line, calls Figma client, and returns batch results.
     async ({ lines }) => {

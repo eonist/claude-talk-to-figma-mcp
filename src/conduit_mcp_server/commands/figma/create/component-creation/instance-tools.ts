@@ -62,7 +62,20 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          componentKey: "abc123",
+          x: 100,
+          y: 200
+        }
+      ]),
+      edgeCaseWarnings: [
+        "componentKey must be a valid component key.",
+        "x and y must be within allowed range.",
+        "If the componentKey is invalid, the command will fail."
+      ],
+      extraInfo: "Creates a new instance of a component at the specified position."
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async ({ componentKey, x, y }): Promise<any> => {
@@ -114,7 +127,21 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          instances: [
+            { componentKey: "abc123", x: 100, y: 200 },
+            { componentKey: "def456", x: 300, y: 400 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each instance must have a valid componentKey.",
+        "x and y must be within allowed range.",
+        "If any componentKey is invalid, that instance will fail."
+      ],
+      extraInfo: "Batch creation is efficient for adding multiple component instances at once."
     },
     // Tool handler: processes each instance, calls Figma client, and returns batch results.
     async ({ instances }): Promise<any> => {
