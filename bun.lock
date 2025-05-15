@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "cursor-talk-to-figma-mcp",
+      "name": "conduit-design",
       "dependencies": {
         "@modelcontextprotocol/sdk": "^1.11.0",
         "reconnecting-websocket": "^4.4.0",

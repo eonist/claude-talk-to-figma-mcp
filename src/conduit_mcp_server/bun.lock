@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "talk-to-figma-mcp",
+      "name": "conduit-design-mcp-server",
       "dependencies": {
         "@modelcontextprotocol/sdk": "latest",
         "uuid": "^9.0.1",
