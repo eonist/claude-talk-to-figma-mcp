@@ -58,9 +58,23 @@ Returns:
     {
       title: "Insert SVG Vector",
       idempotentHint: true,
-      destructiveHint: false,
+      a: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          svg: "<svg>...</svg>",
+          x: 0,
+          y: 0,
+          name: "My SVG"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "SVG content must be valid SVG markup or a valid URL.",
+        "Coordinates must be within the canvas bounds.",
+        "If parentId is invalid, the SVG will be added to the root."
+      ],
+      extraInfo: "Use this command to insert a single SVG vector into the Figma document."
     },
     async ({ svg, x, y, name, parentId }): Promise<any> => {
       try {
@@ -133,7 +147,25 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          svgs: [
+            {
+              svg: "<svg>...</svg>",
+              x: 0,
+              y: 0,
+              name: "My SVG"
+            }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each SVG content must be valid SVG markup or a valid URL.",
+        "Coordinates must be within the canvas bounds.",
+        "If parentId is invalid, SVGs will be added to the root."
+      ],
+      extraInfo: "Use this command to insert multiple SVG vectors into the Figma document."
     },
     async ({ svgs }): Promise<any> => {
       try {

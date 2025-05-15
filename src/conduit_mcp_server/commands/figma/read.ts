@@ -65,7 +65,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns a large JSON object for complex documents.",
+        "May include document-level metadata, pages, and settings.",
+        "If the document is empty, the result may be minimal."
+      ],
+      extraInfo: "Use this command to retrieve the full structure and metadata of the current Figma document."
     },
     async () => {
       try {
@@ -109,7 +118,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if nothing is selected.",
+        "Selection info may include node IDs, types, and properties.",
+        "If multiple nodes are selected, the result is an array."
+      ],
+      extraInfo: "Use this command to inspect the current selection context in the Figma document."
     },
     async () => {
       try {
@@ -158,7 +176,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "Returns an error if nodeId is invalid or not found.",
+        "Result includes all properties of the node.",
+        "Large nodes may return a large JSON object."
+      ],
+      extraInfo: "Use this command to inspect properties and metadata of a specific Figma node."
     },
     async ({ nodeId }) => {
       try {
@@ -216,7 +243,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeIds: ["123:456", "789:101"] }
+      ]),
+      edgeCaseWarnings: [
+        "Returns an error if any nodeId is invalid or not found.",
+        "Result is an array of node info objects.",
+        "Large requests may impact performance."
+      ],
+      extraInfo: "Batch version of get_node_info for inspecting multiple nodes at once."
     },
     async ({ nodeIds }) => {
       try {
@@ -264,7 +300,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if no styles exist.",
+        "Result includes all color, text, and effect styles.",
+        "Large documents may return a large JSON object."
+      ],
+      extraInfo: "Use this command to list all shared styles in the current Figma document."
     },
     async () => {
       try {
@@ -308,7 +353,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if no local components exist.",
+        "Result includes all local components in the document.",
+        "Large documents may return a large JSON object."
+      ],
+      extraInfo: "Use this command to list all components defined in the current Figma document."
     },
     async () => {
       try {
@@ -348,11 +402,20 @@ Returns:
 `,
     {},
     {
-      title: "Get Remote Components",
+      title: "Get Team Components",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { team_id: "123456" }
+      ]),
+      edgeCaseWarnings: [
+        "team_id is required.",
+        "Pagination may be needed for large teams.",
+        "Returns an error if the team ID is invalid."
+      ],
+      extraInfo: "Retrieves components from a Figma team library, supporting pagination."
     },
     async () => {
       try {
@@ -410,11 +473,20 @@ Returns:
       ]).describe("Style Property. Required. The style property to analyze segments by. Must be one of: fillStyleId, fontName, fontSize, textCase, textDecoration, textStyleId, fills, letterSpacing, lineHeight, fontWeight. Example: 'fontSize'."),
     },
     {
-      title: "Get Styled Text Segments",
+      title: "Get Remote Components",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if no remote components are available.",
+        "Result includes components from all linked team libraries.",
+        "Network or permission errors may cause failure."
+      ],
+      extraInfo: "Lists components available from team libraries linked to the current document."
     },
     async ({ nodeId, property }) => {
       try {
@@ -467,11 +539,20 @@ Returns:
         .describe("Node ID. Required. The unique Figma node ID to scan. Must be a string in the format '123:456'. Example: '123:456'."),
     },
     {
-      title: "Scan Text Nodes",
+      title: "Get Styled Text Segments",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", property: "fontSize" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid text node.",
+        "property must be a supported style property.",
+        "Returns an error if the node is not a text node."
+      ],
+      extraInfo: "Use this command to analyze style runs within a text node for advanced formatting."
     },
     async ({ nodeId }) => {
       try {
@@ -570,11 +651,20 @@ Returns:
         .describe('Format. Optional. The format to return CSS in: "object", "string", or "inline". Example: "string".'),
     },
     {
-      title: "Get CSS Async",
+      title: "Scan Text Nodes",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "Large nodes may take longer to scan.",
+        "Returns a summary and all found text nodes."
+      ],
+      extraInfo: "Scans all descendant text nodes for content and style analysis."
     },
     async ({ nodeId, format }) => {
       try {
