@@ -14,28 +14,6 @@ export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Fill Color"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "r": 0.5,
-      "g": 0.5,
-      "b": 0.5,
-      "a": 1
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Set fill 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
@@ -45,6 +23,13 @@ Usage Example:
       g: z.number().min(0).max(1).describe("Green channel (0-1)"),
       b: z.number().min(0).max(1).describe("Blue channel (0-1)"),
       a: z.number().min(0).max(1).optional().describe("Optional. Alpha channel (0-1)"),
+    },
+    {
+      title: "Set Fill Color",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, r, g, b, a }) => {
       const id = ensureNodeIdIsString(nodeId);

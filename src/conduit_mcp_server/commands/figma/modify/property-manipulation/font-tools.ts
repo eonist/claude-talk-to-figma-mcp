@@ -24,32 +24,19 @@ export function registerFontTools(server: McpServer, figmaClient: FigmaClient) {
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Font Name"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "family": "Roboto",
-      "style": "Bold"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Font set for 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       ...FontFamilyStyleSchema.shape,
+    },
+    {
+      title: "Set Font Name",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, family, style }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -64,33 +51,20 @@ Usage Example:
     `Set the font size of a text node in Figma.
 
 Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Font size set for 123:456" }] }
-
-Annotations:
-  - title: "Set Font Size"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "fontSize": 16
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Font size set for 123:456" }]
-    }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       ...FontSizeSchema.shape,
+    },
+    {
+      title: "Set Font Size",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, fontSize }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -105,33 +79,20 @@ Usage Example:
     `Set the font weight of a text node in Figma.
 
 Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Font weight set for 123:456" }] }
-
-Annotations:
-  - title: "Set Font Weight"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "weight": 700
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Font weight set for 123:456" }]
-    }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       ...FontWeightSchema.shape,
+    },
+    {
+      title: "Set Font Weight",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, weight }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -146,28 +107,7 @@ Usage Example:
     `Set the letter spacing of a text node in Figma.
 
 Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }] }
-
-Annotations:
-  - title: "Set Letter Spacing"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "letterSpacing": 2,
-      "unit": "PIXELS"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Letter spacing set for 123:456" }]
-    }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 `,
     {
       nodeId: z.string()
@@ -179,6 +119,13 @@ Usage Example:
         .describe("The letter spacing value to set. Can be negative or positive, typically between -100 and 1000."),
       unit: z.enum(["PIXELS", "PERCENT"]).optional()
         .describe('Optional. The unit for letter spacing: "PIXELS" or "PERCENT". Defaults to "PIXELS" if omitted.'),
+    },
+    {
+      title: "Set Letter Spacing",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, letterSpacing, unit }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -193,28 +140,7 @@ Usage Example:
     `Set the line height of a text node in Figma.
 
 Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Line height set for 123:456" }] }
-
-Annotations:
-  - title: "Set Line Height"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "lineHeight": 24,
-      "unit": "PIXELS"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Line height set for 123:456" }]
-    }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 `,
     {
       nodeId: z.string()
@@ -226,6 +152,13 @@ Usage Example:
         .describe("The line height value to set. Must be a positive number between 1 and 1000."),
       unit: z.enum(["PIXELS", "PERCENT", "AUTO"]).optional()
         .describe('Optional. The unit for line height: "PIXELS", "PERCENT", or "AUTO". Defaults to "AUTO" if omitted.'),
+    },
+    {
+      title: "Set Line Height",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, lineHeight, unit }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -240,27 +173,7 @@ Usage Example:
     `Set the paragraph spacing of a text node in Figma.
 
 Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }] }
-
-Annotations:
-  - title: "Set Paragraph Spacing"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "paragraphSpacing": 12
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Paragraph spacing set for 123:456" }]
-    }
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 `,
     {
       nodeId: z.string()
@@ -270,6 +183,13 @@ Usage Example:
         .min(0)
         .max(1000)
         .describe("The paragraph spacing value to set. Must be a non-negative number between 0 and 1000."),
+    },
+    {
+      title: "Set Paragraph Spacing",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, paragraphSpacing }) => {
       const id = ensureNodeIdIsString(nodeId);

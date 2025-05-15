@@ -58,22 +58,15 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
 
 Returns:
   - content: Array containing a text message with the document info as JSON.
-
-Annotations:
-  - title: "Get Document Info"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...document info...}" }]
-    }
 `,
     {},
+    {
+      title: "Get Document Info",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_document_info");
@@ -109,22 +102,15 @@ Usage Example:
 
 Returns:
   - content: Array containing a text message with the selection info as JSON.
-
-Annotations:
-  - title: "Get Selection"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...selection info...}" }]
-    }
 `,
     {},
+    {
+      title: "Get Selection",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_selection");
@@ -156,39 +142,23 @@ Usage Example:
    */
   server.tool(
     "get_node_info",
-    `
-Retrieves detailed information about a specific node in Figma.
+    `Retrieves detailed information about a specific node in Figma.
 
-**Returns:**
-- \`content\`: Array of objects. Each object contains a \`type: "text"\` and a \`text\` field with the node info as JSON.
-
-**Security & Behavior:**
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
-**Usage Example:**
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [
-    { "type": "text", "text": "{...node info...}" }
-  ]
-}
-\`\`\`
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the node info as JSON.
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("Node ID. Required. The unique Figma node ID to get information about. Must be a string in the format '123:456'. Example: '123:456'."),
+    },
+    {
+      title: "Get Node Info",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId }) => {
       try {
@@ -227,34 +197,8 @@ Output:
     "get_nodes_info",
     `Retrieves detailed information about multiple nodes in Figma.
 
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the nodes info as JSON.
-
-Annotations:
-  - title: "Get Nodes Info"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101"]
-    }
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "[{...node1 info...}, {...node2 info...}]" }
-      ]
-    }
 `,
     {
       // Enforce array of Figma node IDs, each must match format
@@ -266,6 +210,13 @@ Usage Example:
       .min(1)
       .max(100)
       .describe("Node IDs. Required. Array of Figma node IDs to get information about. Must contain 1 to 100 items. Example: ['123:456', '789:101']."),
+    },
+    {
+      title: "Get Nodes Info",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       try {
@@ -304,32 +255,17 @@ Usage Example:
     "get_styles",
     `Retrieves all styles from the current Figma document.
 
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the styles info as JSON.
-
-Annotations:
-  - title: "Get Styles"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "{...styles info...}" }
-      ]
-    }
 `,
     {},
+    {
+      title: "Get Styles",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_styles");
@@ -363,32 +299,17 @@ Usage Example:
     "get_local_components",
     `Retrieves all local components from the current Figma document.
 
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the local components info as JSON.
-
-Annotations:
-  - title: "Get Local Components"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "{...local components info...}" }
-      ]
-    }
 `,
     {},
+    {
+      title: "Get Local Components",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_local_components");
@@ -422,32 +343,17 @@ Usage Example:
     "get_remote_components",
     `Retrieves available components from team libraries in Figma.
 
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the remote components info as JSON.
-
-Annotations:
-  - title: "Get Remote Components"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "{...remote components info...}" }
-      ]
-    }
 `,
     {},
+    {
+      title: "Get Remote Components",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_remote_components");
@@ -481,35 +387,8 @@ Usage Example:
     "get_styled_text_segments",
     `Retrieves text segments with specific styling in a text node.
 
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the styled text segments as JSON.
-
-Annotations:
-  - title: "Get Styled Text Segments"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "property": "fontSize"
-    }
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "[{...styled segments...}]" }
-      ]
-    }
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
@@ -529,6 +408,13 @@ Usage Example:
         "lineHeight", 
         "fontWeight"
       ]).describe("Style Property. Required. The style property to analyze segments by. Must be one of: fillStyleId, fontName, fontSize, textCase, textDecoration, textStyleId, fills, letterSpacing, lineHeight, fontWeight. Example: 'fontSize'."),
+    },
+    {
+      title: "Get Styled Text Segments",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId, property }) => {
       try {
@@ -571,42 +457,21 @@ Usage Example:
     "scan_text_nodes",
     `Scans all text nodes in the selected Figma node.
 
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the scan status and results as JSON.
-
-Annotations:
-  - title: "Scan Text Nodes"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456"
-    }
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "Starting text node scanning. This may take a moment for large designs..." },
-        { "type": "text", "text": "Scan completed: - Found 10 text nodes - Processed in 1 chunks" },
-        { "type": "text", "text": "[{...text nodes...}]" }
-      ]
-    }
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("Node ID. Required. The unique Figma node ID to scan. Must be a string in the format '123:456'. Example: '123:456'."),
+    },
+    {
+      title: "Scan Text Nodes",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId }) => {
       try {
@@ -690,35 +555,8 @@ Usage Example:
     "get_css_async",
     `Retrieves CSS properties from a Figma node in various formats.
 
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: true
-- Open-world: false
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the CSS properties as JSON.
-
-Annotations:
-  - title: "Get CSS Async"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "format": "string"
-    }
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "{...css string...}" }
-      ]
-    }
 `,
     {
       // Enforce Figma node ID format if provided
@@ -730,6 +568,13 @@ Usage Example:
       format: z.enum(["object","string","inline"])
         .optional()
         .describe('Format. Optional. The format to return CSS in: "object", "string", or "inline". Example: "string".'),
+    },
+    {
+      title: "Get CSS Async",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId, format }) => {
       try {

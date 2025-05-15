@@ -15,22 +15,15 @@ export function registerDetachInstanceTools(server: McpServer, figmaClient: Figm
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the detached instance's ID.
-
-Annotations:
-  - title: "Detach Instance"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    { "instanceId": "123:456" }
-  Output:
-    { "content": [{ "type": "text", "text": "Detached instance 123:456" }] }
 `,
     { instanceId: InstanceIdSchema },
+    {
+      title: "Detach Instance",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ instanceId }) => {
       const id = ensureNodeIdIsString(instanceId);
       const result = await figmaClient.executeCommand("detach_instance", { instanceId: id });

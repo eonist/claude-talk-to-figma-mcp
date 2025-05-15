@@ -18,28 +18,6 @@ export function registerVectorCreationCommands(server: McpServer, figmaClient: F
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created vector's node ID.
-
-Annotations:
-  - title: "Create Vector"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "width": 50,
-      "height": 50,
-      "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created vector 123:456" }]
-    }
 `,
     {
       // Enforce reasonable X coordinate
@@ -96,6 +74,13 @@ Usage Example:
         .optional()
         .describe("Optional. Stroke weight for the vector. Must be between 0 and 100."),
     },
+    {
+      title: "Create Vector",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ x, y, width, height, name, parentId, vectorPaths, fillColor, strokeColor, strokeWeight }): Promise<any> => {
       try {
         const node = await figmaClient.createVector({ x, y, width, height, name, parentId, vectorPaths, fillColor, strokeColor, strokeWeight });
@@ -113,27 +98,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of vectors created.
-
-Annotations:
-  - title: "Create Vectors"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "vectors": [
-        { "x": 10, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] },
-        { "x": 70, "y": 20, "width": 50, "height": 50, "vectorPaths": [{ "data": "M0,0L50,0L50,50L0,50Z" }] }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 vectors." }]
-    }
 `,
     {
       vectors: z.array(
@@ -196,6 +160,13 @@ Usage Example:
       .min(1)
       .max(50)
       .describe("Array of vector configuration objects. Must contain 1 to 50 items."),
+    },
+    {
+      title: "Create Vectors",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ vectors }): Promise<any> => {
       try {

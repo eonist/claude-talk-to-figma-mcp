@@ -19,29 +19,6 @@ export function registerGradientTools(server: McpServer, figmaClient: FigmaClien
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created gradient's ID.
-
-Annotations:
-  - title: "Create Gradient Variable"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "name": "Primary Gradient",
-      "gradientType": "LINEAR",
-      "stops": [
-        { "position": 0, "color": [1, 0, 0, 1] },
-        { "position": 1, "color": [0, 0, 1, 1] }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created gradient 123:456" }]
-    }
 `,
     {
       name: z.string()
@@ -65,6 +42,13 @@ Usage Example:
       .min(2)
       .max(10)
       .describe("Array of color stops. Each stop is an object with position and color. Must contain 2 to 10 stops."),
+    },
+    {
+      title: "Create Gradient Variable",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ name, gradientType, stops }) => {
       const result = await figmaClient.executeCommand("create_gradient_variable", { name, gradientType, stops });

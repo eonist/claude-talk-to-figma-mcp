@@ -16,26 +16,6 @@ export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaC
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Corner Radius"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "radius": 8,
-      "corners": [true, false, true, false]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Set corner radius for 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
@@ -43,18 +23,17 @@ Usage Example:
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       ...CornerRadiusSchema.shape,
     },
+    {
+      title: "Set Corner Radius",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeId, radius, corners }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_corner_radius", { nodeId: id, radius, corners });
       return { content: [{ type: "text", text: `Set corner radius for ${id}` }] };
     }
-    // If the MCP server supports metadata/annotations as a separate argument, add here (non-breaking)
-    // {
-    //   title: "Set Corner Radius",
-    //   idempotentHint: true,
-    //   destructiveHint: false,
-    //   readOnlyHint: false,
-    //   openWorldHint: false
-    // }
   );
 }

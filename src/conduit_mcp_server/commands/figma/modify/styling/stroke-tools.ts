@@ -15,35 +15,19 @@ export function registerStrokeTools(server: McpServer, figmaClient: FigmaClient)
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Stroke Color"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "r": 0.5,
-      "g": 0.5,
-      "b": 0.5,
-      "a": 1,
-      "weight": 2
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Set stroke 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       ...StrokeColorSchema.shape,
+    },
+    {
+      title: "Set Stroke Color",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, r, g, b, a, weight }) => {
       const id = ensureNodeIdIsString(nodeId);

@@ -17,26 +17,6 @@ export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) 
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Style"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "fillProps": { "color": [0.5, 0.5, 0.5, 1], "visible": true, "opacity": 1 },
-      "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 }
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Styled 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
@@ -44,6 +24,13 @@ Usage Example:
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       fillProps: FillPropsSchema.optional(),
       strokeProps: StrokePropsSchema.optional(),
+    },
+    {
+      title: "Set Style",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, fillProps, strokeProps }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -66,34 +53,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes styled.
-
-Annotations:
-  - title: "Set Styles"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "entries": [
-        {
-          "nodeId": "123:456",
-          "fillProps": { "color": [0.5, 0.5, 0.5, 1] },
-          "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 }
-        },
-        {
-          "nodeId": "789:101",
-          "fillProps": { "color": [1, 0, 0, 1] }
-        }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Styled 2 nodes" }]
-    }
 `,
     {
       entries: z.array(
@@ -108,6 +67,13 @@ Usage Example:
       .min(1)
       .max(100)
       .describe("Array of style entries. Must contain 1 to 100 items."),
+    },
+    {
+      title: "Set Styles",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ entries }) => {
       for (const e of entries) {
