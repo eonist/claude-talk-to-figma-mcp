@@ -19,7 +19,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if no styles exist.",
+        "Result includes all color, text, and effect styles.",
+        "Large documents may return a large JSON object."
+      ],
+      extraInfo: "Use this command to list all shared styles in the current Figma document."
     },
     async () => {
       try {

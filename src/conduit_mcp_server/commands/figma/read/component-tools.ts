@@ -22,7 +22,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if no local components exist.",
+        "Result includes all local components in the document.",
+        "Large documents may return a large JSON object."
+      ],
+      extraInfo: "Use this command to list all components defined in the current Figma document."
     },
     async () => {
       try {
@@ -67,7 +76,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { team_id: "123456" }
+      ]),
+      edgeCaseWarnings: [
+        "team_id is required.",
+        "Pagination may be needed for large teams.",
+        "Returns an error if the team ID is invalid."
+      ],
+      extraInfo: "Retrieves components from a Figma team library, supporting pagination."
     },
     async (args: any) => {
       const { team_id, page_size, after } = args || {};
@@ -122,7 +140,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if no remote components are available.",
+        "Result includes components from all linked team libraries.",
+        "Network or permission errors may cause failure."
+      ],
+      extraInfo: "Lists components available from team libraries linked to the current document."
     },
     async () => {
       try {

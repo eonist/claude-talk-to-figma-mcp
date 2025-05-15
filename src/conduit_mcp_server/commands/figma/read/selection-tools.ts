@@ -19,7 +19,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns an empty array if nothing is selected.",
+        "Selection info may include node IDs, types, and properties.",
+        "If multiple nodes are selected, the result is an array."
+      ],
+      extraInfo: "Use this command to inspect the current selection context in the Figma document."
     },
     async () => {
       try {

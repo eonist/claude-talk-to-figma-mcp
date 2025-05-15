@@ -31,7 +31,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "Returns an error if nodeId is invalid or not found.",
+        "Result includes all properties of the node.",
+        "Large nodes may return a large JSON object."
+      ],
+      extraInfo: "Use this command to inspect properties and metadata of a specific Figma node."
     },
     async ({ nodeId }) => {
       try {
@@ -75,7 +84,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeIds: ["123:456", "789:101"] }
+      ]),
+      edgeCaseWarnings: [
+        "Returns an error if any nodeId is invalid or not found.",
+        "Result is an array of node info objects.",
+        "Large requests may impact performance."
+      ],
+      extraInfo: "Batch version of get_node_info for inspecting multiple nodes at once."
     },
     async ({ nodeIds }) => {
       try {

@@ -23,7 +23,17 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", format: "string" },
+        { nodeId: "123:456", format: "object" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID if provided.",
+        "Format must be one of 'string', 'object', or 'inline'.",
+        "Returns an error if the node does not support CSS export."
+      ],
+      extraInfo: "Use this command to extract CSS properties from a Figma node for code generation or inspection."
     },
     async ({ nodeId, format }) => {
       try {

@@ -19,7 +19,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {}
+      ]),
+      edgeCaseWarnings: [
+        "Returns a large JSON object for complex documents.",
+        "May include document-level metadata, pages, and settings.",
+        "If the document is empty, the result may be minimal."
+      ],
+      extraInfo: "Use this command to retrieve the full structure and metadata of the current Figma document."
     },
     async () => {
       try {
