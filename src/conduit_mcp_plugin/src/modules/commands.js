@@ -355,6 +355,9 @@ export function initializeCommands() {
 
   // Insert child node operation
   registerCommand('insert_child', layoutOperations.insertChild);
+
+  // Batch flatten nodes operation
+  registerCommand('flatten_nodes', layoutOperations.flatten_nodes);
   
   // UI Component operations
   // HTML export (lite)

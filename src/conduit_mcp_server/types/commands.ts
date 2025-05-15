@@ -128,6 +128,8 @@ export type FigmaCommand =
   | "flatten_node"
   // Flatten a selection of nodes (see commands/figma/modify/layer-management/boolean-tools.ts)
   | "flatten_selection"
+  // Flatten multiple nodes (see commands/figma/modify/layer-management/flatten-nodes-tools.ts)
+  | "flatten_nodes"
   // Insert a child node (see commands/figma/modify/layer-management/index.ts)
   | "insert_child"
   // Rename a single node (see commands/figma/modify/rename.ts)

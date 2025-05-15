@@ -224,6 +224,11 @@ export interface JoinChannelParams extends BaseCommandParams {
   channel: string;
 }
 
+/** Parameters for flatten_nodes command (batch flatten) */
+export interface FlattenNodesParams extends BaseCommandParams {
+  nodeIds: string[];
+}
+
 /** Parameters for insert_child command */
 export interface InsertChildParams extends BaseCommandParams {
   parentId: string;
@@ -278,6 +283,7 @@ export interface CommandParamsMap {
   // HTML commands
   generate_html: GenerateHtmlParams;
   insert_child: InsertChildParams;
+  flatten_nodes: FlattenNodesParams;
   
   // Allow for any other commands with base params
   [command: string]: BaseCommandParams;
