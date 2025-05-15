@@ -45,11 +45,19 @@ export interface ProgressData {
 
 type Pending = { resolve: (res: any) => void; reject: (err: any) => void; };
 
+
 let socket: any = null;
 let channel: string;
 let connected = false;
 let serverPort = 3055;
+
+/**
+ * Map of pending request IDs to their resolve/reject handlers.
+ * Used to track outstanding send() requests.
+ * @type {Map<string, { resolve: (res: any) => void, reject: (err: any) => void }>}
+ */
 const pending = new Map<string, Pending>();
+
 const messageHandlers: Array<(msg: any) => void> = [];
 const progressHandlers: Array<(data: ProgressData) => void> = [];
 

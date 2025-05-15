@@ -1,5 +1,16 @@
 #!/usr/bin/env node
 
+/**
+ * Integration test script for the Conduit MCP Figma plugin and Claude AI agent.
+ * - Verifies dependencies (Bun, MCP SDK)
+ * - Checks and configures AI Agent (Claude) integration
+ * - Starts and verifies the WebSocket server
+ * - Checks Figma plugin installation
+ * - Guides the user through manual integration tests
+ *
+ * Usage: node test-integration.js
+ */
+
 import { execSync, spawn } from 'child_process';
 import { createServer } from 'http';
 import fs from 'fs';
@@ -312,6 +323,11 @@ async function checkFigmaPlugin() {
 }
 
 // Run integration tests
+/**
+ * Main entry point for running integration tests.
+ * Orchestrates dependency checks, configuration, server startup, and manual test guidance.
+ * @returns {Promise<void>}
+ */
 async function runIntegrationTests() {
   log.title('CLAUDE-FIGMA INTEGRATION TESTS');
   
