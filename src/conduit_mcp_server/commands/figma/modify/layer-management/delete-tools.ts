@@ -28,7 +28,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: true,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "Deleting a node is irreversible.",
+        "Ensure the nodeId is valid to avoid errors.",
+        "Deleting a parent node will also remove its children."
+      ],
+      extraInfo: "Use caution when deleting nodes to prevent data loss."
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -53,7 +62,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: true,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeIds: ["123:456", "789:101"] }
+      ]),
+      edgeCaseWarnings: [
+        "Batch deleting nodes is irreversible.",
+        "All nodeIds must be valid to avoid partial failures.",
+        "Deleting parent nodes will remove their children."
+      ],
+      extraInfo: "Batch delete with care to avoid unintended data loss."
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
