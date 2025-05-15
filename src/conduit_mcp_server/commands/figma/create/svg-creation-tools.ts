@@ -22,26 +22,6 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the inserted SVG vector's node ID.
-
-Annotations:
-  - title: "Insert SVG Vector"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "svg": "<svg>...</svg>",
-      "x": 10,
-      "y": 20
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted SVG vector 123:456" }]
-    }
 `,
     {
       // Enforce non-empty string for SVG content, reasonable length
@@ -75,6 +55,13 @@ Usage Example:
         .optional()
         .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
     },
+    {
+      title: "Insert SVG Vector",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ svg, x, y, name, parentId }): Promise<any> => {
       try {
         const content = svg;
@@ -101,27 +88,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of SVG vectors inserted.
-
-Annotations:
-  - title: "Insert SVG Vectors"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "svgs": [
-        { "svg": "<svg>...</svg>", "x": 10, "y": 20 },
-        { "svg": "<svg>...</svg>", "x": 120, "y": 20 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted 2/2 SVG vectors." }]
-    }
 `,
     {
       svgs: z.array(
@@ -161,6 +127,13 @@ Usage Example:
       .min(1)
       .max(50)
       .describe("Array of SVG configuration objects. Must contain 1 to 50 items."),
+    },
+    {
+      title: "Insert SVG Vectors",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ svgs }): Promise<any> => {
       try {

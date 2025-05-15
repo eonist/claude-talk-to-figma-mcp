@@ -19,28 +19,15 @@ export function registerFromUrlImageTools(server: McpServer, figmaClient: FigmaC
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the inserted image's node ID.
-
-Annotations:
-  - title: "Insert Image"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "url": "https://example.com/image.png",
-      "x": 10,
-      "y": 20
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted image 123:456" }]
-    }
 `,
     ImageFromUrlSchema.shape,
+    {
+      title: "Insert Image",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ url, x, y, width, height, name, parentId }): Promise<any> => {
       try {
         const node = await (figmaClient as any).insertImage({ url, x, y, width, height, name, parentId });
@@ -58,33 +45,19 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of images inserted.
-
-Annotations:
-  - title: "Insert Images"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "images": [
-        { "url": "https://example.com/image1.png", "x": 10, "y": 20 },
-        { "url": "https://example.com/image2.png", "x": 120, "y": 20 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted 2/2 images." }]
-    }
 `,
     {
       images: z.array(ImageFromUrlSchema)
         .min(1)
         .max(50)
         .describe("Array of image configuration objects. Must contain 1 to 50 items."),
+    },
+    {
+      title: "Insert Images",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ images }): Promise<any> => {
       try {

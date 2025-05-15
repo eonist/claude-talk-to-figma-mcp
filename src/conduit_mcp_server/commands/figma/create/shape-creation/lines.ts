@@ -45,29 +45,15 @@ export function registerLinesTools(server: McpServer, figmaClient: FigmaClient) 
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created line's node ID.
-
-Annotations:
-  - title: "Create Line"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "x1": 10,
-      "y1": 20,
-      "x2": 110,
-      "y2": 20
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created line 123:456" }]
-    }
 `,
     LineSchema.shape,
+    {
+      title: "Create Line",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     // Tool handler: validates input, calls Figma client, and returns result.
     async ({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight }) => {
       const node = await figmaClient.createLine({ x1, y1, x2, y2, parentId, strokeColor, strokeWeight });
@@ -115,29 +101,15 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of lines created.
-
-Annotations:
-  - title: "Create Lines"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "lines": [
-        { "x1": 10, "y1": 20, "x2": 110, "y2": 20 },
-        { "x1": 20, "y1": 30, "x2": 120, "y2": 30 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 lines." }]
-    }
 `,
     { lines: z.array(LineSchema)
+    },
+    {
+      title: "Create Lines",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     // Tool handler: processes each line, calls Figma client, and returns batch results.
     async ({ lines }) => {

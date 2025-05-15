@@ -49,30 +49,15 @@ export function registerFramesTools(server: McpServer, figmaClient: FigmaClient)
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created frame's node ID.
-
-Annotations:
-  - title: "Create Frame"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "x": 50,
-      "y": 100,
-      "width": 400,
-      "height": 300,
-      "name": "Main Frame"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created frame 123:456" }]
-    }
 `,
     FrameSchema.shape,
+    {
+      title: "Create Frame",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {

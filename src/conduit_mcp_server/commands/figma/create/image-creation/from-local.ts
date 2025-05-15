@@ -28,26 +28,6 @@ export function registerFromLocalImageTools(server: McpServer, figmaClient: Figm
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the inserted local image's node ID.
-
-Annotations:
-  - title: "Insert Local Image"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "imagePath": "/path/to/image.png",
-      "x": 10,
-      "y": 20
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted local image 123:456" }]
-    }
 `,
     {
       // Enforce non-empty string for imagePath if provided
@@ -100,6 +80,13 @@ Usage Example:
         .optional()
         .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
     },
+    {
+      title: "Insert Local Image",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ imagePath, imageData, x, y, width, height, name, parentId }): Promise<any> => {
       try {
         let data: Uint8Array;
@@ -138,27 +125,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of local images inserted.
-
-Annotations:
-  - title: "Insert Local Images"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "images": [
-        { "imagePath": "/path/to/image1.png", "x": 10, "y": 20 },
-        { "imageData": "data:image/png;base64,...", "x": 120, "y": 20 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Inserted 2/2 local images." }]
-    }
 `,
     {
       images: z.array(
@@ -217,6 +183,13 @@ Usage Example:
       .min(1)
       .max(50)
       .describe("Array of local image configuration objects. Must contain 1 to 50 items."),
+    },
+    {
+      title: "Insert Local Images",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ images }): Promise<any> => {
       try {
