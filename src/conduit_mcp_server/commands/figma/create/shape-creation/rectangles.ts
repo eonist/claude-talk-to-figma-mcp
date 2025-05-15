@@ -60,14 +60,6 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle's node ID.
 
-Annotations:
-  - title: "Create Rectangle"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
 Usage Example:
   Input:
     {
@@ -84,6 +76,13 @@ Usage Example:
     }
 `,
     RectangleSchema.shape,
+    {
+      title: "Create Rectangle",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args, extra): Promise<any> => {
       try {
