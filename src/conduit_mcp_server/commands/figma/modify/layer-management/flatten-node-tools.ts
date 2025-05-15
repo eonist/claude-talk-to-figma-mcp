@@ -38,7 +38,16 @@ Returns:
       idempotentHint: false,
       destructiveHint: true,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "Flattening is destructive and cannot be undone.",
+        "All child layers are merged into a single vector.",
+        "Only nodes that support flattening (Frame, Group, etc.) are valid."
+      ],
+      extraInfo: "Flattening is useful for export and performance, but removes layer structure."
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -97,7 +106,16 @@ Returns:
       idempotentHint: false,
       destructiveHint: true,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeIds: ["123:456", "789:101"] }
+      ]),
+      edgeCaseWarnings: [
+        "Batch flattening is destructive and cannot be undone.",
+        "All child layers in each node are merged into single vectors.",
+        "Only nodes that support flattening are valid."
+      ],
+      extraInfo: "Batch flattening is efficient for preparing multiple groups for export or simplification."
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);

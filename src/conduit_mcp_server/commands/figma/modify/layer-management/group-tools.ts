@@ -33,7 +33,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeIds: ["123:456", "789:101"], name: "My Group" }
+      ]),
+      edgeCaseWarnings: [
+        "All nodeIds must be valid and belong to the same parent.",
+        "Grouping nodes changes their z-order and parent.",
+        "Name is optional but must be non-empty if provided."
+      ],
+      extraInfo: "Grouping is useful for organizing layers and applying transformations collectively."
     },
     async ({ nodeIds, name }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
@@ -66,7 +75,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "Only group nodes can be ungrouped.",
+        "Ungrouping releases all children to the parent.",
+        "NodeId must be a valid group node."
+      ],
+      extraInfo: "Ungrouping is useful for breaking apart grouped elements for individual editing."
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);

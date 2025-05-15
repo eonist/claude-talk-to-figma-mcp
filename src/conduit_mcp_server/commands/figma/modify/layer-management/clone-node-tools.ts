@@ -30,7 +30,16 @@ Returns:
       idempotentHint: false,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "Cloning a node duplicates all its children.",
+        "Cloned nodes may overlap with originals if no position/offset is specified.",
+        "Ensure nodeId is valid to avoid errors."
+      ],
+      extraInfo: "Cloning is useful for duplicating components or layouts. Adjust positions to avoid overlap."
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -82,7 +91,16 @@ Returns:
       idempotentHint: false,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeIds: ["123:456", "789:101"], offsetX: 100, offsetY: 0 }
+      ]),
+      edgeCaseWarnings: [
+        "All nodeIds must be valid to avoid partial failures.",
+        "If positions/offsets are not set, clones may overlap originals.",
+        "Batch cloning large numbers of nodes may impact performance."
+      ],
+      extraInfo: "Batch cloning is efficient for duplicating multiple elements. Use offsets or positions for layout control."
     },
     async ({ nodeIds, positions, offsetX, offsetY, parentId }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
