@@ -224,6 +224,13 @@ export interface JoinChannelParams extends BaseCommandParams {
   channel: string;
 }
 
+/** Parameters for insert_child command */
+export interface InsertChildParams extends BaseCommandParams {
+  parentId: string;
+  childId: string;
+  index?: number;
+}
+
 /** Parameters for generate_html command */
 export interface GenerateHtmlParams extends BaseCommandParams {
   /** Target node ID */
@@ -270,6 +277,7 @@ export interface CommandParamsMap {
   
   // HTML commands
   generate_html: GenerateHtmlParams;
+  insert_child: InsertChildParams;
   
   // Allow for any other commands with base params
   [command: string]: BaseCommandParams;

@@ -88,6 +88,7 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
     - [group_nodes](#group_nodes): Group nodes in Figma
     - [ungroup_nodes](#ungroup_nodes): Ungroup a group node
     - [delete_node](#delete_node): Delete a node
+    - [insert_child](#insert_child): Insert a child node into a parent node at an optional index
 
 - Bulk/Batch Commands
     - [move_nodes](#move_nodes): Move multiple nodes to a new absolute position
@@ -113,6 +114,24 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
 - Single Commands
     - [join_channel](#join_channel): Join a specific channel to communicate with Figma
     - [generate_html](#generate_html): Generate HTML structure from Figma nodes
+
+---
+
+### insert_child
+Insert a child node into a parent node at an optional index.
+
+**Parameters:**
+- parentId (string): ID of the parent node
+- childId (string): ID of the child node to insert
+- index (number, optional): Insertion index (0-based, if omitted appends to end)
+
+**Example:**
+```json
+{
+  "command": "insert_child",
+  "params": { "parentId": "123:456", "childId": "123:789", "index": 2 }
+}
+```
 
 ---
 

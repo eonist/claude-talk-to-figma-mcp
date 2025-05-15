@@ -352,6 +352,9 @@ export function initializeCommands() {
   // Auto Layout operations
   registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
+
+  // Insert child node operation
+  registerCommand('insert_child', layoutOperations.insertChild);
   
   // UI Component operations
   // HTML export (lite)
