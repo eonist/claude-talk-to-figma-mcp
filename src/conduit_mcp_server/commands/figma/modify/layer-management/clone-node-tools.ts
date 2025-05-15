@@ -47,7 +47,13 @@ Returns:
   // Batch node clone
   server.tool(
     "clone_nodes",
-    `Clone multiple nodes in Figma by node IDs.
+    `Clone multiple nodes in Figma by node IDs, with optional positions, offsets, and parent.
+
+Parameters:
+  - nodeIds: Array of node IDs to clone.
+  - positions (optional): Array of {x, y} positions for each clone.
+  - offsetX, offsetY (optional): Uniform X/Y offset for all clones.
+  - parentId (optional): Parent node to place clones in.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the new node IDs.
@@ -61,6 +67,15 @@ Returns:
       .min(1)
       .max(100)
       .describe("Array of Figma node IDs to clone. Must contain 1 to 100 items."),
+      positions: z.array(
+        z.object({
+          x: z.number(),
+          y: z.number()
+        })
+      ).optional().describe("Optional array of positions for each clone."),
+      offsetX: z.number().optional().describe("Optional uniform X offset for all clones."),
+      offsetY: z.number().optional().describe("Optional uniform Y offset for all clones."),
+      parentId: z.string().optional().describe("Optional parent node ID to place clones in."),
     },
     {
       title: "Clone Nodes (Batch)",
@@ -69,9 +84,14 @@ Returns:
       readOnlyHint: false,
       openWorldHint: false
     },
-    async ({ nodeIds }) => {
+    async ({ nodeIds, positions, offsetX, offsetY, parentId }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
-      const result = await figmaClient.executeCommand("clone_nodes", { nodeIds: ids });
+      const params: any = { nodeIds: ids };
+      if (positions) params.positions = positions;
+      if (offsetX !== undefined) params.offsetX = offsetX;
+      if (offsetY !== undefined) params.offsetY = offsetY;
+      if (parentId) params.parentId = parentId;
+      const result = await figmaClient.executeCommand("clone_nodes", params);
       return {
         content: [{
           type: "text",

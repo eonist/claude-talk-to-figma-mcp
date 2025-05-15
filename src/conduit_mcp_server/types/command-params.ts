@@ -232,6 +232,10 @@ export interface CloneNodeParams extends BaseCommandParams {
 /** Parameters for clone_nodes command (batch) */
 export interface CloneNodesParams extends BaseCommandParams {
   nodeIds: string[];
+  positions?: { x: number; y: number }[];
+  offsetX?: number;
+  offsetY?: number;
+  parentId?: string;
 }
 
 /** Parameters for flatten_nodes command (batch flatten) */
