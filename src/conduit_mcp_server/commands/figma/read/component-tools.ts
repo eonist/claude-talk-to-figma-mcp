@@ -14,23 +14,15 @@ export function registerComponentTools(server: McpServer, figmaClient: FigmaClie
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the local components info as JSON.
-
-Annotations:
-  - title: "Get Local Components"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input: {}
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...local components info...}" }]
-    }
 `,
     {},
+    {
+      title: "Get Local Components",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_local_components");
@@ -62,23 +54,15 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the remote components info as JSON.
-
-Annotations:
-  - title: "Get Remote Components"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input: {}
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...remote components info...}" }]
-    }
 `,
     {},
+    {
+      title: "Get Remote Components",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_remote_components");

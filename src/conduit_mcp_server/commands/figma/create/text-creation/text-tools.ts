@@ -25,28 +25,15 @@ export function registerTextTools(server: McpServer, figmaClient: FigmaClient) {
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created text node's ID.
-
-Annotations:
-  - title: "Create Text"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "text": "Hello, Figma!"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created text 123:456" }]
-    }
 `,
     BaseTextSchema.shape,
+    {
+      title: "Create Text",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {
@@ -67,30 +54,15 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created bounded text node's ID.
-
-Annotations:
-  - title: "Create Bounded Text"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "width": 300,
-      "height": 100,
-      "text": "Bounded text example"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created bounded text 123:456" }]
-    }
 `,
     BoundedTextSchema.shape,
+    {
+      title: "Create Bounded Text",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {

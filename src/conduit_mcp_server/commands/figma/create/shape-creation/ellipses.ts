@@ -50,30 +50,15 @@ export function registerEllipsesTools(server: McpServer, figmaClient: FigmaClien
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created ellipse's node ID.
-
-Annotations:
-  - title: "Create Ellipse"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "x": 60,
-      "y": 80,
-      "width": 120,
-      "height": 90,
-      "name": "Ellipse1"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created ellipse 123:456" }]
-    }
 `,
     EllipseSchema.shape,
+    {
+      title: "Create Ellipse",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async (args) => {
       try {
@@ -129,29 +114,15 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of ellipses created.
-
-Annotations:
-  - title: "Create Ellipses"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "ellipses": [
-        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Ellipse1" },
-        { "x": 120, "y": 20, "width": 80, "height": 40 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 ellipses." }]
-    }
 `,
     { ellipses: z.array(EllipseSchema)
+    },
+    {
+      title: "Create Ellipses",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     // Tool handler: processes each ellipse, calls Figma client, and returns batch results.
     async ({ ellipses }) => {

@@ -20,29 +20,18 @@ export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the node info as JSON.
-
-Annotations:
-  - title: "Get Node Info"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...node info...}" }]
-    }
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to get information about. Must be a string in the format '123:456'."),
+    },
+    {
+      title: "Get Node Info",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId }) => {
       try {
@@ -77,27 +66,16 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the nodes info as JSON.
-
-Annotations:
-  - title: "Get Nodes Info"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "[{...node1 info...}, {...node2 info...}]" }]
-    }
 `,
     {
       nodeIds: NodeIdsArraySchema(1, 100),
+    },
+    {
+      title: "Get Nodes Info",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       try {

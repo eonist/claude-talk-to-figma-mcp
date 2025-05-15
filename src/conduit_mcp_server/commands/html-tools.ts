@@ -16,26 +16,6 @@ export function registerHtmlCommands(server: McpServer, figmaClient: FigmaClient
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the generated HTML string.
-
-Annotations:
-  - title: "Generate HTML"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "format": "semantic",
-      "cssMode": "classes"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "<main>...</main>" }]
-    }
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
@@ -52,6 +32,13 @@ Usage Example:
         .enum(["inline", "classes", "external"])
         .default("classes")
         .describe('Optional. The CSS handling mode: "inline", "classes", or "external". Defaults to "classes".'),
+    },
+    {
+      title: "Generate HTML",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId, format, cssMode }) => {
       try {

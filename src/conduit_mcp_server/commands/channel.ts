@@ -34,30 +34,19 @@ export function registerChannelCommand(server: McpServer, figmaClient: FigmaClie
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the join status message.
-
-Annotations:
-  - title: "Join Channel"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "channel": "my-channel"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Successfully joined channel: my-channel" }]
-    }
 `,
     {
       // Enforce non-empty string for channel name
       channel: z.string()
         .min(1)
         .describe("The name of the channel to join. Must be a non-empty string."),
+    },
+    {
+      title: "Join Channel",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ channel }) => {
       try {

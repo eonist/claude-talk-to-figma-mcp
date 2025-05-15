@@ -143,30 +143,16 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of rectangles created.
-
-Annotations:
-  - title: "Create Rectangles"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "rectangles": [
-        { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
-        { "x": 120, "y": 20, "width": 80, "height": 40 }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
-    }
 `,
     { rectangles: z.array(RectangleSchema)
         .describe("An array of rectangle configuration objects. Each object should include coordinates, dimensions, and optional properties for a rectangle.")
+    },
+    {
+      title: "Create Rectangles",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     // Tool handler: processes each rectangle, calls Figma client, and returns batch results.
     async ({ rectangles }) => {
