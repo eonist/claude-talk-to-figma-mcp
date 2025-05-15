@@ -28,7 +28,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", radius: 8 }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "Radius must be a non-negative number.",
+        "Corners array, if provided, must have four boolean values."
+      ],
+      extraInfo: "Use this command to set the corner radius of a node, optionally specifying which corners."
     },
     async ({ nodeId, radius, corners }) => {
       const id = ensureNodeIdIsString(nodeId);

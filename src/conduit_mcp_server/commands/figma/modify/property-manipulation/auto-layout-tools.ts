@@ -29,7 +29,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", layoutMode: "HORIZONTAL" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "layoutMode must be one of 'HORIZONTAL', 'VERTICAL', or 'NONE'.",
+        "Changing layout mode may affect child node positioning."
+      ],
+      extraInfo: "Configures auto layout properties for a Figma node."
     },
     async ({ nodeId, layoutMode }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -55,7 +64,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", axis: "horizontal", mode: "HUG" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "axis must be 'horizontal' or 'vertical'.",
+        "mode must be 'FIXED', 'HUG', or 'FILL'."
+      ],
+      extraInfo: "Sets hug or fill sizing mode on an auto layout frame or child node."
     },
     async ({ nodeId, axis, mode }) => {
       const id = ensureNodeIdIsString(nodeId);

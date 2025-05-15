@@ -29,7 +29,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", effects: [{ type: "DROP_SHADOW", color: "#000000", radius: 4 }] }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "Effects array must contain valid effect objects.",
+        "Invalid effect properties may cause failure."
+      ],
+      extraInfo: "Use this command to set visual effects like shadows or blurs on a node."
     },
     async ({ nodeId, effects }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -60,7 +69,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", effectStyleId: "effect123" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "effectStyleId must be a valid effect style identifier.",
+        "Applying an invalid style ID will cause failure."
+      ],
+      extraInfo: "Applies a predefined effect style to a node."
     },
     async ({ nodeId, effectStyleId }) => {
       const id = ensureNodeIdIsString(nodeId);
