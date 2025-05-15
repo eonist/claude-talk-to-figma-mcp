@@ -1,12 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z, ensureNodeIdIsString } from "../utils.js";
+import { z } from "../utils.js";
 import { RectangleSchema } from "./rectangle-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { CreateRectangleParams } from "../../../../types/command-params.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers shape-creation-related commands with the MCP server.
@@ -59,21 +58,6 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle's node ID.
-
-Usage Example:
-  Input:
-    {
-      "x": 100,
-      "y": 200,
-      "width": 300,
-      "height": 150,
-      "name": "Button Background",
-      "cornerRadius": 8
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
-    }
 `,
     RectangleSchema.shape,
     {
@@ -172,8 +156,7 @@ Returns:
       );
       const successCount = results.filter(r => r.result).length;
       return {
-        content: [{ type: "text", text: `Created ${successCount}/${rectangles.length} rectangles.` }],
-        _meta: { results }
+        content: [{ type: "text", text: `Created ${successCount}/${rectangles.length} rectangles.` }]
       };
     }
   );
