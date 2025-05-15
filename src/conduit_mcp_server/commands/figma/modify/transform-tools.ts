@@ -17,26 +17,6 @@ export function registerTransformCommands(server: McpServer, figmaClient: FigmaC
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the resized node's ID and new size.
-
-Annotations:
-  - title: "Resize Node"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "width": 100,
-      "height": 200
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Resized 123:456 to 100x200" }]
-    }
 `,
     {
       // Validate nodeId as simple or complex Figma node ID, preserving original description
@@ -54,42 +34,18 @@ Usage Example:
         .max(10000)
         .describe("The new height for the node, in pixels. Must be a positive number between 1 and 10,000."),
     },
+    {
+      title: "Resize Node",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeId, width, height }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.resizeNode({ nodeId: id, width, height });
       return { content: [{ type: "text", text: `Resized ${id} to ${width}x${height}` }] };
     }
-    /*
-    Additional Usage Example:
-      Input:
-        {
-          "nodeId": "123:456",
-          "width": 500,
-          "height": 300
-        }
-      Output:
-        {
-          "content": [{ "type": "text", "text": "Resized 123:456 to 500x300" }]
-        }
-
-    Error Handling:
-      - Returns an error if nodeId is invalid or not found.
-      - Returns an error if width or height is not between 1 and 10,000.
-
-    Security Notes:
-      - All inputs are validated and sanitized. nodeId must match the expected format.
-      - width and height are limited to a reasonable range.
-
-    Output Schema:
-      {
-        "content": [
-          {
-            "type": "text",
-            "text": "Resized <nodeId> to <width>x<height>"
-          }
-        ]
-      }
-    */
   );
 
   // Resize Multiple Nodes Tool
@@ -99,25 +55,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes resized.
-
-Annotations:
-  - title: "Resize Nodes (Batch)"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"],
-      "targetSize": { "width": 100, "height": 200 }
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Resized 3 nodes" }]
-    }
 `,
     {
       // Enforce array of Figma node IDs, each must match format
@@ -142,41 +79,17 @@ Usage Example:
       })
       .describe("The target size to apply to all nodes. Must include width and height."),
     },
+    {
+      title: "Resize Nodes (Batch)",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeIds, targetSize }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
       await figmaClient.executeCommand("resize_nodes", { nodeIds: ids, targetSize });
       return { content: [{ type: "text", text: `Resized ${ids.length} nodes` }] };
     }
-    /*
-    Additional Usage Example:
-      Input:
-        {
-          "nodeIds": ["123:456", "789:101", "112:131"],
-          "targetSize": { "width": 100, "height": 200 }
-        }
-      Output:
-        {
-          "content": [{ "type": "text", "text": "Resized 3 nodes" }]
-        }
-
-    Error Handling:
-      - Returns an error if any nodeId is invalid or not found.
-      - Returns an error if nodeIds array is empty or exceeds 100 items.
-      - Returns an error if width or height is not between 1 and 10,000.
-
-    Security Notes:
-      - All inputs are validated and sanitized. All nodeIds must match the expected format.
-      - width and height are limited to a reasonable range.
-
-    Output Schema:
-      {
-        "content": [
-          {
-            "type": "text",
-            "text": "Resized <N> nodes"
-          }
-        ]
-      }
-    */
   );
 }

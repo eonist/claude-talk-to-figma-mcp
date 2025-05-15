@@ -17,37 +17,23 @@ export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Register the "create_component_from_node" tool for converting an existing node into a component.
   server.tool(
     "create_component_from_node",
-    `
-Converts an existing node into a component in Figma.
+    `Converts an existing node into a component in Figma.
 
 Returns:
 - content: Array of objects. Each object contains a type: "text" and a text field with the created component's ID.
-
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
-
-Usage Example:
-Input:
-\`\`\`json
-{
-  "nodeId": "456:789"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created component 123:456" }]
-}
-\`\`\`
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to convert. Must be a string in the format '123:456'."),
+    },
+    {
+      title: "Create Component From Node",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async ({ nodeId }): Promise<any> => {

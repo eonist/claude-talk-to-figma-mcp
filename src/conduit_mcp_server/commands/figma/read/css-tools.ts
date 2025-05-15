@@ -16,27 +16,15 @@ export function registerCssTools(server: McpServer, figmaClient: FigmaClient) {
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the CSS properties as JSON.
-
-Annotations:
-  - title: "Get CSS Async"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "format": "string"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...css...}" }]
-    }
 `,
     CssExportOptionsSchema.shape,
+    {
+      title: "Get CSS Async",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async ({ nodeId, format }) => {
       try {
         const params: any = {};

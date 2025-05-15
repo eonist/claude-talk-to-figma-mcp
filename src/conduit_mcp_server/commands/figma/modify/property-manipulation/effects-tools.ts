@@ -17,25 +17,6 @@ export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Effects"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Effects set for 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
@@ -43,41 +24,18 @@ Usage Example:
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       effects: EffectsArraySchema,
     },
+    {
+      title: "Set Effects",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeId, effects }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_effects", { nodeId: id, effects });
       return { content: [{ type: "text", text: `Effects set for ${id}` }] };
     }
-    /*
-    Additional Usage Example:
-      Input:
-        {
-          "nodeId": "123:456",
-          "effects": [{ "type": "DROP_SHADOW", "color": "#000000" }]
-        }
-      Output:
-        {
-          "content": [{ "type": "text", "text": "Effects set for 123:456" }]
-        }
-
-    Error Handling:
-      - Returns an error if nodeId is invalid or not found.
-      - Returns an error if effects array is empty or exceeds 20 items.
-
-    Security Notes:
-      - All inputs are validated and sanitized. nodeId must match the expected format.
-      - effects array is limited to 20 items.
-
-    Output Schema:
-      {
-        "content": [
-          {
-            "type": "text",
-            "text": "Effects set for <nodeId>"
-          }
-        ]
-      }
-    */
   );
 
   // Set Effect Style ID
@@ -87,25 +45,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Effect Style ID"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "effectStyleId": "effect:789"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
@@ -116,40 +55,17 @@ Usage Example:
         .max(100)
         .describe("The ID of the effect style to apply. Must be a non-empty string. Maximum length 100 characters."),
     },
+    {
+      title: "Set Effect Style ID",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeId, effectStyleId }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_effect_style_id", { nodeId: id, effectStyleId });
       return { content: [{ type: "text", text: `Effect style applied to ${id}` }] };
     }
-    /*
-    Additional Usage Example:
-      Input:
-        {
-          "nodeId": "123:456",
-          "effectStyleId": "effect:789"
-        }
-      Output:
-        {
-          "content": [{ "type": "text", "text": "Effect style applied to 123:456" }]
-        }
-
-    Error Handling:
-      - Returns an error if nodeId is invalid or not found.
-      - Returns an error if effectStyleId is empty or exceeds maximum length.
-
-    Security Notes:
-      - All inputs are validated and sanitized. nodeId must match the expected format.
-      - effectStyleId is limited to 100 characters.
-
-    Output Schema:
-      {
-        "content": [
-          {
-            "type": "text",
-            "text": "Effect style applied to <nodeId>"
-          }
-        ]
-      }
-    */
   );
 }

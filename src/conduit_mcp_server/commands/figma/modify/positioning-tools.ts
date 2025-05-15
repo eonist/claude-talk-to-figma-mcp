@@ -16,26 +16,6 @@ export function registerPositioningCommands(server: McpServer, figmaClient: Figm
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the moved node's ID and new position.
-
-Annotations:
-  - title: "Move Node"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "x": 100,
-      "y": 200
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Moved 123:456 to (100,200)" }]
-    }
 `,
     {
       // Validate nodeId as simple or complex Figma node ID, preserving original description
@@ -53,6 +33,13 @@ Usage Example:
         .max(10000)
         .describe("New Y position. Must be between -10,000 and 10,000."),
     },
+    {
+      title: "Move Node",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeId, x, y }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.moveNode({ nodeId: id, x, y });
@@ -67,26 +54,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes moved and new position.
-
-Annotations:
-  - title: "Move Nodes"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"],
-      "x": 100,
-      "y": 200
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Moved 3 nodes to (100,200)" }]
-    }
 `,
     {
       // Enforce array of Figma node IDs, each must match format
@@ -108,6 +75,13 @@ Usage Example:
         .min(-10000)
         .max(10000)
         .describe("New Y position. Must be between -10,000 and 10,000."),
+    },
+    {
+      title: "Move Nodes",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeIds, x, y }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);

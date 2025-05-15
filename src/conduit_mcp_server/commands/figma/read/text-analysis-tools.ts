@@ -18,25 +18,6 @@ export function registerTextAnalysisTools(server: McpServer, figmaClient: FigmaC
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the styled text segments as JSON.
-
-Annotations:
-  - title: "Get Styled Text Segments"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "property": "fontWeight"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "[{...styled segments...}]" }]
-    }
 `,
     {
       nodeId: z.string()
@@ -54,6 +35,13 @@ Usage Example:
         "lineHeight", 
         "fontWeight"
       ]).describe("The style property to analyze segments by. Must be one of the allowed style property names."),
+    },
+    {
+      title: "Get Styled Text Segments",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId, property }) => {
       try {
@@ -91,33 +79,18 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the scan status and results.
-
-Annotations:
-  - title: "Scan Text Nodes"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456"
-    }
-  Output:
-    {
-      "content": [
-        { "type": "text", "text": "Starting text node scanning. This may take a moment for large designs..." },
-        { "type": "text", "text": "Scan completed: - Found 10 text nodes - Processed in 2 chunks" },
-        { "type": "text", "text": "[{...text nodes...}]" }
-      ]
-    }
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to scan. Must be a string in the format '123:456'."),
+    },
+    {
+      title: "Scan Text Nodes",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
     },
     async ({ nodeId }) => {
       try {

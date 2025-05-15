@@ -13,32 +13,10 @@ export function registerAutoLayoutTools(server: McpServer, figmaClient: FigmaCli
   // Auto Layout
   server.tool(
     "set_auto_layout",
-    `
-Configures auto layout properties for a node in Figma.
+    `Configures auto layout properties for a node in Figma.
 
 Returns:
 - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
-
-Usage Example:
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "layoutMode": "HORIZONTAL"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Auto layout set for 123:456" }]
-}
-\`\`\`
 `,
     {
       nodeId: z.string()
@@ -46,70 +24,25 @@ Output:
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       ...AutoLayoutConfigSchema.shape,
     },
+    {
+      title: "Set Auto Layout",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeId, layoutMode }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_auto_layout", { nodeId: id, layoutMode });
       return { content: [{ type: "text", text: `Auto layout set for ${id}` }] };
     }
-    /*
-    Additional Usage Example:
-      Input:
-        {
-          "nodeId": "123:456",
-          "layoutMode": "VERTICAL"
-        }
-      Output:
-        {
-          "content": [{ "type": "text", "text": "Auto layout set for 123:456" }]
-        }
-
-    Error Handling:
-      - Returns an error if nodeId is invalid or not found.
-      - Returns an error if layoutMode is not one of the allowed values.
-
-    Security Notes:
-      - All inputs are validated and sanitized. nodeId must match the expected format.
-
-    Output Schema:
-      {
-        "content": [
-          {
-            "type": "text",
-            "text": "Auto layout set for <nodeId>"
-          }
-        ]
-      }
-    */
   );
   server.tool(
     "set_auto_layout_resizing",
-    `
-Sets hug or fill sizing mode on an auto layout frame or child node in Figma.
+    `Sets hug or fill sizing mode on an auto layout frame or child node in Figma.
 
 Returns:
 - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
-
-Usage Example:
-Input:
-\`\`\`json
-{
-  "nodeId": "123:456",
-  "axis": "horizontal",
-  "mode": "HUG"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }]
-}
-\`\`\`
 `,
     {
       nodeId: z.string()
@@ -117,40 +50,17 @@ Output:
         .describe("The unique Figma node ID to update. Must be a string in the format '123:456'."),
       ...AutoLayoutResizingSchema.shape,
     },
+    {
+      title: "Set Auto Layout Resizing",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     async ({ nodeId, axis, mode }) => {
       const id = ensureNodeIdIsString(nodeId);
       await figmaClient.executeCommand("set_auto_layout_resizing", { nodeId: id, axis, mode });
       return { content: [{ type: "text", text: `Auto layout resizing set for ${id}` }] };
     }
-    /*
-    Additional Usage Example:
-      Input:
-        {
-          "nodeId": "123:456",
-          "axis": "vertical",
-          "mode": "FILL"
-        }
-      Output:
-        {
-          "content": [{ "type": "text", "text": "Auto layout resizing set for 123:456" }]
-        }
-
-    Error Handling:
-      - Returns an error if nodeId is invalid or not found.
-      - Returns an error if axis or mode is not one of the allowed values.
-
-    Security Notes:
-      - All inputs are validated and sanitized. nodeId must match the expected format.
-
-    Output Schema:
-      {
-        "content": [
-          {
-            "type": "text",
-            "text": "Auto layout resizing set for <nodeId>"
-          }
-        ]
-      }
-    */
   );
 }

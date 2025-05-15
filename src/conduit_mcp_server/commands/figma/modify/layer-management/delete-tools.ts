@@ -16,30 +16,19 @@ export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient)
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the deleted node's ID.
-
-Annotations:
-  - title: "Delete Node"
-  - idempotentHint: true
-  - destructiveHint: true
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Deleted node 123:456" }]
-    }
 `,
     {
       // Validate nodeId as simple or complex Figma node ID, preserving original description
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to delete. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
+    },
+    {
+      title: "Delete Node",
+      idempotentHint: true,
+      destructiveHint: true,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -55,27 +44,16 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes deleted.
-
-Annotations:
-  - title: "Delete Nodes"
-  - idempotentHint: true
-  - destructiveHint: true
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Deleted 3 nodes" }]
-    }
 `,
     {
       nodeIds: NodeIdsArraySchema(1, 100),
+    },
+    {
+      title: "Delete Nodes",
+      idempotentHint: true,
+      destructiveHint: true,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);

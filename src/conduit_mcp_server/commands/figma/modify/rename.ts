@@ -31,26 +31,6 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the original and new name.
-
-Annotations:
-  - title: "Rename Layer"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "newName": "New Layer Name",
-      "setAutoRename": true
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Renamed node from \"Old\" to \"New\" with autoRename enabled" }]
-    }
 `,
     {
       // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
@@ -63,6 +43,13 @@ Usage Example:
         .max(100)
         .describe("The new name for the node. Must be a non-empty string up to 100 characters."),
       setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename"),
+    },
+    {
+      title: "Rename Layer",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, newName, setAutoRename }) => {
       try {
@@ -109,27 +96,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of layers renamed.
-
-Annotations:
-  - title: "Rename Layers"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "layer_ids": ["123:456", "789:101"],
-      "new_name": "BaseName",
-      "match_pattern": "Old",
-      "replace_with": "New"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Successfully renamed 2 layers" }]
-    }
 `,
     {
       // Enforce array of Figma node IDs, each must match format
@@ -141,6 +107,13 @@ Usage Example:
         .describe("New base name or pattern including tokens. Must be a non-empty string up to 100 characters."),
       match_pattern: z.string().optional().describe("Regex to match in existing name"),
       replace_with: z.string().optional().describe("Text to replace matched pattern"),
+    },
+    {
+      title: "Rename Layers",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ layer_ids, new_name, match_pattern, replace_with }) => {
       try {
@@ -187,25 +160,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the renamed layers as JSON.
-
-Annotations:
-  - title: "Rename Multiple Layers"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "layer_ids": ["123:456", "789:101"],
-      "new_names": ["Layer A", "Layer B"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Renamed multiple layers: { ... }" }]
-    }
 `,
     {
       // Enforce array of Figma node IDs, each must match format
@@ -220,6 +174,13 @@ Usage Example:
       .min(1)
       .max(100)
       .describe("Array of new names corresponding to each layer ID. Must contain 1 to 100 items."),
+    },
+    {
+      title: "Rename Multiple Layers",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ layer_ids, new_names }) => {
       try {
@@ -272,25 +233,6 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the AI renaming results.
-
-Annotations:
-  - title: "AI Rename Layers"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "layer_ids": ["123:456", "789:101"],
-      "context_prompt": "Rename for clarity"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "AI renaming completed successfully.\nNew names:\n- Layer 123:456: \"Header\"\n- Layer 789:101: \"Footer\"" }]
-    }
 `,
     {
       // Enforce array of Figma node IDs, each must match format
@@ -301,6 +243,13 @@ Usage Example:
         .max(200)
         .optional()
         .describe("Prompt for AI renaming. If provided, must be a non-empty string up to 200 characters."),
+    },
+    {
+      title: "AI Rename Layers",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ layer_ids, context_prompt }) => {
       try {

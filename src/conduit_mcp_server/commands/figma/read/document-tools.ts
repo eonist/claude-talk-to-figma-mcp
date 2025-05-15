@@ -12,23 +12,15 @@ export function registerDocumentTools(server: McpServer, figmaClient: FigmaClien
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the document info as JSON.
-
-Annotations:
-  - title: "Get Document Info"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input: {}
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...document info...}" }]
-    }
 `,
     {},
+    {
+      title: "Get Document Info",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_document_info");

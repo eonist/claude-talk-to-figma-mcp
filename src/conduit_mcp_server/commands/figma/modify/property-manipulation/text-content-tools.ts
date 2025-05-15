@@ -17,25 +17,6 @@ export function registerTextContentTools(server: McpServer, figmaClient: FigmaCl
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-
-Annotations:
-  - title: "Set Text Content"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "123:456",
-      "text": "Hello, world!"
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Updated text of 123:456" }]
-    }
 `,
     {
       nodeId: z.string()
@@ -45,6 +26,13 @@ Usage Example:
         .min(1)
         .max(10000)
         .describe("The new text content to set for the node. Must be a non-empty string. Maximum length 10,000 characters."),
+    },
+    {
+      title: "Set Text Content",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, text }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -60,34 +48,19 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of text nodes updated.
-
-Annotations:
-  - title: "Set Multiple Text Contents"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeId": "parent:123",
-      "text": [
-        { "nodeId": "child:1", "text": "A" },
-        { "nodeId": "child:2", "text": "B" }
-      ]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Updated 2 text nodes" }]
-    }
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma parent node ID. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       text: BatchTextUpdateArraySchema,
+    },
+    {
+      title: "Set Multiple Text Contents",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeId, text }) => {
       const parent = ensureNodeIdIsString(nodeId);

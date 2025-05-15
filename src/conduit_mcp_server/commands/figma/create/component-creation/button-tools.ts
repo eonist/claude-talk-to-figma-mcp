@@ -11,35 +11,10 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 export function registerButtonTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     "create_button",
-    `
-Creates a complete button with background and text in Figma at the specified coordinates. You can customize size, text, colors, font, corner radius, name, and parent node.
+    `Creates a complete button with background and text in Figma at the specified coordinates. You can customize size, text, colors, font, corner radius, name, and parent node.
 
 Returns:
 - content: Array of objects. Each object contains a type: "text" and a text field with the created button's frame, background, and text node IDs.
-
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
-
-Usage Example:
-Input:
-\`\`\`json
-{
-  "x": 100,
-  "y": 200,
-  "width": 120,
-  "height": 40,
-  "text": "Click Me"
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created button with frame ID: 123, background ID: 456, text ID: 789" }]
-}
-\`\`\`
 `,
     {
       x: z.number().min(-10000).max(10000)
@@ -86,6 +61,13 @@ Output:
         .describe("Figma node ID of the parent. If provided, must be a string in the format '123:456'.")
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .optional(),
+    },
+    {
+      title: "Create Button",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async (args) => {
       try {

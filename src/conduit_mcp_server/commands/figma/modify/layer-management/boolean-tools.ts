@@ -20,28 +20,17 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes flattened.
-
-Annotations:
-  - title: "Flatten Selection"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Flattened 3 nodes" }]
-    }
 `,
     {
       // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: NodeIdsArraySchema(1, 100),
+    },
+    {
+      title: "Flatten Selection",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
@@ -57,28 +46,17 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes unioned.
-
-Annotations:
-  - title: "Union Selection"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Unioned 3 nodes" }]
-    }
 `,
     {
       // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: NodeIdsArraySchema(2, 100),
+    },
+    {
+      title: "Union Selection",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("union_selection", { nodeIds });
@@ -92,28 +70,17 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes subtracted.
-
-Annotations:
-  - title: "Subtract Selection"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Subtracted 3 nodes" }]
-    }
 `,
     {
       // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: NodeIdsArraySchema(2, 100),
+    },
+    {
+      title: "Subtract Selection",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("subtract_selection", { nodeIds });
@@ -127,28 +94,17 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes intersected.
-
-Annotations:
-  - title: "Intersect Selection"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Intersected 3 nodes" }]
-    }
 `,
     {
       // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: NodeIdsArraySchema(2, 100),
+    },
+    {
+      title: "Intersect Selection",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("intersect_selection", { nodeIds });
@@ -162,28 +118,17 @@ Usage Example:
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes excluded.
-
-Annotations:
-  - title: "Exclude Selection"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: false
-  - openWorldHint: false
-
----
-Usage Example:
-  Input:
-    {
-      "nodeIds": ["123:456", "789:101", "112:131"]
-    }
-  Output:
-    {
-      "content": [{ "type": "text", "text": "Excluded 3 nodes" }]
-    }
 `,
     {
       // Validate nodeIds as simple or complex Figma node IDs, preserving original description
       nodeIds: NodeIdsArraySchema(2, 100),
+    },
+    {
+      title: "Exclude Selection",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("exclude_selection", { nodeIds });

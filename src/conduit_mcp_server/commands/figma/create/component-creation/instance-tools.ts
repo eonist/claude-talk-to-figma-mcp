@@ -35,33 +35,10 @@ export function registerInstanceTools(server: McpServer, figmaClient: FigmaClien
   // Register the "create_component_instance" tool for creating a single component instance in Figma.
   server.tool(
     "create_component_instance",
-    `
-Creates an instance of a component in Figma at the specified coordinates.
+    `Creates an instance of a component in Figma at the specified coordinates.
 
 Returns:
 - content: Array of objects. Each object contains a type: "text" and a text field with the created component instance's node ID.
-
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
-
-Usage Example:
-Input:
-\`\`\`json
-{
-  "componentKey": "abc123",
-  "x": 100,
-  "y": 200
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created component instance 123:456" }]
-}
-\`\`\`
 `,
     {
       // Enforce non-empty string for componentKey
@@ -80,6 +57,13 @@ Output:
         .max(10000)
         .describe("Y coordinate for the instance. Must be between -10,000 and 10,000."),
     },
+    {
+      title: "Create Component Instance",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
+    },
     // Tool handler: validates input, calls Figma client, and returns result or error.
     async ({ componentKey, x, y }): Promise<any> => {
       try {
@@ -95,34 +79,10 @@ Output:
   // Register the "create_component_instances" tool for creating multiple component instances in Figma.
   server.tool(
     "create_component_instances",
-    `
-Creates multiple component instances in Figma based on the provided array of instance configuration objects.
+    `Creates multiple component instances in Figma based on the provided array of instance configuration objects.
 
 Returns:
 - content: Array of objects. Each object contains a type: "text" and a text field with the number of component instances created.
-
-Security & Behavior:
-- Idempotent: true
-- Destructive: false
-- Read-only: false
-- Open-world: false
-
-Usage Example:
-Input:
-\`\`\`json
-{
-  "instances": [
-    { "componentKey": "abc123", "x": 100, "y": 200 },
-    { "componentKey": "def456", "x": 300, "y": 400 }
-  ]
-}
-\`\`\`
-Output:
-\`\`\`json
-{
-  "content": [{ "type": "text", "text": "Created 2/2 component instances." }]
-}
-\`\`\`
 `,
     {
       // Enforce array of instance configs, each with validated fields
@@ -148,6 +108,13 @@ Output:
       .min(1)
       .max(50)
       .describe("Array of component instance specs. Must contain 1 to 50 items."),
+    },
+    {
+      title: "Create Component Instances",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false
     },
     // Tool handler: processes each instance, calls Figma client, and returns batch results.
     async ({ instances }): Promise<any> => {

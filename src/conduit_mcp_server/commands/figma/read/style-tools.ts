@@ -12,23 +12,15 @@ export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) 
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the styles info as JSON.
-
-Annotations:
-  - title: "Get Styles"
-  - idempotentHint: true
-  - destructiveHint: false
-  - readOnlyHint: true
-  - openWorldHint: false
-
----
-Usage Example:
-  Input: {}
-  Output:
-    {
-      "content": [{ "type": "text", "text": "{...styles info...}" }]
-    }
 `,
     {},
+    {
+      title: "Get Styles",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
     async () => {
       try {
         const result = await figmaClient.executeCommand("get_styles");
