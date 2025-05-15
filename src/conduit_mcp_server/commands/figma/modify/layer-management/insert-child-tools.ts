@@ -49,21 +49,8 @@ Returns:
         "If the parentId or childId is invalid, the command may fail or insert at root.",
         "Omitting index appends the child at the end."
       ],
-      detailedDescription: `Inserts a child node into a parent node at an optional index position in Figma.
-
-Parameters:
-- parentId: The ID of the parent node (string, valid Figma node ID).
-- childId: The ID of the child node to insert (string, valid Figma node ID).
-- index: Optional zero-based index to insert the child at a specific position.
-
-Returns:
-- content: Array of objects with type "text" indicating success and insertion index.
-
-Edge Cases:
-- Index must be >= 0 if specified.
-- Invalid node IDs may cause fallback behavior.
-- Omitting index appends the child at the end.
-`
+      detailedDescription: undefined,
+      extraInfo: "This command is critical for managing node hierarchies in Figma. Use with valid node IDs to avoid unexpected behavior."
     },
     async ({ parentId, childId, index }) => {
       const parent = ensureNodeIdIsString(parentId);
