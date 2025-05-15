@@ -4,7 +4,19 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers the insert_child command for inserting a child node into a parent node at a specified index.
+ * Registers the insert_child command on the MCP server to enable inserting a child node into a parent node in Figma.
+ *
+ * This function integrates the MCP server with the Figma client by adding a tool named "insert_child".
+ * The tool accepts parameters for the parent node ID, child node ID, and an optional insertion index.
+ * It executes the corresponding Figma command to insert the child node at the specified position within the parent.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tool on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tool asynchronously.
+ *
+ * @example
+ * registerInsertChildTools(server, figmaClient);
  */
 export function registerInsertChildTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
