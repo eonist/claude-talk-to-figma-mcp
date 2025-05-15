@@ -528,6 +528,50 @@ function setFixedSize(node, axis, size) {
   }
 }
 
+// Clone a single node by ID
+export async function clone_node(params) {
+  const { nodeId } = params || {};
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+  if (typeof node.clone !== "function") {
+    throw new Error(`Node with ID ${nodeId} cannot be cloned`);
+  }
+  const newNode = node.clone();
+  if (node.parent && typeof node.parent.appendChild === "function") {
+    node.parent.appendChild(newNode);
+  }
+  return { success: true, newNodeId: newNode.id };
+}
+
+// Clone multiple nodes by ID
+export async function clone_nodes(params) {
+  const { nodeIds } = params || {};
+  if (!nodeIds || !Array.isArray(nodeIds) || nodeIds.length === 0) {
+    throw new Error("Must provide an array of nodeIds to clone");
+  }
+  const newNodeIds = [];
+  for (const nodeId of nodeIds) {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      throw new Error(`Node not found with ID: ${nodeId}`);
+    }
+    if (typeof node.clone !== "function") {
+      throw new Error(`Node with ID ${nodeId} cannot be cloned`);
+    }
+    const newNode = node.clone();
+    if (node.parent && typeof node.parent.appendChild === "function") {
+      node.parent.appendChild(newNode);
+    }
+    newNodeIds.push(newNode.id);
+  }
+  return { success: true, newNodeIds };
+}
+
 // Batch flatten nodes: flattens each node in the nodeIds array
 export async function flatten_nodes(params) {
   const { nodeIds } = params || {};
@@ -557,5 +601,7 @@ export const layoutOperations = {
   groupNodes,
   ungroupNodes,
   insertChild,
-  flatten_nodes
+  flatten_nodes,
+  clone_node,
+  clone_nodes
 };

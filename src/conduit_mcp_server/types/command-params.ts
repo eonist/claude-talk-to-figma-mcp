@@ -224,6 +224,16 @@ export interface JoinChannelParams extends BaseCommandParams {
   channel: string;
 }
 
+/** Parameters for clone_node command */
+export interface CloneNodeParams extends BaseCommandParams {
+  nodeId: string;
+}
+
+/** Parameters for clone_nodes command (batch) */
+export interface CloneNodesParams extends BaseCommandParams {
+  nodeIds: string[];
+}
+
 /** Parameters for flatten_nodes command (batch flatten) */
 export interface FlattenNodesParams extends BaseCommandParams {
   nodeIds: string[];
@@ -284,6 +294,8 @@ export interface CommandParamsMap {
   generate_html: GenerateHtmlParams;
   insert_child: InsertChildParams;
   flatten_nodes: FlattenNodesParams;
+  clone_node: CloneNodeParams;
+  clone_nodes: CloneNodesParams;
   
   // Allow for any other commands with base params
   [command: string]: BaseCommandParams;

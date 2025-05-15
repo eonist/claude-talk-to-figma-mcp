@@ -5,6 +5,7 @@ import { registerGroupTools } from "./group-tools.js";
 import { registerDeleteTools } from "./delete-tools.js";
 import { registerInsertChildTools } from "./insert-child-tools.js";
 import { registerFlattenNodeTools, registerFlattenNodesTools } from "./flatten-node-tools.js";
+import { registerCloneNodeTools } from "./clone-node-tools.js";
 
 /**
  * Registers all layer management commands by delegating to submodules.
@@ -16,6 +17,7 @@ export function registerLayerManagementCommands(server: McpServer, figmaClient: 
   registerInsertChildTools(server, figmaClient);
   registerFlattenNodeTools(server, figmaClient);
   registerFlattenNodesTools(server, figmaClient);
+  registerCloneNodeTools(server, figmaClient);
 }
 
 // Re-export for granular imports if needed
@@ -26,4 +28,5 @@ export {
   registerInsertChildTools,
   registerFlattenNodeTools,
   registerFlattenNodesTools,
+  registerCloneNodeTools,
 };

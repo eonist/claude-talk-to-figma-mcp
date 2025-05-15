@@ -356,6 +356,10 @@ export function initializeCommands() {
   // Insert child node operation
   registerCommand('insert_child', layoutOperations.insertChild);
 
+  // Clone node operations
+  registerCommand('clone_node', layoutOperations.clone_node);
+  registerCommand('clone_nodes', layoutOperations.clone_nodes);
+
   // Batch flatten nodes operation
   registerCommand('flatten_nodes', layoutOperations.flatten_nodes);
   
