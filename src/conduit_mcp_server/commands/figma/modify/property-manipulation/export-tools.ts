@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { ExportOptionsSchema } from "./export-schema.js";
 
 /**
  * Registers property-manipulation-related modify commands:
@@ -40,10 +41,7 @@ Usage Example:
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma node ID to export. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      format: z.enum(["PNG", "JPG", "SVG", "PDF"]).optional()
-        .describe('Optional. The image format to export: "PNG", "JPG", "SVG", or "PDF". Defaults to "PNG" if omitted.'),
-      scale: z.number().positive().optional()
-        .describe("Optional. The export scale factor. Must be a positive number. Defaults to 1 if omitted."),
+      ...ExportOptionsSchema.shape,
     },
     async ({ nodeId, format, scale }) => {
       const id = ensureNodeIdIsString(nodeId);

@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { CssExportOptionsSchema } from "./css-schema.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 
 /**
@@ -35,15 +36,7 @@ Usage Example:
       "content": [{ "type": "text", "text": "{...css...}" }]
     }
 `,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .optional()
-        .describe("Optional. The unique Figma node ID to get CSS from. If provided, must be a string in the format '123:456'."),
-      format: z.enum(["object","string","inline"])
-        .optional()
-        .describe('Optional. The format to return CSS in: "object", "string", or "inline".'),
-    },
+    CssExportOptionsSchema.shape,
     async ({ nodeId, format }) => {
       try {
         const params: any = {};

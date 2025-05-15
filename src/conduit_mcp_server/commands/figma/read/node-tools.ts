@@ -5,6 +5,7 @@ import { logger } from "../../../utils/logger.js";
 import { filterFigmaNode } from "../../../utils/figma/filter-node.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { NodeIdsArraySchema } from "../../modify/layer-management/node-ids-schema.js";
 
 /**
  * Registers node info read commands:
@@ -96,14 +97,7 @@ Usage Example:
     }
 `,
     {
-      nodeIds: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to get information about. Must be a string in the format '123:456'.")
-      )
-      .min(1)
-      .max(100)
-      .describe("Array of Figma node IDs to get information about. Must contain 1 to 100 items."),
+      nodeIds: NodeIdsArraySchema(1, 100),
     },
     async ({ nodeIds }) => {
       try {

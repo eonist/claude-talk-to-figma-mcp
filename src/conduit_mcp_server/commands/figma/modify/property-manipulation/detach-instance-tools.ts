@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
+import { InstanceIdSchema } from "./instance-id-schema.js";
 
 /**
  * Registers property-manipulation-related modify commands:
@@ -29,7 +30,7 @@ Usage Example:
   Output:
     { "content": [{ "type": "text", "text": "Detached instance 123:456" }] }
 `,
-    { instanceId: z.string().describe("The unique Figma instance ID to detach. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.") },
+    { instanceId: InstanceIdSchema },
     async ({ instanceId }) => {
       const id = ensureNodeIdIsString(instanceId);
       const result = await figmaClient.executeCommand("detach_instance", { instanceId: id });
