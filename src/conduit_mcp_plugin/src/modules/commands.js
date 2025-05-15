@@ -262,6 +262,8 @@ export function initializeCommands() {
   // Component Conversion
   registerCommand('create_component_from_node', componentOperations.createComponentFromNode);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
+  // Register get_team_components for team library component fetching
+  registerCommand('get_team_components', componentOperations.getTeamComponents);
   
   // Gradient Operations
   registerCommand('create_gradient_variable', styleOperations.createGradientVariable);

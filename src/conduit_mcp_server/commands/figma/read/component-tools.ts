@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { z } from "zod";
 
 /**
  * Registers component info read commands:
@@ -42,6 +43,66 @@ Returns:
               text: `Error getting local components: ${error instanceof Error ? error.message : String(error)}`,
             },
           ],
+        };
+      }
+    }
+  );
+
+  // Get Team Components (NEW)
+  server.tool(
+    "get_team_components",
+    `Retrieves components from a Figma team library.
+
+Parameters:
+  - team_id: Figma team ID (string, required)
+  - page_size: Number of components per page (number, optional)
+  - after: Pagination cursor (number, optional)
+
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the team components info as JSON.
+`,
+    {},
+    {
+      title: "Get Team Components",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false
+    },
+    async (args: any) => {
+      const { team_id, page_size, after } = args || {};
+      if (!team_id) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: team_id parameter is required"
+            }
+          ]
+        };
+      }
+      try {
+        const result = await figmaClient.executeCommand("get_team_components", {
+          teamId: team_id,
+          pageSize: page_size,
+          after: after
+        });
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error getting team components: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ]
         };
       }
     }

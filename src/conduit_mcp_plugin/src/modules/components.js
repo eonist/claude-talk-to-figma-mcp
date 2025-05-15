@@ -169,9 +169,59 @@ export async function exportNodeAsImage(params) {
   return { nodeId, format, scale, mimeType: mime, imageData: base64 };
 }
 
+/**
+ * Retrieves components from a Figma team library with pagination.
+ * @async
+ * @function getTeamComponents
+ * @param {{ teamId: string, pageSize?: number, after?: number }} params
+ * @returns {Promise<{ components: Array, pagination: { next_cursor: number, has_next: boolean } }>}
+ */
+export async function getTeamComponents(params) {
+  const { teamId, pageSize = 30, after = 0 } = params || {};
+  if (!teamId) throw new Error("Missing teamId");
+  if (!figma.teamLibrary || !figma.teamLibrary.getAvailableLibraryAssetsAsync) {
+    throw new Error("Team library API unavailable");
+  }
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error("Timeout")), 15000);
+  });
+  const result = await Promise.race([
+    figma.teamLibrary.getAvailableLibraryAssetsAsync({
+      teamId,
+      pageSize,
+      after,
+      types: ["COMPONENT"]
+    }),
+    timeout
+  ]).finally(() => clearTimeout(timeoutId));
+  return {
+    components: (result.libraryAssets || []).map(asset => ({
+      key: asset.key,
+      name: asset.name,
+      description: asset.description,
+      created_at: asset.created_at,
+      modified_at: asset.modified_at,
+      containing_frame: asset.containing_frame
+        ? {
+            x: asset.containing_frame.x,
+            y: asset.containing_frame.y,
+            width: asset.containing_frame.width,
+            height: asset.containing_frame.height
+          }
+        : null
+    })),
+    pagination: {
+      next_cursor: result.pagination?.after,
+      has_next: result.pagination?.has_next
+    }
+  };
+}
+
 export const componentOperations = {
   getLocalComponents,
   getRemoteComponents,
+  getTeamComponents,
   createComponentFromNode,
   createComponentInstance,
   createComponentInstances,
