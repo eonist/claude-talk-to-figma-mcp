@@ -311,7 +311,14 @@ export function connectToFigma(serverUrl: string, port: number, reconnectInterva
       // Calculate exponential backoff delay before attempting a reconnection.
       const backoff = Math.min(30000, reconnectInterval * Math.pow(1.5, Math.floor(Math.random() * 5))); // Max 30s
       logger.info(`Attempting to reconnect in ${backoff / 1000} seconds...`);
-      setTimeout(() => connectToFigma(serverUrl, port, reconnectInterval), backoff);
+      setTimeout(() => {
+        // Only reconnect if no new connection has been started in the meantime
+        if (!ws) {
+          connectToFigma(serverUrl, port, reconnectInterval);
+        } else {
+          logger.info('Reconnect aborted: connection already established or in progress.');
+        }
+      }, backoff);
     });
     
   } catch (error) {
