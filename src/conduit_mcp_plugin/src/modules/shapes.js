@@ -395,8 +395,6 @@ export async function createLines(params) {
 }
 
 
-// Helper functions
-
 /**
  * Helper: Applies a solid fill color to a node.
  *

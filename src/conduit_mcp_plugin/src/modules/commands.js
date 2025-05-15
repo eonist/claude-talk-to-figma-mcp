@@ -27,7 +27,10 @@ import * as renameOperations from './rename.js';
 import HTMLGenerator from './html-generator.js';
 import { insertSvgVector } from './svg.js';
 
-// Internal registry to store command handlers
+/**
+ * Internal registry to store command handler functions by name.
+ * @type {Object.<string, Function>}
+ */
 const commandRegistry = {};
 
 /**

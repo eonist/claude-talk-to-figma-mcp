@@ -3,7 +3,30 @@
  * Provides a central store for application state that can be accessed by all modules.
  */
 
-// WebSocket connection state
+
+/**
+ * Global plugin state object for the Conduit MCP Figma plugin.
+ * Stores WebSocket connection state, UI state, and other shared properties.
+ *
+ * @type {{
+ *   connection: {
+ *     connected: boolean,
+ *     socket: WebSocket|null,
+ *     serverPort: number,
+ *     pendingRequests: Map<any, any>,
+ *     channel: string|null,
+ *     autoReconnect: boolean,
+ *     reconnectAttempts: number,
+ *     maxReconnectAttempts: number,
+ *     inPersistentRetryMode: boolean,
+ *     persistentRetryDelay: number,
+ *     reconnectTimer: any,
+ *     countdownTimer: any,
+ *     countdownSeconds: number
+ *   },
+ *   ui: object
+ * }}
+ */
 const pluginState = {
   connection: {
     connected: false,

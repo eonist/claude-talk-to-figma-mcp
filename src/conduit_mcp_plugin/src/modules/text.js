@@ -26,7 +26,6 @@
  * const result = await textOperations.createText({ x: 0, y: 0, text: 'Hello' });
  * console.log('Created text node ID:', result.id);
  */
- // Text module providing functions to create and modify text nodes in Figma.
 
 /**
  * Text operations module.
