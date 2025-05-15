@@ -4,8 +4,7 @@ import { registerBooleanTools } from "./boolean-tools.js";
 import { registerGroupTools } from "./group-tools.js";
 import { registerDeleteTools } from "./delete-tools.js";
 import { registerInsertChildTools } from "./insert-child-tools.js";
-import { registerFlattenNodeTools } from "./flatten-node-tools.js";
-import { registerFlattenNodesTools } from "./flatten-nodes-tools.js";
+import { registerFlattenNodeTools, registerFlattenNodesTools } from "./flatten-node-tools.js";
 
 /**
  * Registers all layer management commands by delegating to submodules.
