@@ -29,7 +29,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", r: 1, g: 0, b: 0, a: 1 }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "Color channels must be between 0 and 1.",
+        "Alpha is optional and defaults to 1 if not provided."
+      ],
+      extraInfo: "Use this command to set the fill color of any shape, frame, or text node."
     },
     async ({ nodeId, r, g, b, a }) => {
       const id = ensureNodeIdIsString(nodeId);
