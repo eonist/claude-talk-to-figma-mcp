@@ -22,7 +22,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { instanceId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "instanceId must be a valid Figma instance ID.",
+        "Detaching an instance is irreversible.",
+        "Detached instances lose connection to their master component."
+      ],
+      extraInfo: "Use this command to detach a component instance from its master."
     },
     async ({ instanceId }) => {
       const id = ensureNodeIdIsString(instanceId);
