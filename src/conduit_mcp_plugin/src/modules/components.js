@@ -212,8 +212,8 @@ export async function getTeamComponents(params) {
         : null
     })),
     pagination: {
-      next_cursor: result.pagination?.after,
-      has_next: result.pagination?.has_next
+      next_cursor: result.pagination ? result.pagination.after : undefined,
+      has_next: result.pagination ? result.pagination.has_next : undefined
     }
   };
 }

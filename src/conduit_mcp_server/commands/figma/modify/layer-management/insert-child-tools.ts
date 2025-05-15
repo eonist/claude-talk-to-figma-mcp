@@ -32,7 +32,38 @@ Returns:
       idempotentHint: false,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          parentId: "123:456",
+          childId: "789:101",
+          index: 0
+        },
+        {
+          parentId: "123:456",
+          childId: "789:101"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Index must be a non-negative integer if provided.",
+        "If the parentId or childId is invalid, the command may fail or insert at root.",
+        "Omitting index appends the child at the end."
+      ],
+      detailedDescription: `Inserts a child node into a parent node at an optional index position in Figma.
+
+Parameters:
+- parentId: The ID of the parent node (string, valid Figma node ID).
+- childId: The ID of the child node to insert (string, valid Figma node ID).
+- index: Optional zero-based index to insert the child at a specific position.
+
+Returns:
+- content: Array of objects with type "text" indicating success and insertion index.
+
+Edge Cases:
+- Index must be >= 0 if specified.
+- Invalid node IDs may cause fallback behavior.
+- Omitting index appends the child at the end.
+`
     },
     async ({ parentId, childId, index }) => {
       const parent = ensureNodeIdIsString(parentId);
