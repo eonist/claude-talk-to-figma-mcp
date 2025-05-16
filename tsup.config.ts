@@ -4,7 +4,8 @@ export default defineConfig({
   entry: [
     'src/conduit_mcp_server/server.ts',
     'src/socket.ts',
-    'src/conduit_mcp_server/utils/figma/is-valid-node-id.ts'
+    'src/conduit_mcp_server/utils/figma/is-valid-node-id.ts',
+    'src/conduit_mcp_server/server/websocket.ts'
   ],
   format: ['cjs'],
   dts: true,
@@ -17,5 +18,8 @@ export default defineConfig({
   bundle: false,
   banner: {
     js: '#!/usr/bin/env node'
+  },
+  outExtension({ format }) {
+    return ".js";
   }
 });
