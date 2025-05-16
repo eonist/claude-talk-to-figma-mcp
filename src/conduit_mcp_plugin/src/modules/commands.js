@@ -172,13 +172,10 @@ export function initializeCommands() {
   registerCommand('get_nodes_info', documentOperations.getNodesInfo);
   registerCommand('get_css_async', documentOperations.getCssAsync);
   
-  // Image Operations
-  // Handles image insertion commands only
+  // Image Operations (Unified)
   registerCommand('insert_image', imageOperations.insertImage);
-  registerCommand('insert_images', imageOperations.insertImages);
   registerCommand('insert_svg_vector', insertSvgVector);
   registerCommand('insert_local_image', imageOperations.insertLocalImage);
-  registerCommand('insert_local_images', imageOperations.insertLocalImages);
 
   // Shape Operations (Unified)
   registerCommand('create_rectangle', shapeOperations.createRectangle);
