@@ -120,8 +120,6 @@ export type FigmaCommand =
   | "ai_rename_layers"
   // Insert an SVG as a vector (see commands/figma/create/svg-creation-tools.ts)
   | "insert_svg_vector"
-  // Insert multiple SVG vectors (see commands/figma/create/svg-creation-tools.ts)
-  | "insert_svg_vectors"
   // Set the font for multiple nodes (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
   | "set_bulk_font"
   // Set both fill and stroke properties (see commands/figma/modify/styling)
@@ -150,8 +148,6 @@ export type FigmaCommand =
   | "exclude_selection"
   // Insert an image from a URL (see commands/figma/create/image-creation/from-url.ts)
   | "insert_image"
-  // Insert multiple images from URLs (see commands/figma/create/image-creation/from-url.ts)
-  | "insert_images"
   // Create a complete button with background and text (see commands/figma/create/component-creation/button-tools.ts)
   | "create_button"
   // Convert a rectangle to a frame (see commands/figma/modify/layer-management/index.ts)
