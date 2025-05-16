@@ -528,42 +528,31 @@ function setFixedSize(node, axis, size) {
   }
 }
 
-// Clone a single node by ID
+/**
+ * Clones one or more nodes by ID, with optional positions, offsets, and parent.
+ * Accepts either a single object (node) or an array (nodes).
+ * @param {{ node?: object, nodes?: Array<object> }} params
+ *   - node: Single node clone config ({ nodeId, position?, offsetX?, offsetY?, parentId? }).
+ *   - nodes: Array of node clone configs.
+ * @returns {Promise<{ newNodeIds: string[] }>}
+ */
 export async function clone_node(params) {
-  const { nodeId } = params || {};
-  if (!nodeId) {
-    throw new Error("Missing nodeId parameter");
+  let nodesArr;
+  if (params.nodes) {
+    nodesArr = params.nodes;
+  } else if (params.node) {
+    nodesArr = [params.node];
+  } else {
+    // Fallback for legacy single input
+    nodesArr = [params];
   }
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  if (typeof node.clone !== "function") {
-    throw new Error(`Node with ID ${nodeId} cannot be cloned`);
-  }
-  const newNode = node.clone();
-  if (node.parent && typeof node.parent.appendChild === "function") {
-    node.parent.appendChild(newNode);
-  }
-  return { success: true, newNodeId: newNode.id };
-}
-
-// Clone multiple nodes by ID, with optional positions, offsets, and parent
-export async function clone_nodes(params) {
-  const { nodeIds, positions, offsetX = 0, offsetY = 0, parentId } = params || {};
-  if (!nodeIds || !Array.isArray(nodeIds) || nodeIds.length === 0) {
-    throw new Error("Must provide an array of nodeIds to clone");
-  }
-  let parent = null;
-  if (parentId) {
-    parent = await figma.getNodeByIdAsync(parentId);
-    if (!parent || typeof parent.appendChild !== "function") {
-      throw new Error(`Parent node not found or cannot accept children: ${parentId}`);
-    }
-  }
+  nodesArr = nodesArr.filter(Boolean);
   const newNodeIds = [];
-  for (let i = 0; i < nodeIds.length; i++) {
-    const nodeId = nodeIds[i];
+  for (const cfg of nodesArr) {
+    const { nodeId, position, offsetX = 0, offsetY = 0, parentId } = cfg || {};
+    if (!nodeId) {
+      throw new Error("Missing nodeId parameter");
+    }
     const node = await figma.getNodeByIdAsync(nodeId);
     if (!node) {
       throw new Error(`Node not found with ID: ${nodeId}`);
@@ -574,12 +563,12 @@ export async function clone_nodes(params) {
     const newNode = node.clone();
     // Set position for the cloned node
     let pos = null;
-    if (positions && positions[i]) {
-      pos = positions[i];
+    if (position) {
+      pos = position;
     } else if (offsetX || offsetY) {
       pos = {
-        x: (node.x || 0) + offsetX * (i + 1),
-        y: (node.y || 0) + offsetY * (i + 1)
+        x: (node.x || 0) + offsetX,
+        y: (node.y || 0) + offsetY
       };
     }
     if (pos && "x" in newNode && "y" in newNode) {
@@ -587,14 +576,19 @@ export async function clone_nodes(params) {
       newNode.y = pos.y;
     }
     // Add to parent if specified, otherwise to original parent
-    if (parent) {
+    let parent = null;
+    if (parentId) {
+      parent = await figma.getNodeByIdAsync(parentId);
+      if (!parent || typeof parent.appendChild !== "function") {
+        throw new Error(`Parent node not found or cannot accept children: ${parentId}`);
+      }
       parent.appendChild(newNode);
     } else if (node.parent && typeof node.parent.appendChild === "function") {
       node.parent.appendChild(newNode);
     }
     newNodeIds.push(newNode.id);
   }
-  return { success: true, newNodeIds };
+  return { newNodeIds };
 }
 
 // Batch flatten nodes: flattens each node in the nodeIds array
@@ -699,6 +693,6 @@ export const layoutOperations = {
   insertChild,
   insertChildren,
   flatten_nodes,
-  clone_node,
-  clone_nodes
+  clone_node
+  // Note: clone_nodes has been unified into clone_node. Remove any plugin references to clone_nodes.
 };
