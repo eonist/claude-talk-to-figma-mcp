@@ -3,10 +3,8 @@
  * Provides functions to insert images via URL or local data into Figma via MCP.
  *
  * Exposed functions:
- * - insertImage(params)
- * - insertImages(params)
- * - insertLocalImage(params)
- * - insertLocalImages(params)
+ * - insertImage({ image } | { images }): Promise<{ ids: string[] }>
+ * - insertLocalImage({ image } | { images }): Promise<{ ids: string[] }>
  *
  * @module modules/image
  * @example
@@ -48,6 +46,8 @@ export async function insertImage(params) {
     // Fallback for legacy single input
     imagesArr = [params];
   }
+  // Remove undefined or null configs
+  imagesArr = imagesArr.filter(Boolean);
   const ids = [];
   for (const cfg of imagesArr) {
     const { url, x = 0, y = 0, width, height, name = "Image", parentId } = cfg || {};
@@ -96,6 +96,8 @@ export async function insertLocalImage(params) {
     // Fallback for legacy single input
     imagesArr = [params];
   }
+  // Remove undefined or null configs
+  imagesArr = imagesArr.filter(Boolean);
   const ids = [];
   for (const cfg of imagesArr) {
     const { data, x = 0, y = 0, width, height, name = "Local Image", parentId } = cfg || {};
