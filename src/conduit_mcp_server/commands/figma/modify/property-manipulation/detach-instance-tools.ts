@@ -4,8 +4,19 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { InstanceIdSchema } from "./instance-id-schema.js";
 
 /**
- * Registers property-manipulation-related modify commands:
- * - detach_instance
+ * Registers detach instance command on the MCP server.
+ *
+ * This function adds a tool named "detach_instance" to the MCP server,
+ * enabling detaching a Figma component instance from its master component.
+ * It validates input, executes the corresponding Figma command, and returns the result.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tool on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tool asynchronously.
+ *
+ * @example
+ * registerDetachInstanceTools(server, figmaClient);
  */
 export function registerDetachInstanceTools(server: McpServer, figmaClient: FigmaClient) {
   // Detach Instance
@@ -22,7 +33,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { instanceId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "instanceId must be a valid Figma instance ID.",
+        "Detaching an instance is irreversible.",
+        "Detached instances lose connection to their master component."
+      ],
+      extraInfo: "Use this command to detach a component instance from its master."
     },
     async ({ instanceId }) => {
       const id = ensureNodeIdIsString(instanceId);

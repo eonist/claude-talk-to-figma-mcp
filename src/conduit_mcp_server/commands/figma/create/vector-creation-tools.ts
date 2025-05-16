@@ -79,7 +79,22 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          x: 10,
+          y: 20,
+          width: 100,
+          height: 100,
+          vectorPaths: [{ data: "M0 0L10 10" }]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Width and height must be positive.",
+        "Vector path data must be valid SVG path strings.",
+        "If parentId is invalid, vectors will be added to the root."
+      ],
+      extraInfo: "Use this command to create a single vector node with specified paths."
     },
     async ({ x, y, width, height, name, parentId, vectorPaths, fillColor, strokeColor, strokeWeight }): Promise<any> => {
       try {
@@ -166,7 +181,26 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          vectors: [
+            {
+              x: 10,
+              y: 20,
+              width: 100,
+              height: 100,
+              vectorPaths: [{ data: "M0 0L10 10" }]
+            }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Width and height must be positive for each vector.",
+        "Vector path data must be valid SVG path strings.",
+        "If parentId is invalid, vectors will be added to the root."
+      ],
+      extraInfo: "Use this command to create multiple vector nodes in batch."
     },
     async ({ vectors }): Promise<any> => {
       try {

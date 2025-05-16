@@ -3,22 +3,22 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers image insertion commands:
- * - insert_image
- * - insert_images
- * - insert_local_image
- * - insert_local_images
- * 
- * @module commands/figma/create/image-creation-tools
- */
-
-/**
- * Registers image insertion commands:
- * - insert_image
- * - insert_images
+ * Registers image insertion commands on the MCP server.
+ *
+ * This function adds tools named "insert_local_image" and "insert_local_images" to the MCP server,
+ * enabling insertion of single or multiple local images via file paths or Base64 data URIs into Figma.
+ * It validates inputs, executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerFromLocalImageTools(server, figmaClient);
  */
 export function registerFromLocalImageTools(server: McpServer, figmaClient: FigmaClient) {
   // Local image insertion command: supports both --imagePath and --imageData flags.
@@ -85,7 +85,29 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          imagePath: "/path/to/image.png",
+          x: 100,
+          y: 200,
+          width: 300,
+          height: 150,
+          name: "Sample Image"
+        },
+        {
+          imageData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...",
+          x: 0,
+          y: 0
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Either imagePath or imageData must be provided.",
+        "Width and height must be positive if specified.",
+        "If parentId is invalid, the image will be added to the root.",
+        "Image data must be a valid file or base64 string."
+      ],
+      extraInfo: "Supports both file path and base64 data URI for local image insertion."
     },
     async ({ imagePath, imageData, x, y, width, height, name, parentId }): Promise<any> => {
       try {
@@ -189,7 +211,22 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          images: [
+            { imagePath: "/path/to/image1.png", x: 10, y: 20 },
+            { imageData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...", x: 50, y: 60 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each image must have either imagePath or imageData.",
+        "Width and height must be positive if specified.",
+        "If parentId is invalid, the image will be added to the root.",
+        "Image data must be a valid file or base64 string."
+      ],
+      extraInfo: "Batch insertion is efficient for adding multiple local images at once."
     },
     async ({ images }): Promise<any> => {
       try {

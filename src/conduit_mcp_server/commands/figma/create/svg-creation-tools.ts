@@ -7,11 +7,19 @@ import { logger } from "../../../utils/logger.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers SVG insertion commands:
- * - insert_svg_vector
- * - insert_svg_vectors
+ * Registers SVG insertion commands on the MCP server.
  *
- * Both commands expect an 'svg' field, which can be a URL or raw SVG text.
+ * This function adds tools named "insert_svg_vector" and "insert_svg_vectors" to the MCP server,
+ * enabling insertion of single or multiple SVG vectors into Figma.
+ * It validates inputs, executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerSvgCreationCommands(server, figmaClient);
  */
 export function registerSvgCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   logger.info("🔧 Loading SVG creation tools");
@@ -60,7 +68,21 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          svg: "<svg>...</svg>",
+          x: 0,
+          y: 0,
+          name: "My SVG"
+        }
+      ]),
+      edgeCaseWarnings: [
+        "SVG content must be valid SVG markup or a valid URL.",
+        "Coordinates must be within the canvas bounds.",
+        "If parentId is invalid, the SVG will be added to the root."
+      ],
+      extraInfo: "Use this command to insert a single SVG vector into the Figma document."
     },
     async ({ svg, x, y, name, parentId }): Promise<any> => {
       try {
@@ -133,7 +155,25 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          svgs: [
+            {
+              svg: "<svg>...</svg>",
+              x: 0,
+              y: 0,
+              name: "My SVG"
+            }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each SVG content must be valid SVG markup or a valid URL.",
+        "Coordinates must be within the canvas bounds.",
+        "If parentId is invalid, SVGs will be added to the root."
+      ],
+      extraInfo: "Use this command to insert multiple SVG vectors into the Figma document."
     },
     async ({ svgs }): Promise<any> => {
       try {

@@ -55,3 +55,11 @@ export const BoundedTextSchema = BaseTextSchema.extend({
  */
 export type BaseTextConfig = z.infer<typeof BaseTextSchema>;
 export type BoundedTextConfig = z.infer<typeof BoundedTextSchema>;
+
+/**
+ * Batch schema for create_texts (array of BaseTextSchema)
+ */
+export const CreateTextsSchema = z.object({
+  texts: z.array(BaseTextSchema)
+});
+export type CreateTextsConfig = z.infer<typeof CreateTextsSchema>;

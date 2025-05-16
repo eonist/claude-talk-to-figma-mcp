@@ -20,6 +20,7 @@ import { registerVectorCreationCommands } from "./create/vector-creation-tools.j
 import { registerComponentCreationCommands } from "./create/component-creation/index.js";
 import { registerImageCreationCommands } from "./create/image-creation/index.js";
 import { registerSvgCreationCommands } from "./create/svg-creation-tools.js";
+import { registerDocumentCreationCommands } from "./create/document-creation.js";
 
 /**
  * Registers all creation commands by delegating to category modules.
@@ -33,7 +34,6 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
   registerVectorCreationCommands(server, figmaClient);
   registerComponentCreationCommands(server, figmaClient);
   registerImageCreationCommands(server, figmaClient);
-  logger.info("🔌 before registerSvgCreationCommands");
   registerSvgCreationCommands(server, figmaClient);
-  logger.info("🔌 after registerSvgCreationCommands");
+  registerDocumentCreationCommands(server, figmaClient);
 }

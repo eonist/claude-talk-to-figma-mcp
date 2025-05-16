@@ -5,8 +5,19 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
- * Registers delete node command:
- * - delete_node
+ * Registers delete node commands on the MCP server.
+ *
+ * This function adds tools named "delete_node" and "delete_nodes" to the MCP server,
+ * enabling deletion of single or multiple nodes in Figma. It validates inputs,
+ * executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerDeleteTools(server, figmaClient);
  */
 export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient) {
   // Delete single node
@@ -28,7 +39,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: true,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "Deleting a node is irreversible.",
+        "Ensure the nodeId is valid to avoid errors.",
+        "Deleting a parent node will also remove its children."
+      ],
+      extraInfo: "Use caution when deleting nodes to prevent data loss."
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -53,7 +73,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: true,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeIds: ["123:456", "789:101"] }
+      ]),
+      edgeCaseWarnings: [
+        "Batch deleting nodes is irreversible.",
+        "All nodeIds must be valid to avoid partial failures.",
+        "Deleting parent nodes will remove their children."
+      ],
+      extraInfo: "Batch delete with care to avoid unintended data loss."
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);

@@ -27,7 +27,17 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", r: 0, g: 0, b: 0, a: 1, weight: 2 }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "Color channels must be between 0 and 1.",
+        "Weight must be between 0.1 and 100 if provided.",
+        "Alpha is optional and defaults to 1 if not provided."
+      ],
+      extraInfo: "Use this command to set the stroke color and weight of any shape, frame, or text node."
     },
     async ({ nodeId, r, g, b, a, weight }) => {
       const id = ensureNodeIdIsString(nodeId);

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers text analysis read commands:
@@ -41,7 +41,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", property: "fontSize" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid text node.",
+        "property must be a supported style property.",
+        "Returns an error if the node is not a text node."
+      ],
+      extraInfo: "Use this command to analyze style runs within a text node for advanced formatting."
     },
     async ({ nodeId, property }) => {
       try {
@@ -90,7 +99,16 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma node ID.",
+        "Large nodes may take longer to scan.",
+        "Returns a summary and all found text nodes."
+      ],
+      extraInfo: "Scans all descendant text nodes for content and style analysis."
     },
     async ({ nodeId }) => {
       try {
