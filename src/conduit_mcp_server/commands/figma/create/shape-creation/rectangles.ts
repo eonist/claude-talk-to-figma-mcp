@@ -52,19 +52,8 @@ Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle node ID(s).
 `,
     {
-      rectangles: z.array(
-        z.object({
-          x: z.number(),
-          y: z.number(),
-          width: z.number(),
-          height: z.number(),
-          name: z.string().optional(),
-          parentId: z.string().optional(),
-          cornerRadius: z.number().optional()
-        })
-      )
-      .min(1, "At least one rectangle config is required")
-      .describe("An array of rectangle configuration objects. Each object should include coordinates, dimensions, and optional properties for a rectangle.")
+      rectangles: RectangleSchema
+        .describe("A rectangle configuration object or an array of rectangle configuration objects. Each object should include coordinates, dimensions, and optional properties for a rectangle."),
     },
     {
       title: "Create Rectangle(s)",
@@ -99,11 +88,12 @@ Returns:
       ],
       extraInfo: "Useful for generating UI elements, backgrounds, or design primitives programmatically. Batch creation is efficient for generating multiple design elements at once."
     },
-    // Tool handler: always expects rectangles as an array.
+    // Tool handler: supports both single object and array input.
     async ({ rectangles }, extra): Promise<any> => {
       try {
+        const rects = Array.isArray(rectangles) ? rectangles : [rectangles];
         const results = await processBatch(
-          rectangles,
+          rects,
           async cfg => {
             const params: CreateRectangleParams = { commandId: uuidv4(), ...cfg };
             const node = await figmaClient.createRectangle(params);
