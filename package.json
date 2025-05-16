@@ -1,7 +1,7 @@
 {
   "name": "conduit-design",
   "description": "Conduit Figma MCP (Bun-only, not compatible with Node.js)",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "module": "dist/conduit_mcp_server/server.js",
   "main": "dist/conduit_mcp_server/server.js",
   "bin": {

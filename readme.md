@@ -1,4 +1,4 @@
-[![version](https://img.shields.io/badge/version-0.7.7-blue.svg)](https://github.com/eonist/conduit/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green) [![Npm downloads](https://img.shields.io/npm/dw/conduit-design?label=Npm%20downloads)](https://www.npmjs.com/package/conduit-design)
+[![version](https://img.shields.io/badge/version-0.7.8-blue.svg)](https://github.com/eonist/conduit/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green) [![Npm downloads](https://img.shields.io/npm/dw/conduit-design?label=Npm%20downloads)](https://www.npmjs.com/package/conduit-design)
 
 <img width="100" alt="img" src="logo.svg">
 
