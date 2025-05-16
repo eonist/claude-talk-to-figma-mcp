@@ -27,7 +27,10 @@ import * as renameOperations from './rename.js';
 import HTMLGenerator from './html-generator.js';
 import { insertSvgVector } from './svg.js';
 
-// Internal registry to store command handlers
+/**
+ * Internal registry to store command handler functions by name.
+ * @type {Object.<string, Function>}
+ */
 const commandRegistry = {};
 
 /**
@@ -114,9 +117,9 @@ async function createButton(params) {
 
   // Apply corner radius if specified
   if (style.cornerRadius !== undefined) {
-    await shapeOperations.setCornerRadius({
+    await shapeOperations.setNodeCornerRadii({
       nodeId: background.id,
-      radius: style.cornerRadius
+      all: style.cornerRadius
     });
   }
 
@@ -192,8 +195,6 @@ export function initializeCommands() {
   registerCommand('create_line', shapeOperations.createLine);
   registerCommand('create_lines', shapeOperations.createLines);
 
-  // Corner radius
-  registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   // Resize operations
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('resize_nodes', shapeOperations.resizeNodes);
@@ -230,6 +231,7 @@ export function initializeCommands() {
     return { success: true, message: `Flattened ${nodes.length} nodes.` };
   });
   registerCommand('create_text', textOperations.createText);
+  registerCommand('create_texts', textOperations.createTexts);
   registerCommand('set_text_content', textOperations.setTextContent);
   registerCommand('create_bounded_text', textOperations.createBoundedText);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);
@@ -259,6 +261,8 @@ export function initializeCommands() {
   // Component Conversion
   registerCommand('create_component_from_node', componentOperations.createComponentFromNode);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
+  // Register get_team_components for team library component fetching
+  registerCommand('get_team_components', componentOperations.getTeamComponents);
   
   // Gradient Operations
   registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
@@ -349,6 +353,18 @@ export function initializeCommands() {
   // Auto Layout operations
   registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
+
+  // Insert child node operation
+  registerCommand('insert_child', layoutOperations.insertChild);
+  // Batch insert children operation
+  registerCommand('insert_children', layoutOperations.insertChildren);
+
+  // Clone node operations
+  registerCommand('clone_node', layoutOperations.clone_node);
+  registerCommand('clone_nodes', layoutOperations.clone_nodes);
+
+  // Batch flatten nodes operation
+  registerCommand('flatten_nodes', layoutOperations.flatten_nodes);
   
   // UI Component operations
   // HTML export (lite)

@@ -19,7 +19,7 @@
 
 // Import primitive creation functions from other modules
 import { createFrame } from './shapes.js';
-import { createRectangle, setCornerRadius } from './shapes.js';
+import { createRectangle, setNodeCornerRadii } from './shapes.js';
 import { createText } from './text.js';
 
 /**
@@ -106,9 +106,9 @@ export async function createButton(params) {
 
   // Apply corner radius if specified
   if (style.cornerRadius !== undefined) {
-    await setCornerRadius({
+    await setNodeCornerRadii({
       nodeId: background.id,
-      radius: style.cornerRadius
+      all: style.cornerRadius
     });
   }
 

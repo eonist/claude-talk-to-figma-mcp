@@ -8,17 +8,14 @@
  * - setTextContent(params)
  * - scanTextNodes(params)
  * - setMultipleTextContents(params)
- * - setFontName(params)
- * - setFontSize(params)
- * - setFontWeight(params)
- * - setLetterSpacing(params)
- * - setLineHeight(params)
- * - setParagraphSpacing(params)
+ * - createText(params)
+ * - createBoundedText(params)
+ * - setTextContent(params)
+ * - scanTextNodes(params)
+ * - setMultipleTextContents(params)
  * - setTextCase(params)
  * - setTextDecoration(params)
  * - getStyledTextSegments(params)
- * - loadFontAsyncWrapper(params)
- * - setBulkFont(params)
  *
  * @module modules/text
  * @example
@@ -26,7 +23,6 @@
  * const result = await textOperations.createText({ x: 0, y: 0, text: 'Hello' });
  * console.log('Created text node ID:', result.id);
  */
- // Text module providing functions to create and modify text nodes in Figma.
 
 /**
  * Text operations module.
@@ -40,17 +36,9 @@
  * - setTextContent(params): Promise<object>
  * - scanTextNodes(params): Promise<object>
  * - setMultipleTextContents(params): Promise<object>
- * - setFontName(params): Promise<object>
- * - setFontSize(params): Promise<object>
- * - setFontWeight(params): Promise<object>
- * - setLetterSpacing(params): Promise<object>
- * - setLineHeight(params): Promise<object>
- * - setParagraphSpacing(params): Promise<object>
  * - setTextCase(params): Promise<object>
  * - setTextDecoration(params): Promise<object>
  * - getStyledTextSegments(params): Promise<object>
- * - loadFontAsyncWrapper(params): Promise<object>
- * - setBulkFont(params): Promise<object>
  *
  * @example
  * import { textOperations } from './modules/text.js';
@@ -1078,307 +1066,8 @@ export async function setMultipleTextContents(params) {
   };
 }
 
-/**
- * Update the font family and style of a text node.
- *
- * This function allows changing the font family and optionally the style, returning the
- * updated font details.
- *
- * @param {object} params - Configuration for font update.
- * @param {string} params.nodeId - ID of the text node.
- * @param {string} params.family - New font family.
- * @param {string} [params.style="Regular"] - New font style.
- *
- * @returns {Promise<object>} Updated node information including font name.
- * @throws {Error} If the node is not found or not a text node.
- */
-export async function setFontName(params) {
-  const { nodeId, family, style = "Regular" } = params || {};
-  
-  if (!nodeId || !family) {
-    throw new Error("Missing nodeId or font family");
-  }
-  
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  
-  if (node.type !== "TEXT") {
-    throw new Error(`Node is not a text node: ${nodeId}`);
-  }
-  
-  try {
-    await figma.loadFontAsync({ family, style });
-    node.fontName = { family, style };
-    return {
-      id: node.id,
-      name: node.name,
-      fontName: node.fontName
-    };
-  } catch (error) {
-    throw new Error(`Error setting font name: ${error.message}`);
-  }
-}
 
-/**
- * Update the font size of a text node.
- *
- * Change the font size and return the updated node information.
- *
- * @param {object} params - Configuration for font size update.
- * @param {string} params.nodeId - ID of the text node.
- * @param {number} params.fontSize - New font size in pixels.
- *
- * @returns {Promise<object>} Updated node information including font size.
- * @throws {Error} If the node is not found or not a text node.
- */
-export async function setFontSize(params) {
-  const { nodeId, fontSize } = params || {};
-  
-  if (!nodeId || fontSize === undefined) {
-    throw new Error("Missing nodeId or fontSize");
-  }
-  
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  
-  if (node.type !== "TEXT") {
-    throw new Error(`Node is not a text node: ${nodeId}`);
-  }
-  
-  try {
-    await figma.loadFontAsync(node.fontName);
-    node.fontSize = fontSize;
-    return {
-      id: node.id,
-      name: node.name,
-      fontSize: node.fontSize
-    };
-  } catch (error) {
-    throw new Error(`Error setting font size: ${error.message}`);
-  }
-}
 
-/**
- * Update the font weight of a text node.
- *
- * Adjust the font weight and return the updated font settings.
- *
- * @param {object} params - Configuration for font weight update.
- * @param {string} params.nodeId - ID of the text node.
- * @param {number} params.weight - New font weight (100-900).
- *
- * @returns {Promise<object>} Updated node information including new weight.
- * @throws {Error} If the node is not found or not a text node.
- */
-export async function setFontWeight(params) {
-  const { nodeId, weight } = params || {};
-  
-  if (!nodeId || weight === undefined) {
-    throw new Error("Missing nodeId or weight");
-  }
-  
-  // Map weight to font style
-  const getFontStyle = (weight) => {
-    switch (weight) {
-      case 100: return "Thin";
-      case 200: return "Extra Light";
-      case 300: return "Light";
-      case 400: return "Regular";
-      case 500: return "Medium";
-      case 600: return "Semi Bold";
-      case 700: return "Bold";
-      case 800: return "Extra Bold";
-      case 900: return "Black";
-      default: return "Regular";
-    }
-  };
-  
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  
-  if (node.type !== "TEXT") {
-    throw new Error(`Node is not a text node: ${nodeId}`);
-  }
-  
-  try {
-    const family = node.fontName.family;
-    const style = getFontStyle(weight);
-    await figma.loadFontAsync({ family, style });
-    node.fontName = { family, style };
-    return {
-      id: node.id,
-      name: node.name,
-      fontName: node.fontName,
-      weight: weight
-    };
-  } catch (error) {
-    throw new Error(`Error setting font weight: ${error.message}`);
-  }
-}
-
-/**
- * Update the letter spacing of a text node.
- *
- * This modifies the spacing between letters with an option to specify the unit of measure.
- *
- * @param {object} params - Configuration for letter spacing.
- * @param {string} params.nodeId - ID of the text node.
- * @param {number} params.letterSpacing - New letter spacing value.
- * @param {string} [params.unit="PIXELS"] - Unit for letter spacing ("PIXELS" or "PERCENT").
- *
- * @returns {Promise<object>} Updated node information with new letter spacing.
- * @throws {Error} If the node is not found or not a text node.
- */
-export async function setLetterSpacing(params) {
-  const { nodeId, letterSpacing, unit = "PIXELS" } = params || {};
-  
-  if (!nodeId || letterSpacing === undefined) {
-    throw new Error("Missing nodeId or letterSpacing");
-  }
-  
-  // Validate the unit parameter
-  if (unit !== "PIXELS" && unit !== "PERCENT") {
-    throw new Error("Invalid unit: must be 'PIXELS' or 'PERCENT'");
-  }
-  
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  
-  if (node.type !== "TEXT") {
-    throw new Error(`Node is not a text node: ${nodeId}`);
-  }
-  
-  try {
-    // Load the font to ensure we can modify the text
-    await figma.loadFontAsync(node.fontName);
-    
-    // Set the letter spacing with the specified unit
-    node.letterSpacing = {
-      value: letterSpacing,
-      unit: unit
-    };
-    
-    return {
-      id: node.id,
-      name: node.name,
-      letterSpacing: node.letterSpacing
-    };
-  } catch (error) {
-    throw new Error(`Error setting letter spacing: ${error.message}`);
-  }
-}
-
-/**
- * Update the line height of a text node.
- *
- * This adjusts the vertical spacing of lines within the text node.
- *
- * @param {object} params - Configuration for line height update.
- * @param {string} params.nodeId - ID of the text node.
- * @param {number} params.lineHeight - New line height value.
- * @param {string} [params.unit="PIXELS"] - Unit for line height ("PIXELS", "PERCENT", or "AUTO").
- *
- * @returns {Promise<object>} Updated node information including line height.
- * @throws {Error} If the node is not found or not a text node.
- */
-export async function setLineHeight(params) {
-  const { nodeId, lineHeight, unit = "PIXELS" } = params || {};
-  
-  if (!nodeId || lineHeight === undefined) {
-    throw new Error("Missing nodeId or lineHeight");
-  }
-  
-  // Validate the unit parameter
-  if (unit !== "PIXELS" && unit !== "PERCENT" && unit !== "AUTO") {
-    throw new Error("Invalid unit: must be 'PIXELS', 'PERCENT', or 'AUTO'");
-  }
-  
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  
-  if (node.type !== "TEXT") {
-    throw new Error(`Node is not a text node: ${nodeId}`);
-  }
-  
-  try {
-    // Load the font to ensure we can modify the text
-    await figma.loadFontAsync(node.fontName);
-    
-    // Special handling for AUTO unit
-    if (unit === "AUTO") {
-      node.lineHeight = { unit: "AUTO" };
-    } else {
-      // Set the line height with the specified unit and value
-      node.lineHeight = {
-        value: lineHeight,
-        unit: unit
-      };
-    }
-    
-    return {
-      id: node.id,
-      name: node.name,
-      lineHeight: node.lineHeight
-    };
-  } catch (error) {
-    throw new Error(`Error setting line height: ${error.message}`);
-  }
-}
-
-/**
- * Update the paragraph spacing of a text node.
- *
- * Sets the spacing (in pixels) between paragraphs in the text node.
- *
- * @param {object} params - Configuration for paragraph spacing.
- * @param {string} params.nodeId - ID of the text node.
- * @param {number} params.paragraphSpacing - New paragraph spacing in pixels.
- *
- * @returns {Promise<object>} Updated node information including paragraph spacing.
- * @throws {Error} If the node is not found or not a text node.
- */
-export async function setParagraphSpacing(params) {
-  const { nodeId, paragraphSpacing } = params || {};
-  
-  if (!nodeId || paragraphSpacing === undefined) {
-    throw new Error("Missing nodeId or paragraphSpacing");
-  }
-  
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found with ID: ${nodeId}`);
-  }
-  
-  if (node.type !== "TEXT") {
-    throw new Error(`Node is not a text node: ${nodeId}`);
-  }
-  
-  try {
-    // Load the font to ensure we can modify the text
-    await figma.loadFontAsync(node.fontName);
-    
-    // Set the paragraph spacing
-    node.paragraphSpacing = paragraphSpacing;
-    
-    return {
-      id: node.id,
-      name: node.name,
-      paragraphSpacing: node.paragraphSpacing
-    };
-  } catch (error) {
-    throw new Error(`Error setting paragraph spacing: ${error.message}`);
-  }
-}
 
 /**
  * Update the text case of a text node.
@@ -1589,229 +1278,6 @@ export async function getStyledTextSegments(params) {
   }
 }
 
-/**
- * Load a font asynchronously.
- *
- * Wraps the Figma font loading functionality and returns a success message along with
- * the loaded font details.
- *
- * @param {object} params - Configuration for font loading.
- * @param {string} params.family - Font family to load.
- * @param {string} [params.style="Regular"] - Font style to load.
- *
- * @returns {Promise<object>} Details about the loaded font including family and style.
- * @throws {Error} If font loading fails.
- */
-export async function loadFontAsyncWrapper(params) {
-  const { family, style = "Regular" } = params || {};
-  
-  if (!family) {
-    throw new Error("Missing font family");
-  }
-  
-  try {
-    await figma.loadFontAsync({ family, style });
-    return {
-      success: true,
-      family: family,
-      style: style,
-      message: `Successfully loaded ${family} ${style}`
-    };
-  } catch (error) {
-    throw new Error(`Error loading font: ${error.message}`);
-  }
-}
-
-/**
- * Apply font settings to multiple text nodes at once
- *
- * @param {object} params - Configuration for bulk font update
- * @param {Array<{nodeIds?: string[], parentId?: string, inherit?: boolean, font: object}>} params.targets - Array of target configurations
- * @param {string} [params.commandId] - Optional command identifier for progress tracking
- * 
- * @returns {Promise<object>} Summary of the bulk update operation
- */
-export async function setBulkFont(params) {
-  const { targets, commandId = generateCommandId() } = params;
-
-  if (!targets || !Array.isArray(targets)) {
-    throw new Error("targets parameter must be an array");
-  }
-
-  // Process each target configuration
-  const results = [];
-  let totalSuccessCount = 0;
-  let totalFailureCount = 0;
-  let totalNodes = 0;
-
-  // Send initial progress update
-  sendProgressUpdate(commandId, 'set_bulk_font', 'started', 0, 0, 0, 
-    `Starting bulk font update for multiple configurations`, { totalConfigs: targets.length });
-
-  for (let targetIndex = 0; targetIndex < targets.length; targetIndex++) {
-    const target = targets[targetIndex];
-    let targetNodeIds = target.nodeIds || [];
-
-    // If parentId is provided, scan for text nodes
-    if (target.parentId) {
-      const parent = await figma.getNodeByIdAsync(target.parentId);
-      if (!parent) {
-        results.push({
-          success: false,
-          error: `Parent node not found with ID: ${target.parentId}`,
-          config: targetIndex
-        });
-        continue;
-      }
-      
-      // Determine whether to include all descendant nodes or only direct children
-      const inherit = target.inherit !== undefined ? target.inherit : true;
-      
-      if (inherit) {
-        // If inherit is true (default), scan all descendants (existing behavior)
-        const scanResult = await scanTextNodes({ nodeId: target.parentId });
-        targetNodeIds = scanResult.textNodes.map(node => node.id);
-      } else {
-        // If inherit is false, only include direct children that are text nodes
-        if ("children" in parent) {
-          // Find only direct children that are text nodes
-          for (const child of parent.children) {
-            if (child.type === "TEXT" && child.visible !== false) {
-              targetNodeIds.push(child.id);
-            }
-          }
-        }
-      }
-    }
-
-    if (!targetNodeIds.length) {
-      results.push({
-        success: false,
-        error: "No target nodes specified or found",
-        config: targetIndex
-      });
-      continue;
-    }
-
-    // Initialize progress tracking for this target
-    let successCount = 0;
-    let failureCount = 0;
-    const configTotal = targetNodeIds.length;
-    totalNodes += configTotal;
-
-    // Process in chunks to avoid overwhelming Figma
-    const CHUNK_SIZE = 5;
-    const chunks = [];
-    for (let i = 0; i < targetNodeIds.length; i += CHUNK_SIZE) {
-      chunks.push(targetNodeIds.slice(i, i + CHUNK_SIZE));
-    }
-
-    // Process each chunk
-    for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
-      const chunk = chunks[chunkIndex];
-      const chunkPromises = chunk.map(async nodeId => {
-        try {
-          const node = await figma.getNodeByIdAsync(nodeId);
-          if (!node || node.type !== "TEXT") {
-            return { success: false, nodeId, error: "Not a valid text node" };
-          }
-
-          // Load and apply font settings
-          if (target.font.family || target.font.style) {
-            const newFont = {
-              family: target.font.family || node.fontName.family,
-              style: target.font.style || node.fontName.style
-            };
-            await figma.loadFontAsync(newFont);
-            node.fontName = newFont;
-          }
-
-          if (target.font.size) {
-            node.fontSize = target.font.size;
-          }
-
-          if (target.font.weight) {
-            const style = getFontStyle(target.font.weight);
-            const newFont = {
-              family: node.fontName.family,
-              style: style
-            };
-            await figma.loadFontAsync(newFont);
-            node.fontName = newFont;
-          }
-
-          return {
-            success: true,
-            nodeId,
-            changes: {
-              family: target.font.family,
-              style: target.font.style,
-              size: target.font.size,
-              weight: target.font.weight
-            }
-          };
-
-        } catch (error) {
-          return { success: false, nodeId, error: error.message };
-        }
-      });
-
-      const chunkResults = await Promise.all(chunkPromises);
-      chunkResults.forEach(result => {
-        if (result.success) {
-          successCount++;
-          totalSuccessCount++;
-        } else {
-          failureCount++;
-          totalFailureCount++;
-        }
-        results.push({
-          success: result.success,
-          nodeId: result.nodeId,
-          changes: result.changes,
-          error: result.error,
-          config: targetIndex
-        });
-      });
-
-      // Update progress for current configuration
-      sendProgressUpdate(commandId, 'set_bulk_font', 'in_progress',
-        Math.round(((targetIndex * 100 + (chunkIndex + 1) / chunks.length * 100)) / targets.length),
-        totalNodes,
-        totalSuccessCount + totalFailureCount,
-        `Processing configuration ${targetIndex + 1}/${targets.length}: ${successCount + failureCount} of ${configTotal} nodes`,
-        { 
-          totalSuccessCount,
-          totalFailureCount,
-          currentConfig: targetIndex + 1,
-          totalConfigs: targets.length,
-          currentChunk: chunkIndex + 1,
-          totalChunks: chunks.length
-        }
-      );
-
-      // Add delay between chunks
-      if (chunkIndex < chunks.length - 1) {
-        await delay(100);
-      }
-    }
-  }
-
-  // Send completion update
-  sendProgressUpdate(commandId, 'set_bulk_font', 'completed', 100,
-    totalNodes, totalSuccessCount + totalFailureCount,
-    `Completed bulk font update across ${targets.length} configurations: ${totalSuccessCount} successful, ${totalFailureCount} failed`,
-    { totalSuccessCount, totalFailureCount, totalNodes }
-  );
-
-  return {
-    success: totalSuccessCount > 0,
-    totalNodes,
-    successCount: totalSuccessCount,
-    failureCount: totalFailureCount,
-    results
-  };
-}
 
 // Group export for all text operations.
 /**
@@ -1821,21 +1287,36 @@ export async function setBulkFont(params) {
  * const { setTextContent } = textOperations;
  * const updateResult = await setTextContent({ nodeId: '123', text: 'Goodbye' });
  */
+/**
+ * Batch-create multiple text nodes in the Figma document.
+ * @param {object} params - Object with a 'texts' array of text configs.
+ * @returns {Promise<Array<object>>} Array of created text node details.
+ */
+export async function createTexts(params) {
+  const { texts } = params || {};
+  if (!Array.isArray(texts)) {
+    throw new Error("Missing or invalid 'texts' array in params");
+  }
+  const results = [];
+  for (const textConfig of texts) {
+    try {
+      const node = await createText(textConfig);
+      results.push(node);
+    } catch (err) {
+      results.push({ error: err.message, config: textConfig });
+    }
+  }
+  return results;
+}
+
 export const textOperations = {
   createText,
+  createTexts,
   createBoundedText,
   setTextContent,
   scanTextNodes,
   setMultipleTextContents,
-  setFontName,
-  setFontSize,
-  setFontWeight,
-  setLetterSpacing,
-  setLineHeight,
-  setParagraphSpacing,
   setTextCase,
   setTextDecoration,
-  getStyledTextSegments,
-  loadFontAsyncWrapper,
-  setBulkFont
+  getStyledTextSegments
 };
