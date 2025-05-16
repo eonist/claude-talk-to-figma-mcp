@@ -3,7 +3,7 @@ import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers text analysis read commands:

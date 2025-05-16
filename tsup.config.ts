@@ -1,7 +1,11 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/conduit_mcp_server/server.ts', 'src/socket.ts'],
+  entry: [
+    'src/conduit_mcp_server/server.ts',
+    'src/socket.ts',
+    'src/conduit_mcp_server/utils/figma/is-valid-node-id.ts'
+  ],
   format: ['cjs'],
   dts: true,
   clean: true,
@@ -10,7 +14,7 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   splitting: false,
-  bundle: true,
+  bundle: false,
   banner: {
     js: '#!/usr/bin/env node'
   }

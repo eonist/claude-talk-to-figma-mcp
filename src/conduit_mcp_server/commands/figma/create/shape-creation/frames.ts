@@ -4,7 +4,7 @@ import { z } from "../utils.js";
 import { FrameSchema } from "./frame-schema.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers frame creation commands with the MCP server.

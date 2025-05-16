@@ -4,7 +4,7 @@ import { z, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 import { handleToolError } from "../../../utils/error-handling.js";
 import { logger } from "../../../utils/logger.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers SVG insertion commands on the MCP server.
