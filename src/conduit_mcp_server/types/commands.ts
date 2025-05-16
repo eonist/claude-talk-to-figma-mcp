@@ -126,8 +126,6 @@ export type FigmaCommand =
   | "create_gradient_variable"
   // Apply a gradient style to a node (see commands/figma/modify/styling)
   | "apply_gradient_style"
-  // Batch apply gradient styles to nodes (see commands/figma/modify/styling)
-  | "apply_gradient_styles"
   // Apply a gradient directly to a node (see commands/figma/modify/styling)
   | "apply_direct_gradient"
   // Detach a component instance from its master (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)

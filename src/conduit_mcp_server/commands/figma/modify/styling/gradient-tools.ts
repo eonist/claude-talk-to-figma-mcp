@@ -6,8 +6,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 /**
  * Registers gradient-related styling commands:
  * - create_gradient_variable (unified: supports single or batch)
- * - apply_gradient_style
- * - apply_gradient_styles
+ * - apply_gradient_style (unified: supports single or batch)
  * - apply_direct_gradient
  */
 export function registerGradientTools(server: McpServer, figmaClient: FigmaClient) {
@@ -39,7 +38,7 @@ export function registerGradientTools(server: McpServer, figmaClient: FigmaClien
   });
 
   // Accepts either a single gradient or an array of gradients
-  const ParamsSchema = z.object({
+  const CreateGradientParamsSchema = z.object({
     gradients: z.union([
       GradientDefSchema,
       z.array(GradientDefSchema).min(1).max(20)
@@ -56,7 +55,7 @@ Params:
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created gradient(s) ID(s) or a summary.
 `,
-    ParamsSchema.shape,
+    CreateGradientParamsSchema.shape,
     {
       title: "Create Gradient Variable (Single or Batch)",
       idempotentHint: true,
@@ -103,62 +102,66 @@ Returns:
     }
   );
 
-  // Apply Gradient Style
+  // Unified Apply Gradient Style
+  const ApplyGradientEntrySchema = z.object({
+    nodeId: z.string()
+      .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+      .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
+    gradientStyleId: z.string()
+      .min(1)
+      .max(100)
+      .describe("The ID of the gradient style to apply. Must be a non-empty string up to 100 characters."),
+    applyTo: z.enum(["FILL", "STROKE", "BOTH"]),
+  });
+
+  const ApplyGradientParamsSchema = z.object({
+    entries: z.union([
+      ApplyGradientEntrySchema,
+      z.array(ApplyGradientEntrySchema).min(1).max(100)
+    ])
+  });
+
   server.tool(
     "apply_gradient_style",
-    `Apply a gradient style to a node in Figma.
+    `Apply one or more gradient styles to node(s) in Figma.
+
+Params:
+  - entries: Either a single application or an array of applications.
 
 Returns:
-  - content: Array containing a text message with the updated node's ID.
+  - content: Array containing a text message with the updated node(s) ID(s) or a summary.
     Example: { "content": [{ "type": "text", "text": "Applied gradient to 123:456" }] }
 `,
+    ApplyGradientParamsSchema.shape,
     {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      gradientStyleId: z.string()
-        .min(1)
-        .max(100)
-        .describe("The ID of the gradient style to apply. Must be a non-empty string up to 100 characters."),
-      applyTo: z.enum(["FILL", "STROKE", "BOTH"]),
-    },
-    async ({ nodeId, gradientStyleId, applyTo }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("apply_gradient_style", { nodeId: id, gradientStyleId, applyTo });
-      return { content: [{ type: "text", text: `Applied gradient to ${id}` }] };
-    }
-  );
-
-  // Batch apply gradient styles
-  server.tool(
-    "apply_gradient_styles",
-    `Batch apply gradient styles to nodes in Figma.
-
-Returns:
-  - content: Array containing a text message with the number of gradients applied.
-    Example: { "content": [{ "type": "text", "text": "Batch applied gradients: 2/2 successes" }] }
-`,
-    {
-      entries: z.array(
-        z.object({
-          nodeId: z.string()
-            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-            .describe("The unique Figma node ID to style. Must be a string in the format '123:456'."),
-          gradientStyleId: z.string()
-            .min(1)
-            .max(100)
-            .describe("The ID of the gradient style to apply. Must be a non-empty string up to 100 characters."),
-          applyTo: z.enum(["FILL","STROKE","BOTH"])
-        })
-      ).min(1).max(100),
+      title: "Apply Gradient Style (Single or Batch)",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { entries: { nodeId: "123:456", gradientStyleId: "S:123", applyTo: "FILL" } },
+        { entries: [
+          { nodeId: "123:456", gradientStyleId: "S:123", applyTo: "FILL" },
+          { nodeId: "789:101", gradientStyleId: "S:456", applyTo: "STROKE" }
+        ]}
+      ]),
+      edgeCaseWarnings: [
+        "Each entry must have a valid nodeId and gradientStyleId.",
+        "applyTo must be one of FILL, STROKE, BOTH."
+      ],
+      extraInfo: "Supports both single and batch gradient style application in one call."
     },
     async ({ entries }) => {
-      const results = await figmaClient.applyGradientStyles({ entries });
+      const entryList = Array.isArray(entries) ? entries : [entries];
+      const results = await figmaClient.applyGradientStyles({ entries: entryList });
       return {
         content: [
           {
             type: "text",
-            text: `Batch applied gradients: ${results.filter(r => r.success).length}/${results.length} successes`
+            text: entryList.length === 1
+              ? `Applied gradient to ${entryList[0].nodeId}`
+              : `Batch applied gradients: ${results.filter(r => r.success).length}/${results.length} successes`
           }
         ],
         _meta: { results }
