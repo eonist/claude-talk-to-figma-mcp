@@ -18,50 +18,32 @@ export type FigmaCommand =
   | "get_nodes_info"
   // Create a new rectangle shape node (see commands/figma/create/shape-creation/rectangles.ts)
   | "create_rectangle"
-  // Create multiple rectangles (see commands/figma/create/shape-creation/rectangles.ts)
-  | "create_rectangles"
   // Create a new frame node (see commands/figma/create/shape-creation/frames.ts)
   | "create_frame"
-  // Create multiple frames (see commands/figma/create/shape-creation/frames.ts)
-  | "create_frames"
   // Create a new text element (see commands/figma/create/text-creation/text-tools.ts)
   | "create_text"
   // Create a bounded text box (see commands/figma/create/text-creation/text-tools.ts)
   | "create_bounded_text"
   // Create a new ellipse shape node (see commands/figma/create/shape-creation/ellipses.ts)
   | "create_ellipse"
-  // Create multiple ellipses (see commands/figma/create/shape-creation/ellipses.ts)
-  | "create_ellipses"
   // Create a new polygon shape node (see commands/figma/create/shape-creation/polygons.ts)
   | "create_polygon"
-  // Create multiple polygons (see commands/figma/create/shape-creation/polygons.ts)
-  | "create_polygons"
   // Create a new star shape node (see commands/figma/create/shape-creation/index.ts)
   | "create_star"
   // Create a new vector node (see commands/figma/create/vector-creation-tools.ts)
   | "create_vector"
-  // Create multiple vectors (see commands/figma/create/vector-creation-tools.ts)
-  | "create_vectors"
   // Create a new line node (see commands/figma/create/shape-creation/lines.ts)
   | "create_line"
-  // Create multiple lines (see commands/figma/create/shape-creation/lines.ts)
-  | "create_lines"
   // Set the fill color of a node (see commands/figma/modify/styling)
   | "set_fill_color"
   // Set the stroke color of a node (see commands/figma/modify/styling)
   | "set_stroke_color"
   // Move a node to a new position (see commands/figma/modify/positioning-tools.ts)
   | "move_node"
-  // Move multiple nodes to a new position (see commands/figma/modify/positioning-tools.ts)
-  | "move_nodes"
   // Resize a node (see commands/figma/modify/transform-tools.ts)
   | "resize_node"
-  // Resize multiple nodes (see commands/figma/modify/transform-tools.ts)
-  | "resize_nodes"
   // Delete a node (see commands/figma/modify/layer-management/delete-tools.ts)
   | "delete_node"
-  // Delete multiple nodes (see commands/figma/modify/layer-management/delete-tools.ts)
-  | "delete_nodes"
   // Export a node as an image (see commands/figma/modify/property-manipulation/export-schema.ts)
   | "export_node_as_image"
   // Set the text content of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
@@ -74,16 +56,12 @@ export type FigmaCommand =
   | "get_team_components"
   // Create an instance of a component (see commands/figma/create/component-creation/instance-tools.ts)
   | "create_component_instance"
-  // Create multiple component instances (see commands/figma/create/component-creation/instance-tools.ts)
-  | "create_component_instances"
   // Convert a node into a component (see commands/figma/create/component-creation/node-tools.ts)
   | "create_component_from_node"
   // Set the corner radius of a node (see commands/figma/modify/property-manipulation/corner-radius-tools.ts)
   | "set_corner_radius"
   // Clone a node (see commands/figma/modify/layer-management/index.ts)
   | "clone_node"
-  // Clone multiple nodes (see commands/figma/modify/layer-management/index.ts)
-  | "clone_nodes"
   // Get CSS properties from a node (see commands/figma/read/css-tools.ts)
   | "get_css_async"
   // Scan all text nodes in a node (see commands/figma/read/text-analysis-tools.ts)

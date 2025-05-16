@@ -194,8 +194,8 @@ export function initializeCommands() {
   registerCommand('delete_node', shapeOperations.deleteNode);
   registerCommand('delete_nodes', shapeOperations.deleteNodes);
   // Move operations
+  // Unified move_node only; remove legacy move_nodes
   registerCommand('move_node', shapeOperations.moveNode);
-  registerCommand('move_nodes', shapeOperations.moveNodes);
   // Flatten
   registerCommand('flatten_node', shapeOperations.flattenNode);
 
