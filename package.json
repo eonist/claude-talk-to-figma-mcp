@@ -17,10 +17,11 @@
   "type": "module",
   "scripts": {
     "prepare": "tsup",
+    "prepublishOnly": "node scripts/rename-cjs-to-js.cjs && chmod +x dist/conduit_mcp_server/server.js dist/socket.js",
     "start": "bun run dist/conduit_mcp_server/server.js",
     "socket": "bun run dist/socket.js",
     "setup": "./scripts/setup.sh",
-    "build": "tsup && node scripts/rename-cjs-to-js.cjs && chmod +x dist/conduit_mcp_server/server.js dist/socket.js",
+    "build": "tsup",
     "build:watch": "tsup --watch",
     "build:plugin": "node src/conduit_mcp_plugin/build.js",
     "build:ui-ts": "node src/conduit_mcp_plugin/build-ts.js",
