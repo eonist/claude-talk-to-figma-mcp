@@ -87,7 +87,7 @@ Returns:
     },
     async ({ gradients }) => {
       const gradientList = Array.isArray(gradients) ? gradients : [gradients];
-      const results = await figmaClient.createGradientVariables({ gradients: gradientList });
+      const results = await figmaClient.createGradientVariable({ gradients: gradientList });
       return {
         content: [
           {
@@ -154,7 +154,7 @@ Returns:
     },
     async ({ entries }) => {
       const entryList = Array.isArray(entries) ? entries : [entries];
-      const results = await figmaClient.applyGradientStyles({ entries: entryList });
+      const results = await figmaClient.applyGradientStyle({ entries: entryList });
       return {
         content: [
           {

@@ -242,50 +242,40 @@ The server supports an extensive set of commands for working with Figma. These a
 
 - **Shapes:**
   - `create_rectangle(x, y, width, height, ...)` - Create a rectangle
-  - `create_rectangles(rectangles)` - Create multiple rectangles
   - `create_frame(x, y, width, height, ...)` - Create a frame
   - `create_line(x1, y1, x2, y2, ...)` - Create a line
-  - `create_lines(lines)` - Create multiple lines
   - `create_ellipse(x, y, width, height, ...)` - Create an ellipse
-  - `create_ellipses(ellipses)` - Create multiple ellipses
-  - `create_polygons(polygons)` - Create multiple polygons
+  - `create_polygon(x, y, width, height, sides, ...)` - Create a polygon
+  - `create_star(x, y, width, height, ...)` - Create a star
+  - `create_vector(x, y, width, height, vectorPaths, ...)` - Create a vector
 
 - **Text:**
   - `create_text(x, y, text, ...)` - Create a text element
   - `create_bounded_text(x, y, width, height, text, ...)` - Create a bounded text box
   - `set_text_content(nodeId, text)` - Set text content of an existing node
-  - `set_multiple_text_contents(nodeIds, texts)` - Set multiple text contents
+  - `set_multiple_text_contents(nodeId, textArray)` - Set multiple text contents
 
 - **Components and Vectors:**
   - `create_component_instance(componentKey, x, y)` - Create an instance of a component
-  - `create_component_instances(instances)` - Create multiple component instances
   - `create_component_from_node(nodeId)` - Convert a node to a component
   - `create_button(x, y, width, height, text, ...)` - Create a complete button
-  - `create_vector(x, y, width, height, vectorPaths, ...)` - Create a vector
-  - `create_vectors(vectors)` - Create multiple vectors
 
 - **Images and SVG:**
   - `insert_image(url, x, y, ...)` - Insert an image from a URL
-  - `insert_images(images)` - Insert multiple images from URLs
   - `insert_local_image(imagePath/imageData, x, y, ...)` - Insert a local image
-  - `insert_local_images(images)` - Insert multiple local images
   - `insert_svg_vector(svg, x, y, ...)` - Insert an SVG as vector
-  - `insert_svg_vectors(svgs)` - Insert multiple SVG vectors
 
 ### Styling and Modification
 
 - **Basic Styling:**
   - `set_fill_color(nodeId, r, g, b, a)` - Set fill color
   - `set_stroke_color(nodeId, r, g, b, a, weight)` - Set stroke color
-  - `set_style(nodeId, fillProps, strokeProps)` - Set both fill and stroke
-  - `set_styles(entries)` - Apply styles to multiple nodes
+  - `set_style(entries)` - Set both fill and stroke (single or batch)
 
 - **Gradients:**
-  - `create_gradient_variable(name, gradientType, stops)` - Create a gradient style
-  - `apply_gradient_style(nodeId, gradientStyleId, applyTo)` - Apply a gradient style
+  - `create_gradient_variable(gradients)` - Create one or more gradient styles (single object or array)
+  - `apply_gradient_style(entries)` - Apply one or more gradient styles (single object or array)
   - `apply_direct_gradient(nodeId, gradientType, stops, applyTo)` - Apply gradient directly
-  - `create_gradient_variables(gradients)` - Batch create gradient variables
-  - `apply_gradient_styles(entries)` - Batch apply gradient styles
 
 - **Text Styling:**
   - `set_font_name(nodeId, family, style)` - Set font name and style
@@ -309,12 +299,10 @@ The server supports an extensive set of commands for working with Figma. These a
 
 - **Positioning and Sizing:**
   - `move_node(nodeId, x, y)` - Move a node
-  - `move_nodes(nodeIds, x, y)` - Move multiple nodes
   - `resize_node(nodeId, width, height)` - Resize a node
-  - `resize_nodes(nodeIds, targetSize)` - Resize multiple nodes
+  - `flatten_selection(nodeIds)` - Flatten selected nodes
 
 - **Boolean Operations:**
-  - `flatten_selection(nodeIds)` - Flatten selected nodes
   - `union_selection(nodeIds)` - Union selected shapes
   - `subtract_selection(nodeIds)` - Subtract shapes
   - `intersect_selection(nodeIds)` - Intersect shapes
@@ -328,7 +316,6 @@ The server supports an extensive set of commands for working with Figma. These a
 
 - **Naming:**
   - `rename_layer(nodeId, newName, setAutoRename)` - Rename a single layer
-  - `rename_layers(layer_ids, new_name, match_pattern, replace_with)` - Rename multiple layers
   - `rename_multiple(layer_ids, new_names)` - Rename with distinct names
   - `ai_rename_layers(layer_ids, context_prompt)` - AI-powered renaming
 

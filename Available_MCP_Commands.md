@@ -113,9 +113,6 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
     - [export_node_as_image](#export_node_as_image): Export a node as an image
 
 - Bulk/Batch Commands
-    - [set_styles](#set_styles): Apply fill and/or stroke styles to multiple nodes
-    - [create_gradient_variables](#create_gradient_variables): Batch create gradient variables
-    - [apply_gradient_styles](#apply_gradient_styles): Batch apply gradient styles to nodes
 
 ### Layer/Node Management
 
@@ -949,74 +946,6 @@ Set both fill and stroke properties for a Figma node.
 
 ---
 
-### set_styles
-Apply fill and/or stroke styles to multiple nodes.
-
-**Parameters:**
-- entries (array): Array of { nodeId, fillProps?, strokeProps? }
-
-**Example:**
-```json
-{
-  "command": "set_styles",
-  "params": {
-    "entries": [
-      { "nodeId": "123:456", "fillProps": { "color": [1, 0, 0, 1] } },
-      { "nodeId": "123:789", "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 } }
-    ]
-  }
-}
-```
-
----
-
-### create_gradient_variable
-Create a gradient paint style in Figma.
-
-**Parameters:**
-- name (string)
-- gradientType (string): "LINEAR", "RADIAL", "ANGULAR", "DIAMOND"
-- stops (array): Array of { position: number, color: [r, g, b, a] }
-
-**Example:**
-```json
-{
-  "command": "create_gradient_variable",
-  "params": {
-    "name": "Blue Gradient",
-    "gradientType": "LINEAR",
-    "stops": [
-      { "position": 0, "color": [0.1, 0.1, 0.9, 1] },
-      { "position": 1, "color": [0.6, 0.7, 1, 1] }
-    ]
-  }
-}
-```
-
----
-
-### create_gradient_variables
-Batch create gradient variables in Figma.
-
-**Parameters:**
-- gradients (array): Array of gradient configs
-
-**Example:**
-```json
-{
-  "command": "create_gradient_variables",
-  "params": {
-    "gradients": [
-      {
-        "name": "Blue Gradient",
-        "gradientType": "LINEAR",
-        "stops": [
-          { "position": 0, "color": [0.1, 0.1, 0.9, 1] },
-          { "position": 1, "color": [0.6, 0.7, 1, 1] }
-        ]
-      }
-    ]
-  }
 }
 ```
 
