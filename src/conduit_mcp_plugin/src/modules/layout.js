@@ -619,6 +619,77 @@ export async function flatten_nodes(params) {
   return { success: true, flattened };
 }
 
+/**
+ * Batch-inserts multiple child nodes into parent nodes.
+ * 
+ * @param {object} params - Parameters for batch insertion
+ * @param {Array<{parentId: string, childId: string, index?: number, maintainPosition?: boolean}>} params.operations - Array of operations
+ * @param {object} [params.options] - Optional options object
+ * @param {boolean} [params.options.skipErrors] - If true, skip errors and continue batch
+ * @returns {Promise<{results: Array<{parentId: string, childId: string, index: number, success: boolean, error: string|null}>}>}
+ *   Array of results for each operation, with error messages if any
+ * @throws {Error} If any operation fails and skipErrors is not set
+ * 
+ * @example
+ * await insertChildren({
+ *   operations: [
+ *     { parentId: "1:23", childId: "4:56", index: 0, maintainPosition: true },
+ *     { parentId: "7:89", childId: "0:12", index: 2 }
+ *   ],
+ *   options: { skipErrors: true }
+ * });
+ */
+export async function insertChildren(params) {
+  const { operations, options } = params || {};
+  if (!operations || !Array.isArray(operations) || operations.length === 0) {
+    throw new Error("Must provide an array of operations for insertChildren");
+  }
+  const results = [];
+  for (let i = 0; i < operations.length; i++) {
+    const op = operations[i];
+    try {
+      // Support maintainPosition (optional)
+      let originalPosition = null;
+      if (op.maintainPosition) {
+        const child = await figma.getNodeByIdAsync(op.childId);
+        if (child) {
+          originalPosition = { x: child.x, y: child.y };
+        }
+      }
+      const result = await insertChild(op);
+      // If maintainPosition, restore child's absolute position
+      if (op.maintainPosition && originalPosition) {
+        const parent = await figma.getNodeByIdAsync(op.parentId);
+        const child = await figma.getNodeByIdAsync(op.childId);
+        if (parent && child) {
+          child.x = originalPosition.x - parent.x;
+          child.y = originalPosition.y - parent.y;
+        }
+      }
+      results.push({
+        parentId: op.parentId,
+        childId: op.childId,
+        index: result.index,
+        success: result.success,
+        error: null
+      });
+    } catch (error) {
+      if (options && options.skipErrors) {
+        results.push({
+          parentId: op.parentId,
+          childId: op.childId,
+          index: op.index,
+          success: false,
+          error: error.message || String(error)
+        });
+        continue;
+      }
+      throw error;
+    }
+  }
+  return { results };
+}
+
 // Export the operations as a group
 export const layoutOperations = {
   setAutoLayout,
@@ -626,6 +697,7 @@ export const layoutOperations = {
   groupNodes,
   ungroupNodes,
   insertChild,
+  insertChildren,
   flatten_nodes,
   clone_node,
   clone_nodes
