@@ -8,17 +8,14 @@
  * - setTextContent(params)
  * - scanTextNodes(params)
  * - setMultipleTextContents(params)
- * - setFontName(params)
- * - setFontSize(params)
- * - setFontWeight(params)
- * - setLetterSpacing(params)
- * - setLineHeight(params)
- * - setParagraphSpacing(params)
+ * - createText(params)
+ * - createBoundedText(params)
+ * - setTextContent(params)
+ * - scanTextNodes(params)
+ * - setMultipleTextContents(params)
  * - setTextCase(params)
  * - setTextDecoration(params)
  * - getStyledTextSegments(params)
- * - loadFontAsyncWrapper(params)
- * - setBulkFont(params)
  *
  * @module modules/text
  * @example
@@ -39,17 +36,9 @@
  * - setTextContent(params): Promise<object>
  * - scanTextNodes(params): Promise<object>
  * - setMultipleTextContents(params): Promise<object>
- * - setFontName(params): Promise<object>
- * - setFontSize(params): Promise<object>
- * - setFontWeight(params): Promise<object>
- * - setLetterSpacing(params): Promise<object>
- * - setLineHeight(params): Promise<object>
- * - setParagraphSpacing(params): Promise<object>
  * - setTextCase(params): Promise<object>
  * - setTextDecoration(params): Promise<object>
  * - getStyledTextSegments(params): Promise<object>
- * - loadFontAsyncWrapper(params): Promise<object>
- * - setBulkFont(params): Promise<object>
  *
  * @example
  * import { textOperations } from './modules/text.js';
