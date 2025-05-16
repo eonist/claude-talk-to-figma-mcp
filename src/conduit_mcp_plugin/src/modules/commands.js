@@ -117,9 +117,9 @@ async function createButton(params) {
 
   // Apply corner radius if specified
   if (style.cornerRadius !== undefined) {
-    await shapeOperations.setCornerRadius({
+    await shapeOperations.setNodeCornerRadii({
       nodeId: background.id,
-      radius: style.cornerRadius
+      all: style.cornerRadius
     });
   }
 
@@ -195,8 +195,6 @@ export function initializeCommands() {
   registerCommand('create_line', shapeOperations.createLine);
   registerCommand('create_lines', shapeOperations.createLines);
 
-  // Corner radius
-  registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   // Resize operations
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('resize_nodes', shapeOperations.resizeNodes);

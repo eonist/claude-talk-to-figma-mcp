@@ -421,45 +421,6 @@ function setStroke(node, color, weight) {
   if(weight!==undefined) node.strokeWeight=weight;
 }
 
-/**
- * Sets the corner radius of a rectangle or frame node
- * @async
- * @function setCornerRadius
- * @param {object} params - Parameters
- * @param {string} params.nodeId - ID of the node to modify
- * @param {number} params.radius - Corner radius value
- * @param {Array<boolean>} [params.corners] - Optional array of 4 booleans to specify which corners to round
- * @returns {Promise<{success: boolean}>}
- * @example
- * const result = await setCornerRadius({ nodeId: 'rect-id', radius: 8 });
- * // Also works with frame nodes
- * const frameResult = await setCornerRadius({ nodeId: 'frame-id', radius: 12 });
- */
-export async function setCornerRadius(params) {
-  const { nodeId, radius, corners } = params;
-  const node = await figma.getNodeByIdAsync(nodeId);
-  
-  if (!node) {
-    throw new Error(`Node not found: ${nodeId}`);
-  }
-  
-  if (node.type !== 'RECTANGLE' && node.type !== 'FRAME') {
-    throw new Error('Corner radius can only be set on rectangle or frame nodes');
-  }
-  
-  if (corners && corners.length === 4) {
-    // Set individual corners
-    node.topLeftRadius = corners[0] ? radius : 0;
-    node.topRightRadius = corners[1] ? radius : 0;
-    node.bottomRightRadius = corners[2] ? radius : 0;
-    node.bottomLeftRadius = corners[3] ? radius : 0;
-  } else {
-    // Set all corners uniformly
-    node.cornerRadius = radius;
-  }
-  
-  return { success: true };
-}
 
 /**
  * Resizes a node to the specified dimensions
@@ -1028,7 +989,6 @@ export const shapeOperations = {
   createVectors,
   createLine,
   createLines,
-  setCornerRadius,
   setNodeCornerRadii,
   setNodesCornerRadii,
   resizeNode,
