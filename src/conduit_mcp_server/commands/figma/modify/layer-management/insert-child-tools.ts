@@ -78,4 +78,100 @@ Returns:
       };
     }
   );
+
+  // Batch insert_children tool
+  server.tool(
+    "insert_children",
+    `Batch-inserts multiple child nodes into parent nodes in Figma.
+
+Parameters:
+  - operations: Array of objects, each with:
+      - parentId: string (required)
+      - childId: string (required)
+      - index: number (optional)
+      - maintainPosition: boolean (optional, default false)
+  - options: { skipErrors?: boolean } (optional)
+
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the parentId, childId, index, success status, and any error message.
+`,
+    {
+      operations: z.array(z.object({
+        parentId: z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID" })
+          .describe("ID of the parent node"),
+        childId: z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID" })
+          .describe("ID of the child node to insert"),
+        index: z.number().int().min(0).optional().describe("Optional insertion index (0-based)"),
+        maintainPosition: z.boolean().optional().describe("Maintain child's absolute position (default: false)")
+      })),
+      options: z.object({
+        skipErrors: z.boolean().optional()
+      }).optional()
+    },
+    {
+      title: "Batch Insert Children",
+      idempotentHint: false,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          operations: [
+            { parentId: "1:23", childId: "4:56", index: 0, maintainPosition: true },
+            { parentId: "7:89", childId: "0:12", index: 2 }
+          ],
+          options: { skipErrors: true }
+        }
+      ]),
+      edgeCaseWarnings: [
+        "If skipErrors is false, the first error will abort the batch.",
+        "If maintainPosition is true, the child's absolute position will be preserved relative to the canvas.",
+        "All parentId and childId values must be valid Figma node IDs."
+      ],
+      detailedDescription: "Efficiently inserts multiple children into parents in a single batch operation.",
+      extraInfo: "Follows the same parenting constraints as Figma's insertChild API."
+    },
+    async ({ operations, options }) => {
+      const { processBatch } = await import("../../../utils/batch-processor.js");
+      type InsertChildOp = {
+        parentId: string;
+        childId: string;
+        index?: number;
+        maintainPosition?: boolean;
+      };
+      const results = await processBatch(
+        operations,
+        async (op: InsertChildOp) => {
+          try {
+            const parent = ensureNodeIdIsString(op.parentId);
+            const child = ensureNodeIdIsString(op.childId);
+            const params: any = { parentId: parent, childId: child };
+            if (op.index !== undefined) params.index = op.index;
+            // Optionally, maintain position logic could be handled in the Figma plugin code
+            if (op.maintainPosition !== undefined) params.maintainPosition = op.maintainPosition;
+            const result = await figmaClient.executeCommand("insert_child", params);
+            return {
+              type: "text",
+              text: `Inserted child node ${child} into parent ${parent} at index ${result.index ?? "end"} (success: ${result.success ?? true})`
+            };
+          } catch (error: any) {
+            if (options?.skipErrors) {
+              return {
+                type: "text",
+                text: `Failed to insert child node ${op.childId} into parent ${op.parentId}: ${error.message || error}`
+              };
+            }
+            throw error;
+          }
+        },
+        {
+          chunkSize: 20,
+          concurrency: 5
+        }
+      );
+      return { content: results };
+    }
+  );
 }
