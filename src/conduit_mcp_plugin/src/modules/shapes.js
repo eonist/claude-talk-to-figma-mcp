@@ -846,6 +846,174 @@ export async function convertRectangleToFrame(params) {
 /**
  * Registry of available shape operations for the plugin.
  */
+/**
+ * Sets custom corner radii for a single node
+ * @async
+ * @function setNodeCornerRadii
+ * @param {object} params - Parameters
+ * @param {string} params.nodeId - ID of the node to modify
+ * @param {number} [params.all] - Uniform radius for all corners
+ * @param {number} [params.top_left] - Radius for top-left corner
+ * @param {number} [params.top_right] - Radius for top-right corner
+ * @param {number} [params.bottom_left] - Radius for bottom-left corner
+ * @param {number} [params.bottom_right] - Radius for bottom-right corner
+ * @param {boolean} [params.maintain_aspect] - Whether to maintain aspect ratio
+ * @returns {Promise<{success: boolean}>}
+ */
+export async function setNodeCornerRadii(params) {
+  const { nodeId, all, top_left, top_right, bottom_left, bottom_right, maintain_aspect } = params;
+  const node = await figma.getNodeByIdAsync(nodeId);
+
+  if (!node) {
+    throw new Error(`Node not found: ${nodeId}`);
+  }
+
+  if (
+    node.type !== 'RECTANGLE' &&
+    node.type !== 'FRAME' &&
+    node.type !== 'COMPONENT' &&
+    node.type !== 'INSTANCE'
+  ) {
+    throw new Error('Corner radii can only be set on rectangle, frame, component, or instance nodes');
+  }
+
+  if (all !== undefined) {
+    node.cornerRadius = all;
+    if (
+      node.cornerRadius !== all &&
+      node.topLeftRadius !== undefined
+    ) {
+      node.topLeftRadius = all;
+      node.topRightRadius = all;
+      node.bottomLeftRadius = all;
+      node.bottomRightRadius = all;
+    }
+  } else {
+    if (top_left !== undefined) node.topLeftRadius = top_left;
+    if (top_right !== undefined) node.topRightRadius = top_right;
+    if (bottom_left !== undefined) node.bottomLeftRadius = bottom_left;
+    if (bottom_right !== undefined) node.bottomRightRadius = bottom_right;
+  }
+
+  if (maintain_aspect) {
+    const radii = [
+      node.topLeftRadius,
+      node.topRightRadius,
+      node.bottomLeftRadius,
+      node.bottomRightRadius
+    ].filter(r => typeof r === 'number');
+    if (radii.length > 0) {
+      const minRadius = Math.min(...radii);
+      node.topLeftRadius = minRadius;
+      node.topRightRadius = minRadius;
+      node.bottomLeftRadius = minRadius;
+      node.bottomRightRadius = minRadius;
+    }
+  }
+
+  return { success: true };
+}
+
+/**
+ * Sets corner radii for multiple nodes with per-corner control
+ * @async
+ * @function setNodesCornerRadii
+ * @param {object} params - Parameters
+ * @param {Array<object>} params.radii - Array of node configurations
+ * @param {string} params.radii[].node_id - ID of the node to modify
+ * @param {number} [params.radii[].all] - Uniform radius for all corners
+ * @param {number} [params.radii[].top_left] - Radius for top-left corner
+ * @param {number} [params.radii[].top_right] - Radius for top-right corner
+ * @param {number} [params.radii[].bottom_left] - Radius for bottom-left corner
+ * @param {number} [params.radii[].bottom_right] - Radius for bottom-right corner
+ * @param {object} [params.options] - Optional configuration
+ * @param {boolean} [params.options.skip_errors] - Whether to continue on errors
+ * @param {boolean} [params.options.maintain_aspect] - Whether to maintain aspect ratio
+ * @returns {Promise<{success: boolean, modifiedNodes: string[], errors?: string[]}>}
+ */
+export async function setNodesCornerRadii(params) {
+  const { radii = [], options = {} } = params;
+  const modifiedNodes = [];
+  const errors = [];
+
+  for (const config of radii) {
+    try {
+      const node = await figma.getNodeByIdAsync(config.node_id);
+
+      if (!node) {
+        throw new Error(`Node not found: ${config.node_id}`);
+      }
+
+      if (
+        node.type !== 'RECTANGLE' &&
+        node.type !== 'FRAME' &&
+        node.type !== 'COMPONENT' &&
+        node.type !== 'INSTANCE'
+      ) {
+        throw new Error(`Node ${config.node_id} doesn't support corner radii`);
+      }
+
+      if (config.all !== undefined) {
+        node.cornerRadius = config.all;
+        if (
+          node.cornerRadius !== config.all &&
+          node.topLeftRadius !== undefined
+        ) {
+          node.topLeftRadius = config.all;
+          node.topRightRadius = config.all;
+          node.bottomLeftRadius = config.all;
+          node.bottomRightRadius = config.all;
+        }
+      } else {
+        if (config.top_left !== undefined) node.topLeftRadius = config.top_left;
+        if (config.top_right !== undefined) node.topRightRadius = config.top_right;
+        if (config.bottom_left !== undefined) node.bottomLeftRadius = config.bottom_left;
+        if (config.bottom_right !== undefined) node.bottomRightRadius = config.bottom_right;
+      }
+
+      if (options.maintain_aspect) {
+        const radii = [
+          node.topLeftRadius,
+          node.topRightRadius,
+          node.bottomLeftRadius,
+          node.bottomRightRadius
+        ].filter(r => typeof r === 'number');
+        if (radii.length > 0) {
+          const minRadius = Math.min(...radii);
+          node.topLeftRadius = minRadius;
+          node.topRightRadius = minRadius;
+          node.bottomLeftRadius = minRadius;
+          node.bottomRightRadius = minRadius;
+        }
+      }
+
+      modifiedNodes.push(config.node_id);
+    } catch (error) {
+      if (options.skip_errors) {
+        errors.push(`Failed on node ${config.node_id}: ${error.message}`);
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  // Select modified nodes
+  if (modifiedNodes.length > 0) {
+    const nodes = [];
+    for (const id of modifiedNodes) {
+      const node = await figma.getNodeByIdAsync(id);
+      if (node) nodes.push(node);
+    }
+    figma.currentPage.selection = nodes;
+  }
+
+  return {
+    success: true,
+    modifiedNodes,
+    errors: errors.length > 0 ? errors : undefined
+  };
+}
+
 export const shapeOperations = {
   createRectangle,
   createRectangles,
@@ -861,6 +1029,8 @@ export const shapeOperations = {
   createLine,
   createLines,
   setCornerRadius,
+  setNodeCornerRadii,
+  setNodesCornerRadii,
   resizeNode,
   resizeNodes,
   deleteNode,
