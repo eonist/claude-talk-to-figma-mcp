@@ -112,8 +112,6 @@ export type FigmaCommand =
   | "insert_child"
   // Rename a single node (see commands/figma/modify/rename.ts)
   | "rename_layer"
-  // Rename multiple layers by pattern (see commands/figma/modify/rename.ts)
-  | "rename_layers"
   // Rename multiple layers with distinct names (see commands/figma/modify/rename.ts)
   | "rename_multiple" 
   // AI-powered rename of specified layers (see commands/figma/modify/rename.ts)
@@ -124,14 +122,10 @@ export type FigmaCommand =
   | "set_bulk_font"
   // Set both fill and stroke properties (see commands/figma/modify/styling)
   | "set_style"
-  // Apply fill/stroke styles to multiple nodes (see commands/figma/modify/styling)
-  | "set_styles"
   // Create a gradient paint style (see commands/figma/modify/styling)
   | "create_gradient_variable"
   // Apply a gradient style to a node (see commands/figma/modify/styling)
   | "apply_gradient_style"
-  // Batch create gradient variables (see commands/figma/modify/styling)
-  | "create_gradient_variables"
   // Batch apply gradient styles to nodes (see commands/figma/modify/styling)
   | "apply_gradient_styles"
   // Apply a gradient directly to a node (see commands/figma/modify/styling)

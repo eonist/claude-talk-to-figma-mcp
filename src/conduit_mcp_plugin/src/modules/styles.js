@@ -6,7 +6,6 @@
  * - setFillColor(params)
  * - setStrokeColor(params)
  * - setStyle(params)
- * - setStyles(entries)
  * - getStyles()
  * - setEffects(params)
  * - setEffectStyleId(params)
@@ -255,17 +254,6 @@ export async function setStyle(params) {
 /**
  * Apply styles to multiple nodes in one call.
  * @async
- * @function setStyles
- *
- * @param {Array} entries - Array of objects { nodeId, fillProps?, strokeProps? }
- * @returns {Array} Results per node.
- */
-export async function setStyles(entries) {
-  const results = [];
-  for (const entry of entries) {
-    const res = await setStyle(entry);
-    results.push(res);
-  }
   return results;
 }
 

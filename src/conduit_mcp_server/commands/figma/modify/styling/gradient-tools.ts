@@ -5,119 +5,97 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers gradient-related styling commands:
- * - create_gradient_variable
- * - create_gradient_variables
+ * - create_gradient_variable (unified: supports single or batch)
  * - apply_gradient_style
  * - apply_gradient_styles
  * - apply_direct_gradient
  */
 export function registerGradientTools(server: McpServer, figmaClient: FigmaClient) {
-  // Create Gradient Variable
+  // Unified Gradient Variable Schema
+  const GradientStopSchema = z.object({
+    position: z.number().min(0).max(1)
+      .describe("Position of the stop (0-1)."),
+    color: z.tuple([
+      z.number().min(0).max(1).describe("Red channel (0-1)"),
+      z.number().min(0).max(1).describe("Green channel (0-1)"),
+      z.number().min(0).max(1).describe("Blue channel (0-1)"),
+      z.number().min(0).max(1).describe("Alpha channel (0-1)")
+    ]).describe("RGBA color array (4 numbers, each 0-1)."),
+  });
+
+  const GradientDefSchema = z.object({
+    name: z.string().min(1).max(100)
+      .describe("Name for the gradient style. Must be a non-empty string up to 100 characters."),
+    gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"])
+      .describe('Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".'),
+    stops: z.array(GradientStopSchema).min(2).max(10)
+      .describe("Array of color stops. Each stop is an object with position and color. Must contain 2 to 10 stops."),
+    mode: z.string().optional()
+      .describe("Optional. Gradient mode."),
+    opacity: z.number().min(0).max(1).optional()
+      .describe("Optional. Opacity of the gradient (0-1)."),
+    transformMatrix: z.array(z.array(z.number())).optional()
+      .describe("Optional. Transform matrix for the gradient."),
+  });
+
+  // Accepts either a single gradient or an array of gradients
+  const ParamsSchema = z.object({
+    gradients: z.union([
+      GradientDefSchema,
+      z.array(GradientDefSchema).min(1).max(20)
+    ])
+  });
+
   server.tool(
     "create_gradient_variable",
-    `Creates a gradient paint style in Figma.
+    `Creates one or more gradient paint styles in Figma.
+
+Params:
+  - gradients: Either a single gradient definition or an array of gradient definitions.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the created gradient's ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created gradient(s) ID(s) or a summary.
 `,
+    ParamsSchema.shape,
     {
-      name: z.string()
-        .min(1)
-        .max(100)
-        .describe("Name for the gradient style. Must be a non-empty string up to 100 characters."),
-      gradientType: z.enum(["LINEAR", "RADIAL", "ANGULAR", "DIAMOND"])
-        .describe('Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".'),
-      stops: z.array(
-        z.object({
-          position: z.number().min(0).max(1)
-            .describe("Position of the stop (0-1)."),
-          color: z.tuple([
-            z.number().min(0).max(1).describe("Red channel (0-1)"),
-            z.number().min(0).max(1).describe("Green channel (0-1)"),
-            z.number().min(0).max(1).describe("Blue channel (0-1)"),
-            z.number().min(0).max(1).describe("Alpha channel (0-1)")
-          ]).describe("RGBA color array (4 numbers, each 0-1)."),
-        })
-      )
-      .min(2)
-      .max(10)
-      .describe("Array of color stops. Each stop is an object with position and color. Must contain 2 to 10 stops."),
-    },
-    {
-      title: "Create Gradient Variable",
+      title: "Create Gradient Variable (Single or Batch)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
-        {
-          name: "Primary Gradient",
-          gradientType: "LINEAR",
-          stops: [
+        { gradients: { name: "Primary Gradient", gradientType: "LINEAR", stops: [
+          { position: 0, color: [1, 0, 0, 1] },
+          { position: 1, color: [0, 0, 1, 1] }
+        ] } },
+        { gradients: [
+          { name: "Primary Gradient", gradientType: "LINEAR", stops: [
             { position: 0, color: [1, 0, 0, 1] },
             { position: 1, color: [0, 0, 1, 1] }
-          ]
-        }
+          ] },
+          { name: "Secondary Gradient", gradientType: "RADIAL", stops: [
+            { position: 0, color: [0, 1, 0, 1] },
+            { position: 1, color: [0, 0, 0, 1] }
+          ] }
+        ]}
       ]),
       edgeCaseWarnings: [
         "Name must be a non-empty string.",
         "At least two color stops are required.",
         "Color values must be between 0 and 1."
       ],
-      extraInfo: "Creates a reusable gradient style for fills or strokes."
-    },
-    async ({ name, gradientType, stops }) => {
-      const result = await figmaClient.executeCommand("create_gradient_variable", { name, gradientType, stops });
-      return { content: [{ type: "text", text: `Created gradient ${result.id}` }] };
-    }
-  );
-
-  // Batch create gradient variables
-  server.tool(
-    "create_gradient_variables",
-    `Batch create gradient variables in Figma.
-
-Returns:
-  - content: Array containing a text message with the number of gradient variables created.
-    Example: { "content": [{ "type": "text", "text": "Batch created 3 gradient variables" }] }
-`,
-    {
-      gradients: z.array(
-        z.object({
-          name: z.string().min(1).max(100)
-            .describe("Name for the gradient style. Must be a non-empty string up to 100 characters."),
-          gradientType: z.enum(["LINEAR","RADIAL","ANGULAR","DIAMOND"])
-            .describe('Type of gradient: "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".'),
-          stops: z.array(
-            z.object({
-              position: z.number().min(0).max(1)
-                .describe("Position of the stop (0-1)."),
-              color: z.tuple([
-                z.number().min(0).max(1).describe("Red channel (0-1)"),
-                z.number().min(0).max(1).describe("Green channel (0-1)"),
-                z.number().min(0).max(1).describe("Blue channel (0-1)"),
-                z.number().min(0).max(1).describe("Alpha channel (0-1)")
-              ]).describe("RGBA color array (4 numbers, each 0-1).")
-            })
-          ).min(2).max(10)
-            .describe("Array of color stops. Each stop is an object with position and color. Must contain 2 to 10 stops."),
-          mode: z.string().optional()
-            .describe("Optional. Gradient mode."),
-          opacity: z.number().min(0).max(1).optional()
-            .describe("Optional. Opacity of the gradient (0-1)."),
-          transformMatrix: z.array(z.array(z.number())).optional()
-            .describe("Optional. Transform matrix for the gradient."),
-        })
-      ).min(1).max(20)
-      .describe("Array of gradient definition objects. Must contain 1 to 20 items."),
+      extraInfo: "Creates one or more reusable gradient styles for fills or strokes."
     },
     async ({ gradients }) => {
-      const results = await figmaClient.createGradientVariables({ gradients });
+      const gradientList = Array.isArray(gradients) ? gradients : [gradients];
+      const results = await figmaClient.createGradientVariables({ gradients: gradientList });
       return {
         content: [
           {
             type: "text",
-            text: `Batch created ${results.length} gradient variables`
+            text: gradientList.length === 1
+              ? `Created gradient ${results[0]?.id || ""}`
+              : `Batch created ${results.length} gradient variables`
           }
         ],
         _meta: { results }

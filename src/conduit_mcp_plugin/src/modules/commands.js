@@ -248,7 +248,6 @@ export function initializeCommands() {
   registerCommand('set_effects', styleOperations.setEffects);
   registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
   registerCommand('set_style', styleOperations.setStyle);
-  registerCommand('set_styles', styleOperations.setStyles);
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
   // Component Conversion
   registerCommand('create_component_from_node', componentOperations.createComponentFromNode);
