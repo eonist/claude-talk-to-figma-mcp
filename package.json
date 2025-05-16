@@ -1,12 +1,12 @@
 {
   "name": "conduit-design",
-  "description": "Conduit Figma MCP (Bun-only, not compatible with Node.js)",
-  "version": "0.7.8",
+  "description": "Conduit Figma MCP",
+  "version": "0.6.6",
   "module": "dist/conduit_mcp_server/server.js",
   "main": "dist/conduit_mcp_server/server.js",
   "bin": {
-    "conduit-design": "dist/conduit_mcp_server/server.js",
-    "conduit-mcp-socket": "dist/socket.js"
+    "conduit-design": "dist/conduit_mcp_server/server.cjs",
+    "conduit-mcp-socket": "dist/socket.cjs"
   },
   "files": [
     "dist",
@@ -15,15 +15,12 @@
     "TESTING.md"
   ],
   "type": "module",
-  "engines": {
-    "bun": ">=1.0.0"
-  },
   "scripts": {
-    "prepare": "tsup && node scripts/rename-cjs-to-js.cjs && chmod +x dist/conduit_mcp_server/server.js dist/socket.js",
+    "prepare": "tsup",
     "start": "bun run dist/conduit_mcp_server/server.js",
-    "socket": "bun run dist/socket.js",
+    "socket": "bun run dist/socket.cjs",
     "setup": "./scripts/setup.sh",
-    "build": "tsup && node scripts/rename-cjs-to-js.cjs && chmod +x dist/conduit_mcp_server/server.js dist/socket.js",
+    "build": "tsup && chmod +x dist/conduit_mcp_server/server.cjs dist/socket.cjs",
     "build:watch": "tsup --watch",
     "build:plugin": "node src/conduit_mcp_plugin/build.js",
     "build:ui-ts": "node src/conduit_mcp_plugin/build-ts.js",
@@ -36,17 +33,14 @@
     "pub:release": "bun run build && npm publish",
     "configure-claude": "node scripts/configure-claude.js",
     "test": "node scripts/test-integration.js",
-    "test-local-images": "node scripts/test-local-images.js",
-    "postinstall": "echo 'This package requires Bun. See https://bun.sh/'"
+    "test-local-images": "node scripts/test-local-images.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/ws": "^8.18.1",
     "bun-types": "^1.2.9",
     "concurrently": "^9.1.2",
     "esbuild": "^0.25.3",
     "nodemon": "^3.1.10",
-    "rollup": "^4.40.2",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3"
   },

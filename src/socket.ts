@@ -1,6 +1,3 @@
-if (typeof Bun === "undefined") {
-  throw new Error("This package requires Bun. Please run with Bun, not Node.js.");
-}
 import { Server, ServerWebSocket } from "bun";
 
 // Enhanced logging system
