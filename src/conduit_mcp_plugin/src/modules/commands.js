@@ -180,20 +180,15 @@ export function initializeCommands() {
   registerCommand('insert_local_image', imageOperations.insertLocalImage);
   registerCommand('insert_local_images', imageOperations.insertLocalImages);
 
-  // Shape Operations
+  // Shape Operations (Unified)
   registerCommand('create_rectangle', shapeOperations.createRectangle);
-  registerCommand('create_rectangles', shapeOperations.createRectangles);
   registerCommand('create_frame', shapeOperations.createFrame);
-  registerCommand('create_frames', shapeOperations.createFrames);
   registerCommand('create_ellipse', shapeOperations.createEllipse);
-  registerCommand('create_ellipses', shapeOperations.createEllipses);
   registerCommand('create_polygon', shapeOperations.createPolygon);
-  registerCommand('create_polygons', shapeOperations.createPolygons);
   registerCommand('create_star', shapeOperations.createStar);
   registerCommand('create_vector', shapeOperations.createVector);
   registerCommand('create_vectors', shapeOperations.createVectors);
   registerCommand('create_line', shapeOperations.createLine);
-  registerCommand('create_lines', shapeOperations.createLines);
 
   // Resize operations
   registerCommand('resize_node', shapeOperations.resizeNode);
