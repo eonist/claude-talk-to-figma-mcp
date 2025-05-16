@@ -12,23 +12,14 @@ jobs:
       id-token: write  # needed for npm provenance
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Downgrade npm to v9.x
-        run: npm install -g npm@9
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
       - name: Install dependencies
-        run: npm ci
+        run: bun install
       - name: Build package
-        run: bun run build
+        run: bun run build:all
       - name: Run tests
-        env:
-          CI: true
-        run: npm test # Ensure your test script handles the CI environment variable
+        run: bun run test
       - name: List dist contents
         run: ls -R dist
       - name: Publish to npm

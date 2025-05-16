@@ -1,6 +1,6 @@
 {
   "name": "conduit-design",
-  "description": "Conduit Figma MCP",
+  "description": "Conduit Figma MCP (Bun-only, not compatible with Node.js)",
   "version": "0.7.7",
   "module": "dist/conduit_mcp_server/server.js",
   "main": "dist/conduit_mcp_server/server.js",
@@ -15,6 +15,9 @@
     "TESTING.md"
   ],
   "type": "module",
+  "engines": {
+    "bun": ">=1.0.0"
+  },
   "scripts": {
     "prepare": "tsup && node scripts/rename-cjs-to-js.cjs && chmod +x dist/conduit_mcp_server/server.js dist/socket.js",
     "start": "bun run dist/conduit_mcp_server/server.js",
@@ -33,7 +36,8 @@
     "pub:release": "bun run build && npm publish",
     "configure-claude": "node scripts/configure-claude.js",
     "test": "node scripts/test-integration.js",
-    "test-local-images": "node scripts/test-local-images.js"
+    "test-local-images": "node scripts/test-local-images.js",
+    "postinstall": "echo 'This package requires Bun. See https://bun.sh/'"
   },
   "devDependencies": {
     "@types/bun": "latest",

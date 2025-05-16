@@ -1,3 +1,6 @@
+if (typeof Bun === "undefined") {
+  throw new Error("This package requires Bun. Please run with Bun, not Node.js.");
+}
 /**
  * Module: Conduit MCP Server CLI
  *
