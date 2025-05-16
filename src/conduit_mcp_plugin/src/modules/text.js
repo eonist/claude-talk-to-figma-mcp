@@ -1820,8 +1820,31 @@ export async function setBulkFont(params) {
  * const { setTextContent } = textOperations;
  * const updateResult = await setTextContent({ nodeId: '123', text: 'Goodbye' });
  */
+/**
+ * Batch-create multiple text nodes in the Figma document.
+ * @param {object} params - Object with a 'texts' array of text configs.
+ * @returns {Promise<Array<object>>} Array of created text node details.
+ */
+export async function createTexts(params) {
+  const { texts } = params || {};
+  if (!Array.isArray(texts)) {
+    throw new Error("Missing or invalid 'texts' array in params");
+  }
+  const results = [];
+  for (const textConfig of texts) {
+    try {
+      const node = await createText(textConfig);
+      results.push(node);
+    } catch (err) {
+      results.push({ error: err.message, config: textConfig });
+    }
+  }
+  return results;
+}
+
 export const textOperations = {
   createText,
+  createTexts,
   createBoundedText,
   setTextContent,
   scanTextNodes,

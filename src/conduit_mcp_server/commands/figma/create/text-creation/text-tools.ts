@@ -1,11 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { CreateTextParams, CreateBoundedTextParams } from "../../../../types/command-params.js";
-import { BaseTextSchema, BoundedTextSchema } from "./text-schema.js";
+import { CreateTextParams, CreateBoundedTextParams, CreateTextsParams } from "../../../../types/command-params.js";
+import { BaseTextSchema, BoundedTextSchema, CreateTextsSchema } from "./text-schema.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers text-creation-related commands with the MCP server.
@@ -59,6 +58,48 @@ Returns:
       } catch (err) {
         // Handle errors and return a formatted error response.
         return handleToolError(err, "text-creation-tools", "create_text") as any;
+      }
+    }
+  );
+
+  // Register the "create_texts" tool for batch-creating multiple text elements in Figma.
+  server.tool(
+    "create_texts",
+    `Batch-creates multiple text elements in Figma. Accepts an array of text configs (same as create_text), and returns an array of created node IDs.`,
+    CreateTextsSchema.shape,
+    {
+      title: "Create Texts (Batch)",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        {
+          texts: [
+            { x: 10, y: 20, text: "A" },
+            { x: 30, y: 40, text: "B", fontSize: 18 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Each text config must have a non-empty string.",
+        "Font size/weight must be valid.",
+        "If parentId is invalid, text will be added to the root."
+      ],
+      extraInfo: "Efficient for adding many labels or annotations at once."
+    },
+    async (args: any) => {
+      try {
+        const params: CreateTextsParams = { commandId: uuidv4(), ...args };
+        const results = [];
+        for (const textConfig of params.texts) {
+          const singleParams = { commandId: uuidv4(), ...textConfig };
+          const node = await figmaClient.createText(singleParams);
+          results.push({ type: "text", text: `Created text ${node.id}` });
+        }
+        return { content: results };
+      } catch (err) {
+        return handleToolError(err, "text-creation-tools", "create_texts") as any;
       }
     }
   );

@@ -57,6 +57,20 @@ export interface CreateBoundedTextParams extends BaseCommandParams {
   parentId?: string;
 }
 
+/** Parameters for create_texts (batch) command */
+export interface CreateTextsParams extends BaseCommandParams {
+  texts: Array<{
+    x: number;
+    y: number;
+    text: string;
+    fontSize?: number;
+    fontWeight?: number;
+    fontColor?: { r: number; g: number; b: number; a?: number };
+    name?: string;
+    parentId?: string;
+  }>;
+}
+
 /** Parameters for create_ellipse command */
 export interface CreateEllipseParams extends BaseCommandParams {
   x: number;
@@ -283,6 +297,7 @@ export interface CommandParamsMap {
   create_frame: CreateFrameParams;
   create_text: CreateTextParams;
   create_bounded_text: CreateBoundedTextParams;
+  create_texts: CreateTextsParams;
   create_ellipse: CreateEllipseParams;
   create_polygon: CreatePolygonParams;
   create_star: CreateStarParams;
