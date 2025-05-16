@@ -5,7 +5,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  * Shared Zod schema for line configuration objects.
  * Used for both single and batch line creation tools.
  */
-export const LineSchema = z.object({
+export const SingleLineSchema = z.object({
   x1: z.number()
     .describe("X coordinate for the start point. Example: 10"),
   y1: z.number()
@@ -26,7 +26,15 @@ export const LineSchema = z.object({
     .optional()
 });
 
+export const BatchLinesSchema = z.array(SingleLineSchema);
+
+export const LineSchema = z.union([
+  SingleLineSchema,
+  BatchLinesSchema
+]);
+
 /**
  * TypeScript type inferred from LineSchema.
  */
-export type LineConfig = z.infer<typeof LineSchema>;
+export type LineConfig = z.infer<typeof SingleLineSchema>;
+export type BatchLinesConfig = z.infer<typeof BatchLinesSchema>;

@@ -5,7 +5,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  * Shared Zod schema for polygon configuration objects.
  * Used for batch polygon creation tools.
  */
-export const PolygonSchema = z.object({
+export const SinglePolygonSchema = z.object({
   x: z.number()
     .describe("X coordinate for the top-left corner. Example: 10"),
   y: z.number()
@@ -34,7 +34,15 @@ export const PolygonSchema = z.object({
     .optional()
 });
 
+export const BatchPolygonsSchema = z.array(SinglePolygonSchema);
+
+export const PolygonSchema = z.union([
+  SinglePolygonSchema,
+  BatchPolygonsSchema
+]);
+
 /**
  * TypeScript type inferred from PolygonSchema.
  */
-export type PolygonConfig = z.infer<typeof PolygonSchema>;
+export type PolygonConfig = z.infer<typeof SinglePolygonSchema>;
+export type BatchPolygonsConfig = z.infer<typeof BatchPolygonsSchema>;

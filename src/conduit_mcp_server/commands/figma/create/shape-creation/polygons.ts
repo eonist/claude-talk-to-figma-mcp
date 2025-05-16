@@ -1,64 +1,89 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z } from "../utils.js";
-import { PolygonSchema } from "./polygon-schema.js";
+import { PolygonSchema, SinglePolygonSchema, BatchPolygonsSchema } from "./polygon-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
- * MCP Tool: create_polygons
- * 
- * Creates multiple polygons in Figma based on the provided array of polygon configuration objects.
- * Each object should specify the coordinates, dimensions, number of sides, and optional properties for a polygon.
- * This tool is useful for batch-generating stars, polygons, or design primitives in Figma via MCP.
- * 
- * Parameters:
- *   - polygons (array, required): An array of polygon configuration objects. Each object should include:
- *       - x (number, required): X coordinate for the top-left corner.
- *       - y (number, required): Y coordinate for the top-left corner.
- *       - width (number, required): Width in pixels.
- *       - height (number, required): Height in pixels.
- *       - sides (number, required): Number of sides (minimum 3).
- *       - name (string, optional): Name for the polygon node.
- *       - parentId (string, optional): Figma node ID of the parent.
- *       - fillColor (any, optional): Fill color for the polygon.
- *       - strokeColor (any, optional): Stroke color for the polygon.
- *       - strokeWeight (number, optional): Stroke weight for the polygon.
- * 
- * Returns:
- *   - content: Array containing a text message with the number of polygons created.
- *     Example: { "content": [{ "type": "text", "text": "Created 3/3 polygons." }] }
- * 
- * Usage Example:
- *   Input:
- *     {
- *       "polygons": [
- *         { "x": 10, "y": 20, "width": 100, "height": 100, "sides": 5 },
- *         { "x": 120, "y": 20, "width": 80, "height": 80, "sides": 6 }
- *       ]
- *     }
- *   Output:
- *     {
- *       "content": [{ "type": "text", "text": "Created 2/2 polygons." }]
- *     }
+/**
+ * Registers polygon creation commands with the MCP server.
+ *
+ * @param {McpServer} server - The MCP server instance to register tools on.
+ * @param {FigmaClient} figmaClient - The Figma client for executing commands.
+ *
+ * Adds:
+ * - create_polygon: Create one or more polygons in Figma.
  */
 export function registerPolygonsTools(server: McpServer, figmaClient: FigmaClient) {
+  /**
+   * MCP Tool: create_polygon
+   *
+   * Creates one or more polygon nodes in the specified Figma document.
+   * Accepts either a single polygon config (via the 'polygon' property) or an array of configs (via the 'polygons' property).
+   * Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+   *
+   * This tool is useful for programmatically generating stars, polygons, or design primitives in Figma via MCP.
+   *
+   * @param {object} args - The input object. Must provide either:
+   *   - polygon: A single polygon config object (x, y, width, height, sides, name?, parentId?, fillColor?, strokeColor?, strokeWeight?)
+   *   - polygons: An array of polygon config objects (same shape as above)
+   *
+   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created polygon node ID(s).
+   *
+   * @example
+   * // Single polygon
+   * {
+   *   polygon: {
+   *     x: 10,
+   *     y: 20,
+   *     width: 100,
+   *     height: 100,
+   *     sides: 5
+   *   }
+   * }
+   *
+   * // Multiple polygons
+   * {
+   *   polygons: [
+   *     { x: 10, y: 20, width: 100, height: 100, sides: 5 },
+   *     { x: 120, y: 20, width: 80, height: 80, sides: 6 }
+   *   ]
+   * }
+   */
   server.tool(
-    "create_polygons",
-    `Creates multiple polygons in Figma based on the provided array of polygon configuration objects.
+    "create_polygon",
+    `Creates one or more polygons in Figma. Accepts either a single polygon config (via 'polygon') or an array of configs (via 'polygons'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+
+Input:
+  - polygon: A single polygon configuration object.
+  - polygons: An array of polygon configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of polygons created.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created polygon node ID(s).
 `,
-    { polygons: z.array(PolygonSchema)
+    {
+      polygon: SinglePolygonSchema
+        .describe("A single polygon configuration object. Each object should include coordinates, dimensions, and optional properties for a polygon.")
+        .optional(),
+      polygons: BatchPolygonsSchema
+        .describe("An array of polygon configuration objects. Each object should include coordinates, dimensions, and optional properties for a polygon.")
+        .optional(),
     },
     {
-      title: "Create Polygons",
+      title: "Create Polygon(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
+        {
+          polygon: {
+            x: 10,
+            y: 20,
+            width: 100,
+            height: 100,
+            sides: 5
+          }
+        },
         {
           polygons: [
             { x: 10, y: 20, width: 100, height: 100, sides: 5 },
@@ -74,17 +99,29 @@ Returns:
       ],
       extraInfo: "Batch creation is efficient for generating multiple polygons or stars at once."
     },
-    // Tool handler: processes each polygon, calls Figma client, and returns batch results.
-    async ({ polygons }) => {
+    // Tool handler: supports both single object and array input via 'polygon' or 'polygons'.
+    async (args) => {
+      let polygonsArr;
+      if (args.polygons) {
+        polygonsArr = args.polygons;
+      } else if (args.polygon) {
+        polygonsArr = [args.polygon];
+      } else {
+        throw new Error("You must provide either 'polygon' or 'polygons' as input.");
+      }
       const results = await processBatch(
-        polygons,
-        cfg => figmaClient.createPolygon(cfg).then(node => node.id)
+        polygonsArr,
+        async cfg => {
+          const node = await figmaClient.createPolygon(cfg);
+          return node.id;
+        }
       );
-      const successCount = results.filter(r => r.result).length;
-      return {
-        content: [{ type: "text", text: `Created ${successCount}/${polygons.length} polygons.` }],
-        _meta: { results }
-      };
+      const nodeIds = results.map(r => r.result).filter(Boolean);
+      if (nodeIds.length === 1) {
+        return { content: [{ type: "text", text: `Created polygon ${nodeIds[0]}` }] };
+      } else {
+        return { content: [{ type: "text", text: `Created polygons: ${nodeIds.join(", ")}` }] };
+      }
     }
   );
 }
