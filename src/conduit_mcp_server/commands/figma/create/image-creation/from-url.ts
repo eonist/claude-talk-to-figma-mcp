@@ -7,9 +7,19 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { ImageFromUrlSchema } from "./image-schema.js";
 
 /**
- * Registers image insertion commands:
- * - insert_image
- * - insert_images
+ * Registers image insertion commands on the MCP server.
+ *
+ * This function adds tools named "insert_image" and "insert_images" to the MCP server,
+ * enabling insertion of single or multiple images from URLs into Figma.
+ * It validates inputs, executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerFromUrlImageTools(server, figmaClient);
  */
 export function registerFromUrlImageTools(server: McpServer, figmaClient: FigmaClient) {
   // Single image insertion

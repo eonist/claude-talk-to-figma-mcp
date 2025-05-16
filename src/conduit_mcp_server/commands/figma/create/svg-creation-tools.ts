@@ -7,11 +7,19 @@ import { logger } from "../../../utils/logger.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers SVG insertion commands:
- * - insert_svg_vector
- * - insert_svg_vectors
+ * Registers SVG insertion commands on the MCP server.
  *
- * Both commands expect an 'svg' field, which can be a URL or raw SVG text.
+ * This function adds tools named "insert_svg_vector" and "insert_svg_vectors" to the MCP server,
+ * enabling insertion of single or multiple SVG vectors into Figma.
+ * It validates inputs, executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerSvgCreationCommands(server, figmaClient);
  */
 export function registerSvgCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   logger.info("🔧 Loading SVG creation tools");
@@ -58,7 +66,7 @@ Returns:
     {
       title: "Insert SVG Vector",
       idempotentHint: true,
-      a: false,
+      destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([

@@ -7,42 +7,43 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * MCP Tool: create_frame
+ * Registers frame creation commands with the MCP server.
  * 
- * Creates a new frame node in the specified Figma document at the given coordinates, with the specified width and height.
- * Optionally, you can provide a name, a parent node ID to attach the frame to, and fill/stroke properties.
- * This tool is useful for programmatically generating UI containers, artboards, or design primitives in Figma via MCP.
+ * @param {McpServer} server - The MCP server instance to register tools on.
+ * @param {FigmaClient} figmaClient - The Figma client for executing commands.
  * 
- * Parameters:
- *   - x (number, required): X coordinate for the top-left corner. Example: 50
- *   - y (number, required): Y coordinate for the top-left corner. Example: 100
- *   - width (number, required): Width in pixels. Example: 400
- *   - height (number, required): Height in pixels. Example: 300
- *   - name (string, optional): Name for the frame node. Example: "Main Frame"
- *   - parentId (string, optional): Figma node ID of the parent.
- *   - fillColor (any, optional): Fill color for the frame.
- *   - strokeColor (any, optional): Stroke color for the frame.
- *   - strokeWeight (number, optional): Stroke weight for the frame.
- * 
- * Returns:
- *   - content: Array containing a text message with the created frame's node ID.
- *     Example: { "content": [{ "type": "text", "text": "Created frame 123:456" }] }
- * 
- * Usage Example:
- *   Input:
- *     {
- *       "x": 50,
- *       "y": 100,
- *       "width": 400,
- *       "height": 300,
- *       "name": "Main Frame"
- *     }
- *   Output:
- *     {
- *       "content": [{ "type": "text", "text": "Created frame 123:456" }]
- *     }
+ * Adds:
+ * - create_frame: Create a new frame node in Figma.
  */
 export function registerFramesTools(server: McpServer, figmaClient: FigmaClient) {
+  /**
+   * MCP Tool: create_frame
+   * 
+   * Creates a new frame node in the specified Figma document at the given coordinates, with the specified width and height.
+   * Optionally, you can provide a name, a parent node ID to attach the frame to, and fill/stroke properties.
+   * This tool is useful for programmatically generating UI containers, artboards, or design primitives in Figma via MCP.
+   * 
+   * @param {number} x - X coordinate for the top-left corner.
+   * @param {number} y - Y coordinate for the top-left corner.
+   * @param {number} width - Width in pixels.
+   * @param {number} height - Height in pixels.
+   * @param {string} [name] - Optional. Name for the frame node.
+   * @param {string} [parentId] - Optional. Figma node ID of the parent.
+   * @param {any} [fillColor] - Optional. Fill color for the frame.
+   * @param {any} [strokeColor] - Optional. Stroke color for the frame.
+   * @param {number} [strokeWeight] - Optional. Stroke weight for the frame.
+   * 
+   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created frame's node ID.
+   * 
+   * @example
+   * {
+   *   x: 50,
+   *   y: 100,
+   *   width: 400,
+   *   height: 300,
+   *   name: "Main Frame"
+   * }
+   */
   server.tool(
     "create_frame",
     `Creates a new frame node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID, and fill/stroke properties.

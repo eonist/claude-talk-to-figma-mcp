@@ -4,12 +4,19 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers the clone_node and clone_nodes commands for duplicating nodes in Figma.
+ * Registers clone node commands on the MCP server.
  *
- * - clone_node: Clones a single node by ID.
- * - clone_nodes: Clones multiple nodes by ID.
+ * This function adds tools named "clone_node" and "clone_nodes" to the MCP server,
+ * enabling cloning of single or multiple nodes in Figma. It validates inputs,
+ * executes corresponding Figma commands, and returns informative results.
  *
- * Cloning creates a duplicate of the node(s) at the same position in the Figma document.
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerCloneNodeTools(server, figmaClient);
  */
 export function registerCloneNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Single node clone

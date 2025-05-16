@@ -5,16 +5,19 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { FontFamilyStyleSchema, FontSizeSchema, FontWeightSchema } from "./font-schema.js";
 
 /**
- * Registers property-manipulation-related modify commands:
- * - set_font_name
- * - set_font_size
- * - set_font_weight
- * - set_letter_spacing
- * - set_line_height
- * - set_paragraph_spacing
- * - set_text_case
- * - set_text_decoration
- * - load_font_async
+ * Registers property-manipulation-related modify commands on the MCP server.
+ *
+ * This function adds tools for setting font properties and loading fonts asynchronously in Figma.
+ * It includes commands for setting font name, size, weight, letter spacing, line height,
+ * paragraph spacing, text case, text decoration, and loading fonts.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerFontTools(server, figmaClient);
  */
 export function registerFontTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Font Name
@@ -111,7 +114,7 @@ Returns:
 `,
     {
       nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       letterSpacing: z.number()
         .min(-100)
@@ -144,7 +147,7 @@ Returns:
 `,
     {
       nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
       lineHeight: z.number()
         .min(1)
@@ -177,7 +180,7 @@ Returns:
 `,
     {
       nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
       paragraphSpacing: z.number()
         .min(0)
@@ -209,7 +212,7 @@ Returns:
 `,
     {
       nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
       textCase: z.enum(["ORIGINAL", "UPPER", "LOWER", "TITLE"])
         .describe('The text case to set: "ORIGINAL", "UPPER", "LOWER", or "TITLE".'),
@@ -232,7 +235,7 @@ Returns:
 `,
     {
       nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
         .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
       textDecoration: z.enum(["NONE", "UNDERLINE", "STRIKETHROUGH"])
         .describe('The text decoration to set: "NONE", "UNDERLINE", or "STRIKETHROUGH".'),

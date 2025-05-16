@@ -10,11 +10,11 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 /**
  * Registers shape-creation-related commands with the MCP server.
  * 
- * @param server - The MCP server instance to register tools on
- * @param figmaClient - The Figma client for executing commands
+ * @param {McpServer} server - The MCP server instance to register tools on.
+ * @param {FigmaClient} figmaClient - The Figma client for executing commands.
  * 
  * Adds:
- * - create_rectangle, create_rectangles: Create one or more rectangles in Figma
+ * - create_rectangle, create_rectangles: Create one or more rectangles in Figma.
  */
 export function registerRectanglesTools(server: McpServer, figmaClient: FigmaClient) {
   /**
@@ -24,33 +24,25 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
    * Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
    * This tool is useful for programmatically generating UI elements, backgrounds, or design primitives in Figma via MCP.
    * 
-   * Parameters:
-   *   - x (number, required): The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 100
-   *   - y (number, required): The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0. Example: 200
-   *   - width (number, required): The width of the rectangle in pixels. Must be > 0. Example: 300
-   *   - height (number, required): The height of the rectangle in pixels. Must be > 0. Example: 150
-   *   - name (string, optional): The name to assign to the rectangle node in Figma. Example: "Button Background"
-   *   - parentId (string, optional): The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
-   *   - cornerRadius (number, optional): The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8
+   * @param {number} x - The X coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0.
+   * @param {number} y - The Y coordinate (in Figma canvas units, pixels) for the top-left corner of the rectangle. Must be >= 0.
+   * @param {number} width - The width of the rectangle in pixels. Must be > 0.
+   * @param {number} height - The height of the rectangle in pixels. Must be > 0.
+   * @param {string} [name] - Optional. The name to assign to the rectangle node in Figma.
+   * @param {string} [parentId] - Optional. The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.
+   * @param {number} [cornerRadius] - Optional. The corner radius (in pixels) for rounded corners. Must be >= 0.
    * 
-   * Returns:
-   *   - content: Array containing a text message with the created rectangle's node ID.
-   *     Example: { "content": [{ "type": "text", "text": "Created rectangle 123:456" }] }
+   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created rectangle's node ID.
    * 
-   * Usage Example:
-   *   Input:
-   *     {
-   *       "x": 100,
-   *       "y": 200,
-   *       "width": 300,
-   *       "height": 150,
-   *       "name": "Button Background",
-   *       "cornerRadius": 8
-   *     }
-   *   Output:
-   *     {
-   *       "content": [{ "type": "text", "text": "Created rectangle 123:456" }]
-   *     }
+   * @example
+   * {
+   *   x: 100,
+   *   y: 200,
+   *   width: 300,
+   *   height: 150,
+   *   name: "Button Background",
+   *   cornerRadius: 8
+   * }
    */
   server.tool(
     "create_rectangle",
@@ -110,32 +102,24 @@ Returns:
    * Each object should specify the coordinates, dimensions, and optional properties for a rectangle.
    * This tool is useful for batch-generating UI elements or design primitives in Figma via MCP.
    * 
-   * Parameters:
-   *   - rectangles (array, required): An array of rectangle configuration objects. Each object should include:
-   *       - x (number, required): X coordinate for the top-left corner.
-   *       - y (number, required): Y coordinate for the top-left corner.
-   *       - width (number, required): Width in pixels.
-   *       - height (number, required): Height in pixels.
-   *       - name (string, optional): Name for the rectangle node.
-   *       - parentId (string, optional): Figma node ID of the parent.
-   *       - cornerRadius (number, optional): Corner radius in pixels.
+   * @param {Array<object>} rectangles - An array of rectangle configuration objects. Each object should include:
+   *   - x {number} - X coordinate for the top-left corner.
+   *   - y {number} - Y coordinate for the top-left corner.
+   *   - width {number} - Width in pixels.
+   *   - height {number} - Height in pixels.
+   *   - name {string} [optional] - Name for the rectangle node.
+   *   - parentId {string} [optional] - Figma node ID of the parent.
+   *   - cornerRadius {number} [optional] - Corner radius in pixels.
    * 
-   * Returns:
-   *   - content: Array containing a text message with the number of rectangles created.
-   *     Example: { "content": [{ "type": "text", "text": "Created 3/3 rectangles." }] }
+   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the number of rectangles created.
    * 
-   * Usage Example:
-   *   Input:
-   *     {
-   *       "rectangles": [
-   *         { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
-   *         { "x": 120, "y": 20, "width": 80, "height": 40 }
-   *       ]
-   *     }
-   *   Output:
-   *     {
-   *       "content": [{ "type": "text", "text": "Created 2/2 rectangles." }]
-   *     }
+   * @example
+   * {
+   *   rectangles: [
+   *     { x: 10, y: 20, width: 100, height: 50, name: "Rect1" },
+   *     { x: 120, y: 20, width: 80, height: 40 }
+   *   ]
+   * }
    */
   server.tool(
     "create_rectangles",

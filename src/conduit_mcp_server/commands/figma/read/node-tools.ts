@@ -8,9 +8,19 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "../../modify/layer-management/node-ids-schema.js";
 
 /**
- * Registers node info read commands:
- * - get_node_info
- * - get_nodes_info
+ * Registers node info read commands on the MCP server.
+ *
+ * This function adds tools named "get_node_info" and "get_nodes_info" to the MCP server,
+ * enabling retrieval of detailed information about single or multiple nodes in Figma.
+ * It validates inputs, executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerNodeTools(server, figmaClient);
  */
 export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Get Node Info
@@ -51,7 +61,7 @@ Returns:
           content: [
             {
               type: "text",
-              text: JSON.stringify(filterFigmaNode(result))
+              text: JSON.stringify(result)
             }
           ]
         };

@@ -4,21 +4,19 @@ import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers the flatten_node command for flattening a single node in Figma.
+ * Registers flatten node commands on the MCP server.
  *
- * The "flatten_node" command merges all child vector layers and shapes within a given node into a single vector layer.
- * This operation is commonly used to reduce complexity, optimize performance, or prepare artwork for export.
- * Flattening is destructive: after flattening, the original child layers are replaced by a single merged vector.
+ * This function adds tools named "flatten_node" and "flatten_nodes" to the MCP server,
+ * enabling flattening of single or multiple nodes in Figma. It validates inputs,
+ * executes corresponding Figma commands, and returns informative results.
  *
- * Parameters:
- *   - nodeId (string): The Figma node ID to flatten. Must be a valid node that supports flattening (e.g., a Frame, Group, or selection of vector shapes).
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
  *
- * Returns:
- *   - content: Array of objects. Each object contains a type: "text" and a text field with the node ID and success status.
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
  *
- * Example use case:
- *   - Flatten a group of shapes into a single vector before exporting as SVG or PNG.
- *   - Simplify a complex group to make editing or sharing easier.
+ * @example
+ * registerFlattenNodeTools(server, figmaClient);
  */
 export function registerFlattenNodeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(

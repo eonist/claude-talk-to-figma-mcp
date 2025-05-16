@@ -5,8 +5,19 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
- * Registers delete node command:
- * - delete_node
+ * Registers delete node commands on the MCP server.
+ *
+ * This function adds tools named "delete_node" and "delete_nodes" to the MCP server,
+ * enabling deletion of single or multiple nodes in Figma. It validates inputs,
+ * executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerDeleteTools(server, figmaClient);
  */
 export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient) {
   // Delete single node

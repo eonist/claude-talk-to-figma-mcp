@@ -4,10 +4,18 @@ import { FigmaClient } from "../clients/figma-client.js";
 import { isValidNodeId } from "../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers HTML generation commands for the MCP server.
+ * Registers HTML generation commands on the MCP server to generate HTML structure from Figma nodes.
  *
- * @param server - The MCP server instance
- * @param figmaClient - The Figma client instance
+ * This function adds a tool named "generate_html" to the MCP server, which accepts parameters for the Figma node ID,
+ * output format, and CSS handling mode. It executes the corresponding Figma command to generate HTML markup.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tool on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tool asynchronously.
+ *
+ * @example
+ * registerHtmlCommands(server, figmaClient);
  */
 export function registerHtmlCommands(server: McpServer, figmaClient: FigmaClient): void {
   server.tool(

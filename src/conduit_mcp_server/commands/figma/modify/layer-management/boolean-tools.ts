@@ -5,12 +5,19 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
- * Registers layer-management-related modify commands:
- * - flatten_selection
- * - union_selection
- * - subtract_selection
- * - intersect_selection
- * - exclude_selection
+ * Registers boolean operation commands on the MCP server.
+ *
+ * This function adds tools for flattening selections and performing boolean operations
+ * such as union, subtract, intersect, and exclude on nodes in Figma. It validates inputs,
+ * executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerBooleanTools(server, figmaClient);
  */
 export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient) {
   // Flatten Selection

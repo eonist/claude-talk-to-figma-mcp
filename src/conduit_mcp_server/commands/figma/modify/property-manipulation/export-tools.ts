@@ -5,8 +5,19 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { ExportOptionsSchema } from "./export-schema.js";
 
 /**
- * Registers property-manipulation-related modify commands:
- * - export_node_as_image
+ * Registers export node as image command on the MCP server.
+ *
+ * This function adds a tool named "export_node_as_image" to the MCP server,
+ * enabling exporting a Figma node as an image in various formats and scales.
+ * It validates inputs, executes the corresponding Figma command, and returns the image data.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tool on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tool asynchronously.
+ *
+ * @example
+ * registerExportTools(server, figmaClient);
  */
 export function registerExportTools(server: McpServer, figmaClient: FigmaClient) {
   // Export Node As Image

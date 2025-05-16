@@ -6,19 +6,19 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers image insertion commands:
- * - insert_image
- * - insert_images
- * - insert_local_image
- * - insert_local_images
- * 
- * @module commands/figma/create/image-creation-tools
- */
-
-/**
- * Registers image insertion commands:
- * - insert_image
- * - insert_images
+ * Registers image insertion commands on the MCP server.
+ *
+ * This function adds tools named "insert_local_image" and "insert_local_images" to the MCP server,
+ * enabling insertion of single or multiple local images via file paths or Base64 data URIs into Figma.
+ * It validates inputs, executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerFromLocalImageTools(server, figmaClient);
  */
 export function registerFromLocalImageTools(server: McpServer, figmaClient: FigmaClient) {
   // Local image insertion command: supports both --imagePath and --imageData flags.
@@ -223,7 +223,7 @@ Returns:
       edgeCaseWarnings: [
         "Each image must have either imagePath or imageData.",
         "Width and height must be positive if specified.",
-        "If parentId is invalid, images will be added to the root.",
+        "If parentId is invalid, the image will be added to the root.",
         "Image data must be a valid file or base64 string."
       ],
       extraInfo: "Batch insertion is efficient for adding multiple local images at once."

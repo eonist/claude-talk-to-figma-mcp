@@ -5,8 +5,19 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers button creation command:
- * - create_button
+ * Registers button creation command on the MCP server.
+ *
+ * This function adds a tool named "create_button" to the MCP server,
+ * enabling creation of a complete button with customizable style and text in Figma.
+ * It validates inputs, executes the corresponding Figma command, and returns the result.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tool on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tool asynchronously.
+ *
+ * @example
+ * registerButtonTools(server, figmaClient);
  */
 export function registerButtonTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
@@ -14,7 +25,7 @@ export function registerButtonTools(server: McpServer, figmaClient: FigmaClient)
     `Creates a complete button with background and text in Figma at the specified coordinates. You can customize size, text, colors, font, corner radius, name, and parent node.
 
 Returns:
-- content: Array of objects. Each object contains a type: "text" and a text field with the created button's frame, background, and text node IDs.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created button's frame, background, and text node IDs.
 `,
     {
       x: z.number().min(-10000).max(10000)

@@ -5,9 +5,19 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { EffectsArraySchema } from "./effect-schema.js";
 
 /**
- * Registers property-manipulation-related modify commands:
- * - set_effects
- * - set_effect_style_id
+ * Registers effect-related commands on the MCP server.
+ *
+ * This function adds tools named "set_effects" and "set_effect_style_id" to the MCP server,
+ * enabling setting visual effects and applying effect styles to nodes in Figma.
+ * It validates inputs, executes corresponding Figma commands, and returns informative results.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerEffectsTools(server, figmaClient);
  */
 export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Effects

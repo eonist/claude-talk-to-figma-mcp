@@ -5,8 +5,19 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { CornerRadiusSchema } from "./corner-radius-schema.js";
 
 /**
- * Registers property-manipulation-related modify commands:
- * - set_corner_radius
+ * Registers corner radius command on the MCP server.
+ *
+ * This function adds a tool named "set_corner_radius" to the MCP server,
+ * enabling setting the corner radius of a node in Figma, optionally specifying which corners.
+ * It validates input, executes the corresponding Figma command, and returns the result.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tool on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tool asynchronously.
+ *
+ * @example
+ * registerCornerRadiusTools(server, figmaClient);
  */
 export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Corner Radius

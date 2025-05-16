@@ -2,8 +2,19 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 
 /**
- * Registers style info read command:
- * - get_styles
+ * Registers style info read command on the MCP server.
+ *
+ * This function adds a tool named "get_styles" to the MCP server,
+ * enabling retrieval of all styles from the current Figma document.
+ * It executes the corresponding Figma command and returns the styles info as JSON.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tool on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tool asynchronously.
+ *
+ * @example
+ * registerStyleTools(server, figmaClient);
  */
 export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
