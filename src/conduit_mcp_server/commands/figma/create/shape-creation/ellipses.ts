@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
-import { EllipseSchema } from "./ellipse-schema.js";
+import { EllipseSchema, SingleEllipseSchema, BatchEllipsesSchema } from "./ellipse-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
@@ -52,20 +52,35 @@ export function registerEllipsesTools(server: McpServer, figmaClient: FigmaClien
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created ellipse's node ID.
 `,
-    EllipseSchema.shape,
     {
-      title: "Create Ellipse",
+      ellipse: SingleEllipseSchema
+        .describe("A single ellipse configuration object. Each object should include coordinates, dimensions, and optional properties for an ellipse.")
+        .optional(),
+      ellipses: BatchEllipsesSchema
+        .describe("An array of ellipse configuration objects. Each object should include coordinates, dimensions, and optional properties for an ellipse.")
+        .optional(),
+    },
+    {
+      title: "Create Ellipse(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
         {
-          x: 60,
-          y: 80,
-          width: 120,
-          height: 90,
-          name: "Ellipse1"
+          ellipse: {
+            x: 60,
+            y: 80,
+            width: 120,
+            height: 90,
+            name: "Ellipse1"
+          }
+        },
+        {
+          ellipses: [
+            { x: 10, y: 20, width: 100, height: 50, name: "Ellipse1" },
+            { x: 120, y: 20, width: 80, height: 40 }
+          ]
         }
       ]),
       edgeCaseWarnings: [
@@ -73,14 +88,34 @@ Returns:
         "If parentId is invalid, the ellipse will be added to the root.",
         "Fill and stroke colors must be valid color objects."
       ],
-      extraInfo: "Useful for generating circles, ovals, or design primitives programmatically."
+      extraInfo: "Useful for generating circles, ovals, or design primitives programmatically. Batch creation is efficient for generating multiple ellipses or circles at once."
     },
-    // Tool handler: validates input, calls Figma client, and returns result or error.
+    // Tool handler: supports both single object and array input via 'ellipse' or 'ellipses'.
     async (args) => {
       try {
-        const params = { commandId: uuidv4(), ...args };
-        const node = await figmaClient.createEllipse(params);
-        return { content: [{ type: "text", text: `Created ellipse ${node.id}` }] };
+        let ellipsesArr;
+        if (args.ellipses) {
+          ellipsesArr = args.ellipses;
+        } else if (args.ellipse) {
+          ellipsesArr = [args.ellipse];
+        } else {
+          throw new Error("You must provide either 'ellipse' or 'ellipses' as input.");
+        }
+        const results = await processBatch(
+          ellipsesArr,
+          async cfg => {
+            const params = { ...cfg, commandId: uuidv4() };
+            // Only pass commandId if createEllipse supports it, otherwise omit
+            const node = await figmaClient.createEllipse(params);
+            return node.id;
+          }
+        );
+        const nodeIds = results.map(r => r.result).filter(Boolean);
+        if (nodeIds.length === 1) {
+          return { content: [{ type: "text", text: `Created ellipse ${nodeIds[0]}` }] };
+        } else {
+          return { content: [{ type: "text", text: `Created ellipses: ${nodeIds.join(", ")}` }] };
+        }
       } catch (err) {
         // Handle errors and return a formatted error response.
         return handleToolError(err, "shape-creation-tools", "create_ellipse") as any;
@@ -116,47 +151,5 @@ Returns:
    *   ]
    * }
    */
-  server.tool(
-    "create_ellipses",
-    `Creates multiple ellipses in Figma based on the provided array of ellipse configuration objects.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of ellipses created.
-`,
-    { ellipses: z.array(EllipseSchema)
-    },
-    {
-      title: "Create Ellipses",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          ellipses: [
-            { x: 10, y: 20, width: 100, height: 50, name: "Ellipse1" },
-            { x: 120, y: 20, width: 80, height: 40 }
-          ]
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Each ellipse must have positive width and height.",
-        "If parentId is invalid, ellipses will be added to the root.",
-        "Fill and stroke colors must be valid color objects."
-      ],
-      extraInfo: "Batch creation is efficient for generating multiple ellipses or circles at once."
-    },
-    // Tool handler: processes each ellipse, calls Figma client, and returns batch results.
-    async ({ ellipses }) => {
-      const results = await processBatch(
-        ellipses,
-        cfg => figmaClient.createEllipse(cfg).then(node => node.id)
-      );
-      const successCount = results.filter(r => r.result).length;
-      return {
-        content: [{ type: "text", text: `Created ${successCount}/${ellipses.length} ellipses.` }],
-        _meta: { results }
-      };
-    }
-  );
+  // The batch tool 'create_ellipses' is now replaced by the unified 'create_ellipse' tool above.
 }

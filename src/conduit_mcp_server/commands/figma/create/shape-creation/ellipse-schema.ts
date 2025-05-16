@@ -5,7 +5,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  * Shared Zod schema for ellipse configuration objects.
  * Used for both single and batch ellipse creation tools.
  */
-export const EllipseSchema = z.object({
+export const SingleEllipseSchema = z.object({
   x: z.number()
     .describe("X coordinate for the top-left corner. Example: 60"),
   y: z.number()
@@ -32,7 +32,15 @@ export const EllipseSchema = z.object({
     .optional()
 });
 
+export const BatchEllipsesSchema = z.array(SingleEllipseSchema);
+
+export const EllipseSchema = z.union([
+  SingleEllipseSchema,
+  BatchEllipsesSchema
+]);
+
 /**
  * TypeScript type inferred from EllipseSchema.
  */
-export type EllipseConfig = z.infer<typeof EllipseSchema>;
+export type EllipseConfig = z.infer<typeof SingleEllipseSchema>;
+export type BatchEllipsesConfig = z.infer<typeof BatchEllipsesSchema>;
