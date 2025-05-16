@@ -100,49 +100,42 @@ export async function createComponentFromNode(params) {
 }
 
 /**
- * Creates an instance of a component by key.
- * @param {{componentKey: string, x?: number, y?: number}} params
- * @returns {Promise<{id: string, name: string, x: number, y: number, width: number, height: number, componentId: string}>}
- */
-/**
- * Creates an instance of a component by its key.
- *
- * @param {{componentKey: string, x?: number, y?: number}} params - Component key and optional position.
- * @returns {Promise<{id: string, name: string, x: number, y: number, width: number, height: number, componentId: string}>}
- *    Details of the new instance including coordinates and ID.
- * @throws {Error} If `componentKey` is missing or import fails.
+ * Creates one or more instances of a component by key.
+ * Accepts either a single object (instance) or an array (instances).
+ * @param {{instance?: {componentKey: string, x?: number, y?: number}, instances?: Array<{componentKey: string, x?: number, y?: number}>}} params
+ * @returns {Promise<{instances: Array<any>}>}
  * @example
- * // Create an instance of a published component
- * const inst = await createComponentInstance({ componentKey: 'ABC123', x: 100, y: 200 });
- * console.log(`Instance created at (${inst.x},${inst.y})`);
+ * // Single instance
+ * const { instances } = await createComponentInstance({ instance: { componentKey: 'ABC123', x: 100, y: 200 } });
+ * // Batch
+ * const { instances } = await createComponentInstance({ instances: [{ componentKey: 'ABC123', x: 100, y: 200 }, { componentKey: 'DEF456', x: 300, y: 400 }] });
  */
 export async function createComponentInstance(params) {
-  const { componentKey, x = 0, y = 0 } = params;
-  if (!componentKey) throw new Error("Missing componentKey");
-  const comp = await figma.importComponentByKeyAsync(componentKey);
-  const inst = comp.createInstance();
-  inst.x = x;
-  inst.y = y;
-  figma.currentPage.appendChild(inst);
-  return {
-    id: inst.id, name: inst.name,
-    x: inst.x, y: inst.y,
-    width: inst.width, height: inst.height,
-    componentId: inst.componentId
-  };
-}
-
-/**
- * Creates multiple component instances.
- * @param {{instances: Array<{componentKey: string, x?: number, y?: number}>}} params
- * @returns {Promise<{instances: Array<any>}>}
- */
-export async function createComponentInstances(params) {
-  const { instances } = params;
-  if (!Array.isArray(instances)) throw new Error("Missing instances array");
+  let instancesArr;
+  if (params.instances) {
+    instancesArr = params.instances;
+  } else if (params.instance) {
+    instancesArr = [params.instance];
+  } else {
+    // Fallback for legacy single input
+    instancesArr = [params];
+  }
+  instancesArr = instancesArr.filter(Boolean);
   const results = [];
-  for (const cfg of instances) {
-    results.push(await createComponentInstance(cfg));
+  for (const cfg of instancesArr) {
+    const { componentKey, x = 0, y = 0 } = cfg;
+    if (!componentKey) throw new Error("Missing componentKey");
+    const comp = await figma.importComponentByKeyAsync(componentKey);
+    const inst = comp.createInstance();
+    inst.x = x;
+    inst.y = y;
+    figma.currentPage.appendChild(inst);
+    results.push({
+      id: inst.id, name: inst.name,
+      x: inst.x, y: inst.y,
+      width: inst.width, height: inst.height,
+      componentId: inst.componentId
+    });
   }
   return { instances: results };
 }
@@ -224,6 +217,5 @@ export const componentOperations = {
   getTeamComponents,
   createComponentFromNode,
   createComponentInstance,
-  createComponentInstances,
   exportNodeAsImage
 };

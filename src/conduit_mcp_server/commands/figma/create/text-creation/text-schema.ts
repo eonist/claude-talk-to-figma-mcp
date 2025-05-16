@@ -4,7 +4,7 @@ import { z } from "zod";
  * Shared Zod schema for text configuration objects.
  * Used for both single and bounded text creation tools.
  */
-export const BaseTextSchema = z.object({
+export const SingleTextSchema = z.object({
   x: z.number()
     .min(-10000)
     .max(10000)
@@ -39,7 +39,14 @@ export const BaseTextSchema = z.object({
     .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
 });
 
-export const BoundedTextSchema = BaseTextSchema.extend({
+export const BatchTextsSchema = z.array(SingleTextSchema);
+
+export const TextSchema = z.union([
+  SingleTextSchema,
+  BatchTextsSchema
+]);
+
+export const SingleBoundedTextSchema = SingleTextSchema.extend({
   width: z.number()
     .min(1)
     .max(2000)
@@ -50,16 +57,14 @@ export const BoundedTextSchema = BaseTextSchema.extend({
     .describe("Height of the text box. Must be between 1 and 2000."),
 });
 
-/**
- * TypeScript types inferred from schemas.
- */
-export type BaseTextConfig = z.infer<typeof BaseTextSchema>;
-export type BoundedTextConfig = z.infer<typeof BoundedTextSchema>;
+export const BatchBoundedTextsSchema = z.array(SingleBoundedTextSchema);
 
-/**
- * Batch schema for create_texts (array of BaseTextSchema)
- */
-export const CreateTextsSchema = z.object({
-  texts: z.array(BaseTextSchema)
-});
-export type CreateTextsConfig = z.infer<typeof CreateTextsSchema>;
+export const BoundedTextSchema = z.union([
+  SingleBoundedTextSchema,
+  BatchBoundedTextsSchema
+]);
+
+export type BaseTextConfig = z.infer<typeof SingleTextSchema>;
+export type BatchTextsConfig = z.infer<typeof BatchTextsSchema>;
+export type BoundedTextConfig = z.infer<typeof SingleBoundedTextSchema>;
+export type BatchBoundedTextsConfig = z.infer<typeof BatchBoundedTextsSchema>;
