@@ -16,7 +16,7 @@ import { FigmaClient } from "../../clients/figma-client/index.js";
 import { logger } from "../../utils/logger.js";
 import { filterFigmaNode } from "../../utils/figma/filter-node.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers read commands for the MCP server

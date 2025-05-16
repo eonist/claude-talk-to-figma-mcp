@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Shared Zod schema for ellipse configuration objects.

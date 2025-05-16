@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../clients/figma-client.js";
-import { isValidNodeId } from "../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers HTML generation commands for the MCP server.

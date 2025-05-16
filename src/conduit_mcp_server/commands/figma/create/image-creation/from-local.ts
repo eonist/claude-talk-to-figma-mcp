@@ -3,7 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers image insertion commands:
