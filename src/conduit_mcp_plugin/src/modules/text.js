@@ -122,103 +122,117 @@ function delay(ms) {
  * @throws {Error} When the parent node is not found or cannot have child nodes.
  */
 export async function createText(params) {
-  const {
-    x = 0,
-    y = 0,
-    text = "Text",
-    fontSize = 14,
-    fontWeight = 400,
-    fontColor = { r: 0, g: 0, b: 0, a: 1 },
-    name = "Text",
-    parentId,
-  } = params || {};
-
-  // Map given numeric font weight to corresponding string font style.
-  const getFontStyle = (weight) => {
-    switch (weight) {
-      case 100: return "Thin";
-      case 200: return "Extra Light";
-      case 300: return "Light";
-      case 400: return "Regular";
-      case 500: return "Medium";
-      case 600: return "Semi Bold";
-      case 700: return "Bold";
-      case 800: return "Extra Bold";
-      case 900: return "Black";
-      default: return "Regular";
-    }
-  };
-
-  try {
-    const textNode = figma.createText();
-    textNode.x = x;
-    textNode.y = y;
-    textNode.name = name;
-    
-    try {
-      // Load the necessary font before applying its settings.
-      await figma.loadFontAsync({
-        family: "Inter",
-        style: getFontStyle(fontWeight),
-      });
-      textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
-      textNode.fontSize = fontSize;
-    } catch (error) {
-      console.error("Error setting font", error);
-    }
-    
-    // Set text content using helper function.
-    await setCharacters(textNode, text);
-
-    // Configure the fill style using the provided RGBA color values.
-    const paintStyle = {
-      type: "SOLID",
-      color: {
-        r: parseFloat(fontColor.r.toString()) || 0,
-        g: parseFloat(fontColor.g.toString()) || 0,
-        b: parseFloat(fontColor.b.toString()) || 0,
-      },
-      opacity: parseFloat((fontColor.a || 1).toString()),
-    };
-    textNode.fills = [paintStyle];
-
-    // Append the text node to the parent node if an id is provided, or to the current page.
-    if (parentId) {
-      const parentNode = await figma.getNodeByIdAsync(parentId);
-      if (!parentNode) {
-        throw new Error(`Parent node not found with ID: ${parentId}`);
-      }
-      if (!canAcceptChildren(parentNode)) {
-        const nodeType = parentNode.type || 'unknown type';
-        throw new Error(
-          `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
-          `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
-        );
-      }
-      parentNode.appendChild(textNode);
-    } else {
-      figma.currentPage.appendChild(textNode);
-    }
-
-    return {
-      id: textNode.id,
-      name: textNode.name,
-      x: textNode.x,
-      y: textNode.y,
-      width: textNode.width,
-      height: textNode.height,
-      characters: textNode.characters,
-      fontSize: textNode.fontSize,
-      fontWeight: fontWeight,
-      fontColor: fontColor,
-      fontName: textNode.fontName,
-      fills: textNode.fills,
-      parentId: textNode.parent ? textNode.parent.id : undefined,
-    };
-  } catch (error) {
-    console.error("Error creating text", error);
-    throw error;
+  let textsArr;
+  if (params.texts) {
+    textsArr = params.texts;
+  } else if (params.text) {
+    textsArr = [params.text];
+  } else {
+    // Fallback for legacy single input
+    textsArr = [params];
   }
+  textsArr = textsArr.filter(Boolean);
+  const results = [];
+  for (const cfg of textsArr) {
+    const {
+      x = 0,
+      y = 0,
+      text = "Text",
+      fontSize = 14,
+      fontWeight = 400,
+      fontColor = { r: 0, g: 0, b: 0, a: 1 },
+      name = "Text",
+      parentId,
+    } = cfg || {};
+
+    // Map given numeric font weight to corresponding string font style.
+    const getFontStyle = (weight) => {
+      switch (weight) {
+        case 100: return "Thin";
+        case 200: return "Extra Light";
+        case 300: return "Light";
+        case 400: return "Regular";
+        case 500: return "Medium";
+        case 600: return "Semi Bold";
+        case 700: return "Bold";
+        case 800: return "Extra Bold";
+        case 900: return "Black";
+        default: return "Regular";
+      }
+    };
+
+    try {
+      const textNode = figma.createText();
+      textNode.x = x;
+      textNode.y = y;
+      textNode.name = name;
+      
+      try {
+        // Load the necessary font before applying its settings.
+        await figma.loadFontAsync({
+          family: "Inter",
+          style: getFontStyle(fontWeight),
+        });
+        textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
+        textNode.fontSize = fontSize;
+      } catch (error) {
+        console.error("Error setting font", error);
+      }
+      
+      // Set text content using helper function.
+      await setCharacters(textNode, text);
+
+      // Configure the fill style using the provided RGBA color values.
+      const paintStyle = {
+        type: "SOLID",
+        color: {
+          r: parseFloat(fontColor.r.toString()) || 0,
+          g: parseFloat(fontColor.g.toString()) || 0,
+          b: parseFloat(fontColor.b.toString()) || 0,
+        },
+        opacity: parseFloat((fontColor.a || 1).toString()),
+      };
+      textNode.fills = [paintStyle];
+
+      // Append the text node to the parent node if an id is provided, or to the current page.
+      if (parentId) {
+        const parentNode = await figma.getNodeByIdAsync(parentId);
+        if (!parentNode) {
+          throw new Error(`Parent node not found with ID: ${parentId}`);
+        }
+        if (!canAcceptChildren(parentNode)) {
+          const nodeType = parentNode.type || 'unknown type';
+          throw new Error(
+            `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
+            `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
+          );
+        }
+        parentNode.appendChild(textNode);
+      } else {
+        figma.currentPage.appendChild(textNode);
+      }
+
+      results.push({
+        id: textNode.id,
+        name: textNode.name,
+        x: textNode.x,
+        y: textNode.y,
+        width: textNode.width,
+        height: textNode.height,
+        characters: textNode.characters,
+        fontSize: textNode.fontSize,
+        fontWeight: fontWeight,
+        fontColor: fontColor,
+        fontName: textNode.fontName,
+        fills: textNode.fills,
+        parentId: textNode.parent ? textNode.parent.id : undefined,
+      });
+    } catch (error) {
+      console.error("Error creating text", error);
+      results.push({ error: error.message, config: cfg });
+    }
+  }
+  return results.length === 1 ? results[0] : { nodes: results };
 }
 
 /**
@@ -239,101 +253,115 @@ export async function createText(params) {
  * console.log(result.characters);
  */
 export async function createBoundedText(params) {
-  const {
-    x = 0,
-    y = 0,
-    text = "",
-    width,
-    height,
-    fontSize = 14,
-    fontWeight = 400,
-    fontColor = { r: 0, g: 0, b: 0, a: 1 },
-    name = "Text",
-    parentId,
-  } = params || {};
-
-  const getFontStyle = (weight) => {
-    switch (weight) {
-      case 100: return "Thin";
-      case 200: return "Extra Light";
-      case 300: return "Light";
-      case 400: return "Regular";
-      case 500: return "Medium";
-      case 600: return "Semi Bold";
-      case 700: return "Bold";
-      case 800: return "Extra Bold";
-      case 900: return "Black";
-      default: return "Regular";
-    }
-  };
-
-  try {
-    const textNode = figma.createText();
-    textNode.x = x;
-    textNode.y = y;
-    textNode.name = name;
-
-    await figma.loadFontAsync({ family: "Inter", style: getFontStyle(fontWeight) });
-    textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
-    textNode.fontSize = fontSize;
-
-    await setCharacters(textNode, text);
-
-    const paintStyle = {
-      type: "SOLID",
-      color: {
-        r: parseFloat(fontColor.r.toString()) || 0,
-        g: parseFloat(fontColor.g.toString()) || 0,
-        b: parseFloat(fontColor.b.toString()) || 0,
-      },
-      opacity: parseFloat((fontColor.a || 1).toString()),
-    };
-    textNode.fills = [paintStyle];
-
-    if (width !== undefined && height !== undefined) {
-      textNode.textAutoResize = "NONE";
-      textNode.resize(width, height);
-    } else if (width !== undefined) {
-      textNode.textAutoResize = "HEIGHT";
-      textNode.resize(width, textNode.height);
-    }
-
-    if (parentId) {
-      const parentNode = await figma.getNodeByIdAsync(parentId);
-      if (!parentNode) {
-        throw new Error(`Parent node not found with ID: ${parentId}`);
-      }
-      if (!canAcceptChildren(parentNode)) {
-        const nodeType = parentNode.type || 'unknown type';
-        throw new Error(
-          `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
-          `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
-        );
-      }
-      parentNode.appendChild(textNode);
-    } else {
-      figma.currentPage.appendChild(textNode);
-    }
-
-    return {
-      id: textNode.id,
-      name: textNode.name,
-      x: textNode.x,
-      y: textNode.y,
-      width: textNode.width,
-      height: textNode.height,
-      characters: textNode.characters,
-      fontSize: textNode.fontSize,
-      fontWeight,
-      fontColor,
-      fontName: textNode.fontName,
-      fills: textNode.fills,
-      parentId: textNode.parent ? textNode.parent.id : undefined,
-    };
-  } catch (error) {
-    console.error("Error creating bounded text", error);
-    throw error;
+  let textsArr;
+  if (params.texts) {
+    textsArr = params.texts;
+  } else if (params.text) {
+    textsArr = [params.text];
+  } else {
+    // Fallback for legacy single input
+    textsArr = [params];
   }
+  textsArr = textsArr.filter(Boolean);
+  const results = [];
+  for (const cfg of textsArr) {
+    const {
+      x = 0,
+      y = 0,
+      text = "",
+      width,
+      height,
+      fontSize = 14,
+      fontWeight = 400,
+      fontColor = { r: 0, g: 0, b: 0, a: 1 },
+      name = "Text",
+      parentId,
+    } = cfg || {};
+
+    const getFontStyle = (weight) => {
+      switch (weight) {
+        case 100: return "Thin";
+        case 200: return "Extra Light";
+        case 300: return "Light";
+        case 400: return "Regular";
+        case 500: return "Medium";
+        case 600: return "Semi Bold";
+        case 700: return "Bold";
+        case 800: return "Extra Bold";
+        case 900: return "Black";
+        default: return "Regular";
+      }
+    };
+
+    try {
+      const textNode = figma.createText();
+      textNode.x = x;
+      textNode.y = y;
+      textNode.name = name;
+
+      await figma.loadFontAsync({ family: "Inter", style: getFontStyle(fontWeight) });
+      textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
+      textNode.fontSize = fontSize;
+
+      await setCharacters(textNode, text);
+
+      const paintStyle = {
+        type: "SOLID",
+        color: {
+          r: parseFloat(fontColor.r.toString()) || 0,
+          g: parseFloat(fontColor.g.toString()) || 0,
+          b: parseFloat(fontColor.b.toString()) || 0,
+        },
+        opacity: parseFloat((fontColor.a || 1).toString()),
+      };
+      textNode.fills = [paintStyle];
+
+      if (width !== undefined && height !== undefined) {
+        textNode.textAutoResize = "NONE";
+        textNode.resize(width, height);
+      } else if (width !== undefined) {
+        textNode.textAutoResize = "HEIGHT";
+        textNode.resize(width, textNode.height);
+      }
+
+      if (parentId) {
+        const parentNode = await figma.getNodeByIdAsync(parentId);
+        if (!parentNode) {
+          throw new Error(`Parent node not found with ID: ${parentId}`);
+        }
+        if (!canAcceptChildren(parentNode)) {
+          const nodeType = parentNode.type || 'unknown type';
+          throw new Error(
+            `Parent node with ID ${parentId} (${nodeType}) cannot have children. ` +
+            `Use a FRAME, GROUP, or COMPONENT as the parent for text nodes instead of ${nodeType} nodes.`
+          );
+        }
+        parentNode.appendChild(textNode);
+      } else {
+        figma.currentPage.appendChild(textNode);
+      }
+
+      results.push({
+        id: textNode.id,
+        name: textNode.name,
+        x: textNode.x,
+        y: textNode.y,
+        width: textNode.width,
+        height: textNode.height,
+        characters: textNode.characters,
+        fontSize: textNode.fontSize,
+        fontWeight,
+        fontColor,
+        fontName: textNode.fontName,
+        fills: textNode.fills,
+        parentId: textNode.parent ? textNode.parent.id : undefined,
+      });
+    } catch (error) {
+      console.error("Error creating bounded text", error);
+      results.push({ error: error.message, config: cfg });
+    }
+  }
+  return results.length === 1 ? results[0] : { nodes: results };
 }
 
 export async function setTextContent(params) {
@@ -1311,7 +1339,6 @@ export async function createTexts(params) {
 
 export const textOperations = {
   createText,
-  createTexts,
   createBoundedText,
   setTextContent,
   scanTextNodes,
