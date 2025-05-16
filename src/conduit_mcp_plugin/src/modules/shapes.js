@@ -299,6 +299,19 @@ export async function createVector(params) {
 }
 
 /**
+ * Batch vectors.
+ */
+export async function createVectors(params) {
+  const { vectors = [] } = params||{};
+  const ids=[];
+  for(const cfg of vectors){
+    const res=await createVector(cfg);
+    ids.push(res.id);
+  }
+  return { ids };
+}
+
+/**
  * Creates a line.
  */
 /**
