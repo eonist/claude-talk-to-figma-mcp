@@ -3,8 +3,8 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
-import { ImageFromUrlSchema } from "./image-schema.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { ImageFromUrlSchema, SingleImageFromUrlSchema, BatchImagesFromUrlSchema } from "./image-schema.js";
 
 /**
  * Registers image insertion commands on the MCP server.
@@ -22,70 +22,43 @@ import { ImageFromUrlSchema } from "./image-schema.js";
  * registerFromUrlImageTools(server, figmaClient);
  */
 export function registerFromUrlImageTools(server: McpServer, figmaClient: FigmaClient) {
-  // Single image insertion
+  // Unified image insertion (single or batch)
   server.tool(
     "insert_image",
-    `Inserts an image from a URL into Figma at the specified coordinates. You can customize size, name, and parent node.
+    `Inserts one or more images from URLs into Figma. Accepts either a single image config (via 'image') or an array of configs (via 'images'). You can customize size, name, and parent node.
+
+Input:
+  - image: A single image configuration object.
+  - images: An array of image configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the inserted image's node ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the inserted image node ID(s).
 `,
-    ImageFromUrlSchema.shape,
     {
-      title: "Insert Image",
+      image: SingleImageFromUrlSchema
+        .describe("A single image configuration object. Each object should include URL, coordinates, and optional properties for an image.")
+        .optional(),
+      images: BatchImagesFromUrlSchema
+        .describe("An array of image configuration objects. Each object should include URL, coordinates, and optional properties for an image.")
+        .optional(),
+    },
+    {
+      title: "Insert Image(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
         {
-          url: "https://example.com/image.png",
-          x: 100,
-          y: 200,
-          width: 300,
-          height: 150,
-          name: "Sample Image"
-        }
-      ]),
-      edgeCaseWarnings: [
-        "URL must point to a valid image file.",
-        "Width and height must be positive if specified.",
-        "If parentId is invalid, the image will be added to the root.",
-        "Network errors or invalid URLs will cause failure."
-      ],
-      extraInfo: "Supports inserting images from remote URLs with custom size and position."
-    },
-    async ({ url, x, y, width, height, name, parentId }): Promise<any> => {
-      try {
-        const node = await (figmaClient as any).insertImage({ url, x, y, width, height, name, parentId });
-        return { content: [{ type: "text", text: `Inserted image ${node.id}` }] };
-      } catch (err) {
-        return handleToolError(err, "image-creation-tools", "insert_image") as any;
-      }
-    }
-  );
-
-  // Batch image insertion
-  server.tool(
-    "insert_images",
-    `Inserts multiple images from URLs into Figma based on the provided array of image configuration objects.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of images inserted.
-`,
-    {
-      images: z.array(ImageFromUrlSchema)
-        .min(1)
-        .max(50)
-        .describe("Array of image configuration objects. Must contain 1 to 50 items."),
-    },
-    {
-      title: "Insert Images",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
+          image: {
+            url: "https://example.com/image.png",
+            x: 100,
+            y: 200,
+            width: 300,
+            height: 150,
+            name: "Sample Image"
+          }
+        },
         {
           images: [
             { url: "https://example.com/image1.png", x: 10, y: 20 },
@@ -94,26 +67,35 @@ Returns:
         }
       ]),
       edgeCaseWarnings: [
-        "Each image must have a valid URL.",
+        "URL must point to a valid image file.",
         "Width and height must be positive if specified.",
-        "If parentId is invalid, images will be added to the root.",
-        "Network errors or invalid URLs will cause partial or total failure."
+        "If parentId is invalid, the image will be added to the root.",
+        "Network errors or invalid URLs will cause failure."
       ],
-      extraInfo: "Batch insertion is efficient for adding multiple remote images at once."
+      extraInfo: "Supports inserting images from remote URLs with custom size and position. Batch insertion is efficient for adding multiple remote images at once."
     },
-    async ({ images }): Promise<any> => {
+    async (args): Promise<any> => {
       try {
+        let imagesArr;
+        if (args.images) {
+          imagesArr = args.images;
+        } else if (args.image) {
+          imagesArr = [args.image];
+        } else {
+          throw new Error("You must provide either 'image' or 'images' as input.");
+        }
         const results = await processBatch(
-          images,
-          cfg => (figmaClient as any).insertImage(cfg).then((node: any) => node.id)
+          imagesArr,
+          async (cfg) => (figmaClient as any).insertImage(cfg).then((node: any) => node.id)
         );
-        const successCount = results.filter(r => r.result).length;
-        return {
-          content: [{ type: "text", text: `Inserted ${successCount}/${images.length} images.` }],
-          _meta: { results }
-        };
+        const nodeIds = results.map(r => r.result).filter(Boolean);
+        if (nodeIds.length === 1) {
+          return { content: [{ type: "text", text: `Inserted image ${nodeIds[0]}` }] };
+        } else {
+          return { content: [{ type: "text", text: `Inserted images: ${nodeIds.join(", ")}` }] };
+        }
       } catch (err) {
-        return handleToolError(err, "image-creation-tools", "insert_images") as any;
+        return handleToolError(err, "image-creation-tools", "insert_image") as any;
       }
     }
   );
