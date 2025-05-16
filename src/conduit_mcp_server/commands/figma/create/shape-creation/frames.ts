@@ -1,10 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z } from "../utils.js";
-import { FrameSchema } from "./frame-schema.js";
+import { FrameSchema, SingleFrameSchema, BatchFramesSchema } from "./frame-schema.js";
+import { processBatch } from "../../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers frame creation commands with the MCP server.
@@ -13,58 +12,84 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
  * @param {FigmaClient} figmaClient - The Figma client for executing commands.
  * 
  * Adds:
- * - create_frame: Create a new frame node in Figma.
+ * - create_frame: Create one or more frames in Figma.
  */
 export function registerFramesTools(server: McpServer, figmaClient: FigmaClient) {
   /**
    * MCP Tool: create_frame
-   * 
-   * Creates a new frame node in the specified Figma document at the given coordinates, with the specified width and height.
-   * Optionally, you can provide a name, a parent node ID to attach the frame to, and fill/stroke properties.
+   *
+   * Creates one or more frame nodes in the specified Figma document.
+   * Accepts either a single frame config (via the 'frame' property) or an array of configs (via the 'frames' property).
+   * Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+   *
    * This tool is useful for programmatically generating UI containers, artboards, or design primitives in Figma via MCP.
-   * 
-   * @param {number} x - X coordinate for the top-left corner.
-   * @param {number} y - Y coordinate for the top-left corner.
-   * @param {number} width - Width in pixels.
-   * @param {number} height - Height in pixels.
-   * @param {string} [name] - Optional. Name for the frame node.
-   * @param {string} [parentId] - Optional. Figma node ID of the parent.
-   * @param {any} [fillColor] - Optional. Fill color for the frame.
-   * @param {any} [strokeColor] - Optional. Stroke color for the frame.
-   * @param {number} [strokeWeight] - Optional. Stroke weight for the frame.
-   * 
-   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created frame's node ID.
-   * 
+   *
+   * @param {object} args - The input object. Must provide either:
+   *   - frame: A single frame config object (x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight?)
+   *   - frames: An array of frame config objects (same shape as above)
+   *
+   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created frame node ID(s).
+   *
    * @example
+   * // Single frame
    * {
-   *   x: 50,
-   *   y: 100,
-   *   width: 400,
-   *   height: 300,
-   *   name: "Main Frame"
+   *   frame: {
+   *     x: 50,
+   *     y: 100,
+   *     width: 400,
+   *     height: 300,
+   *     name: "Main Frame"
+   *   }
+   * }
+   *
+   * // Multiple frames
+   * {
+   *   frames: [
+   *     { x: 10, y: 20, width: 100, height: 50, name: "Frame1" },
+   *     { x: 120, y: 20, width: 80, height: 40 }
+   *   ]
    * }
    */
   server.tool(
     "create_frame",
-    `Creates a new frame node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID, and fill/stroke properties.
+    `Creates one or more frame nodes in the specified Figma document. Accepts either a single frame config (via 'frame') or an array of configs (via 'frames'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+
+Input:
+  - frame: A single frame configuration object.
+  - frames: An array of frame configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the created frame's node ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created frame node ID(s).
 `,
-    FrameSchema.shape,
     {
-      title: "Create Frame",
+      frame: SingleFrameSchema
+        .describe("A single frame configuration object. Each object should include coordinates, dimensions, and optional properties for a frame.")
+        .optional(),
+      frames: BatchFramesSchema
+        .describe("An array of frame configuration objects. Each object should include coordinates, dimensions, and optional properties for a frame.")
+        .optional(),
+    },
+    {
+      title: "Create Frame(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
         {
-          x: 50,
-          y: 100,
-          width: 400,
-          height: 300,
-          name: "Main Frame"
+          frame: {
+            x: 50,
+            y: 100,
+            width: 400,
+            height: 300,
+            name: "Main Frame"
+          }
+        },
+        {
+          frames: [
+            { x: 10, y: 20, width: 100, height: 50, name: "Frame1" },
+            { x: 120, y: 20, width: 80, height: 40 }
+          ]
         }
       ]),
       edgeCaseWarnings: [
@@ -72,14 +97,33 @@ Returns:
         "If parentId is invalid, the frame will be added to the root.",
         "Fill and stroke colors must be valid color objects."
       ],
-      extraInfo: "Useful for generating UI containers, artboards, or design primitives programmatically."
+      extraInfo: "Useful for generating UI containers, artboards, or design primitives programmatically. Batch creation is efficient for generating multiple frames at once."
     },
-    // Tool handler: validates input, calls Figma client, and returns result or error.
+    // Tool handler: supports both single object and array input via 'frame' or 'frames'.
     async (args) => {
       try {
-        const params = { commandId: uuidv4(), ...args };
-        const node = await figmaClient.createFrame(params);
-        return { content: [{ type: "text", text: `Created frame ${node.id}` }] };
+        let framesArr;
+        if (args.frames) {
+          framesArr = args.frames;
+        } else if (args.frame) {
+          framesArr = [args.frame];
+        } else {
+          throw new Error("You must provide either 'frame' or 'frames' as input.");
+        }
+        const results = await processBatch(
+          framesArr,
+          async cfg => {
+            const params = { ...cfg, commandId: uuidv4() };
+            const node = await figmaClient.createFrame(params);
+            return node.id;
+          }
+        );
+        const nodeIds = results.map(r => r.result).filter(Boolean);
+        if (nodeIds.length === 1) {
+          return { content: [{ type: "text", text: `Created frame ${nodeIds[0]}` }] };
+        } else {
+          return { content: [{ type: "text", text: `Created frames: ${nodeIds.join(", ")}` }] };
+        }
       } catch (err) {
         // Handle errors and return a formatted error response.
         return handleToolError(err, "shape-creation-tools", "create_frame") as any;

@@ -5,7 +5,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  * Shared Zod schema for frame configuration objects.
  * Used for single frame creation tools.
  */
-export const FrameSchema = z.object({
+export const SingleFrameSchema = z.object({
   x: z.number()
     .describe("X coordinate for the top-left corner. Example: 50"),
   y: z.number()
@@ -32,7 +32,15 @@ export const FrameSchema = z.object({
     .optional()
 });
 
+export const BatchFramesSchema = z.array(SingleFrameSchema);
+
+export const FrameSchema = z.union([
+  SingleFrameSchema,
+  BatchFramesSchema
+]);
+
 /**
  * TypeScript type inferred from FrameSchema.
  */
-export type FrameConfig = z.infer<typeof FrameSchema>;
+export type FrameConfig = z.infer<typeof SingleFrameSchema>;
+export type BatchFramesConfig = z.infer<typeof BatchFramesSchema>;
