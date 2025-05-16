@@ -23,140 +23,91 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
  */
 export function registerSvgCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   logger.info("🔧 Loading SVG creation tools");
-  // Insert a single SVG vector
+  // Unified single/batch SVG vector insertion
   server.tool(
     "insert_svg_vector",
-    `Inserts an SVG as a vector in Figma at the specified coordinates. You can customize name and parent node.
+    `Inserts one or more SVG vectors in Figma. Accepts either a single SVG config (via 'svg') or an array of configs (via 'svgs').
+
+Input:
+  - svg: A single SVG configuration object.
+  - svgs: An array of SVG configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the inserted SVG vector's node ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the inserted SVG vector node ID(s).
 `,
     {
-      // Enforce non-empty string for SVG content, reasonable length
-      svg: z.string()
-        .min(1)
-        .max(100000)
-        .describe("The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters."),
-      // Enforce reasonable X coordinate
-      x: z.number()
-        .min(-10000)
-        .max(10000)
-        .optional()
-        .default(0)
-        .describe("Optional. X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
-      // Enforce reasonable Y coordinate
-      y: z.number()
-        .min(-10000)
-        .max(10000)
-        .optional()
-        .default(0)
-        .describe("Optional. Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
-      // Enforce non-empty string for name if provided
-      name: z.string()
-        .min(1)
-        .max(100)
-        .optional()
-        .describe("Optional. Name for the SVG node. If provided, must be a non-empty string up to 100 characters."),
-      // Enforce Figma node ID format for parentId if provided
-      parentId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .optional()
-        .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
-    },
-    {
-      title: "Insert SVG Vector",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          svg: "<svg>...</svg>",
-          x: 0,
-          y: 0,
-          name: "My SVG"
-        }
-      ]),
-      edgeCaseWarnings: [
-        "SVG content must be valid SVG markup or a valid URL.",
-        "Coordinates must be within the canvas bounds.",
-        "If parentId is invalid, the SVG will be added to the root."
-      ],
-      extraInfo: "Use this command to insert a single SVG vector into the Figma document."
-    },
-    async ({ svg, x, y, name, parentId }): Promise<any> => {
-      try {
-        const content = svg;
-        const node = await (figmaClient as any).insertSvgVector({
-          svg: content,
-          x,
-          y,
-          name,
-          parentId: parentId ? ensureNodeIdIsString(parentId) : undefined
-        });
-        return {
-          content: [{ type: "text", text: `Inserted SVG vector ${node.id}` }]
-        };
-      } catch (err) {
-        return handleToolError(err, "svg-creation-tools", "insert_svg_vector") as any;
-      }
-    }
-  );
-
-  // Batch insertion of multiple SVG vectors
-  server.tool(
-    "insert_svg_vectors",
-    `Inserts multiple SVG vectors in Figma based on the provided array of SVG configuration objects.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of SVG vectors inserted.
-`,
-    {
+      svg: z.object({
+        svg: z.string()
+          .min(1)
+          .max(100000)
+          .describe("The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters."),
+        x: z.number()
+          .min(-10000)
+          .max(10000)
+          .optional()
+          .default(0)
+          .describe("Optional. X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
+        y: z.number()
+          .min(-10000)
+          .max(10000)
+          .optional()
+          .default(0)
+          .describe("Optional. Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
+        name: z.string()
+          .min(1)
+          .max(100)
+          .optional()
+          .describe("Optional. Name for the SVG node. If provided, must be a non-empty string up to 100 characters."),
+        parentId: z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .optional()
+          .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
+      }).optional(),
       svgs: z.array(
         z.object({
-          // Enforce non-empty string for SVG content, reasonable length
           svg: z.string()
             .min(1)
             .max(100000)
             .describe("The SVG content (raw SVG text or URL). Must be a non-empty string up to 100,000 characters."),
-          // Enforce reasonable X coordinate
           x: z.number()
             .min(-10000)
             .max(10000)
             .optional()
             .default(0)
             .describe("Optional. X coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
-          // Enforce reasonable Y coordinate
           y: z.number()
             .min(-10000)
             .max(10000)
             .optional()
             .default(0)
             .describe("Optional. Y coordinate for the SVG. Must be between -10,000 and 10,000. Defaults to 0."),
-          // Enforce non-empty string for name if provided
           name: z.string()
             .min(1)
             .max(100)
             .optional()
             .describe("Optional. Name for the SVG node. If provided, must be a non-empty string up to 100 characters."),
-          // Enforce Figma node ID format for parentId if provided
           parentId: z.string()
             .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
             .optional()
             .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
         })
-      )
-      .min(1)
-      .max(50)
-      .describe("Array of SVG configuration objects. Must contain 1 to 50 items."),
+      ).optional(),
     },
     {
-      title: "Insert SVG Vectors",
+      title: "Insert SVG Vector(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
+        {
+          svg: {
+            svg: "<svg>...</svg>",
+            x: 0,
+            y: 0,
+            name: "My SVG"
+          }
+        },
         {
           svgs: [
             {
@@ -169,16 +120,24 @@ Returns:
         }
       ]),
       edgeCaseWarnings: [
-        "Each SVG content must be valid SVG markup or a valid URL.",
+        "SVG content must be valid SVG markup or a valid URL.",
         "Coordinates must be within the canvas bounds.",
-        "If parentId is invalid, SVGs will be added to the root."
+        "If parentId is invalid, the SVG will be added to the root."
       ],
-      extraInfo: "Use this command to insert multiple SVG vectors into the Figma document."
+      extraInfo: "Use this command to insert one or more SVG vectors into the Figma document."
     },
-    async ({ svgs }): Promise<any> => {
+    async (args): Promise<any> => {
       try {
+        let svgsArr;
+        if (args.svgs) {
+          svgsArr = args.svgs;
+        } else if (args.svg) {
+          svgsArr = [args.svg];
+        } else {
+          throw new Error("You must provide either 'svg' or 'svgs' as input.");
+        }
         const results = await processBatch(
-          svgs,
+          svgsArr,
           async (cfg) => {
             const content = cfg.svg;
             const node = await (figmaClient as any).insertSvgVector({
@@ -191,15 +150,14 @@ Returns:
             return node.id;
           }
         );
-        const successCount = results.filter(r => r.result).length;
-        return {
-          content: [
-            { type: "text", text: `Inserted ${successCount}/${svgs.length} SVG vectors.` }
-          ],
-          _meta: { results }
-        };
+        const nodeIds = results.map(r => r.result).filter(Boolean);
+        if (nodeIds.length === 1) {
+          return { content: [{ type: "text", text: `Inserted SVG vector ${nodeIds[0]}` }] };
+        } else {
+          return { content: [{ type: "text", text: `Inserted SVG vectors: ${nodeIds.join(", ")}` }] };
+        }
       } catch (err) {
-        return handleToolError(err, "svg-creation-tools", "insert_svg_vectors") as any;
+        return handleToolError(err, "svg-creation-tools", "insert_svg_vector") as any;
       }
     }
   );
