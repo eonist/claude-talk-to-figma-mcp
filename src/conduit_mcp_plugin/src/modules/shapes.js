@@ -362,20 +362,6 @@ function setStroke(node, color, weight) {
   if(weight!==undefined) node.strokeWeight=weight;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const shapeOperations = {
   createRectangle,
   createFrame,
@@ -385,4 +371,5 @@ export const shapeOperations = {
   createVector,
   createVectors,
   createLine
+  // Note: If any legacy batch/single functions remain, remove them.
 };
