@@ -54,7 +54,7 @@ function handleConnection(ws: ServerWebSocket<any>) {
   ws.data = { clientId };
   
   // Don't add to clients immediately - wait for channel join
-  logger.info(`New client connected: ${clientId}`);
+  logger.info(`☎️ New client connected: ${clientId}`);
 
   // Send welcome message to the new client
   try {
@@ -221,14 +221,14 @@ const server = Bun.serve({
 
           // Create channel if it doesn't exist
           if (!channels.has(channelName)) {
-            logger.info(`🔌 Creating new channel: ${channelName}`);
+            logger.info(`🛰️ Creating new channel: ${channelName}`);
             channels.set(channelName, new Set());
           }
 
           // Add client to channel
           const channelClients = channels.get(channelName)!;
           channelClients.add(ws);
-          logger.info(`🏠 Client ${clientId} joined channel: ${channelName}`);
+          logger.info(`🛰️ Client ${clientId} joined channel: ${channelName}`);
 
           // Notify client they joined successfully
           try {

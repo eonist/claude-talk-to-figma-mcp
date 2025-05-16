@@ -260,6 +260,14 @@ export interface GenerateHtmlParams extends BaseCommandParams {
   cssMode?: "inline" | "classes" | "external";
 }
 
+export interface SetCurrentPageParams extends BaseCommandParams {
+  pageId: string;
+}
+
+export interface CreatePageParams extends BaseCommandParams {
+  name?: string;
+}
+
 export interface CommandParamsMap {
   // Read commands
   get_document_info: BaseCommandParams;
@@ -267,7 +275,9 @@ export interface CommandParamsMap {
   get_node_info: GetNodeInfoParams;
   get_nodes_info: GetNodesInfoParams;
   get_css_async: GetCssAsyncParams;
-  
+  get_pages: BaseCommandParams;
+  set_current_page: SetCurrentPageParams;
+
   // Create commands
   create_rectangle: CreateRectangleParams;
   create_frame: CreateFrameParams;
@@ -277,7 +287,8 @@ export interface CommandParamsMap {
   create_polygon: CreatePolygonParams;
   create_star: CreateStarParams;
   create_button: CreateButtonParams;
-  
+  create_page: CreatePageParams;
+
   // Modify commands
   move_node: MoveNodeParams;
   move_nodes: MoveNodesParams;
@@ -290,17 +301,17 @@ export interface CommandParamsMap {
   set_text_content: SetTextContentParams;
   convert_rectangle_to_frame: ConvertRectangleToFrameParams;
   apply_direct_gradient: ApplyDirectGradientParams;
-  
+
   // Channel commands
   join: JoinChannelParams;
-  
+
   // HTML commands
   generate_html: GenerateHtmlParams;
   insert_child: InsertChildParams;
   flatten_nodes: FlattenNodesParams;
   clone_node: CloneNodeParams;
   clone_nodes: CloneNodesParams;
-  
+
   // Allow for any other commands with base params
   [command: string]: BaseCommandParams;
 }

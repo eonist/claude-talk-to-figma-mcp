@@ -322,6 +322,47 @@ async function checkFigmaPlugin() {
   }
 }
 
+async function testPageManagementCommands() {
+  log.step('Testing page management MCP commands');
+
+  // Helper to simulate MCP command execution (replace with actual call if available)
+  async function executeMcpCommand(command, params = {}) {
+    // This is a placeholder. Replace with actual MCP client call if available.
+    log.info(`Simulate MCP command: ${command} ${JSON.stringify(params)}`);
+    // Simulate a response
+    return {};
+  }
+
+  // Test get_pages
+  log.info('Testing get_pages...');
+  const pagesResult = await executeMcpCommand('get_pages');
+  if (!Array.isArray(pagesResult)) {
+    log.warning('get_pages did not return an array (this is a placeholder test)');
+  } else {
+    log.success(`get_pages returned ${pagesResult.length} pages`);
+  }
+
+  // Test create_page
+  log.info('Testing create_page...');
+  const newPage = await executeMcpCommand('create_page', { name: 'IntegrationTestPage' });
+  if (!newPage || !newPage.id) {
+    log.warning('create_page did not return a valid page object (this is a placeholder test)');
+  } else {
+    log.success(`create_page created page: ${newPage.name} (${newPage.id})`);
+  }
+
+  // Test set_current_page
+  if (newPage && newPage.id) {
+    log.info('Testing set_current_page...');
+    const setPage = await executeMcpCommand('set_current_page', { pageId: newPage.id });
+    if (!setPage || setPage.id !== newPage.id) {
+      log.warning('set_current_page did not set the correct page (this is a placeholder test)');
+    } else {
+      log.success(`set_current_page set page: ${setPage.name} (${setPage.id})`);
+    }
+  }
+}
+
 // Run integration tests
 /**
  * Main entry point for running integration tests.
@@ -349,6 +390,9 @@ async function runIntegrationTests() {
   
   // Check Figma plugin (interactive part skipped in CI)
   await checkFigmaPlugin();
+
+  // Automated test for page management commands
+  await testPageManagementCommands();
   
   // Instructions for manual tests (only show in non-CI environments)
   if (!isCI) {
@@ -363,6 +407,9 @@ async function runIntegrationTests() {
     log.info('   - "Connect to Figma using the default channel"');
     log.info('   - "Get information about the current document"');
     log.info('   - "Get information about the current selection"');
+    log.info('   - "Get all pages in the document"');
+    log.info('   - "Create a new page named IntegrationTestPage"');
+    log.info('   - "Set the current page to IntegrationTestPage"');
   }
   
   log.title('TESTS COMPLETED');
