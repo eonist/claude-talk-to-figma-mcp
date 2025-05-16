@@ -3,7 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { PolygonSchema } from "./polygon-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * MCP Tool: create_polygons
@@ -57,22 +57,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          polygons: [
-            { x: 10, y: 20, width: 100, height: 100, sides: 5 },
-            { x: 120, y: 20, width: 80, height: 80, sides: 6 }
-          ]
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Each polygon must have at least 3 sides.",
-        "Width and height must be greater than zero.",
-        "If parentId is invalid, polygons will be added to the root.",
-        "Fill and stroke colors must be valid color objects."
-      ],
-      extraInfo: "Batch creation is efficient for generating multiple polygons or stars at once."
+      openWorldHint: false
     },
     // Tool handler: processes each polygon, calls Figma client, and returns batch results.
     async ({ polygons }) => {

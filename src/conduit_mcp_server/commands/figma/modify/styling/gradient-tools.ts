@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers gradient-related styling commands:
@@ -48,23 +48,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          name: "Primary Gradient",
-          gradientType: "LINEAR",
-          stops: [
-            { position: 0, color: [1, 0, 0, 1] },
-            { position: 1, color: [0, 0, 1, 1] }
-          ]
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Name must be a non-empty string.",
-        "At least two color stops are required.",
-        "Color values must be between 0 and 1."
-      ],
-      extraInfo: "Creates a reusable gradient style for fills or strokes."
+      openWorldHint: false
     },
     async ({ name, gradientType, stops }) => {
       const result = await figmaClient.executeCommand("create_gradient_variable", { name, gradientType, stops });

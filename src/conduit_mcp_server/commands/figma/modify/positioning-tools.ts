@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers positioning-related modify commands:
@@ -38,15 +38,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", x: 100, y: 200 }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "x and y must be within allowed range."
-      ],
-      extraInfo: "Use this command to move a single node to a new position."
+      openWorldHint: false
     },
     async ({ nodeId, x, y }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -89,15 +81,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"], x: 100, y: 200 }
-      ]),
-      edgeCaseWarnings: [
-        "Each nodeId must be a valid Figma node ID.",
-        "x and y must be within allowed range."
-      ],
-      extraInfo: "Use this command to move multiple nodes to a new position."
+      openWorldHint: false
     },
     async ({ nodeIds, x, y }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);

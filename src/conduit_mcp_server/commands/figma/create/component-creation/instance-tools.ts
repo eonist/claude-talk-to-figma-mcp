@@ -1,3 +1,18 @@
+/**
+ * @fileoverview
+ * Registers component-creation-related commands for the MCP server.
+ * 
+ * Exports the function `registerComponentCreationCommands` which adds:
+ * - create_component_instance: Create a single component instance in Figma
+ * - create_component_instances: Create multiple component instances in Figma
+ * - create_component_from_node: Convert an existing node into a component
+ * - create_button: Create a complete button (frame, background, text) in Figma
+ * 
+ * These tools validate input parameters, call the Figma client, and handle errors.
+ * 
+ * @module commands/figma/create/component-creation-tools
+ */
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
@@ -5,19 +20,16 @@ import { processBatch } from "../../../../utils/batch-processor.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
 
 /**
- * Registers component-creation-related commands on the MCP server.
- *
- * This function adds tools named "create_component_instance" and "create_component_instances" to the MCP server,
- * enabling creation of single or multiple component instances in Figma.
- * It validates inputs, executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
- * @example
- * registerInstanceTools(server, figmaClient);
+ * Registers component-creation-related commands with the MCP server.
+ * 
+ * @param server - The MCP server instance to register tools on
+ * @param figmaClient - The Figma client for executing commands
+ * 
+ * Adds:
+ * - create_component_instance: Create a single component instance in Figma
+ * - create_component_instances: Create multiple component instances in Figma
+ * - create_component_from_node: Convert an existing node into a component
+ * - create_button: Create a complete button (frame, background, text) in Figma
  */
 export function registerInstanceTools(server: McpServer, figmaClient: FigmaClient) {
   // Register the "create_component_instance" tool for creating a single component instance in Figma.
@@ -26,7 +38,7 @@ export function registerInstanceTools(server: McpServer, figmaClient: FigmaClien
     `Creates an instance of a component in Figma at the specified coordinates.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the created component instance's node ID.
+- content: Array of objects. Each object contains a type: "text" and a text field with the created component instance's node ID.
 `,
     {
       // Enforce non-empty string for componentKey
@@ -50,23 +62,10 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          componentKey: "abc123",
-          x: 100,
-          y: 200
-        }
-      ]),
-      edgeCaseWarnings: [
-        "componentKey must be a valid component key.",
-        "x and y must be within allowed range.",
-        "If the componentKey is invalid, the command will fail."
-      ],
-      extraInfo: "Creates a new instance of a component at the specified position."
+      openWorldHint: false
     },
     // Tool handler: validates input, calls Figma client, and returns result or error.
-    async ({ componentKey, x, y }) => {
+    async ({ componentKey, x, y }): Promise<any> => {
       try {
         const result = await figmaClient.executeCommand("create_component_instance", { componentKey, x, y });
         return { content: [{ type: "text", text: `Created component instance ${result.id}` }] };
@@ -83,7 +82,7 @@ Returns:
     `Creates multiple component instances in Figma based on the provided array of instance configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of component instances created.
+- content: Array of objects. Each object contains a type: "text" and a text field with the number of component instances created.
 `,
     {
       // Enforce array of instance configs, each with validated fields
@@ -115,24 +114,10 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          instances: [
-            { componentKey: "abc123", x: 100, y: 200 },
-            { componentKey: "def456", x: 300, y: 400 }
-          ]
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Each instance must have a valid componentKey.",
-        "x and y must be within allowed range.",
-        "If any componentKey is invalid, that instance will fail."
-      ],
-      extraInfo: "Batch creation is efficient for adding multiple component instances at once."
+      openWorldHint: false
     },
     // Tool handler: processes each instance, calls Figma client, and returns batch results.
-    async ({ instances }) => {
+    async ({ instances }): Promise<any> => {
       try {
         const results = await processBatch(
           instances,

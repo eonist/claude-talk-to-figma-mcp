@@ -1,23 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
- * Registers boolean operation commands on the MCP server.
- *
- * This function adds tools for flattening selections and performing boolean operations
- * such as union, subtract, intersect, and exclude on nodes in Figma. It validates inputs,
- * executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
- * @example
- * registerBooleanTools(server, figmaClient);
+ * Registers layer-management-related modify commands:
+ * - flatten_selection
+ * - union_selection
+ * - subtract_selection
+ * - intersect_selection
+ * - exclude_selection
  */
 export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient) {
   // Flatten Selection
@@ -37,16 +30,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "Flattening is destructive and cannot be undone.",
-        "All child layers are merged into a single vector.",
-        "Only nodes that support flattening (Frame, Group, etc.) are valid."
-      ],
-      extraInfo: "Flattening is useful for export and performance, but removes layer structure."
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
@@ -72,16 +56,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Unioning nodes changes their z-order and shape.",
-        "Only nodes that support union operations are valid."
-      ],
-      extraInfo: "Unioning is useful for combining shapes into a single vector."
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("union_selection", { nodeIds });
@@ -105,16 +80,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Subtracting nodes changes their z-order and shape.",
-        "Only nodes that support subtraction operations are valid."
-      ],
-      extraInfo: "Subtracting is useful for removing overlapping areas from shapes."
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("subtract_selection", { nodeIds });
@@ -138,16 +104,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Intersecting nodes changes their z-order and shape.",
-        "Only nodes that support intersection operations are valid."
-      ],
-      extraInfo: "Intersecting is useful for creating new shapes from overlapping areas."
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("intersect_selection", { nodeIds });
@@ -171,16 +128,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Excluding nodes changes their z-order and shape.",
-        "Only nodes that support exclusion operations are valid."
-      ],
-      extraInfo: "Excluding is useful for creating new shapes by removing overlapping areas."
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       await figmaClient.executeCommand("exclude_selection", { nodeIds });

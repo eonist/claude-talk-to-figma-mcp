@@ -3,11 +3,8 @@
  * Processes incoming and outgoing messages between the WebSocket and plugin.
  */
 
-/**
- * Stores a map of command types to their original request IDs for tracking responses.
- * @global
- * @type {Map<string, Array<{id: string, timestamp: number, params: any}>>}
- */
+// Handle messages from the WebSocket
+// Store a map of command types to their original request IDs
 if (!window.commandIdMap) {
   window.commandIdMap = new Map();
 }

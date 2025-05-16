@@ -7,19 +7,9 @@ import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { ImageFromUrlSchema } from "./image-schema.js";
 
 /**
- * Registers image insertion commands on the MCP server.
- *
- * This function adds tools named "insert_image" and "insert_images" to the MCP server,
- * enabling insertion of single or multiple images from URLs into Figma.
- * It validates inputs, executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
- * @example
- * registerFromUrlImageTools(server, figmaClient);
+ * Registers image insertion commands:
+ * - insert_image
+ * - insert_images
  */
 export function registerFromUrlImageTools(server: McpServer, figmaClient: FigmaClient) {
   // Single image insertion
@@ -36,24 +26,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          url: "https://example.com/image.png",
-          x: 100,
-          y: 200,
-          width: 300,
-          height: 150,
-          name: "Sample Image"
-        }
-      ]),
-      edgeCaseWarnings: [
-        "URL must point to a valid image file.",
-        "Width and height must be positive if specified.",
-        "If parentId is invalid, the image will be added to the root.",
-        "Network errors or invalid URLs will cause failure."
-      ],
-      extraInfo: "Supports inserting images from remote URLs with custom size and position."
+      openWorldHint: false
     },
     async ({ url, x, y, width, height, name, parentId }): Promise<any> => {
       try {
@@ -84,22 +57,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          images: [
-            { url: "https://example.com/image1.png", x: 10, y: 20 },
-            { url: "https://example.com/image2.png", x: 50, y: 60 }
-          ]
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Each image must have a valid URL.",
-        "Width and height must be positive if specified.",
-        "If parentId is invalid, images will be added to the root.",
-        "Network errors or invalid URLs will cause partial or total failure."
-      ],
-      extraInfo: "Batch insertion is efficient for adding multiple remote images at once."
+      openWorldHint: false
     },
     async ({ images }): Promise<any> => {
       try {

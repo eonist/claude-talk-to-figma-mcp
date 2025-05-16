@@ -6,10 +6,7 @@
 let tabs;
 let tabContents;
 
-
-/**
- * Initializes tab navigation by setting up click handlers and toggling active classes.
- */
+// Initialize tab navigation
 function initTabNavigation() {
   // Get all tab elements and content
   tabs = document.querySelectorAll(".tab");

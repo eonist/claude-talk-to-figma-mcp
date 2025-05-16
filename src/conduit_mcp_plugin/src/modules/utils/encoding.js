@@ -11,13 +11,6 @@
  * const base64 = customBase64Encode(new Uint8Array([72,65,84]));
  * console.log(base64); // "SEFU"
  */
-/**
- * Encodes a Uint8Array of binary data to a Base64 string.
- * @param {Uint8Array} bytes - The binary data to encode.
- * @returns {string} The Base64-encoded string.
- * @example
- * customBase64Encode(new Uint8Array([72,65,84])); // "SEFU"
- */
 export function customBase64Encode(bytes) {
   // Base64 character set lookup table
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

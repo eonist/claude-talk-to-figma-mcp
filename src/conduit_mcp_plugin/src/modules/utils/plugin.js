@@ -17,10 +17,6 @@
  * @module modules/utils/plugin
  */
 
-/**
- * Plugin state object for server port and auto-reconnect settings.
- * @type {{ serverPort: number, autoReconnect: boolean }}
- */
 export const state = {
   serverPort: 3055,
   autoReconnect: true,

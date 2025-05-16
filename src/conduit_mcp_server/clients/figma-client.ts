@@ -338,21 +338,6 @@ export class FigmaClient {
     });
   }
   
-  /**
-   * Creates a polygon node in Figma.
-   * @param {object} params - Polygon parameters.
-   * @param {number} params.x - X position.
-   * @param {number} params.y - Y position.
-   * @param {number} params.width - Width of the polygon.
-   * @param {number} params.height - Height of the polygon.
-   * @param {number} [params.sides] - Number of sides.
-   * @param {string} [params.name] - Name of the node.
-   * @param {string} [params.parentId] - Parent node ID.
-   * @param {RGBAColor} [params.fillColor] - Fill color.
-   * @param {RGBAColor} [params.strokeColor] - Stroke color.
-   * @param {number} [params.strokeWeight] - Stroke weight.
-   * @returns {Promise<BaseFigmaNode>} The created polygon node.
-   */
   async createPolygon(params: {
     x: number;
     y: number;
@@ -1115,42 +1100,18 @@ export class FigmaClient {
       return this.executeCommand("flatten_selection", { nodeIds: nodeIdStrings });
     }
 
-    /**
-     * Applies union boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to union.
-     * @returns {Promise<any>} Operation result.
-     */
     async unionSelection(params: { nodeIds: string[] }): Promise<any> {
       return this.executeCommand("union_selection", params);
     }
 
-    /**
-     * Applies subtract boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to subtract.
-     * @returns {Promise<any>} Operation result.
-     */
     async subtractSelection(params: { nodeIds: string[] }): Promise<any> {
       return this.executeCommand("subtract_selection", params);
     }
 
-    /**
-     * Applies intersect boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to intersect.
-     * @returns {Promise<any>} Operation result.
-     */
     async intersectSelection(params: { nodeIds: string[] }): Promise<any> {
       return this.executeCommand("intersect_selection", params);
     }
 
-    /**
-     * Applies exclude boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to exclude.
-     * @returns {Promise<any>} Operation result.
-     */
     async excludeSelection(params: { nodeIds: string[] }): Promise<any> {
       return this.executeCommand("exclude_selection", params);
     }

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./layer-management/node-ids-schema.js";
 
 /**
@@ -49,16 +49,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", newName: "New Name", setAutoRename: true }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "newName must be a non-empty string up to 100 characters.",
-        "setAutoRename is optional and controls TextNode autoRename behavior."
-      ],
-      extraInfo: "Use this command to rename a single node with optional autoRename control."
+      openWorldHint: false
     },
     async ({ nodeId, newName, setAutoRename }) => {
       try {
@@ -122,16 +113,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { layer_ids: ["123:456", "789:101"], new_name: "New Layer Name" }
-      ]),
-      edgeCaseWarnings: [
-        "Each layer_id must be a valid Figma node ID.",
-        "new_name must be a non-empty string up to 100 characters.",
-        "match_pattern and replace_with are optional for regex-based renaming."
-      ],
-      extraInfo: "Use this command to rename multiple layers by base name or regex pattern."
+      openWorldHint: false
     },
     async ({ layer_ids, new_name, match_pattern, replace_with }) => {
       try {
@@ -198,16 +180,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { layer_ids: ["123:456", "789:101"], new_names: ["Name1", "Name2"] }
-      ]),
-      edgeCaseWarnings: [
-        "Each layer_id must be a valid Figma node ID.",
-        "new_names array must be the same length as layer_ids.",
-        "Each new name must be a non-empty string up to 100 characters."
-      ],
-      extraInfo: "Use this command to rename multiple layers with distinct names."
+      openWorldHint: false
     },
     async ({ layer_ids, new_names }) => {
       try {
@@ -276,15 +249,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { layer_ids: ["123:456", "789:101"], context_prompt: "Rename layers for clarity" }
-      ]),
-      edgeCaseWarnings: [
-        "Each layer_id must be a valid Figma node ID.",
-        "context_prompt is optional but must be a non-empty string if provided."
-      ],
-      extraInfo: "Use this command to AI-rename multiple layers based on a prompt."
+      openWorldHint: false
     },
     async ({ layer_ids, context_prompt }) => {
       try {

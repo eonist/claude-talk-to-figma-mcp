@@ -1,16 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * Integration test script for the Conduit MCP Figma plugin and Claude AI agent.
- * - Verifies dependencies (Bun, MCP SDK)
- * - Checks and configures AI Agent (Claude) integration
- * - Starts and verifies the WebSocket server
- * - Checks Figma plugin installation
- * - Guides the user through manual integration tests
- *
- * Usage: node test-integration.js
- */
-
 import { execSync, spawn } from 'child_process';
 import { createServer } from 'http';
 import fs from 'fs';
@@ -322,53 +311,7 @@ async function checkFigmaPlugin() {
   }
 }
 
-async function testPageManagementCommands() {
-  log.step('Testing page management MCP commands');
-
-  // Helper to simulate MCP command execution (replace with actual call if available)
-  async function executeMcpCommand(command, params = {}) {
-    // This is a placeholder. Replace with actual MCP client call if available.
-    log.info(`Simulate MCP command: ${command} ${JSON.stringify(params)}`);
-    // Simulate a response
-    return {};
-  }
-
-  // Test get_pages
-  log.info('Testing get_pages...');
-  const pagesResult = await executeMcpCommand('get_pages');
-  if (!Array.isArray(pagesResult)) {
-    log.warning('get_pages did not return an array (this is a placeholder test)');
-  } else {
-    log.success(`get_pages returned ${pagesResult.length} pages`);
-  }
-
-  // Test create_page
-  log.info('Testing create_page...');
-  const newPage = await executeMcpCommand('create_page', { name: 'IntegrationTestPage' });
-  if (!newPage || !newPage.id) {
-    log.warning('create_page did not return a valid page object (this is a placeholder test)');
-  } else {
-    log.success(`create_page created page: ${newPage.name} (${newPage.id})`);
-  }
-
-  // Test set_current_page
-  if (newPage && newPage.id) {
-    log.info('Testing set_current_page...');
-    const setPage = await executeMcpCommand('set_current_page', { pageId: newPage.id });
-    if (!setPage || setPage.id !== newPage.id) {
-      log.warning('set_current_page did not set the correct page (this is a placeholder test)');
-    } else {
-      log.success(`set_current_page set page: ${setPage.name} (${setPage.id})`);
-    }
-  }
-}
-
 // Run integration tests
-/**
- * Main entry point for running integration tests.
- * Orchestrates dependency checks, configuration, server startup, and manual test guidance.
- * @returns {Promise<void>}
- */
 async function runIntegrationTests() {
   log.title('CLAUDE-FIGMA INTEGRATION TESTS');
   
@@ -390,9 +333,6 @@ async function runIntegrationTests() {
   
   // Check Figma plugin (interactive part skipped in CI)
   await checkFigmaPlugin();
-
-  // Automated test for page management commands
-  await testPageManagementCommands();
   
   // Instructions for manual tests (only show in non-CI environments)
   if (!isCI) {
@@ -407,9 +347,6 @@ async function runIntegrationTests() {
     log.info('   - "Connect to Figma using the default channel"');
     log.info('   - "Get information about the current document"');
     log.info('   - "Get information about the current selection"');
-    log.info('   - "Get all pages in the document"');
-    log.info('   - "Create a new page named IntegrationTestPage"');
-    log.info('   - "Set the current page to IntegrationTestPage"');
   }
   
   log.title('TESTS COMPLETED');

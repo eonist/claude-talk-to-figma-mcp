@@ -3,7 +3,7 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 import { handleToolError } from "../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers vector-creation-related commands:
@@ -79,22 +79,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          x: 10,
-          y: 20,
-          width: 100,
-          height: 100,
-          vectorPaths: [{ data: "M0 0L10 10" }]
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Width and height must be positive.",
-        "Vector path data must be valid SVG path strings.",
-        "If parentId is invalid, vectors will be added to the root."
-      ],
-      extraInfo: "Use this command to create a single vector node with specified paths."
+      openWorldHint: false
     },
     async ({ x, y, width, height, name, parentId, vectorPaths, fillColor, strokeColor, strokeWeight }): Promise<any> => {
       try {
@@ -181,26 +166,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        {
-          vectors: [
-            {
-              x: 10,
-              y: 20,
-              width: 100,
-              height: 100,
-              vectorPaths: [{ data: "M0 0L10 10" }]
-            }
-          ]
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Width and height must be positive for each vector.",
-        "Vector path data must be valid SVG path strings.",
-        "If parentId is invalid, vectors will be added to the root."
-      ],
-      extraInfo: "Use this command to create multiple vector nodes in batch."
+      openWorldHint: false
     },
     async ({ vectors }): Promise<any> => {
       try {

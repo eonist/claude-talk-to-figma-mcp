@@ -1,10 +1,8 @@
 /**
- * Sanitizes a string by trimming whitespace and normalizing line endings.
+ * Sanitize a string by trimming whitespace and normalizing line endings.
  *
- * @param {string} input - The string to sanitize.
- * @returns {string} A trimmed string with normalized line breaks.
- * @example
- * sanitize("  foo\r\nbar  "); // "foo\nbar"
+ * @param input - The string to sanitize
+ * @returns A trimmed string with normalized line breaks
  */
 export function sanitize(input: string): string {
   if (typeof input !== 'string') {

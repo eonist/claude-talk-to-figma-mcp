@@ -1,23 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { EffectsArraySchema } from "./effect-schema.js";
 
 /**
- * Registers effect-related commands on the MCP server.
- *
- * This function adds tools named "set_effects" and "set_effect_style_id" to the MCP server,
- * enabling setting visual effects and applying effect styles to nodes in Figma.
- * It validates inputs, executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
- * @example
- * registerEffectsTools(server, figmaClient);
+ * Registers property-manipulation-related modify commands:
+ * - set_effects
+ * - set_effect_style_id
  */
 export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Effects
@@ -39,16 +29,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", effects: [{ type: "DROP_SHADOW", color: "#000000", radius: 4 }] }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "Effects array must contain valid effect objects.",
-        "Invalid effect properties may cause failure."
-      ],
-      extraInfo: "Use this command to set visual effects like shadows or blurs on a node."
+      openWorldHint: false
     },
     async ({ nodeId, effects }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -79,16 +60,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", effectStyleId: "effect123" }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "effectStyleId must be a valid effect style identifier.",
-        "Applying an invalid style ID will cause failure."
-      ],
-      extraInfo: "Applies a predefined effect style to a node."
+      openWorldHint: false
     },
     async ({ nodeId, effectStyleId }) => {
       const id = ensureNodeIdIsString(nodeId);

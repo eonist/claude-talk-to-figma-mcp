@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { FillPropsSchema, StrokePropsSchema } from "./style-schema.js";
 
 /**
@@ -30,16 +30,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", fillProps: { color: [1, 0, 0, 1] }, strokeProps: { color: [0, 0, 0, 1], weight: 2 } }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "fillProps and strokeProps are both optional, but at least one should be provided.",
-        "Color arrays must have four values between 0 and 1."
-      ],
-      extraInfo: "Sets both fill and stroke properties for a single node in one call."
+      openWorldHint: false
     },
     async ({ nodeId, fillProps, strokeProps }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -82,19 +73,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { entries: [
-          { nodeId: "123:456", fillProps: { color: [1, 0, 0, 1] } },
-          { nodeId: "789:101", strokeProps: { color: [0, 0, 0, 1], weight: 2 } }
-        ]}
-      ]),
-      edgeCaseWarnings: [
-        "Each entry must have a valid nodeId.",
-        "fillProps and strokeProps are both optional per entry.",
-        "Color arrays must have four values between 0 and 1."
-      ],
-      extraInfo: "Batch version of set_style for updating multiple nodes efficiently."
+      openWorldHint: false
     },
     async ({ entries }) => {
       for (const e of entries) {

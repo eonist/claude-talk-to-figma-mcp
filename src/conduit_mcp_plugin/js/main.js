@@ -7,9 +7,7 @@
  * Detects current Figma theme and sets up observer for theme changes
  */
 function setupThemeDetection() {
-  /**
-   * Handles theme changes by updating the body class based on Figma's theme.
-   */
+  // Function to handle theme changes
   function handleThemeChange() {
     const isDarkTheme = document.documentElement.classList.contains('figma-dark');
     const theme = isDarkTheme ? 'dark' : 'light';

@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { StrokeColorSchema } from "./stroke-schema.js";
 
 /**
@@ -27,17 +27,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", r: 0, g: 0, b: 0, a: 1, weight: 2 }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "Color channels must be between 0 and 1.",
-        "Weight must be between 0.1 and 100 if provided.",
-        "Alpha is optional and defaults to 1 if not provided."
-      ],
-      extraInfo: "Use this command to set the stroke color and weight of any shape, frame, or text node."
+      openWorldHint: false
     },
     async ({ nodeId, r, g, b, a, weight }) => {
       const id = ensureNodeIdIsString(nodeId);

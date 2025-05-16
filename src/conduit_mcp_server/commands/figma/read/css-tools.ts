@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { CssExportOptionsSchema } from "./css-schema.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 
@@ -23,17 +23,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", format: "string" },
-        { nodeId: "123:456", format: "object" }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID if provided.",
-        "Format must be one of 'string', 'object', or 'inline'.",
-        "Returns an error if the node does not support CSS export."
-      ],
-      extraInfo: "Use this command to extract CSS properties from a Figma node for code generation or inspection."
+      openWorldHint: false
     },
     async ({ nodeId, format }) => {
       try {

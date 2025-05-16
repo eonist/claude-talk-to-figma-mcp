@@ -4,19 +4,11 @@
  */
 
 // Helper to generate unique IDs
-/**
- * Generates a unique identifier string.
- * @returns {string} A unique ID.
- */
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
 
 // Generate random channel name
-/**
- * Generates a random channel name for WebSocket communication.
- * @returns {string} An 8-character alphanumeric channel name.
- */
 function generateChannelName() {
   const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
@@ -27,10 +19,6 @@ function generateChannelName() {
 }
 
 // Calculate reconnect delay with exponential backoff
-/**
- * Calculates the reconnect delay using exponential backoff.
- * @returns {number} Delay in milliseconds before the next reconnect attempt.
- */
 function getReconnectDelay() {
   // Start with 1 second, then exponential backoff up to 30 seconds
   const baseDelay = 1000; 
@@ -43,10 +31,6 @@ function getReconnectDelay() {
 }
 
 // Start countdown timer for reconnection
-/**
- * Starts a countdown timer for the next reconnection attempt.
- * @param {number} seconds - Number of seconds for the countdown.
- */
 function startCountdownTimer(seconds) {
   // Clear any existing countdown timer
   clearCountdownTimer();
@@ -73,9 +57,6 @@ function startCountdownTimer(seconds) {
 }
 
 // Clear countdown timer
-/**
- * Clears the active countdown timer for reconnection.
- */
 function clearCountdownTimer() {
   if (pluginState.connection.countdownTimer) {
     clearInterval(pluginState.connection.countdownTimer);
@@ -84,9 +65,6 @@ function clearCountdownTimer() {
 }
 
 // Update the UI with current countdown value
-/**
- * Updates the UI to display the current countdown value for reconnection.
- */
 function updateCountdownDisplay() {
   if (pluginState.connection.inPersistentRetryMode) {
     const seconds = pluginState.connection.countdownSeconds;
@@ -98,9 +76,6 @@ function updateCountdownDisplay() {
 }
 
 // Attempt to reconnect to the WebSocket server
-/**
- * Attempts to reconnect to the WebSocket server using exponential backoff and persistent retry.
- */
 function attemptReconnect() {
   // Clear any existing reconnect timer
   if (pluginState.connection.reconnectTimer) {
@@ -152,11 +127,6 @@ function attemptReconnect() {
 }
 
 // Connect to WebSocket server
-/**
- * Connects to the WebSocket server on the specified port.
- * Handles connection lifecycle, event listeners, and channel joining.
- * @param {number} port - The port number to connect to.
- */
 async function connectToServer(port) {
   try {
     if (pluginState.connection.connected && pluginState.connection.socket) {
@@ -263,9 +233,6 @@ async function connectToServer(port) {
 }
 
 // Disconnect from websocket server
-/**
- * Disconnects from the WebSocket server and resets connection state.
- */
 function disconnectFromServer() {
   // Clear any reconnection timers
   if (pluginState.connection.reconnectTimer) {
@@ -290,12 +257,6 @@ function disconnectFromServer() {
 }
 
 // Send a command to the WebSocket server
-/**
- * Sends a command to the WebSocket server and returns a promise for the response.
- * @param {string} command - The command name to send.
- * @param {object} params - Parameters for the command.
- * @returns {Promise<any>} Promise resolving with the server response.
- */
 async function sendCommand(command, params) {
   return new Promise((resolve, reject) => {
     if (!pluginState.connection.connected || !pluginState.connection.socket) {
@@ -330,11 +291,6 @@ async function sendCommand(command, params) {
 }
 
 // Send success response back to WebSocket
-/**
- * Sends a success response back to the WebSocket server.
- * @param {string} id - The request ID to respond to.
- * @param {any} result - The result data to send.
- */
 function sendSuccessResponse(id, result) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {
     console.error("Cannot send response: socket not connected");
@@ -376,11 +332,6 @@ function sendSuccessResponse(id, result) {
 }
 
 // Send error response back to WebSocket
-/**
- * Sends an error response back to the WebSocket server.
- * @param {string} id - The request ID to respond to.
- * @param {string} errorMessage - The error message to send.
- */
 function sendErrorResponse(id, errorMessage) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {
     console.error("Cannot send error response: socket not connected");
@@ -431,11 +382,6 @@ function sendErrorResponse(id, errorMessage) {
 }
 
 // Helper to find the most recent command ID (duplicated from message-handler.js for self-containment)
-/**
- * Finds the most recent command ID for a given command type.
- * @param {string} commandType - The command type to search for.
- * @returns {string|null} The most recent command ID, or null if not found.
- */
 function findCommandId(commandType) {
   if (!window.commandIdMap || !window.commandIdMap.has(commandType)) {
     console.warn(`No stored command IDs found for command type: ${commandType}`);
@@ -456,10 +402,6 @@ function findCommandId(commandType) {
 }
 
 // Send operation progress update to server
-/**
- * Sends a progress update to the server for a long-running operation.
- * @param {object} progressData - Data describing the current progress.
- */
 function sendProgressUpdateToServer(progressData) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {
     console.error("Cannot send progress update: socket not connected");

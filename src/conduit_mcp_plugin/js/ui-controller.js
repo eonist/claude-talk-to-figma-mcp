@@ -3,11 +3,7 @@
  * Handles UI state updates and interactions.
  */
 
-
-/**
- * UI element references for the plugin UI.
- * @type {HTMLElement|undefined}
- */
+// UI Elements
 let portInput;
 let connectButton;
 let copyChannelButton;
@@ -19,9 +15,7 @@ let progressMessage;
 let progressStatus;
 let progressPercentage;
 
-/**
- * Initializes UI elements and sets up event listeners for the plugin UI.
- */
+  // Initialize UI elements
 function initUIElements() {
   portInput = document.getElementById("port");
   connectButton = document.getElementById("btn-connect");

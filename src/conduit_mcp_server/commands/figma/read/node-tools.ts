@@ -4,23 +4,13 @@ import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { logger } from "../../../utils/logger.js";
 import { filterFigmaNode } from "../../../utils/figma/filter-node.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
-import { NodeIdsArraySchema } from "../../modify/layer-management/node-ids-schema";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { NodeIdsArraySchema } from "../../modify/layer-management/node-ids-schema.js";
 
 /**
- * Registers node info read commands on the MCP server.
- *
- * This function adds tools named "get_node_info" and "get_nodes_info" to the MCP server,
- * enabling retrieval of detailed information about single or multiple nodes in Figma.
- * It validates inputs, executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
- * @example
- * registerNodeTools(server, figmaClient);
+ * Registers node info read commands:
+ * - get_node_info
+ * - get_nodes_info
  */
 export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Get Node Info
@@ -41,16 +31,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456" }
-      ]),
-      edgeCaseWarnings: [
-        "Returns an error if nodeId is invalid or not found.",
-        "Result includes all properties of the node.",
-        "Large nodes may return a large JSON object."
-      ],
-      extraInfo: "Use this command to inspect properties and metadata of a specific Figma node."
+      openWorldHint: false
     },
     async ({ nodeId }) => {
       try {
@@ -61,7 +42,7 @@ Returns:
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(filterFigmaNode(result))
             }
           ]
         };
@@ -94,16 +75,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "Returns an error if any nodeId is invalid or not found.",
-        "Result is an array of node info objects.",
-        "Large requests may impact performance."
-      ],
-      extraInfo: "Batch version of get_node_info for inspecting multiple nodes at once."
+      openWorldHint: false
     },
     async ({ nodeIds }) => {
       try {

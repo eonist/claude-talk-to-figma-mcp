@@ -1,23 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
- * Registers group and ungroup commands on the MCP server.
- *
- * This function adds tools named "group_nodes" and "ungroup_nodes" to the MCP server,
- * enabling grouping and ungrouping of nodes in Figma. It validates inputs, executes
- * corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
- * @example
- * registerGroupTools(server, figmaClient);
+ * Registers group/ungroup commands:
+ * - group_nodes
+ * - ungroup_nodes
  */
 export function registerGroupTools(server: McpServer, figmaClient: FigmaClient) {
   // Group Nodes
@@ -43,16 +33,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"], name: "My Group" }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Grouping nodes changes their z-order and parent.",
-        "Name is optional but must be non-empty if provided."
-      ],
-      extraInfo: "Grouping is useful for organizing layers and applying transformations collectively."
+      openWorldHint: false
     },
     async ({ nodeIds, name }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
@@ -85,16 +66,7 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456" }
-      ]),
-      edgeCaseWarnings: [
-        "Only group nodes can be ungrouped.",
-        "Ungrouping releases all children to the parent.",
-        "NodeId must be a valid group node."
-      ],
-      extraInfo: "Ungrouping is useful for breaking apart grouped elements for individual editing."
+      openWorldHint: false
     },
     async ({ nodeId }) => {
       const id = ensureNodeIdIsString(nodeId);
