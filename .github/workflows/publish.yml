@@ -29,6 +29,8 @@ jobs:
         env:
           CI: true
         run: npm test # Ensure your test script handles the CI environment variable
+      - name: List dist contents
+        run: ls -R dist
       - name: Publish to npm
         if: startsWith(github.ref, 'refs/tags/') # Only run for tag pushes
         run: npm publish
