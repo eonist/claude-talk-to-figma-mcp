@@ -1,11 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z } from "../utils.js";
 import { EllipseSchema, SingleEllipseSchema, BatchEllipsesSchema } from "./ellipse-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
  * Registers ellipse creation commands with the MCP server.
@@ -14,43 +12,54 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  * @param {FigmaClient} figmaClient - The Figma client for executing commands.
  * 
  * Adds:
- * - create_ellipse, create_ellipses: Create one or more ellipses in Figma.
+ * - create_ellipse: Create one or more ellipses in Figma.
  */
 export function registerEllipsesTools(server: McpServer, figmaClient: FigmaClient) {
   /**
    * MCP Tool: create_ellipse
-   * 
-   * Creates a new ellipse node in the specified Figma document at the given coordinates, with the specified width and height.
+   *
+   * Creates one or more ellipse nodes in the specified Figma document.
+   * Accepts either a single ellipse config (via the 'ellipse' property) or an array of configs (via the 'ellipses' property).
    * Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+   *
    * This tool is useful for programmatically generating circles, ovals, or design primitives in Figma via MCP.
-   * 
-   * @param {number} x - X coordinate for the top-left corner.
-   * @param {number} y - Y coordinate for the top-left corner.
-   * @param {number} width - Width in pixels.
-   * @param {number} height - Height in pixels.
-   * @param {string} [name] - Optional. Name for the ellipse node.
-   * @param {string} [parentId] - Optional. Figma node ID of the parent.
-   * @param {any} [fillColor] - Optional. Fill color for the ellipse.
-   * @param {any} [strokeColor] - Optional. Stroke color for the ellipse.
-   * @param {number} [strokeWeight] - Optional. Stroke weight for the ellipse.
-   * 
-   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created ellipse's node ID.
-   * 
+   *
+   * @param {object} args - The input object. Must provide either:
+   *   - ellipse: A single ellipse config object (x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight?)
+   *   - ellipses: An array of ellipse config objects (same shape as above)
+   *
+   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created ellipse node ID(s).
+   *
    * @example
+   * // Single ellipse
    * {
-   *   x: 60,
-   *   y: 80,
-   *   width: 120,
-   *   height: 90,
-   *   name: "Ellipse1"
+   *   ellipse: {
+   *     x: 60,
+   *     y: 80,
+   *     width: 120,
+   *     height: 90,
+   *     name: "Ellipse1"
+   *   }
+   * }
+   *
+   * // Multiple ellipses
+   * {
+   *   ellipses: [
+   *     { x: 10, y: 20, width: 100, height: 50, name: "Ellipse1" },
+   *     { x: 120, y: 20, width: 80, height: 40 }
+   *   ]
    * }
    */
   server.tool(
     "create_ellipse",
-    `Creates a new ellipse node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+    `Creates one or more ellipse nodes in the specified Figma document. Accepts either a single ellipse config (via 'ellipse') or an array of configs (via 'ellipses'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+
+Input:
+  - ellipse: A single ellipse configuration object.
+  - ellipses: An array of ellipse configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the created ellipse's node ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created ellipse node ID(s).
 `,
     {
       ellipse: SingleEllipseSchema
@@ -123,33 +132,5 @@ Returns:
     }
   );
 
-  /**
-   * MCP Tool: create_ellipses
-   * 
-   * Creates multiple ellipses in Figma based on the provided array of ellipse configuration objects.
-   * Each object should specify the coordinates, dimensions, and optional properties for an ellipse.
-   * This tool is useful for batch-generating circles, ovals, or design primitives in Figma via MCP.
-   * 
-   * @param {Array<object>} ellipses - An array of ellipse configuration objects. Each object should include:
-   *   - x {number} - X coordinate for the top-left corner.
-   *   - y {number} - Y coordinate for the top-left corner.
-   *   - width {number} - Width in pixels.
-   *   - height {number} - Height in pixels.
-   *   - name {string} [optional] - Name for the ellipse node.
-   *   - parentId {string} [optional] - Figma node ID of the parent.
-   *   - fillColor {any} [optional] - Fill color for the ellipse.
-   *   - strokeColor {any} [optional] - Stroke color for the ellipse.
-   *   - strokeWeight {number} [optional] - Stroke weight for the ellipse.
-   * 
-   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the number of ellipses created.
-   * 
-   * @example
-   * {
-   *   ellipses: [
-   *     { x: 10, y: 20, width: 100, height: 50, name: "Ellipse1" },
-   *     { x: 120, y: 20, width: 80, height: 40 }
-   *   ]
-   * }
-   */
   // The batch tool 'create_ellipses' is now replaced by the unified 'create_ellipse' tool above.
 }
