@@ -57,6 +57,20 @@ export interface CreateBoundedTextParams extends BaseCommandParams {
   parentId?: string;
 }
 
+/** Parameters for create_texts (batch) command */
+export interface CreateTextsParams extends BaseCommandParams {
+  texts: Array<{
+    x: number;
+    y: number;
+    text: string;
+    fontSize?: number;
+    fontWeight?: number;
+    fontColor?: { r: number; g: number; b: number; a?: number };
+    name?: string;
+    parentId?: string;
+  }>;
+}
+
 /** Parameters for create_ellipse command */
 export interface CreateEllipseParams extends BaseCommandParams {
   x: number;
@@ -224,6 +238,32 @@ export interface JoinChannelParams extends BaseCommandParams {
   channel: string;
 }
 
+/** Parameters for clone_node command */
+export interface CloneNodeParams extends BaseCommandParams {
+  nodeId: string;
+}
+
+/** Parameters for clone_nodes command (batch) */
+export interface CloneNodesParams extends BaseCommandParams {
+  nodeIds: string[];
+  positions?: { x: number; y: number }[];
+  offsetX?: number;
+  offsetY?: number;
+  parentId?: string;
+}
+
+/** Parameters for flatten_nodes command (batch flatten) */
+export interface FlattenNodesParams extends BaseCommandParams {
+  nodeIds: string[];
+}
+
+/** Parameters for insert_child command */
+export interface InsertChildParams extends BaseCommandParams {
+  parentId: string;
+  childId: string;
+  index?: number;
+}
+
 /** Parameters for generate_html command */
 export interface GenerateHtmlParams extends BaseCommandParams {
   /** Target node ID */
@@ -234,6 +274,14 @@ export interface GenerateHtmlParams extends BaseCommandParams {
   cssMode?: "inline" | "classes" | "external";
 }
 
+export interface SetCurrentPageParams extends BaseCommandParams {
+  pageId: string;
+}
+
+export interface CreatePageParams extends BaseCommandParams {
+  name?: string;
+}
+
 export interface CommandParamsMap {
   // Read commands
   get_document_info: BaseCommandParams;
@@ -241,17 +289,21 @@ export interface CommandParamsMap {
   get_node_info: GetNodeInfoParams;
   get_nodes_info: GetNodesInfoParams;
   get_css_async: GetCssAsyncParams;
-  
+  get_pages: BaseCommandParams;
+  set_current_page: SetCurrentPageParams;
+
   // Create commands
   create_rectangle: CreateRectangleParams;
   create_frame: CreateFrameParams;
   create_text: CreateTextParams;
   create_bounded_text: CreateBoundedTextParams;
+  create_texts: CreateTextsParams;
   create_ellipse: CreateEllipseParams;
   create_polygon: CreatePolygonParams;
   create_star: CreateStarParams;
   create_button: CreateButtonParams;
-  
+  create_page: CreatePageParams;
+
   // Modify commands
   move_node: MoveNodeParams;
   move_nodes: MoveNodesParams;
@@ -264,13 +316,17 @@ export interface CommandParamsMap {
   set_text_content: SetTextContentParams;
   convert_rectangle_to_frame: ConvertRectangleToFrameParams;
   apply_direct_gradient: ApplyDirectGradientParams;
-  
+
   // Channel commands
   join: JoinChannelParams;
-  
+
   // HTML commands
   generate_html: GenerateHtmlParams;
-  
+  insert_child: InsertChildParams;
+  flatten_nodes: FlattenNodesParams;
+  clone_node: CloneNodeParams;
+  clone_nodes: CloneNodesParams;
+
   // Allow for any other commands with base params
   [command: string]: BaseCommandParams;
 }
