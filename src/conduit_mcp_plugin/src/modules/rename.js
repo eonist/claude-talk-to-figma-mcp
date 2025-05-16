@@ -18,78 +18,45 @@
  */
 
 /**
- * Rename Multiple Figma Layers
- * @async
- * @function rename_layers
- * 
- * Renames multiple layers in a Figma document using either template-based naming or regex pattern replacement.
- * Template naming supports special placeholders:
- * - ${current}: The current name of the layer
- * - ${asc}: Ascending number (1, 2, 3...)
- * - ${desc}: Descending number (total, total-1...)
- *
- * @param {object} params - Parameters for renaming operation
- * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename
- * @param {string} [params.new_name] - Template string for new names. Uses placeholders ${current}, ${asc}, ${desc}
- * @param {string} [params.match_pattern] - Regex pattern to find in existing names. Used with replace_with
- * @param {string} [params.replace_with] - Replacement string for regex matches. Used with match_pattern
- *
+ * Renames one or more Figma layers.
+ * Accepts either a single object (rename) or an array (renames).
+ * @param {{ rename?: object, renames?: Array<object> }} params
+ *   - rename: Single rename config ({ nodeId, newName, setAutoRename? }).
+ *   - renames: Array of rename configs.
  * @returns {Promise<object>} Object containing:
  *   - success: boolean indicating if operation completed
- *   - renamed_count: number of layers successfully renamed
- *
- * @throws {Error} When:
- *   - Any target layer is locked or hidden
- *   - A layer ID cannot be found
- *   - A layer lacks the name property
- *
- * @example Template-based renaming:
- * await rename_layers({
- *   layer_ids: ['id1', 'id2', 'id3'],
- *   new_name: "Component ${asc} - ${current}"
- * });
- * // Results: "Component 1 - Original", "Component 2 - Original2"...
- *
- * @example Regex-based renaming:
- * await rename_layers({
- *   layer_ids: ['id1', 'id2'],
- *   match_pattern: "Button\\s*-\\s*",
- *   replace_with: "btn_"
- * });
- * // "Button - Save" becomes "btn_Save"
+ *   - results: array of rename results
  */
-export async function rename_layers(params) {
-  const { layer_ids, new_name, match_pattern, replace_with } = params || {};
-  
-  const nodes = await Promise.all(
-    layer_ids.map(id => figma.getNodeByIdAsync(id))
-  );
-  
-  const total = nodes.length;
-  
-  nodes.forEach((node, i) => {
-    // Skip nodes that are not valid or lack a name property
-    if (!node || !('name' in node)) return;
-    
-    // Do not allow renaming of nodes that are hidden or locked
-    if (!node.visible || node.locked) {
-      throw new Error('Cannot rename locked or hidden layer: ' + node.id);
+export async function rename_layer(params) {
+  let renamesArr;
+  if (params.renames) {
+    renamesArr = params.renames;
+  } else if (params.rename) {
+    renamesArr = [params.rename];
+  } else {
+    // Fallback for legacy single input
+    renamesArr = [params];
+  }
+  renamesArr = renamesArr.filter(Boolean);
+  const results = [];
+  for (const cfg of renamesArr) {
+    const { nodeId, newName, setAutoRename } = cfg || {};
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) throw new Error(`Node with ID ${nodeId} not found`);
+    const originalName = node.name;
+    node.name = newName;
+    if (node.type === 'TEXT' && setAutoRename !== undefined) {
+      node.autoRename = Boolean(setAutoRename);
     }
-    
-    // Apply regex replacement mode if both parameters are provided
-    if (match_pattern && replace_with) {
-      node.name = node.name.replace(new RegExp(match_pattern), replace_with);
-    } else {
-      // Otherwise, generate a new name using the template and placeholders
-      let base = new_name;
-      base = base.replace(/\${current}/g, node.name);
-      base = base.replace(/\${asc}/g, (i + 1).toString());
-      base = base.replace(/\${desc}/g, (total - i).toString());
-      node.name = base;
-    }
-  });
-  
-  return { success: true, renamed_count: total };
+    results.push({
+      success: true,
+      nodeId,
+      originalName,
+      newName: node.name,
+      setAutoRename
+    });
+  }
+  return results.length === 1 ? results[0] : { success: true, results };
 }
 
 /**
@@ -258,8 +225,6 @@ export async function rename_multiples(params) {
  * @property {Function} rename_multiples - Rename multiple layers to specific names.
  */
 export const renameOperations = {
-  rename_layers,
-  ai_rename_layers,
   rename_layer,
-  rename_multiples
+  ai_rename_layers
 };
