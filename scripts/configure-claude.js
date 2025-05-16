@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 
+/**
+ * Script to configure the Claude AI agent for the Conduit MCP server.
+ * - Backs up and updates the Claude desktop configuration file.
+ * - Adds MCP server configuration for ClaudeTalkToFigma.
+ * - Detects Bun or falls back to npx.
+ * - Provides instructions for using the MCP in AI Agent.
+ *
+ * Usage: node configure-claude.js
+ */
+
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -24,6 +34,10 @@ const packageVersion = packageJson.version;
 console.log(`Configuring AI agent for ${packageName} v${packageVersion}...`);
 
 // Create backups
+/**
+ * Creates a timestamped backup of a file if it exists.
+ * @param {string} filePath - Path to the file to back up.
+ */
 function backupFile(filePath) {
   if (fs.existsSync(filePath)) {
     const backupPath = `${filePath}.backup-${Date.now()}`;
@@ -87,4 +101,4 @@ try {
 } catch (e) {
   console.error(`Error writing configuration: ${e.message}`);
   console.error(`Make sure you have write permissions for: ${configPath}`);
-} 
+}
