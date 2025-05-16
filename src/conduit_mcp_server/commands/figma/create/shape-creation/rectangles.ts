@@ -46,98 +46,45 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
    */
   server.tool(
     "create_rectangle",
-    `Creates a new rectangle shape node in the specified Figma document at the given coordinates, with the specified width and height. Optionally, you can provide a name, a parent node ID to attach the rectangle to, and a corner radius for rounded corners.
+    `Creates one or more rectangle shape nodes in the specified Figma document. Accepts either a single rectangle config or an array of configs. Optionally, you can provide a name, a parent node ID to attach the rectangle(s) to, and a corner radius for rounded corners.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle's node ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle node ID(s).
 `,
-    RectangleSchema.shape,
     {
-      title: "Create Rectangle",
+      rectangles: z.array(
+        z.object({
+          x: z.number(),
+          y: z.number(),
+          width: z.number(),
+          height: z.number(),
+          name: z.string().optional(),
+          parentId: z.string().optional(),
+          cornerRadius: z.number().optional()
+        })
+      )
+      .min(1, "At least one rectangle config is required")
+      .describe("An array of rectangle configuration objects. Each object should include coordinates, dimensions, and optional properties for a rectangle.")
+    },
+    {
+      title: "Create Rectangle(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
         {
-          x: 100,
-          y: 200,
-          width: 300,
-          height: 150,
-          name: "Button Background",
-          cornerRadius: 8
-        }
-      ]),
-      edgeCaseWarnings: [
-        "Width and height must be greater than zero.",
-        "Corner radius should not exceed half the smallest dimension.",
-        "If parentId is invalid, the rectangle will be added to the root."
-      ],
-      extraInfo: "Useful for generating UI elements, backgrounds, or design primitives programmatically."
-    },
-    // Tool handler: validates input, calls Figma client, and returns result or error.
-    async (args, extra): Promise<any> => {
-      try {
-        const params: CreateRectangleParams = { commandId: uuidv4(), ...args };
-        const node = await figmaClient.createRectangle(params);
-        if (args.cornerRadius != null) {
-          await figmaClient.executeCommand("set_corner_radius", {
-            commandId: uuidv4(),
-            nodeId: node.id,
-            radius: args.cornerRadius
-          });
-        }
-        return { content: [{ type: "text", text: `Created rectangle ${node.id}` }] };
-      } catch (err) {
-        // Handle errors and return a formatted error response.
-        return handleToolError(err, "shape-creation-tools", "create_rectangle") as any;
-      }
-    }
-  );
-
-  /**
-   * MCP Tool: create_rectangles
-   * 
-   * Creates multiple rectangles in Figma based on the provided array of rectangle configuration objects.
-   * Each object should specify the coordinates, dimensions, and optional properties for a rectangle.
-   * This tool is useful for batch-generating UI elements or design primitives in Figma via MCP.
-   * 
-   * @param {Array<object>} rectangles - An array of rectangle configuration objects. Each object should include:
-   *   - x {number} - X coordinate for the top-left corner.
-   *   - y {number} - Y coordinate for the top-left corner.
-   *   - width {number} - Width in pixels.
-   *   - height {number} - Height in pixels.
-   *   - name {string} [optional] - Name for the rectangle node.
-   *   - parentId {string} [optional] - Figma node ID of the parent.
-   *   - cornerRadius {number} [optional] - Corner radius in pixels.
-   * 
-   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the number of rectangles created.
-   * 
-   * @example
-   * {
-   *   rectangles: [
-   *     { x: 10, y: 20, width: 100, height: 50, name: "Rect1" },
-   *     { x: 120, y: 20, width: 80, height: 40 }
-   *   ]
-   * }
-   */
-  server.tool(
-    "create_rectangles",
-    `Creates multiple rectangles in Figma based on the provided array of rectangle configuration objects.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of rectangles created.
-`,
-    { rectangles: z.array(RectangleSchema)
-        .describe("An array of rectangle configuration objects. Each object should include coordinates, dimensions, and optional properties for a rectangle.")
-    },
-    {
-      title: "Create Rectangles",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
+          rectangles: [
+            {
+              x: 100,
+              y: 200,
+              width: 300,
+              height: 150,
+              name: "Button Background",
+              cornerRadius: 8
+            }
+          ]
+        },
         {
           rectangles: [
             { x: 10, y: 20, width: 100, height: 50, name: "Rect1" },
@@ -146,32 +93,40 @@ Returns:
         }
       ]),
       edgeCaseWarnings: [
-        "Each rectangle must have positive width and height.",
-        "Corner radius for each rectangle should not exceed half the smallest dimension.",
-        "If parentId is invalid, rectangles will be added to the root."
+        "Width and height must be greater than zero.",
+        "Corner radius should not exceed half the smallest dimension.",
+        "If parentId is invalid, the rectangle will be added to the root."
       ],
-      extraInfo: "Batch creation is efficient for generating multiple design elements at once."
+      extraInfo: "Useful for generating UI elements, backgrounds, or design primitives programmatically. Batch creation is efficient for generating multiple design elements at once."
     },
-    // Tool handler: processes each rectangle, calls Figma client, and returns batch results.
-    async ({ rectangles }) => {
-      const results = await processBatch(
-        rectangles,
-        async cfg => {
-          const node = await figmaClient.createRectangle(cfg);
-          if (cfg.cornerRadius != null) {
-            await figmaClient.executeCommand("set_corner_radius", { 
-              commandId: uuidv4(),
-              nodeId: node.id, 
-              radius: cfg.cornerRadius 
-            });
+    // Tool handler: always expects rectangles as an array.
+    async ({ rectangles }, extra): Promise<any> => {
+      try {
+        const results = await processBatch(
+          rectangles,
+          async cfg => {
+            const params: CreateRectangleParams = { commandId: uuidv4(), ...cfg };
+            const node = await figmaClient.createRectangle(params);
+            if (cfg.cornerRadius != null) {
+              await figmaClient.executeCommand("set_corner_radius", {
+                commandId: uuidv4(),
+                nodeId: node.id,
+                radius: cfg.cornerRadius
+              });
+            }
+            return node.id;
           }
-          return node.id;
+        );
+        const nodeIds = results.map(r => r.result).filter(Boolean);
+        if (nodeIds.length === 1) {
+          return { content: [{ type: "text", text: `Created rectangle ${nodeIds[0]}` }] };
+        } else {
+          return { content: [{ type: "text", text: `Created rectangles: ${nodeIds.join(", ")}` }] };
         }
-      );
-      const successCount = results.filter(r => r.result).length;
-      return {
-        content: [{ type: "text", text: `Created ${successCount}/${rectangles.length} rectangles.` }]
-      };
+      } catch (err) {
+        // Handle errors and return a formatted error response.
+        return handleToolError(err, "shape-creation-tools", "create_rectangle") as any;
+      }
     }
   );
 }
