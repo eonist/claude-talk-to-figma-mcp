@@ -19,110 +19,106 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  * registerCloneNodeTools(server, figmaClient);
  */
 export function registerCloneNodeTools(server: McpServer, figmaClient: FigmaClient) {
-  // Single node clone
+  // Unified single/batch node clone
   server.tool(
     "clone_node",
-    `Clone a single node in Figma by node ID.
+    `Clones one or more nodes in Figma. Accepts either a single node config (via 'node') or an array of configs (via 'nodes'). Optionally, you can specify positions, offsets, and parent.
+
+Input:
+  - node: A single node clone configuration object ({ nodeId, position?, offsetX?, offsetY?, parentId? }).
+  - nodes: An array of node clone configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the new node's ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the new node ID(s).
 `,
     {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("ID of the node to clone."),
+      node: z.object({
+        nodeId: z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+          .describe("ID of the node to clone."),
+        position: z.object({
+          x: z.number(),
+          y: z.number()
+        }).optional(),
+        offsetX: z.number().optional(),
+        offsetY: z.number().optional(),
+        parentId: z.string().optional()
+      }).optional(),
+      nodes: z.array(
+        z.object({
+          nodeId: z.string()
+            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+            .describe("ID of the node to clone."),
+          position: z.object({
+            x: z.number(),
+            y: z.number()
+          }).optional(),
+          offsetX: z.number().optional(),
+          offsetY: z.number().optional(),
+          parentId: z.string().optional()
+        })
+      ).optional()
     },
     {
-      title: "Clone Node",
+      title: "Clone Node(s)",
       idempotentHint: false,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
-        { nodeId: "123:456" }
+        { node: { nodeId: "123:456" } },
+        { nodes: [
+          { nodeId: "123:456", offsetX: 100, offsetY: 0 },
+          { nodeId: "789:101", position: { x: 200, y: 300 } }
+        ]}
       ]),
       edgeCaseWarnings: [
         "Cloning a node duplicates all its children.",
         "Cloned nodes may overlap with originals if no position/offset is specified.",
-        "Ensure nodeId is valid to avoid errors."
-      ],
-      extraInfo: "Cloning is useful for duplicating components or layouts. Adjust positions to avoid overlap."
-    },
-    async ({ nodeId }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      const result = await figmaClient.executeCommand("clone_node", { nodeId: id });
-      return {
-        content: [{
-          type: "text",
-          text: `Cloned node ${id} to new node ${result.newNodeId ?? "(unknown)"}`
-        }]
-      };
-    }
-  );
-
-  // Batch node clone
-  server.tool(
-    "clone_nodes",
-    `Clone multiple nodes in Figma by node IDs, with optional positions, offsets, and parent.
-
-Parameters:
-  - nodeIds: Array of node IDs to clone.
-  - positions (optional): Array of {x, y} positions for each clone.
-  - offsetX, offsetY (optional): Uniform X/Y offset for all clones.
-  - parentId (optional): Parent node to place clones in.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the new node IDs.
-`,
-    {
-      nodeIds: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to clone.")
-      )
-      .min(1)
-      .max(100)
-      .describe("Array of Figma node IDs to clone. Must contain 1 to 100 items."),
-      positions: z.array(
-        z.object({
-          x: z.number(),
-          y: z.number()
-        })
-      ).optional().describe("Optional array of positions for each clone."),
-      offsetX: z.number().optional().describe("Optional uniform X offset for all clones."),
-      offsetY: z.number().optional().describe("Optional uniform Y offset for all clones."),
-      parentId: z.string().optional().describe("Optional parent node ID to place clones in."),
-    },
-    {
-      title: "Clone Nodes (Batch)",
-      idempotentHint: false,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"], offsetX: 100, offsetY: 0 }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid to avoid partial failures.",
-        "If positions/offsets are not set, clones may overlap originals.",
+        "Ensure nodeId is valid to avoid errors.",
         "Batch cloning large numbers of nodes may impact performance."
       ],
-      extraInfo: "Batch cloning is efficient for duplicating multiple elements. Use offsets or positions for layout control."
+      extraInfo: "Cloning is useful for duplicating components or layouts. Use offsets or positions for layout control."
     },
-    async ({ nodeIds, positions, offsetX, offsetY, parentId }) => {
-      const ids = nodeIds.map(ensureNodeIdIsString);
-      const params: any = { nodeIds: ids };
-      if (positions) params.positions = positions;
-      if (offsetX !== undefined) params.offsetX = offsetX;
-      if (offsetY !== undefined) params.offsetY = offsetY;
-      if (parentId) params.parentId = parentId;
-      const result = await figmaClient.executeCommand("clone_nodes", params);
-      return {
-        content: [{
-          type: "text",
-          text: `Cloned ${ids.length} nodes. New node IDs: ${result.newNodeIds ? result.newNodeIds.join(", ") : "(unknown)"}`
-        }]
-      };
+    async (args) => {
+      try {
+        let nodesArr;
+        if (args.nodes) {
+          nodesArr = args.nodes;
+        } else if (args.node) {
+          nodesArr = [args.node];
+        } else {
+          throw new Error("You must provide either 'node' or 'nodes' as input.");
+        }
+        const results = [];
+        for (const cfg of nodesArr) {
+          const id = ensureNodeIdIsString(cfg.nodeId);
+          const params: any = { nodeId: id };
+          if (cfg.position) params.position = cfg.position;
+          if (cfg.offsetX !== undefined) params.offsetX = cfg.offsetX;
+          if (cfg.offsetY !== undefined) params.offsetY = cfg.offsetY;
+          if (cfg.parentId) params.parentId = cfg.parentId;
+          const result = await figmaClient.executeCommand("clone_node", params);
+          results.push(result.newNodeId ?? "(unknown)");
+        }
+        if (results.length === 1) {
+          return {
+            content: [{
+              type: "text",
+              text: `Cloned node to new node ${results[0]}`
+            }]
+          };
+        } else {
+          return {
+            content: [{
+              type: "text",
+              text: `Cloned ${results.length} nodes. New node IDs: ${results.join(", ")}`
+            }]
+          };
+        }
+      } catch (err) {
+        return handleToolError(err, "layer-management-tools", "clone_node") as any;
+      }
     }
   );
 }
