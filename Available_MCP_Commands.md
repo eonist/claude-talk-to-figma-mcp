@@ -916,6 +916,255 @@ Rename one or more nodes in Figma.
 
 ---
 
+## set_font_name
+Set the font family and style of one or more text nodes.
+
+**Parameters:**
+- font (object) or fonts (array of objects): { nodeId, family, style }
+
+**Example:**
+```json
+{ "command": "set_font_name", "params": { "font": { "nodeId": "123:456", "family": "Inter", "style": "Bold" } } }
+```
+
+---
+
+## set_font_size
+Set the font size of a text node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- fontSize (number): The font size to set.
+
+**Example:**
+```json
+{ "command": "set_font_size", "params": { "nodeId": "123:456", "fontSize": 24 } }
+```
+
+---
+
+## set_font_weight
+Set the font weight of a text node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- weight (number): The font weight to set.
+
+**Example:**
+```json
+{ "command": "set_font_weight", "params": { "nodeId": "123:456", "weight": 700 } }
+```
+
+---
+
+## set_letter_spacing
+Set the letter spacing of a text node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- letterSpacing (number): The letter spacing value to set.
+- unit (string, optional): "PIXELS" or "PERCENT".
+
+**Example:**
+```json
+{ "command": "set_letter_spacing", "params": { "nodeId": "123:456", "letterSpacing": 2, "unit": "PIXELS" } }
+```
+
+---
+
+## set_line_height
+Set the line height of a text node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- lineHeight (number): The line height value to set.
+- unit (string, optional): "PIXELS", "PERCENT", "AUTO".
+
+**Example:**
+```json
+{ "command": "set_line_height", "params": { "nodeId": "123:456", "lineHeight": 32, "unit": "PIXELS" } }
+```
+
+---
+
+## set_paragraph_spacing
+Set the paragraph spacing of a text node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- paragraphSpacing (number): The paragraph spacing value to set.
+
+**Example:**
+```json
+{ "command": "set_paragraph_spacing", "params": { "nodeId": "123:456", "paragraphSpacing": 8 } }
+```
+
+---
+
+## set_text_case
+Set the text case of a text node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- textCase (string): "ORIGINAL", "UPPER", "LOWER", or "TITLE".
+
+**Example:**
+```json
+{ "command": "set_text_case", "params": { "nodeId": "123:456", "textCase": "UPPER" } }
+```
+
+---
+
+## set_text_decoration
+Set the text decoration of a text node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- textDecoration (string): "NONE", "UNDERLINE", or "STRIKETHROUGH".
+
+**Example:**
+```json
+{ "command": "set_text_decoration", "params": { "nodeId": "123:456", "textDecoration": "UNDERLINE" } }
+```
+
+---
+
+## load_font_async
+Load a font asynchronously in Figma.
+
+**Parameters:**
+- family (string): The font family to set.
+- style (string, optional): The font style to set.
+
+**Example:**
+```json
+{ "command": "load_font_async", "params": { "family": "Inter", "style": "Bold" } }
+```
+
+---
+
+## set_effects
+Set visual effects of a node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- effects (array): Array of effect objects to apply.
+
+**Example:**
+```json
+{ "command": "set_effects", "params": { "nodeId": "123:456", "effects": [] } }
+```
+
+---
+
+## set_effect_style_id
+Apply an effect style to a node in Figma.
+
+**Parameters:**
+- nodeId (string): The node ID to update.
+- effectStyleId (string): The effect style ID to apply.
+
+**Example:**
+```json
+{ "command": "set_effect_style_id", "params": { "nodeId": "123:456", "effectStyleId": "effect123" } }
+```
+
+---
+
+## set_auto_layout
+Configure auto layout properties for a node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- layoutMode (string): "HORIZONTAL", "VERTICAL", or "NONE".
+
+**Example:**
+```json
+{ "command": "set_auto_layout", "params": { "nodeId": "123:456", "layoutMode": "VERTICAL" } }
+```
+
+---
+
+## set_auto_layout_resizing
+Set hug or fill sizing mode on an auto layout frame or child node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- axis (string): "horizontal" or "vertical".
+- mode (string): "FIXED", "HUG", or "FILL".
+
+**Example:**
+```json
+{ "command": "set_auto_layout_resizing", "params": { "nodeId": "123:456", "axis": "horizontal", "mode": "HUG" } }
+```
+
+---
+
+## set_corner_radius
+Set the corner radius of a node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- radius (number): The new corner radius to set, in pixels.
+- corners (array of boolean, optional): [top-left, top-right, bottom-right, bottom-left].
+
+**Example:**
+```json
+{ "command": "set_corner_radius", "params": { "nodeId": "123:456", "radius": 8 } }
+```
+
+---
+
+## create_gradient_variable
+Create one or more gradient paint styles in Figma.
+
+**Parameters:**
+- gradients (object or array): Gradient definition(s).
+
+**Example:**
+```json
+{ "command": "create_gradient_variable", "params": { "gradients": { "name": "Primary Gradient", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,1,0,1] } ] } } }
+```
+
+---
+
+## apply_gradient_style
+Apply one or more gradient styles to node(s) in Figma.
+
+**Parameters:**
+- entries (object or array): { nodeId, gradientStyleId, applyTo }
+
+**Example:**
+```json
+{ "command": "apply_gradient_style", "params": { "entries": { "nodeId": "123:456", "gradientStyleId": "style123", "applyTo": "FILL" } } }
+```
+
+---
+
+## apply_direct_gradient
+Apply a gradient directly to a node without using styles.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to apply gradient to.
+- gradientType (string): "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".
+- stops (array): Array of color stops.
+- applyTo (string, optional): "FILL", "STROKE", or "BOTH".
+
+**Example:**
+```json
+{ "command": "apply_direct_gradient", "params": {
+  "nodeId": "123:456",
+  "gradientType": "LINEAR",
+  "stops": [
+    { "position": 0, "color": [0.1, 0.1, 0.9, 1] },
+    { "position": 1, "color": [0.6, 0.7, 1, 1] }
+  ],
+  "applyTo": "FILL"
+} }
+```
+
+---
+
 ## set_fill_color
 Set the fill color of a node in Figma.
 
