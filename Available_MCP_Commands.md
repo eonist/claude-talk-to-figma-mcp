@@ -845,6 +845,77 @@ Delete a node in Figma.
 
 ---
 
+## insert_child
+Insert a child node into a parent node at an optional index.
+
+**Parameters:**
+- parentId (string): ID of the parent node.
+- childId (string): ID of the child node to insert.
+- index (number, optional): Insertion index (0-based).
+
+**Example:**
+```json
+{ "command": "insert_child", "params": { "parentId": "123:456", "childId": "123:789", "index": 2 } }
+```
+
+---
+
+## set_node_locked
+Lock or unlock one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID.
+- nodeIds (array of string, optional): Array of node IDs.
+- locked (boolean): Lock (true) or unlock (false).
+
+**Example:**
+```json
+{ "command": "set_node_locked", "params": { "nodeIds": ["123:456", "123:789"], "locked": true } }
+```
+
+---
+
+## set_node_visible
+Show or hide one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID.
+- nodeIds (array of string, optional): Array of node IDs.
+- visible (boolean): Show (true) or hide (false).
+
+**Example:**
+```json
+{ "command": "set_node_visible", "params": { "nodeIds": ["123:456", "123:789"], "visible": false } }
+```
+
+---
+
+## detach_instances
+Detach one or more component instances from their masters.
+
+**Parameters:**
+- instanceIds (array of string): Array of instance node IDs.
+
+**Example:**
+```json
+{ "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"] } }
+```
+
+---
+
+## rename_layer
+Rename one or more nodes in Figma.
+
+**Parameters:**
+- rename (object) or renames (array of objects): { nodeId, newName, setAutoRename (optional) }
+
+**Example:**
+```json
+{ "command": "rename_layer", "params": { "rename": { "nodeId": "123:456", "newName": "Header Section" } } }
+```
+
+---
+
 ## ungroup_nodes
 Ungroup a group node in Figma.
 
