@@ -51,6 +51,61 @@ export async function setFontName(params) {
 }
 
 /**
+ * Update the font family and style of one or more text nodes (batch or single).
+ *
+ * @async
+ * @function
+ * @param {Object} args - Parameters for setting font names.
+ * @param {Object} [args.font] - Single font config: { nodeId, family, style }
+ * @param {Array} [args.fonts] - Array of font configs: [{ nodeId, family, style }]
+ * @returns {Promise<Array<{id: string, name: string, fontName: {family: string, style: string}}>>} Array of updated node info.
+ * @throws {Error} If neither font nor fonts is provided, or if any node fails.
+ */
+export async function setFontNames(args) {
+  let fontConfigs;
+  if (args.fonts) {
+    fontConfigs = args.fonts;
+  } else if (args.font) {
+    fontConfigs = [args.font];
+  } else {
+    throw new Error("You must provide either 'font' or 'fonts' as input.");
+  }
+
+  // Preload all fonts up front for performance
+  const fontSet = new Set();
+  for (const cfg of fontConfigs) {
+    fontSet.add(`${cfg.family}|||${cfg.style || "Regular"}`);
+  }
+  await Promise.all(
+    Array.from(fontSet).map(key => {
+      const [family, style] = key.split("|||");
+      return figma.loadFontAsync({ family, style });
+    })
+  );
+
+  const results = [];
+  const errors = [];
+  for (const cfg of fontConfigs) {
+    const { nodeId, family, style = "Regular" } = cfg;
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node) throw new Error(`Node not found with ID: ${nodeId}`);
+      if (node.type !== "TEXT") throw new Error(`Node is not a text node: ${nodeId}`);
+      node.fontName = { family, style };
+      results.push({ id: node.id, name: node.name, fontName: node.fontName });
+    } catch (error) {
+      errors.push({ nodeId, error: error && error.message ? error.message : String(error) });
+    }
+  }
+  if (errors.length > 0) {
+    throw new Error(
+      `Some font operations failed: ${errors.map(e => `${e.nodeId}: ${e.error}`).join("; ")}`
+    );
+  }
+  return results;
+}
+
+/**
  * Update the font size of a text node.
  *
  * @async

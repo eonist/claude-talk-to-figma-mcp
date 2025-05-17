@@ -20,31 +20,87 @@ import { FontFamilyStyleSchema, FontSizeSchema, FontWeightSchema } from "./font-
  * registerFontTools(server, figmaClient);
  */
 export function registerFontTools(server: McpServer, figmaClient: FigmaClient) {
-  // Set Font Name
+  // Unified Set Font Name(s) - single or batch
+  const SingleFontSchema = z.object({
+    nodeId: z.string()
+      .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+      .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
+    ...FontFamilyStyleSchema.shape,
+  });
+
+  const BatchFontsSchema = z.array(SingleFontSchema);
+
   server.tool(
     "set_font_name",
-    `Sets the font family and style of a text node in Figma.
+    `Sets the font family and style of one or more text nodes in Figma.
+
+Accepts either:
+  - font: A single font configuration object.
+  - fonts: An array of font configuration objects.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node(s) ID(s).
 `,
     {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      ...FontFamilyStyleSchema.shape,
+      font: SingleFontSchema.optional()
+        .describe("A single font configuration object. Each object should include nodeId, family, and style."),
+      fonts: BatchFontsSchema.optional()
+        .describe("An array of font configuration objects. Each object should include nodeId, family, and style."),
     },
     {
-      title: "Set Font Name",
+      title: "Set Font Name(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false
     },
-    async ({ nodeId, family, style }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_font_name", { nodeId: id, family, style });
-      return { content: [{ type: "text", text: `Font set for ${id}` }] };
+    async (args) => {
+      let fontConfigs;
+      if (args.fonts) {
+        fontConfigs = args.fonts;
+      } else if (args.font) {
+        fontConfigs = [args.font];
+      } else {
+        throw new Error("You must provide either 'font' or 'fonts' as input.");
+      }
+
+      // Optionally, preload all fonts up front for performance
+      const fontSet = new Set();
+      for (const cfg of fontConfigs) {
+        fontSet.add(`${cfg.family}|||${cfg.style}`);
+      }
+      await Promise.all(
+        Array.from(fontSet).map(key => {
+          const [family, style] = key.split("|||");
+          return figmaClient.executeCommand("load_font_async", { family, style });
+        })
+      );
+
+      const results = [];
+      const errors = [];
+      for (const cfg of fontConfigs) {
+        try {
+          await figmaClient.executeCommand("set_font_name", {
+            nodeId: ensureNodeIdIsString(cfg.nodeId),
+            family: cfg.family,
+            style: cfg.style
+          });
+          results.push(cfg.nodeId);
+        } catch (err) {
+          errors.push({ nodeId: cfg.nodeId, error: err?.message || String(err) });
+        }
+      }
+
+      let msg = "";
+      if (results.length === 1) {
+        msg = `Font set for ${results[0]}`;
+      } else if (results.length > 1) {
+        msg = `Fonts set for ${results.join(", ")}`;
+      }
+      if (errors.length > 0) {
+        msg += `; Errors: ${errors.map(e => `${e.nodeId}: ${e.error}`).join("; ")}`;
+      }
+      return { content: [{ type: "text", text: msg }] };
     }
   );
 
