@@ -1,6 +1,6 @@
 /**
  * Node modification operations for Figma nodes.
- * Exports: resizeNode, resizeNodes, moveNode, moveNodes, setNodeCornerRadii, setNodesCornerRadii
+ * Exports: resizeNode, resizeNodes, moveNode, moveNodes, setNodeCornerRadii, setNodesCornerRadii, reorderNode, reorderNodes
  */
 
 /**
@@ -274,6 +274,111 @@ export async function setNodesCornerRadii(params) {
   return {
     success: true,
     modifiedNodes,
+    errors: errors.length > 0 ? errors : undefined
+  };
+}
+
+/**
+ * Reorders a single node in its parent's children array.
+ * Supports direction ('up', 'down', 'front', 'back') or absolute index.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for reordering.
+ * @param {string} params.nodeId - The ID of the node to reorder.
+ * @param {'up'|'down'|'front'|'back'} [params.direction] - Direction to move the node.
+ * @param {number} [params.index] - Absolute index to move the node to (overrides direction if provided).
+ * @returns {Promise<{success: boolean, nodeId: string, newIndex: number}>}
+ * @throws {Error} If nodeId is missing, node or parent cannot be found, or index is out of bounds.
+ */
+export async function reorderNode(params) {
+  const { nodeId, direction, index } = params;
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  const parent = node.parent;
+  if (!parent || !Array.isArray(parent.children)) throw new Error(`Parent not found or invalid for node: ${nodeId}`);
+  const currentIndex = parent.children.indexOf(node);
+
+  let targetIndex = -1;
+  if (typeof index === 'number') {
+    if (index < 0 || index >= parent.children.length) throw new Error(`Index out of bounds: ${index}`);
+    targetIndex = index;
+  } else if (direction === 'up') {
+    targetIndex = Math.max(0, currentIndex - 1);
+  } else if (direction === 'down') {
+    targetIndex = Math.min(parent.children.length - 1, currentIndex + 1);
+  } else if (direction === 'front') {
+    targetIndex = 0;
+  } else if (direction === 'back') {
+    targetIndex = parent.children.length - 1;
+  } else {
+    throw new Error('Must provide either direction or index');
+  }
+
+  if (targetIndex === currentIndex) {
+    return { success: true, nodeId, newIndex: currentIndex };
+  }
+
+  parent.insertChild(targetIndex, node);
+  return { success: true, nodeId, newIndex: targetIndex };
+}
+
+/**
+ * Batch reorders multiple nodes in their respective parents' children arrays.
+ * Each reorder config supports direction or absolute index.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for batch reordering.
+ * @param {Array<Object>} params.reorders - Array of reorder configs ({nodeId, direction?, index?}).
+ * @param {Object} [params.options] - Optional options ({skip_errors}).
+ * @returns {Promise<{success: boolean, results: Array<Object>, errors?: Array<string>}>}
+ */
+export async function reorderNodes(params) {
+  const { reorders = [], options = {} } = params;
+  const results = [];
+  const errors = [];
+  for (const config of reorders) {
+    try {
+      const { nodeId, direction, index } = config;
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node) throw new Error(`Node not found: ${nodeId}`);
+      const parent = node.parent;
+      if (!parent || !Array.isArray(parent.children)) throw new Error(`Parent not found or invalid for node: ${nodeId}`);
+      const currentIndex = parent.children.indexOf(node);
+
+      let targetIndex = -1;
+      if (typeof index === 'number') {
+        if (index < 0 || index >= parent.children.length) throw new Error(`Index out of bounds: ${index}`);
+        targetIndex = index;
+      } else if (direction === 'up') {
+        targetIndex = Math.max(0, currentIndex - 1);
+      } else if (direction === 'down') {
+        targetIndex = Math.min(parent.children.length - 1, currentIndex + 1);
+      } else if (direction === 'front') {
+        targetIndex = 0;
+      } else if (direction === 'back') {
+        targetIndex = parent.children.length - 1;
+      } else {
+        throw new Error('Must provide either direction or index');
+      }
+
+      if (targetIndex !== currentIndex) {
+        parent.insertChild(targetIndex, node);
+      }
+      results.push({ success: true, nodeId, newIndex: targetIndex });
+    } catch (error) {
+      if (options.skip_errors) {
+        errors.push(error && error.message ? error.message : String(error));
+        results.push({ success: false, error: error && error.message ? error.message : String(error) });
+        continue;
+      }
+      throw error;
+    }
+  }
+  return {
+    success: true,
+    results,
     errors: errors.length > 0 ? errors : undefined
   };
 }
