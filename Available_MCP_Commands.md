@@ -17,6 +17,10 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 
 > **Note:** For batch operations, pass an array to the singular command (e.g., `rectangles` for `create_rectangle`). Plural command names are deprecated.
 
+### Communication
+
+- [join_channel](#join_channel): Join a specific communication channel
+
 ### Document and Information
 - [get_document_info](#get_document_info): Get detailed information about the current Figma document
 - [get_selection](#get_selection): Get information about the current selection in Figma
@@ -127,12 +131,515 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [export_node_as_image](#export_node_as_image): Export a node as an image
 - [generate_html](#generate_html): Generate HTML structure from Figma nodes
 
-### Communication
-
-- [join_channel](#join_channel): Join a specific communication channel
-
 ---
 
 # Command Index
 
-<!-- (The rest of the file remains unchanged, with the main index and detailed sections as before) -->
+
+## get_document_info
+Get detailed information about the current Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_document_info", "params": {} }
+```
+
+---
+
+## get_selection
+Get information about the current selection in Figma.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_selection", "params": {} }
+```
+
+---
+
+## get_node_info
+Get detailed information about a specific node.
+
+**Parameters:**
+- nodeId (string): Node ID
+
+**Example:**
+```json
+{ "command": "get_node_info", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## get_nodes_info
+Get detailed information about multiple nodes.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs
+
+**Example:**
+```json
+{ "command": "get_nodes_info", "params": { "nodeIds": ["123:456", "123:789"] } }
+```
+
+---
+
+## get_styles
+Get all styles from the current Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_styles", "params": {} }
+```
+
+---
+
+## get_local_components
+Get all local components from the Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_local_components", "params": {} }
+```
+
+---
+
+## get_team_components
+Get components from a Figma team library.
+
+**Parameters:**
+- team_id (string): Figma team ID
+- page_size (number, optional)
+- after (number, optional)
+
+**Example:**
+```json
+{ "command": "get_team_components", "params": { "team_id": "123456" } }
+```
+
+---
+
+## get_remote_components
+Get available components from team libraries.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_remote_components", "params": {} }
+```
+
+---
+
+## get_styled_text_segments
+Get text segments with specific styling in a text node.
+
+**Parameters:**
+- nodeId (string)
+- property (string): e.g. "fontWeight", "fontSize", etc.
+
+**Example:**
+```json
+{ "command": "get_styled_text_segments", "params": { "nodeId": "123:456", "property": "fontWeight" } }
+```
+
+---
+
+## scan_text_nodes
+Scan all text nodes in the selected Figma node.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "scan_text_nodes", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## get_css_async
+Get CSS properties from a node.
+
+**Parameters:**
+- nodeId (string, optional)
+- format (string, optional): "object", "string", or "inline"
+
+**Example:**
+```json
+{ "command": "get_css_async", "params": { "nodeId": "123:456", "format": "inline" } }
+```
+
+---
+
+## get_pages
+Get all pages in the current Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_pages", "params": {} }
+```
+
+---
+
+## set_current_page
+Set the current active page in Figma.
+
+**Parameters:**
+- pageId (string)
+
+**Example:**
+```json
+{ "command": "set_current_page", "params": { "pageId": "1:1" } }
+```
+
+---
+
+## create_frame
+Create one or more frames.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- frame (object) or frames (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_frame", "params": { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Mobile Screen" } }
+```
+_Batch:_
+```json
+{ "command": "create_frame", "params": { "frames": [
+  { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Screen 1" },
+  { "x": 500, "y": 100, "width": 375, "height": 812, "name": "Screen 2" }
+] } }
+```
+
+---
+
+## create_rectangle
+Create one or more rectangles.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- cornerRadius (number, optional)
+- rectangle (object) or rectangles (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_rectangle", "params": { "x": 100, "y": 100, "width": 200, "height": 100, "cornerRadius": 8, "name": "Button Background" } }
+```
+_Batch:_
+```json
+{ "command": "create_rectangle", "params": { "rectangles": [
+  { "x": 100, "y": 100, "width": 200, "height": 100, "name": "Rect1" },
+  { "x": 300, "y": 100, "width": 200, "height": 100, "name": "Rect2" }
+] } }
+```
+
+---
+
+## create_ellipse
+Create one or more ellipses.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- ellipse (object) or ellipses (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_ellipse", "params": { "x": 100, "y": 100, "width": 50, "height": 30, "name": "Profile Avatar" } }
+```
+_Batch:_
+```json
+{ "command": "create_ellipse", "params": { "ellipses": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "name": "Ellipse1" },
+  { "x": 300, "y": 100, "width": 30, "height": 30, "name": "Ellipse2" }
+] } }
+```
+
+---
+
+## create_polygon
+Create one or more polygons.
+
+**Parameters:**
+- x, y, width, height, sides (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- polygon (object) or polygons (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_polygon", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" } }
+```
+_Batch:_
+```json
+{ "command": "create_polygon", "params": { "polygons": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" },
+  { "x": 300, "y": 100, "width": 40, "height": 40, "sides": 3, "name": "Triangle" }
+] } }
+```
+
+---
+
+## create_line
+Create one or more lines.
+
+**Parameters:**
+- x1, y1, x2, y2 (number)
+- parentId (string, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+- line (object) or lines (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_line", "params": { "x1": 100, "y1": 100, "x2": 300, "y2": 300 } }
+```
+_Batch:_
+```json
+{ "command": "create_line", "params": { "lines": [
+  { "x1": 100, "y1": 100, "x2": 300, "y2": 100 },
+  { "x1": 100, "y1": 200, "x2": 300, "y2": 200 }
+] } }
+```
+
+---
+
+## create_text
+Create one or more text elements.
+
+**Parameters:**
+- x, y, text (number/string)
+- fontSize, fontWeight, fontColor (optional)
+- name, parentId (string, optional)
+- text (object) or texts (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_text", "params": { "x": 100, "y": 100, "text": "Hello, Figma!", "fontSize": 24, "name": "Heading" } }
+```
+_Batch:_
+```json
+{ "command": "create_text", "params": { "texts": [
+  { "x": 100, "y": 100, "text": "Title", "fontSize": 32 },
+  { "x": 100, "y": 200, "text": "Subtitle", "fontSize": 18 }
+] } }
+```
+
+---
+
+## create_bounded_text
+Create one or more bounded text boxes.
+
+**Parameters:**
+- x, y, width, height, text (number/string)
+- fontSize, fontWeight, fontColor (optional)
+- name, parentId (string, optional)
+- text (object) or texts (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_bounded_text", "params": { "x": 100, "y": 100, "width": 200, "height": 100, "text": "Wrapped text", "fontSize": 16 } }
+```
+_Batch:_
+```json
+{ "command": "create_bounded_text", "params": { "texts": [
+  { "x": 100, "y": 100, "width": 200, "height": 100, "text": "Box 1" },
+  { "x": 400, "y": 100, "width": 200, "height": 100, "text": "Box 2" }
+] } }
+```
+
+---
+
+## create_vector
+Create one or more vectors.
+
+**Parameters:**
+- x, y, width, height (number)
+- vectorPaths (array)
+- name, parentId, fillColor, strokeColor, strokeWeight (optional)
+- vector (object) or vectors (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_vector", "params": {
+  "x": 100, "y": 100, "width": 50, "height": 50,
+  "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
+} }
+```
+_Batch:_
+```json
+{ "command": "create_vector", "params": { "vectors": [
+  {
+    "x": 100, "y": 100, "width": 50, "height": 50,
+    "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
+  }
+] } }
+```
+
+---
+
+## create_component_instance
+Create one or more component instances.
+
+**Parameters:**
+- componentKey (string), x, y (number)
+- instance (object) or instances (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_component_instance", "params": { "componentKey": "123:456", "x": 100, "y": 100 } }
+```
+_Batch:_
+```json
+{ "command": "create_component_instance", "params": { "instances": [
+  { "componentKey": "123:456", "x": 100, "y": 100 },
+  { "componentKey": "123:789", "x": 300, "y": 100 }
+] } }
+```
+
+---
+
+## create_components_from_nodes
+Convert one or more existing nodes into components.
+
+**Parameters:**
+- entry (object) or entries (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_components_from_nodes", "params": { "entry": { "nodeId": "123:456" } } }
+```
+_Batch:_
+```json
+{ "command": "create_components_from_nodes", "params": { "entries": [
+  { "nodeId": "123:456" },
+  { "nodeId": "789:101" }
+] } }
+```
+
+---
+
+## create_button
+Create a complete button with background and text.
+
+**Parameters:**
+- x, y (number)
+- width, height, text, background, textColor, fontSize, fontWeight, cornerRadius, name, parentId (optional)
+
+**Example:**
+```json
+{ "command": "create_button", "params": { "x": 100, "y": 100, "text": "Click Me" } }
+```
+
+---
+
+## insert_image
+Insert one or more images from URLs.
+
+**Parameters:**
+- url (string), x, y, width, height, name, parentId (optional)
+- image (object) or images (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "insert_image", "params": { "url": "https://example.com/image.jpg", "x": 100, "y": 100 } }
+```
+_Batch:_
+```json
+{ "command": "insert_image", "params": { "images": [
+  { "url": "https://example.com/image1.jpg", "x": 100, "y": 100 },
+  { "url": "https://example.com/image2.jpg", "x": 300, "y": 100 }
+] } }
+```
+
+---
+
+## insert_local_image
+Insert one or more local images via file path or Base64 data URI.
+
+**Parameters:**
+- imagePath (string, optional), imageData (string, optional), x, y, width, height, name, parentId (optional)
+- image (object) or images (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "insert_local_image", "params": { "imagePath": "/path/to/image.png", "x": 100, "y": 100 } }
+```
+_Batch:_
+```json
+{ "command": "insert_local_image", "params": { "images": [
+  { "imagePath": "/path/to/image1.png", "x": 100, "y": 100 },
+  { "imageData": "data:image/png;base64,iVBORw0KGgoAAAANS...", "x": 300, "y": 100 }
+] } }
+```
+
+---
+
+## insert_svg_vector
+Insert one or more SVG vectors.
+
+**Parameters:**
+- svg (string), x, y, name, parentId (optional)
+- svg (object) or svgs (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "insert_svg_vector", "params": { "svg": "<svg .../>", "x": 100, "y": 100 } }
+```
+_Batch:_
+```json
+{ "command": "insert_svg_vector", "params": { "svgs": [
+  { "svg": "<svg .../>", "x": 100, "y": 100 },
+  { "svg": "<svg .../>", "x": 300, "y": 100 }
+] } }
+```
+
+---
+
+## create_page
+Create a new page in the Figma document.
+
+**Parameters:**
+- name (string, optional)
+
+**Example:**
+```json
+{ "command": "create_page", "params": { "name": "My New Page" } }
+```
+
+---
