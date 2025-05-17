@@ -19,6 +19,8 @@
  * console.log('Created rectangle', rect);
  */
 
+import { setFill, setStroke } from "./shapes-helpers.js";
+
 /**
  * Creates a new rectangle node in the Figma document.
  * @async
@@ -349,31 +351,7 @@ export async function createLine(params) {
 }
 
 
-/**
- * Helper: Applies a solid fill color to a node.
- *
- * @param {SceneNode} node - The Figma node to style.
- * @param {{ r: number, g: number, b: number, a?: number }} color - RGBA color.
- * @example
- * setFill(rect, { r:1, g:0, b:0 });
- */
-function setFill(node, color) {
-  node.fills=[{ type:"SOLID", color:{ r:color.r, g:color.g, b:color.b }, opacity:color.a||1 }];
-}
 
-/**
- * Helper: Applies a solid stroke color and weight to a node.
- *
- * @param {SceneNode} node - The Figma node to style.
- * @param {{ r: number, g: number, b: number, a?: number }} color - RGBA color.
- * @param {number} [weight] - Stroke weight.
- * @example
- * setStroke(rect, { r:0, g:0, b:1 }, 2);
- */
-function setStroke(node, color, weight) {
-  node.strokes=[{ type:"SOLID", color:{ r:color.r, g:color.g, b:color.b }, opacity:color.a||1 }];
-  if(weight!==undefined) node.strokeWeight=weight;
-}
 
 export const shapeOperations = {
   createRectangle,
