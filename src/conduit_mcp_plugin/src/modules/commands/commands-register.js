@@ -47,8 +47,6 @@ export function initializeCommands() {
   // Image Operations (Unified)
   registerCommand('insert_image', imageOperations.insertImage);
   registerCommand('insert_svg_vector', insertSvgVector);
-  registerCommand('insert_local_image', imageOperations.insertLocalImage);
-
   // Shape Operations (Unified)
   registerCommand('create_rectangle', shapeOperations.createRectangle);
   registerCommand('create_frame', shapeOperations.createFrame);

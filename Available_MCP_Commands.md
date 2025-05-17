@@ -58,8 +58,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [create_button](#create_button): Create a complete button
 
 **Images and SVG:**
-- [insert_image](#insert_image): Insert images from URLs
-- [insert_local_image](#insert_local_image): Insert local images
+- [insert_image](#insert_image): Insert images from URLs, local files, or base64 data (single or batch)
 - [insert_svg_vector](#insert_svg_vector): Insert SVG vectors
 
 **Pages:**
@@ -562,44 +561,40 @@ Create a complete button with background and text.
 ---
 
 ## insert_image
-Insert one or more images from URLs.
+Insert one or more images from a remote URL, local file path, or base64 data URI.
 
 **Parameters:**
-- url (string), x, y, width, height, name, parentId (optional)
-- image (object) or images (array of objects)
+- url (string, optional): Remote image URL
+- imagePath (string, optional): Local file path
+- imageData (string, optional): Base64 data URI
+- x, y, width, height, name, parentId (optional): Position, size, and metadata
+- image (object) or images (array of objects): Single or batch
+
+**At least one of `url`, `imagePath`, or `imageData` is required for each image.**
 
 **Examples:**
-_Single:_
+
+_Single remote image:_
 ```json
-{ "command": "insert_image", "params": { "url": "https://example.com/image.jpg", "x": 100, "y": 100 } }
+{ "command": "insert_image", "params": { "image": { "url": "https://example.com/image.jpg", "x": 100, "y": 100 } } }
 ```
-_Batch:_
+
+_Single local file:_
+```json
+{ "command": "insert_image", "params": { "image": { "imagePath": "/path/to/image.png", "x": 100, "y": 100 } } }
+```
+
+_Single base64 data:_
+```json
+{ "command": "insert_image", "params": { "image": { "imageData": "data:image/png;base64,iVBORw0KGgoAAAANS...", "x": 100, "y": 100 } } }
+```
+
+_Batch (mixed):_
 ```json
 { "command": "insert_image", "params": { "images": [
   { "url": "https://example.com/image1.jpg", "x": 100, "y": 100 },
-  { "url": "https://example.com/image2.jpg", "x": 300, "y": 100 }
-] } }
-```
-
----
-
-## insert_local_image
-Insert one or more local images via file path or Base64 data URI.
-
-**Parameters:**
-- imagePath (string, optional), imageData (string, optional), x, y, width, height, name, parentId (optional)
-- image (object) or images (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "insert_local_image", "params": { "imagePath": "/path/to/image.png", "x": 100, "y": 100 } }
-```
-_Batch:_
-```json
-{ "command": "insert_local_image", "params": { "images": [
-  { "imagePath": "/path/to/image1.png", "x": 100, "y": 100 },
-  { "imageData": "data:image/png;base64,iVBORw0KGgoAAAANS...", "x": 300, "y": 100 }
+  { "imagePath": "/path/to/image2.png", "x": 300, "y": 100 },
+  { "imageData": "data:image/png;base64,iVBORw0KGgoAAAANS...", "x": 500, "y": 100 }
 ] } }
 ```
 

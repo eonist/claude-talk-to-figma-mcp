@@ -51,15 +51,28 @@ export async function insertImage(params) {
   imagesArr = imagesArr.filter(Boolean);
   const ids = [];
   for (const cfg of imagesArr) {
-    const { url, x = 0, y = 0, width, height, name = "Image", parentId } = cfg || {};
-    // Fetch image data
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image at ${url}: ${response.statusText}`);
+    const { url, imageData, x = 0, y = 0, width, height, name = "Image", parentId } = cfg || {};
+    let imageBytes;
+    if (url) {
+      // Fetch image data from URL
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image at ${url}: ${response.statusText}`);
+      }
+      const buffer = await response.arrayBuffer();
+      imageBytes = new Uint8Array(buffer);
+    } else if (imageData) {
+      // Decode base64 data URI
+      let base64 = imageData;
+      if (imageData.startsWith("data:")) {
+        base64 = imageData.split(",")[1];
+      }
+      imageBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    } else {
+      throw new Error("Must provide either 'url' or 'imageData' for each image.");
     }
-    const buffer = await response.arrayBuffer();
     // Create Figma image and a rectangle to hold it
-    const image = figma.createImage(new Uint8Array(buffer));
+    const image = figma.createImage(imageBytes);
     const rect = figma.createRectangle();
     rect.x = x;
     rect.y = y;
