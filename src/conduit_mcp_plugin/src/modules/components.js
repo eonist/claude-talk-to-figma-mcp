@@ -5,7 +5,6 @@
  * Exposed functions:
  * - getLocalComponents(): Promise<{ count: number, components: Array<{ id: string, name: string, key: string|null }> }>
  * - getRemoteComponents(): Promise<{ success: boolean, count?: number, components?: Array<any>, error?: boolean, message?: string }>
- * - createComponentFromNode(params): Promise<{ success: boolean, componentId: string }>
  * - createComponentInstance(params): Promise<{ instances: Array<any> }>
  * - exportNodeAsImage(params): Promise<{ nodeId: string, format: string, scale: number, mimeType: string, imageData: string }>
  *
@@ -75,29 +74,60 @@ export async function getRemoteComponents() {
 }
 
 /**
- * Converts an existing node into a component.
- * @param {{nodeId: string}} params
- * @returns {Promise<{success: boolean, componentId: string}>}
- */
-/**
- * Converts an existing node into a component.
+ * Converts one or more existing nodes into components.
+ * Accepts either a single entry or an array of entries.
  *
- * @param {{nodeId: string}} params - Parameters including the node ID to convert.
- * @returns {Promise<{success: boolean, componentId: string}>} Result containing success flag and new component ID.
- * @throws {Error} If `nodeId` is missing or node not found.
+ * @param {object} params - Parameters for component creation.
+ * @param {{nodeId: string, maintain_position?: boolean}} [params.entry] - Single node config.
+ * @param {Array<{nodeId: string, maintain_position?: boolean}>} [params.entries] - Array of node configs.
+ * @param {boolean} [params.skip_errors] - If true, skip errors and continue processing.
+ * @returns {Promise<Array<{nodeId: string, componentId?: string, error?: string}>>}
+ * @throws {Error} If no valid entry/entries are provided or a node is not found (unless skip_errors is true).
  * @example
- * // Convert node '123:45' into a component
- * const result = await createComponentFromNode({ nodeId: '123:45' });
- * console.log(result.componentId);
+ * // Single node
+ * const results = await createComponentsFromNodes({ entry: { nodeId: '123:45' } });
+ * // Batch
+ * const results = await createComponentsFromNodes({ entries: [{ nodeId: '123:45' }, { nodeId: '678:90', maintain_position: true }], skip_errors: true });
  */
-export async function createComponentFromNode(params) {
-  const { nodeId } = params;
-  if (!nodeId) throw new Error("Missing nodeId");
-  const node = figma.getNodeById(nodeId);
-  if (!node) throw new Error(`Node not found: ${nodeId}`);
-  const comp = figma.createComponentFromNode(node);
-  figma.currentPage.appendChild(comp);
-  return { success: true, componentId: comp.id };
+export async function createComponentsFromNodes(params) {
+  const { entry, entries, skip_errors } = params || {};
+  const nodeEntries =
+    Array.isArray(entries) && entries.length > 0
+      ? entries
+      : entry
+      ? [entry]
+      : [];
+  if (!nodeEntries.length) throw new Error("No node entries provided");
+  const results = [];
+  for (const nodeCfg of nodeEntries) {
+    try {
+      const { nodeId, maintain_position } = nodeCfg;
+      if (!nodeId) throw new Error("Missing nodeId");
+      const node = figma.getNodeById(nodeId);
+      if (!node) throw new Error(`Node not found: ${nodeId}`);
+      // Store original position if needed
+      const originalX = node.x;
+      const originalY = node.y;
+      const comp = figma.createComponentFromNode(node);
+      if (maintain_position) {
+        comp.x = originalX;
+        comp.y = originalY;
+      }
+      figma.currentPage.appendChild(comp);
+      results.push({ nodeId, componentId: comp.id });
+    } catch (err) {
+      if (skip_errors) {
+        results.push({
+          nodeId: nodeCfg.nodeId,
+          error: err && err.message ? err.message : String(err),
+        });
+        continue;
+      } else {
+        throw err;
+      }
+    }
+  }
+  return results;
 }
 
 /**
@@ -234,7 +264,6 @@ export async function getTeamComponents(params) {
  * @property {function} getLocalComponents - Retrieve local components.
  * @property {function} getRemoteComponents - Retrieve remote components.
  * @property {function} getTeamComponents - Retrieve team library components.
- * @property {function} createComponentFromNode - Convert node to component.
  * @property {function} createComponentInstance - Create component instance(s).
  * @property {function} exportNodeAsImage - Export node as image.
  */
@@ -242,7 +271,7 @@ export const componentOperations = {
   getLocalComponents,
   getRemoteComponents,
   getTeamComponents,
-  createComponentFromNode,
+  createComponentsFromNodes,
   createComponentInstance,
   exportNodeAsImage
 };

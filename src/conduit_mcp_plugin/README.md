@@ -422,7 +422,7 @@ The plugin supports various commands organized into categories:
 - **Shapes**: Create and manipulate shapes (`create_rectangle`, `create_ellipse`, etc.)
 - **Text**: Create and modify text elements (`create_text`, `set_text_content`, etc.)
 - **Style**: Apply styles, fills, strokes, effects (`set_fill_color`, `set_style`, etc.)
-- **Components**: Work with components, groups, and assets (`create_component_from_node`, etc.)
+- **Components**: Work with components, groups, and assets (`create_components_from_nodes`, etc.)
 - **Layout**: Manipulate layout properties (`set_auto_layout`, etc.)
 - **Vectors**: Create and manipulate vectors (`create_vector`, `insert_svg_vector`, etc.)
 - **HTML Generation**: Generate HTML from Figma nodes (`generate_html`)

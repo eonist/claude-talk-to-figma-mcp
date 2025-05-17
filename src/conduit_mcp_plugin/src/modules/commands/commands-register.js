@@ -118,7 +118,7 @@ export function initializeCommands() {
   registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
 
   // Component Conversion
-  registerCommand('create_component_from_node', componentOperations.createComponentFromNode);
+  registerCommand('create_components_from_nodes', componentOperations.createComponentsFromNodes);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
   registerCommand('get_team_components', componentOperations.getTeamComponents);
 

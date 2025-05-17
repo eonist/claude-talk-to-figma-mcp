@@ -58,8 +58,6 @@ export type FigmaCommand =
   | "get_team_components"
   // Create an instance of a component (see commands/figma/create/component-creation/instance-tools.ts)
   | "create_component_instance"
-  // Convert a node into a component (see commands/figma/create/component-creation/node-tools.ts)
-  | "create_component_from_node"
   // Set the corner radius of a node (see commands/figma/modify/property-manipulation/corner-radius-tools.ts)
   | "set_corner_radius"
   // Clone a node (see commands/figma/modify/layer-management/index.ts)

@@ -5,11 +5,11 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
- * Registers component-creation-related commands on the MCP server.
+ * Registers the unified batch/single component creation tool on the MCP server.
  *
- * This function adds a tool named "create_component_from_node" to the MCP server,
- * enabling conversion of an existing Figma node into a reusable component.
- * It validates input, executes the corresponding Figma command, and returns the result.
+ * This function adds a tool named "create_components_from_nodes" to the MCP server,
+ * enabling conversion of one or more Figma nodes into reusable components.
+ * It validates input, executes the corresponding Figma command for each node, and returns the results.
  *
  * @param {McpServer} server - The MCP server instance to register the tool on.
  * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
@@ -20,48 +20,95 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  * registerNodeTools(server, figmaClient);
  */
 export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
-  // Register the "create_component_from_node" tool for converting an existing node into a component.
   server.tool(
-    "create_component_from_node",
-    `Converts an existing node into a component in Figma.
+    "create_components_from_nodes",
+    `Converts one or more existing nodes into components in Figma.
+
+Parameters:
+  - entry: { nodeId: string, maintain_position?: boolean } (for single node)
+  - entries: Array<{ nodeId: string, maintain_position?: boolean }> (for batch)
+  - skip_errors: boolean (optional, default: false)
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the created component's ID.
+  - content: Array of objects. Each object contains:
+      - type: "text"
+      - text: JSON string with created component IDs and any errors.
 `,
     {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to convert. Must be a string in the format '123:456'."),
+      entry: z
+        .object({
+          nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (e.g., '123:456')" }),
+          maintain_position: z.boolean().optional(),
+        })
+        .optional(),
+      entries: z
+        .array(
+          z.object({
+            nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (e.g., '123:456')" }),
+            maintain_position: z.boolean().optional(),
+          })
+        )
+        .optional(),
+      skip_errors: z.boolean().optional(),
     },
     {
-      title: "Create Component From Node",
+      title: "Create Components From Node(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
-        {
-          nodeId: "123:456"
-        }
+        { entry: { nodeId: "123:456" } },
+        { entries: [{ nodeId: "123:456" }, { nodeId: "789:101", maintain_position: true }], skip_errors: true }
       ]),
       edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "If the node is not convertible, the command will fail.",
-        "The node must not already be a component."
+        "Each nodeId must be a valid Figma node ID.",
+        "If a node is not convertible, the command will fail unless skip_errors is true.",
+        "Nodes must not already be components."
       ],
-      extraInfo: "Converts an existing node into a reusable component for design systems."
+      extraInfo: "Converts one or more nodes into reusable components for design systems. Supports both single and batch input."
     },
-    // Tool handler: validates input, calls Figma client, and returns result or error.
-    async ({ nodeId }): Promise<any> => {
-      try {
-        const id = ensureNodeIdIsString(nodeId);
-        const result = await figmaClient.executeCommand("create_component_from_node", { nodeId: id });
-        return { content: [{ type: "text", text: `Created component ${result.componentId}` }] };
-      } catch (err) {
-        // Handle errors and return a formatted error response.
-        return handleToolError(err, "component-creation-tools", "create_component_from_node") as any;
+    async ({ entry, entries, skip_errors }): Promise<any> => {
+      // Normalize to array of entries
+      const nodeEntries =
+        Array.isArray(entries) && entries.length > 0
+          ? entries
+          : entry
+          ? [entry]
+          : [];
+
+      const results: Array<{ nodeId: string; componentId?: string; error?: string }> = [];
+      for (const node of nodeEntries) {
+        try {
+          const id = ensureNodeIdIsString(node.nodeId);
+          // Directly call the Figma client logic for component creation, or update to use the new batch command if available.
+          // If the Figma client only supports single-node creation, keep this as a local helper.
+          const result = await figmaClient.createComponentFromNode
+            ? await figmaClient.createComponentFromNode({ nodeId: id })
+            : await figmaClient.executeCommand("create_components_from_nodes", {
+                entry: { nodeId: id, maintain_position: node.maintain_position }
+              });
+          results.push({ nodeId: id, componentId: result.componentId || (Array.isArray(result) && result[0]?.componentId) });
+        } catch (err: any) {
+          if (skip_errors) {
+            results.push({
+              nodeId: node.nodeId,
+              error: err instanceof Error ? err.message : String(err),
+            });
+            continue;
+          }
+          // If not skipping errors, fail immediately
+          return handleToolError(err, "component-creation-tools", "create_components_from_nodes") as any;
+        }
       }
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(results),
+          },
+        ],
+      };
     }
   );
 }
