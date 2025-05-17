@@ -261,7 +261,11 @@ export async function handleCommand(command, params) {
   if (!commandRegistry[command]) {
     throw new Error(`Unknown command: ${command}`);
   }
-  return await commandRegistry[command](params);
+  const result = await commandRegistry[command](params);
+  if (typeof figma.commitUndo === "function") {
+    figma.commitUndo();
+  }
+  return result;
 }
 
 export const commandOperations = {
