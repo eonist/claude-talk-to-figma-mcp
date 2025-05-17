@@ -121,6 +121,10 @@ async function buildPlugin() {
     
     // List of other module files to be added in the defined order.
     const moduleOrder = [
+      'document/document-info.js',
+      'document/document-selection.js',
+      'document/document-node.js',
+      'document/document-css.js',
       'document.js',
       'shapes.js',
       'shape/shapes-rectangle.js',
@@ -151,6 +155,9 @@ async function buildPlugin() {
       'node/node-modify.js',
       'node/node-edit.js',
       'node/node-misc.js',
+      'font/font-set.js',
+      'font/font-load.js',
+      'font/font-bulk.js',
       'rename.js',
       'svg.js',
       'html-generator.js',
