@@ -131,67 +131,9 @@ export function initializeCommands() {
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
   registerCommand('get_team_components', componentOperations.getTeamComponents);
 
-  // Gradient Operations
-  registerCommand('create_gradient_variable', styleOperations.createGradientVariable);
-  registerCommand('apply_gradient_style', styleOperations.applyGradientStyle);
-
-  // Direct Gradient Operations (Style-free alternatives)
-  registerCommand('apply_direct_gradient', async (params) => {
-    const { nodeId, gradientType = "LINEAR", stops, applyTo = "FILL" } = params || {};
-
-    if (!nodeId) {
-      throw new Error("Missing nodeId parameter");
-    }
-
-    if (!stops || !Array.isArray(stops) || stops.length < 2) {
-      throw new Error("Gradient must have at least two stops");
-    }
-
-    const node = await figma.getNodeByIdAsync(nodeId);
-    if (!node) {
-      throw new Error(`Node not found: ${nodeId}`);
-    }
-
-    const typeMap = {
-      LINEAR: "GRADIENT_LINEAR",
-      RADIAL: "GRADIENT_RADIAL",
-      ANGULAR: "GRADIENT_ANGULAR",
-      DIAMOND: "GRADIENT_DIAMOND"
-    };
-
-    const figmaType = typeMap[gradientType] || "GRADIENT_LINEAR";
-
-    const gradientPaint = {
-      type: figmaType,
-      gradientTransform: [[1, 0, 0], [0, 1, 0]],
-      gradientStops: stops.map(stop => ({
-        position: stop.position,
-        color: Array.isArray(stop.color)
-          ? { r: stop.color[0], g: stop.color[1], b: stop.color[2], a: stop.color[3] || 1 }
-          : stop.color
-      }))
-    };
-
-    if (applyTo === "FILL" || applyTo === "BOTH") {
-      if (!("fills" in node)) {
-        throw new Error("Node does not support fills");
-      }
-      node.fills = [gradientPaint];
-    }
-
-    if (applyTo === "STROKE" || applyTo === "BOTH") {
-      if (!("strokes" in node)) {
-        throw new Error("Node does not support strokes");
-      }
-      node.strokes = [gradientPaint];
-    }
-
-    return {
-      id: node.id,
-      name: node.name,
-      success: true
-    };
-  });
+  // Gradient Operations (Unified)
+  registerCommand('create_gradient_style', styleOperations.createGradientStyle);
+  registerCommand('set_gradient', styleOperations.setGradient);
 
   // Detach Instance Tool (calls batch logic for DRYness)
   // Detach Instances Tool (Batch)

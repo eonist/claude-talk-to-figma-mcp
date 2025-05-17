@@ -1,140 +1,132 @@
 /**
- * Gradient style operations for Figma nodes.
- * Exports: createGradientVariable, applyGradientStyle
+ * Unified gradient style operations for Figma nodes.
+ * Exports: createGradientStyle, setGradient
  */
 
-/**
- * Creates a gradient paint style in Figma.
- *
- * @async
- * @function
- * @param {Object} params - Parameters for gradient variable.
- * @param {string} params.name - Name for the gradient style.
- * @param {"LINEAR"|"RADIAL"|"ANGULAR"|"DIAMOND"} params.gradientType - Type of gradient.
- * @param {Array<{ position: number, color: [number, number, number, number] }>} params.stops - Array of color stops.
- * @returns {Promise<{ id: string, name: string }>} Created gradient style info.
- * @throws {Error} If parameters are missing or invalid.
- */
-export async function createGradientVariable(params) {
-  const { name, gradientType, stops } = params || {};
-  if (!name || !gradientType || !Array.isArray(stops)) {
-    throw new Error("Missing or invalid parameters for create_gradient_variable");
+// Create one or more gradient style variables (single or batch)
+export async function createGradientStyle(params) {
+  const { gradients } = params || {};
+  const gradientList = Array.isArray(gradients) ? gradients : [gradients];
+  const results = [];
+  for (const gradient of gradientList) {
+    const { name, gradientType, stops } = gradient || {};
+    if (!name || !gradientType || !Array.isArray(stops)) {
+      throw new Error("Missing or invalid parameters for create_gradient_style");
+    }
+    const paintStyle = figma.createPaintStyle();
+    paintStyle.name = name;
+    const typeMap = {
+      LINEAR: "GRADIENT_LINEAR",
+      RADIAL: "GRADIENT_RADIAL",
+      ANGULAR: "GRADIENT_ANGULAR",
+      DIAMOND: "GRADIENT_DIAMOND"
+    };
+    paintStyle.paints = [{
+      type: typeMap[gradientType],
+      gradientTransform: [[1, 0, 0], [0, 1, 0]],
+      gradientStops: stops.map(s => ({
+        position: s.position,
+        color: { r: s.color[0], g: s.color[1], b: s.color[2], a: s.color[3] }
+      }))
+    }];
+    results.push({ id: paintStyle.id, name: paintStyle.name });
   }
-  const paintStyle = figma.createPaintStyle();
-  paintStyle.name = name;
-  const typeMap = {
-    LINEAR: "GRADIENT_LINEAR",
-    RADIAL: "GRADIENT_RADIAL",
-    ANGULAR: "GRADIENT_ANGULAR",
-    DIAMOND: "GRADIENT_DIAMOND"
-  };
-  paintStyle.paints = [{
-    type: typeMap[gradientType],
-    gradientTransform: [[1, 0, 0], [0, 1, 0]],
-    gradientStops: stops.map(s => ({
-      position: s.position,
-      color: { r: s.color[0], g: s.color[1], b: s.color[2], a: s.color[3] }
-    }))
-  }];
-  return { id: paintStyle.id, name: paintStyle.name };
+  return results.length === 1 ? results[0] : results;
 }
 
-/**
- * Applies a gradient paint style to a node in Figma.
- *
- * @async
- * @function
- * @param {Object} params - Parameters for applying gradient style.
- * @param {string} params.nodeId - The ID of the node to update.
- * @param {string} params.gradientStyleId - The ID of the gradient style to apply.
- * @param {"FILL"|"STROKE"|"BOTH"} [params.applyTo] - Where to apply the gradient.
- * @returns {Promise<{ id: string, name: string, usedFallback?: boolean }>} Updated node info.
- * @throws {Error} If parameters are missing, node or style cannot be found, or node does not support fills/strokes.
- */
-export async function applyGradientStyle(params) {
-  const { nodeId, gradientStyleId, applyTo } = params || {};
-  if (!nodeId || !gradientStyleId) {
-    throw new Error("Missing nodeId or gradientStyleId for apply_gradient_style");
-  }
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) {
-    throw new Error(`Node not found: ${nodeId}`);
-  }
+// Set a gradient on one or more nodes (single or batch, direct or style)
+export async function setGradient(params) {
+  const { entries } = params || {};
+  const entryList = Array.isArray(entries) ? entries : [entries];
+  const results = [];
+  for (const entry of entryList) {
+    const { nodeId, gradientType, stops, gradientStyleId, applyTo } = entry || {};
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      results.push({ nodeId, success: false, error: "Node not found" });
+      continue;
+    }
 
-  // Get all local paint styles
-  const styles = await figma.getLocalPaintStylesAsync();
-  
-  // Try multiple methods to find the style
-  let style = null;
-  
-  // Method 1: Direct ID match
-  style = styles.find(s => s.id === gradientStyleId);
-  
-  // Method 2: If that fails, try matching by key (remove the "S:" prefix if present)
-  if (!style && gradientStyleId.startsWith("S:")) {
-    const key = gradientStyleId.substring(2);
-    style = styles.find(s => s.key === key);
-  }
-  
-  // Method 3: As last resort, try a looser match on the ID
-  if (!style) {
-    style = styles.find(s => 
-      s.id.includes(gradientStyleId.replace("S:", "")) || 
-      gradientStyleId.includes(s.id)
-    );
-  }
-  
-  // If we found a style, apply it properly
-  if (style) {
-    // Get the actual paint definitions from the style
-    const paints = style.paints;
-    if (!paints || !paints.length) {
-      throw new Error(`No paint definitions found in style: ${gradientStyleId}`);
-    }
-    
-    // Apply the actual paint definitions directly
-    if (applyTo === "FILL" || applyTo === "BOTH") {
-      if (!("fills" in node)) throw new Error("Node does not support fills");
-      node.fills = [...paints];
-    }
-    
-    if (applyTo === "STROKE" || applyTo === "BOTH") {
-      if (!("strokes" in node)) throw new Error("Node does not support strokes");
-      node.strokes = [...paints];
-    }
-    
-    return { id: node.id, name: node.name };
-  }
-  
-  // Debug information
-  console.warn(`Style lookup failed for: ${gradientStyleId}`);
-  console.info(`Available style IDs: ${styles.map(s => s.id).join(', ')}`);
-  
-  // If the style ID starts with S: and we couldn't find it, try creating a default gradient
-  if (gradientStyleId.startsWith("S:")) {
-    try {
-      const fallbackGradient = {
-        type: "GRADIENT_LINEAR",
-        gradientTransform: [[1, 0, 0], [0, 1, 0]],
-        gradientStops: [
-          { position: 0, color: { r: 0.2, g: 0.2, b: 0.22, a: 1 } },
-          { position: 1, color: { r: 0.6, g: 0.6, b: 0.62, a: 1 } }
-        ]
+    // Direct gradient application
+    if (gradientType && stops) {
+      const typeMap = {
+        LINEAR: "GRADIENT_LINEAR",
+        RADIAL: "GRADIENT_RADIAL",
+        ANGULAR: "GRADIENT_ANGULAR",
+        DIAMOND: "GRADIENT_DIAMOND"
       };
-      if (applyTo === "FILL" || applyTo === "BOTH") {
-        if (!("fills" in node)) throw new Error("Node does not support fills");
-        node.fills = [fallbackGradient];
+      const figmaType = typeMap[gradientType] || "GRADIENT_LINEAR";
+      const gradientPaint = {
+        type: figmaType,
+        gradientTransform: [[1, 0, 0], [0, 1, 0]],
+        gradientStops: stops.map(stop => ({
+          position: stop.position,
+          color: Array.isArray(stop.color)
+            ? { r: stop.color[0], g: stop.color[1], b: stop.color[2], a: stop.color[3] || 1 }
+            : stop.color
+        }))
+      };
+      if (applyTo === "FILL" || applyTo === "BOTH" || !applyTo) {
+        if (!("fills" in node)) {
+          results.push({ nodeId, success: false, error: "Node does not support fills" });
+          continue;
+        }
+        node.fills = [gradientPaint];
       }
       if (applyTo === "STROKE" || applyTo === "BOTH") {
-        if (!("strokes" in node)) throw new Error("Node does not support strokes");
-        node.strokes = [fallbackGradient];
+        if (!("strokes" in node)) {
+          results.push({ nodeId, success: false, error: "Node does not support strokes" });
+          continue;
+        }
+        node.strokes = [gradientPaint];
       }
-      console.info(`Applied fallback gradient to ${nodeId} since style ${gradientStyleId} was not found`);
-      return { id: node.id, name: node.name, usedFallback: true };
-    } catch (fallbackError) {
-      console.error(`Failed to apply fallback gradient: ${fallbackError}`);
-      throw new Error(`Gradient style not found: ${gradientStyleId} and fallback failed`);
+      results.push({ nodeId, success: true, type: "direct" });
+      continue;
     }
+
+    // Style variable application
+    if (gradientStyleId) {
+      // Get all local paint styles
+      const styles = await figma.getLocalPaintStylesAsync();
+      let style = styles.find(s => s.id === gradientStyleId);
+      if (!style && gradientStyleId.startsWith("S:")) {
+        const key = gradientStyleId.substring(2);
+        style = styles.find(s => s.key === key);
+      }
+      if (!style) {
+        style = styles.find(s =>
+          s.id.includes(gradientStyleId.replace("S:", "")) ||
+          gradientStyleId.includes(s.id)
+        );
+      }
+      if (style) {
+        const paints = style.paints;
+        if (!paints || !paints.length) {
+          results.push({ nodeId, success: false, error: "No paint definitions in style" });
+          continue;
+        }
+        if (applyTo === "FILL" || applyTo === "BOTH" || !applyTo) {
+          if (!("fills" in node)) {
+            results.push({ nodeId, success: false, error: "Node does not support fills" });
+            continue;
+          }
+          node.fills = [...paints];
+        }
+        if (applyTo === "STROKE" || applyTo === "BOTH") {
+          if (!("strokes" in node)) {
+            results.push({ nodeId, success: false, error: "Node does not support strokes" });
+            continue;
+          }
+          node.strokes = [...paints];
+        }
+        results.push({ nodeId, success: true, type: "style" });
+        continue;
+      }
+      results.push({ nodeId, success: false, error: "Gradient style not found" });
+      continue;
+    }
+
+    results.push({ nodeId, success: false, error: "Invalid gradient entry: must provide direct args or style variable" });
   }
-  throw new Error(`Gradient style not found: ${gradientStyleId}`);
+  return results.length === 1 ? results[0] : results;
 }
