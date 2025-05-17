@@ -916,6 +916,61 @@ Rename one or more nodes in Figma.
 
 ---
 
+## set_fill_color
+Set the fill color of a node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- r (number): Red channel (0-1).
+- g (number): Green channel (0-1).
+- b (number): Blue channel (0-1).
+- a (number, optional): Alpha channel (0-1).
+
+**Example:**
+```json
+{ "command": "set_fill_color", "params": { "nodeId": "123:456", "r": 1, "g": 0, "b": 0 } }
+```
+
+---
+
+## set_stroke_color
+Set the stroke color of a node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- r (number): Red channel (0-1).
+- g (number): Green channel (0-1).
+- b (number): Blue channel (0-1).
+- a (number, optional): Alpha channel (0-1).
+- weight (number, optional): Stroke weight.
+
+**Example:**
+```json
+{ "command": "set_stroke_color", "params": { "nodeId": "123:456", "r": 0, "g": 0, "b": 0, "weight": 2 } }
+```
+
+---
+
+## set_style
+Set both fill and stroke properties for one or more Figma nodes.
+
+**Parameters:**
+- entries (object or array): { nodeId, fillProps, strokeProps }
+
+**Example:**
+```json
+{ "command": "set_style", "params": {
+  "entries": {
+    "nodeId": "123:456",
+    "fillProps": { "color": [1, 0, 0, 1] },
+    "strokeProps": { "color": [0, 0, 0, 1], "weight": 2 }
+  }
+} }
+```
+
+---
+
+
 ## ai_rename_layers
 AI-powered rename of specified layers.
 
