@@ -57,49 +57,6 @@ export function generateCommandId() {
   return 'cmd_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-/**
- * Filters an array to contain only unique values based on a property or predicate function.
- * Similar to lodash's uniqBy but with a lighter implementation.
- * 
- * @param {Array} arr - The array to filter.
- * @param {string|Function} predicate - Either a property name or a function that returns a value to check for uniqueness.
- * @returns {Array} A new array containing only unique items.
- * 
- * @example
- * // Using a property name
- * const users = [
- *   { id: 1, name: 'John' },
- *   { id: 1, name: 'John' },
- *   { id: 2, name: 'Jane' }
- * ];
- * const uniqueUsers = uniqBy(users, 'id');
- * // Returns: [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }]
- * 
- * @example
- * // Using a function
- * const nodes = [
- *   { id: 'rect1', type: 'RECTANGLE' },
- *   { id: 'rect2', type: 'RECTANGLE' },
- *   { id: 'text1', type: 'TEXT' }
- * ];
- * const uniqueByType = uniqBy(nodes, node => node.type);
- * // Returns: [{ id: 'rect1', type: 'RECTANGLE' }, { id: 'text1', type: 'TEXT' }]
- */
-export function uniqBy(arr, predicate) {
-  const cb = typeof predicate === "function" 
-    ? predicate 
-    : (o) => o[predicate];
-    
-  return [
-    ...arr
-      .reduce((map, item) => {
-        const key = item === null || item === undefined ? item : cb(item);
-        map.has(key) || map.set(key, item);
-        return map;
-      }, new Map())
-      .values(),
-  ];
-}
 
 /**
  * Helper to safely set characters on a text node with font loading.

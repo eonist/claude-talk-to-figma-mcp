@@ -104,20 +104,6 @@ export async function initializePlugin() {
   }
 }
 
-/**
- * Updates plugin settings by saving the server port to state and client storage.
- *
- * @param {{ serverPort: number }} settings - Settings object containing serverPort.
- */
-export function updateSettings(settings) {
-  if (settings.serverPort) {
-    state.serverPort = settings.serverPort;
-  }
-
-  figma.clientStorage.setAsync("settings", {
-    serverPort: state.serverPort,
-  });
-}
 
 /**
  * Returns a promise that resolves after a specified delay.
