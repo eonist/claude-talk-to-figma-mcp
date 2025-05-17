@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
-import { EffectSchema } from "../../property-manipulation/effect-schema.ts";
+import { EffectSchema } from "../property-manipulation/effect-schema.js";
 
 /**
  * Registers effect-related styling commands:
@@ -11,70 +11,6 @@ import { EffectSchema } from "../../property-manipulation/effect-schema.ts";
  * - create_effect_style_variable
  */
 export function registerEffectTools(server: McpServer, figmaClient: FigmaClient) {
-  // 1. apply_effect_style
-  const ApplyEffectStyleEntrySchema = z.object({
-    nodeId: z.string()
-      .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-      .describe("The unique Figma node ID to update."),
-    effectStyleId: z.string()
-      .min(1)
-      .max(100)
-      .describe("The ID of the effect style to apply."),
-  });
-
-  const ApplyEffectStyleParamsSchema = z.object({
-    entries: z.union([
-      ApplyEffectStyleEntrySchema,
-      z.array(ApplyEffectStyleEntrySchema).min(1).max(100)
-    ])
-  });
-
-  server.tool(
-    "apply_effect_style",
-    `Apply one or more effect styles to node(s) in Figma.
-
-Params:
-  - entries: Either a single application or an array of applications.
-
-Returns:
-  - content: Array containing a text message with the updated node(s) ID(s) or a summary.
-`,
-    ApplyEffectStyleParamsSchema.shape,
-    {
-      title: "Apply Effect Style (Single or Batch)",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { entries: { nodeId: "123:456", effectStyleId: "S:effect123" } },
-        { entries: [
-          { nodeId: "123:456", effectStyleId: "S:effect123" },
-          { nodeId: "789:101", effectStyleId: "S:effect456" }
-        ]}
-      ]),
-      edgeCaseWarnings: [
-        "Each entry must have a valid nodeId and effectStyleId."
-      ],
-      extraInfo: "Supports both single and batch effect style application in one call."
-    },
-    async ({ entries }) => {
-      const entryList = Array.isArray(entries) ? entries : [entries];
-      const results = await figmaClient.executeCommand("apply_effect_style", { entries: entryList });
-      return {
-        content: [
-          {
-            type: "text",
-            text: entryList.length === 1
-              ? `Applied effect style to ${entryList[0].nodeId}`
-              : `Batch applied effect styles: ${results.filter(r => r.success).length}/${results.length} successes`
-          }
-        ],
-        _meta: { results }
-      };
-    }
-  );
-
   // 2. set_effect
   const SetEffectEntrySchema = z.object({
     nodeId: z.string()

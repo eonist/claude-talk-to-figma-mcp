@@ -5,21 +5,6 @@
 
 export const effectCommands = {
   /**
-   * Apply an effect style to one or more nodes.
-   * @param {Object} params - { entries: [{ nodeId, effectStyleId }] }
-   */
-  async apply_effect_style({ entries }) {
-    const entryList = Array.isArray(entries) ? entries : [entries];
-    // TODO: Implement actual Figma API logic
-    // For now, return mock success for each entry
-    return entryList.map(entry => ({
-      nodeId: entry.nodeId,
-      effectStyleId: entry.effectStyleId,
-      success: true
-    }));
-  },
-
-  /**
    * Set effect(s) directly or by style variable on one or more nodes.
    * @param {Object} params - { entries: [{ nodeId, effects?, effectStyleId? }] }
    */

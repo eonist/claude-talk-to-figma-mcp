@@ -79,7 +79,6 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 
 **Effects:**
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
-- [apply_effect_style](#apply_effect_style): Apply one or more effect styles
 - [set_effect](#set_effect): Set effect(s) directly or by style variable
 
 **Text Styling:**
@@ -164,25 +163,6 @@ _Batch:_
 
 ---
 
-## apply_effect_style
-Apply one or more effect styles to node(s) in Figma.
-
-**Parameters:**
-- entries (object or array): { nodeId, effectStyleId }
-
-**Example:**
-```json
-{ "command": "apply_effect_style", "params": { "entries": { "nodeId": "123:456", "effectStyleId": "S:effect123" } } }
-```
-_Batch:_
-```json
-{ "command": "apply_effect_style", "params": { "entries": [
-  { "nodeId": "123:456", "effectStyleId": "S:effect123" },
-  { "nodeId": "789:101", "effectStyleId": "S:effect456" }
-] } }
-```
-
----
 
 ## set_effect
 Set effect(s) directly or by style variable on one or more nodes in Figma.
