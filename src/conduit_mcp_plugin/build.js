@@ -123,6 +123,13 @@ async function buildPlugin() {
     const moduleOrder = [
       'document.js',
       'shapes.js',
+      'shapes-rectangle.js',
+      'shapes-frame.js',
+      'shapes-ellipse.js',
+      'shapes-polygon.js',
+      'shapes-star.js',
+      'shapes-vector.js',
+      'shapes-line.js',
       'image.js',
       'text.js',
       'styles.js',
