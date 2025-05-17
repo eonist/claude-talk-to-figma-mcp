@@ -184,18 +184,86 @@ export function initializeCommands() {
     };
   });
 
-  // Detach Instance Tool
+  // Detach Instance Tool (calls batch logic for DRYness)
   registerCommand('detach_instance', async (params) => {
     const { instanceId } = params;
-    const node = figma.getNodeById(instanceId);
-    if (!node) {
-      throw new Error(`No node found with ID: ${instanceId}`);
+    // Call the batch handler with a single-element array
+    const results = await commandRegistry['detach_instances']({
+      instanceIds: [instanceId],
+      options: {} // No options for single detach by default
+    });
+    // Return the first result (or error if any)
+    if (Array.isArray(results) && results.length > 0) {
+      const r = results[0];
+      if (r.error) throw new Error(r.error);
+      return { id: r.id, name: r.name };
     }
-    if (node.type !== 'INSTANCE') {
-      throw new Error('Node is not a component instance');
+    throw new Error(`No instance detached for ${instanceId}`);
+  });
+
+  // Detach Instances Tool (Batch)
+  registerCommand('detach_instances', async (params) => {
+    const { instanceIds, options } = params || {};
+    if (!Array.isArray(instanceIds) || instanceIds.length === 0) {
+      throw new Error('No instanceIds provided for detach_instances');
     }
-    const detached = node.detachInstance();
-    return { id: detached.id, name: detached.name };
+    const maintainPosition = options && options.maintain_position;
+    const skipErrors = options && options.skip_errors;
+    const results = [];
+
+    for (const instanceId of instanceIds) {
+      try {
+        const node = figma.getNodeById(instanceId);
+        if (!node) {
+          throw new Error(`No node found with ID: ${instanceId}`);
+        }
+        if (node.type !== 'INSTANCE') {
+          throw new Error('Node is not a component instance');
+        }
+        // Store original position and parent if needed
+        const originalX = node.x;
+        const originalY = node.y;
+        const originalParent = node.parent;
+
+        // Detach instance
+        const detached = node.detachInstance();
+
+        // Maintain position if requested
+        if (maintainPosition) {
+          detached.x = originalX;
+          detached.y = originalY;
+          if (originalParent && 'appendChild' in originalParent) {
+            try {
+              originalParent.appendChild(detached);
+            } catch (e) {
+              // If already parented, ignore
+            }
+          }
+        }
+
+        results.push({ id: detached.id, name: detached.name, instanceId });
+      } catch (error) {
+        if (skipErrors) {
+          results.push({
+            error: error && error.message ? error.message : String(error),
+            instanceId
+          });
+          continue;
+        } else {
+          // Stop on first error if not skipping errors
+          throw error;
+        }
+      }
+    }
+
+    // Optionally, select and zoom to detached nodes if any
+    const detachedNodes = results.filter(r => r.id).map(r => figma.getNodeById(r.id)).filter(Boolean);
+    if (detachedNodes.length > 0) {
+      figma.currentPage.selection = detachedNodes;
+      figma.viewport.scrollAndZoomIntoView(detachedNodes);
+    }
+
+    return results;
   });
 
   registerCommand('rename_layer', renameOperations.rename_layer);

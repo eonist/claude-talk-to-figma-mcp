@@ -154,6 +154,15 @@ export interface DeleteNodesParams extends BaseCommandParams {
   nodeIds: string[];
 }
 
+/** Parameters for detach_instances command */
+export interface DetachInstancesParams extends BaseCommandParams {
+  instanceIds: string[];
+  options?: {
+    maintain_position?: boolean;
+    skip_errors?: boolean;
+  };
+}
+
 /** Parameters for set_fill_color command */
 export interface SetFillColorParams extends BaseCommandParams {
   nodeId: string;
@@ -282,6 +291,19 @@ export interface CreatePageParams extends BaseCommandParams {
   name?: string;
 }
 
+/** Entry for create_components_from_nodes (single node) */
+export interface CreateComponentFromNodeEntry {
+  nodeId: string;
+  maintain_position?: boolean;
+}
+
+/** Parameters for create_components_from_nodes (unified single/batch) */
+export interface CreateComponentsFromNodesParams extends BaseCommandParams {
+  entry?: CreateComponentFromNodeEntry;
+  entries?: CreateComponentFromNodeEntry[];
+  skip_errors?: boolean;
+}
+
 export interface CommandParamsMap {
   // Read commands
   get_document_info: BaseCommandParams;
@@ -293,6 +315,7 @@ export interface CommandParamsMap {
   set_current_page: SetCurrentPageParams;
 
   // Create commands
+  create_components_from_nodes: CreateComponentsFromNodesParams;
   create_rectangle: CreateRectangleParams;
   create_frame: CreateFrameParams;
   create_text: CreateTextParams;
@@ -316,6 +339,9 @@ export interface CommandParamsMap {
   set_text_content: SetTextContentParams;
   convert_rectangle_to_frame: ConvertRectangleToFrameParams;
   apply_direct_gradient: ApplyDirectGradientParams;
+
+  // Batch detach instances command
+  detach_instances: DetachInstancesParams;
 
   // Channel commands
   join: JoinChannelParams;

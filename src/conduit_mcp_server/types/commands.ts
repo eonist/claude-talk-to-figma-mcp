@@ -16,6 +16,8 @@ export type FigmaCommand =
   | "get_node_info"
   // Get information about multiple nodes (see commands/figma/read/node-tools.ts)
   | "get_nodes_info"
+  // Create components from node(s) (see commands/figma/create/component-creation/node-tools.ts)
+  | "create_components_from_nodes"
   // Create a new rectangle shape node (see commands/figma/create/shape-creation/rectangles.ts)
   | "create_rectangle"
   // Create a new frame node (see commands/figma/create/shape-creation/frames.ts)
@@ -130,6 +132,8 @@ export type FigmaCommand =
   | "apply_direct_gradient"
   // Detach a component instance from its master (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
   | "detach_instance"
+  // Detach multiple component instances from their masters (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
+  | "detach_instances"
   // Union selected shapes (see commands/figma/modify/layer-management/boolean-tools.ts)
   | "union_selection"
   // Subtract top shapes from bottom shape (see commands/figma/modify/layer-management/boolean-tools.ts)
