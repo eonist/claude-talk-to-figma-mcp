@@ -67,7 +67,7 @@ Ss a l pertson a noei Figa.
 import { setAutoLayout, setAutoLayoutResizing } from './layout/layout-auto.js';
 import { groupNodes, ungroupNodes } from './layout/layout-group.js';
 import { insertChild, insertChildren } from './layout/layout-insert.js';
-import { flatten_nodes } from './layout/layout-flatten.js';
+import { flatten_nodes, union_selection, subtract_selection, intersect_selection, exclude_selection } from './node/node-misc.js';
 import { clone_node } from './layout/layout-clone.js';
 
 /**
