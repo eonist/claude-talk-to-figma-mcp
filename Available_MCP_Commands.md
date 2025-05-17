@@ -998,6 +998,36 @@ Clone a node in Figma.
 
 ---
 
+## export_node_as_image
+Export a node as an image from Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to export.
+- format (string, optional): Image format ("PNG", "JPG", "SVG", "PDF").
+- scale (number, optional): Export scale factor.
+
+**Example:**
+```json
+{ "command": "export_node_as_image", "params": { "nodeId": "123:456", "format": "PNG", "scale": 2 } }
+```
+
+---
+
+## generate_html
+Generate HTML structure from Figma nodes.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to generate HTML from.
+- format (string, optional): HTML output format ("semantic", "div-based", "webcomponent").
+- cssMode (string, optional): CSS handling mode ("inline", "classes", "external").
+
+**Example:**
+```json
+{ "command": "generate_html", "params": { "nodeId": "123:456", "format": "semantic", "cssMode": "classes" } }
+```
+
+---
+
 ## insert_child
 Insert a child node into a parent node at an optional index.
 
