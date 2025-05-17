@@ -23,3 +23,50 @@ export async function getSelection() {
     })),
   };
 }
+
+/**
+ * Sets the selection on the current page to the specified node(s) by ID.
+ * Accepts a single nodeId (string) or an array of nodeIds (string[]).
+ * Returns a summary of the new selection.
+ *
+ * @async
+ * @function
+ * @param {Object} params
+ * @param {string|string[]} params.nodeId - A single node ID or array of node IDs.
+ * @returns {Promise<{selected: Array<{id: string, name: string, type: string}>, notFound: Array<string>}>}
+ */
+export async function setSelection(params) {
+  let nodeIds = [];
+  if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    nodeIds = params.nodeIds;
+  } else if (typeof params.nodeId === "string") {
+    nodeIds = [params.nodeId];
+  } else {
+    throw new Error("You must provide 'nodeId' or 'nodeIds'");
+  }
+
+  // Retrieve nodes asynchronously (supporting both sync and async getNodeById)
+  const nodePromises = nodeIds.map(id => {
+    if (typeof figma.getNodeByIdAsync === "function") {
+      return figma.getNodeByIdAsync(id);
+    } else {
+      // fallback for sync API
+      return Promise.resolve(figma.getNodeById(id));
+    }
+  });
+  const nodes = await Promise.all(nodePromises);
+  const validNodes = nodes.filter(node => node && node.type !== "DOCUMENT" && node.type !== "PAGE" && node.parent && node.parent.type === "PAGE");
+  const notFound = nodeIds.filter((_, i) => !validNodes.includes(nodes[i]));
+
+  // Set the selection
+  figma.currentPage.selection = validNodes;
+
+  return {
+    selected: validNodes.map(node => ({
+      id: node.id,
+      name: node.name,
+      type: node.type
+    })),
+    notFound
+  };
+}

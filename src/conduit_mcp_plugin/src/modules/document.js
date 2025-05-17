@@ -23,13 +23,14 @@
  * @property {function} createPage - Create a new page.
  */
 import { getDocumentInfo, getPages, setCurrentPage, createPage } from './document/document-info.js';
-import { getSelection } from './document/document-selection.js';
+import { getSelection, setSelection } from './document/document-selection.js';
 import { getNodeInfo, getNodesInfo, ensureNodeIdIsString } from './document/document-node.js';
 import { getCssAsync } from './document/document-css.js';
 
 export const documentOperations = {
   getDocumentInfo,
   getSelection,
+  setSelection,
   getNodeInfo,
   getNodesInfo,
   ensureNodeIdIsString,

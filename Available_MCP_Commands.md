@@ -67,6 +67,9 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 
 ### Styling and Modification
 
+**Selection:**
+- [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
+
 **Basic Styling:**
 - [set_fill_color](#set_fill_color): Set fill color
 - [set_stroke_color](#set_stroke_color): Set stroke color
@@ -128,6 +131,29 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 
 - [export_node_as_image](#export_node_as_image): Export a node as an image
 - [generate_html](#generate_html): Generate HTML structure from Figma nodes
+
+---
+
+## set_selection
+Set the current selection in Figma to the specified node(s) by ID.
+
+**Parameters:**
+- nodeId (string, optional): A single node ID to select.
+- nodeIds (array of string, optional): An array of node IDs to select.
+- At least one of `nodeId` or `nodeIds` is required.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the selection result as JSON, including which nodes were selected and which were not found.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_selection", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "set_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
 
 ---
 
