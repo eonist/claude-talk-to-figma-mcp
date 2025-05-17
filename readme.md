@@ -68,21 +68,21 @@ irm bun.sh/install.ps1 | iex
 
 ### Step 1: Start the server
 
-1, Terminal: `cd path-to-conduit`
-2. Terminal: `bun install` -> Installs dependencies
-3. Terminal: `bun run build:all` -> Builds the Server and Plugin
-4. Terminal: `bun socket` -> Starts the Server 
-
-### Step 2: Install the Figma Plugin
-
 1. Clone this repository:
    ```bash
    git clone https://github.com/eonist/conduit.git
    ```
-2. Open Figma Desktop App
-3. Go to `Plugins > Development > Import plugin from manifest...`
-4. Navigate to conduit folder and select `conduit/src/plugin/manifest.json`
-5. Start Figma plugin: Plugin -> Development -> Conduit
+2, Terminal: `cd path-to-conduit`
+3. Terminal: `bunx install` -> Builds dependencies
+4. Terminal: `bun run build:all` -> Builds the Server and Plugin
+5. Terminal: `bun socket` -> Starts the Server 
+
+### Step 2: Install the Figma Plugin
+
+1. Open Figma Desktop App
+2. Go to `Plugins > Development > Import plugin from manifest...`
+3. Navigate to conduit folder and select `conduit/src/plugin/manifest.json`
+4. Start Figma plugin: Plugin -> Development -> Conduit
    
 ### Step 3: Configure Agent
 
