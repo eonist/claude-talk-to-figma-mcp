@@ -77,6 +77,11 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [apply_gradient_style](#apply_gradient_style): Apply one or more gradient styles
 - [apply_direct_gradient](#apply_direct_gradient): Apply gradient directly
 
+**Effects:**
+- [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
+- [apply_effect_style](#apply_effect_style): Apply one or more effect styles
+- [set_effect](#set_effect): Set effect(s) directly or by style variable
+
 **Text Styling:**
 - [set_font_name](#set_font_name): Set font name and style
 - [set_font_size](#set_font_size): Set font size
@@ -130,6 +135,80 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 
 # Command Index
 
+## create_effect_style_variable
+Create one or more effect style variables in Figma.
+
+**Parameters:**
+- effects (object or array): Effect style definition(s), each with:
+  - name (string): Name for the effect style
+  - type (string): "DROP_SHADOW", "INNER_SHADOW", "LAYER_BLUR", or "BACKGROUND_BLUR"
+  - color (string, optional): Color for shadow effects (hex or rgba)
+  - offset (object, optional): { x, y }
+  - radius (number, optional)
+  - spread (number, optional)
+  - visible (boolean, optional)
+  - blendMode (string, optional)
+  - opacity (number, optional)
+
+**Example:**
+```json
+{ "command": "create_effect_style_variable", "params": { "effects": { "name": "Soft Shadow", "type": "DROP_SHADOW", "color": "#000", "radius": 8, "opacity": 0.2 } } }
+```
+_Batch:_
+```json
+{ "command": "create_effect_style_variable", "params": { "effects": [
+  { "name": "Soft Shadow", "type": "DROP_SHADOW", "color": "#000", "radius": 8, "opacity": 0.2 },
+  { "name": "Blur", "type": "LAYER_BLUR", "radius": 12 }
+] } }
+```
+
+---
+
+## apply_effect_style
+Apply one or more effect styles to node(s) in Figma.
+
+**Parameters:**
+- entries (object or array): { nodeId, effectStyleId }
+
+**Example:**
+```json
+{ "command": "apply_effect_style", "params": { "entries": { "nodeId": "123:456", "effectStyleId": "S:effect123" } } }
+```
+_Batch:_
+```json
+{ "command": "apply_effect_style", "params": { "entries": [
+  { "nodeId": "123:456", "effectStyleId": "S:effect123" },
+  { "nodeId": "789:101", "effectStyleId": "S:effect456" }
+] } }
+```
+
+---
+
+## set_effect
+Set effect(s) directly or by style variable on one or more nodes in Figma.
+
+**Parameters:**
+- entries (object or array): Each entry:
+  - nodeId (string): Node to update
+  - effects (object or array, optional): Effect(s) to set directly (see EffectSchema)
+  - effectStyleId (string, optional): Effect style variable to apply
+
+**At least one of `effects` or `effectStyleId` is required per entry.**
+
+**Example:**
+_Direct:_
+```json
+{ "command": "set_effect", "params": { "entries": { "nodeId": "123:456", "effects": { "type": "DROP_SHADOW", "color": "#000", "radius": 4 } } } }
+```
+_Batch:_
+```json
+{ "command": "set_effect", "params": { "entries": [
+  { "nodeId": "123:456", "effects": [{ "type": "DROP_SHADOW", "color": "#000", "radius": 4 }] },
+  { "nodeId": "789:101", "effectStyleId": "S:effect123" }
+] } }
+```
+
+---
 
 ## get_document_info
 Get detailed information about the current Figma document.
