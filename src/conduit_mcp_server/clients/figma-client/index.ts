@@ -39,6 +39,7 @@ import { readCommands } from "./read-commands.js";
 import { writeCommands } from "./write-commands.js";
 import { textCommands } from "./text-commands.js";
 import { effectCommands } from "./effect-commands.js";
+import { gradientCommands } from "./gradient-commands.js";
 import { miscCommands } from "./misc-commands.js";
 import { layoutCommands } from "./layout-commands.js";
 
@@ -48,6 +49,7 @@ Object.assign(
   writeCommands,
   textCommands,
   effectCommands,
+  gradientCommands,
   miscCommands,
   layoutCommands
 );

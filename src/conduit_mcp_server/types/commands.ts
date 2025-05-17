@@ -124,12 +124,10 @@ export type FigmaCommand =
   | "set_bulk_font"
   // Set both fill and stroke properties (see commands/figma/modify/styling)
   | "set_style"
-  // Create a gradient paint style (see commands/figma/modify/styling)
-  | "create_gradient_variable"
-  // Apply a gradient style to a node (see commands/figma/modify/styling)
-  | "apply_gradient_style"
-  // Apply a gradient directly to a node (see commands/figma/modify/styling)
-  | "apply_direct_gradient"
+  // Create a gradient style variable (see commands/figma/modify/styling)
+  | "create_gradient_style"
+  // Set a gradient on a node (see commands/figma/modify/styling)
+  | "set_gradient"
   // Set effect(s) directly or by style variable on a node (see commands/figma/modify/styling/effect-tools.ts)
   | "set_effect"
   // Create an effect style variable (see commands/figma/modify/styling/effect-tools.ts)

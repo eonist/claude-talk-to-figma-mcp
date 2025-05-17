@@ -73,9 +73,8 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [set_style](#set_style): Set both fill and stroke
 
 **Gradients:**
-- [create_gradient_variable](#create_gradient_variable): Create one or more gradient styles
-- [apply_gradient_style](#apply_gradient_style): Apply one or more gradient styles
-- [apply_direct_gradient](#apply_direct_gradient): Apply gradient directly
+- [create_gradient_style](#create_gradient_style): Create one or more gradient styles
+- [set_gradient](#set_gradient): Set gradient(s) directly or by style variable
 
 **Effects:**
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
@@ -1160,52 +1159,61 @@ Set the corner radius of a node in Figma.
 
 ---
 
-## create_gradient_variable
-Create one or more gradient paint styles in Figma.
+## create_gradient_style
+Create one or more gradient style variables in Figma.
 
 **Parameters:**
-- gradients (object or array): Gradient definition(s).
+- gradients (object or array): Gradient definition(s), each with:
+  - name (string)
+  - gradientType (string): "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND"
+  - stops (array): Array of color stops
+  - (other optional gradient properties)
 
 **Example:**
+_Single:_
 ```json
-{ "command": "create_gradient_variable", "params": { "gradients": { "name": "Primary Gradient", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,1,0,1] } ] } } }
+{ "command": "create_gradient_style", "params": { "gradients": { "name": "Primary Linear", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ] } } }
+```
+_Batch:_
+```json
+{ "command": "create_gradient_style", "params": { "gradients": [
+  { "name": "Primary Linear", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ] },
+  { "name": "Accent Radial", "gradientType": "RADIAL", "stops": [ { "position": 0, "color": [0,1,0,1] }, { "position": 1, "color": [0,0,0,1] } ] }
+] } }
 ```
 
 ---
 
-## apply_gradient_style
-Apply one or more gradient styles to node(s) in Figma.
+## set_gradient
+Set a gradient on one or more nodes in Figma, either directly or by style variable.
 
 **Parameters:**
-- entries (object or array): { nodeId, gradientStyleId, applyTo }
+- entries (object or array): Each entry:
+  - nodeId (string): Node to update
+  - EITHER:
+    - gradientType (string): "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND"
+    - stops (array): Array of color stops
+  - OR
+    - gradientStyleId (string): Style variable to apply
+  - applyTo (string, optional): "FILL", "STROKE", or "BOTH"
 
-**Example:**
+**At least one of direct args or styleId is required per entry.**
+
+**Examples:**
+_Single node, direct:_
 ```json
-{ "command": "apply_gradient_style", "params": { "entries": { "nodeId": "123:456", "gradientStyleId": "style123", "applyTo": "FILL" } } }
+{ "command": "set_gradient", "params": { "entries": { "nodeId": "123:456", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ], "applyTo": "FILL" } } }
 ```
-
----
-
-## apply_direct_gradient
-Apply a gradient directly to a node without using styles.
-
-**Parameters:**
-- nodeId (string): The unique Figma node ID to apply gradient to.
-- gradientType (string): "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND".
-- stops (array): Array of color stops.
-- applyTo (string, optional): "FILL", "STROKE", or "BOTH".
-
-**Example:**
+_Single node, style variable:_
 ```json
-{ "command": "apply_direct_gradient", "params": {
-  "nodeId": "123:456",
-  "gradientType": "LINEAR",
-  "stops": [
-    { "position": 0, "color": [0.1, 0.1, 0.9, 1] },
-    { "position": 1, "color": [0.6, 0.7, 1, 1] }
-  ],
-  "applyTo": "FILL"
-} }
+{ "command": "set_gradient", "params": { "entries": { "nodeId": "123:456", "gradientStyleId": "S:gradient123", "applyTo": "FILL" } } }
+```
+_Batch (mixed):_
+```json
+{ "command": "set_gradient", "params": { "entries": [
+  { "nodeId": "123:456", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ], "applyTo": "FILL" },
+  { "nodeId": "789:101", "gradientStyleId": "S:gradient123", "applyTo": "STROKE" }
+] } }
 ```
 
 ---
