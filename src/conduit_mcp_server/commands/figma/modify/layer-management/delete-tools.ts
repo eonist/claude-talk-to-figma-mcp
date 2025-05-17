@@ -20,76 +20,60 @@ import { NodeIdsArraySchema } from "./node-ids-schema.js";
  * registerDeleteTools(server, figmaClient);
  */
 export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient) {
-  // Delete single node
-  server.tool(
-    "delete_node",
-    `Deletes a node in Figma.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the deleted node's ID.
-`,
-    {
-      // Validate nodeId as simple or complex Figma node ID, preserving original description
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to delete. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-    },
-    {
-      title: "Delete Node",
-      idempotentHint: true,
-      destructiveHint: true,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456" }
-      ]),
-      edgeCaseWarnings: [
-        "Deleting a node is irreversible.",
-        "Ensure the nodeId is valid to avoid errors.",
-        "Deleting a parent node will also remove its children."
-      ],
-      extraInfo: "Use caution when deleting nodes to prevent data loss."
-    },
-    async ({ nodeId }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("delete_node", { nodeId: id });
-      return { content: [{ type: "text", text: `Deleted node ${id}` }] };
-    }
-  );
-
-  // Batch delete nodes
+  // Unified delete_nodes tool (single or batch)
   server.tool(
     "delete_nodes",
-    `Deletes multiple nodes in Figma.
+    `Deletes one or more nodes in Figma.
+
+Input:
+  - nodeId: (optional) A single node ID to delete.
+  - nodeIds: (optional) An array of node IDs to delete.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes deleted.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the deleted node's ID(s).
+
+Examples:
+  { "nodeId": "123:456" }
+  { "nodeIds": ["123:456", "789:101"] }
 `,
     {
-      nodeIds: NodeIdsArraySchema(1, 100),
+      nodeId: z.string()
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+        .describe("The unique Figma node ID to delete. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
+        .optional(),
+      nodeIds: NodeIdsArraySchema(1, 100).optional(),
     },
     {
-      title: "Delete Nodes",
+      title: "Delete Nodes (Unified)",
       idempotentHint: true,
       destructiveHint: true,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
+        { nodeId: "123:456" },
         { nodeIds: ["123:456", "789:101"] }
       ]),
       edgeCaseWarnings: [
-        "Batch deleting nodes is irreversible.",
+        "Deleting nodes is irreversible.",
         "All nodeIds must be valid to avoid partial failures.",
-        "Deleting parent nodes will remove their children."
+        "Deleting parent nodes will remove their children.",
+        "You must provide either 'nodeId' or 'nodeIds'."
       ],
-      extraInfo: "Batch delete with care to avoid unintended data loss."
+      extraInfo: "Delete with care to avoid unintended data loss."
     },
-    async ({ nodeIds }) => {
-      const ids = nodeIds.map(ensureNodeIdIsString);
-      for (const nodeId of ids) {
-        await figmaClient.executeCommand("delete_node", { nodeId });
+    async ({ nodeId, nodeIds }) => {
+      let ids = [];
+      if (Array.isArray(nodeIds) && nodeIds.length > 0) {
+        ids = nodeIds.map(ensureNodeIdIsString);
+      } else if (nodeId) {
+        ids = [ensureNodeIdIsString(nodeId)];
+      } else {
+        return { content: [{ type: "text", text: "You must provide 'nodeId' or 'nodeIds'." }] };
       }
-      return { content: [{ type: "text", text: `Deleted ${ids.length} nodes` }] };
+      for (const id of ids) {
+        await figmaClient.executeCommand("delete_node", { nodeId: id });
+      }
+      return { content: [{ type: "text", text: `Deleted ${ids.length} node(s): ${ids.join(", ")}` }] };
     }
   );
 }

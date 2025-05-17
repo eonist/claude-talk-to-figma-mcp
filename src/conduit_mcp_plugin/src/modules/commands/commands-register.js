@@ -63,8 +63,25 @@ export function initializeCommands() {
   registerCommand('resize_node', shapeOperations.resizeNode);
   registerCommand('resize_nodes', shapeOperations.resizeNodes);
   // Delete operations
-  registerCommand('delete_node', shapeOperations.deleteNode);
-  registerCommand('delete_nodes', shapeOperations.deleteNodes);
+  registerCommand('delete_nodes', async (params) => {
+    let nodeIds = [];
+    if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+      nodeIds = params.nodeIds;
+    } else if (typeof params.nodeId === "string") {
+      nodeIds = [params.nodeId];
+    } else {
+      throw new Error("You must provide 'nodeId' or 'nodeIds'");
+    }
+    const deleted = [];
+    for (const nodeId of nodeIds) {
+      const node = figma.getNodeById(nodeId);
+      if (node) {
+        node.remove();
+        deleted.push(nodeId);
+      }
+    }
+    return { success: true, deleted };
+  });
   // Move operations
   registerCommand('move_node', shapeOperations.moveNode);
   // Flatten

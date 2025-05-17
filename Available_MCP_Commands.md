@@ -852,15 +852,21 @@ Group nodes in Figma.
 
 ---
 
-## delete_node
-Delete a node in Figma.
+## delete_nodes
+Delete one or more nodes in Figma.
 
 **Parameters:**
-- nodeId (string): The node ID to delete.
+- nodeId (string, optional): The node ID to delete.
+- nodeIds (array of string, optional): Array of node IDs to delete.
 
-**Example:**
+**Examples:**
+_Single:_
 ```json
-{ "command": "delete_node", "params": { "nodeId": "123:456" } }
+{ "command": "delete_nodes", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "delete_nodes", "params": { "nodeIds": ["123:456", "789:101"] } }
 ```
 
 ---
