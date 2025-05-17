@@ -4,45 +4,6 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
 
 ---
 
-## Command Cross-Reference
-
-| Command             | Registration File                                         |
-|---------------------|-----------------------------------------------------------|
-| get_document_info   | commands/figma/read/document-tools.ts                     |
-| get_selection       | commands/figma/read/document-tools.ts                     |
-| get_node_info       | commands/figma/read/document-tools.ts                     |
-| get_nodes_info      | commands/figma/read/document-tools.ts                     |
-| get_styles          | commands/figma/read/document-tools.ts                     |
-| get_local_components| commands/figma/read/document-tools.ts                     |
-| get_team_components | commands/figma/read/component-tools.ts                    |
-| get_remote_components| commands/figma/read/document-tools.ts                    |
-| get_styled_text_segments| commands/figma/read/document-tools.ts                 |
-| scan_text_nodes     | commands/figma/read/document-tools.ts                     |
-| get_css_async       | commands/figma/read/document-tools.ts                     |
-| get_pages           | commands/figma/read/document-tools.ts                     |
-| set_current_page    | commands/figma/read/document-tools.ts                     |
-| create_frame        | commands/figma/create/shape-creation/frames.ts            |
-| create_rectangle    | commands/figma/create/shape-creation/rectangles.ts        |
-| create_ellipse      | commands/figma/create/shape-creation/ellipses.ts          |
-| create_line         | commands/figma/create/shape-creation/lines.ts             |
-| create_text         | commands/figma/create/text-creation/text-tools.ts         |
-| create_bounded_text | commands/figma/create/text-creation/text-tools.ts         |
-| create_vector       | commands/figma/create/vector-creation-tools.ts            |
-| create_component_from_node | commands/figma/create/component-creation/node-tools.ts |
-| create_component_instance  | commands/figma/create/component-creation/instance-tools.ts |
-| create_button       | commands/figma/create/component-creation/button-tools.ts  |
-| insert_image        | commands/figma/create/image-creation/from-url.ts          |
-| insert_local_image  | commands/figma/create/image-creation/from-local.ts        |
-| insert_svg_vector   | commands/figma/create/svg-creation-tools.ts               |
-| insert_children     | commands/figma/modify/layer-management/insert-child-tools.ts |
-| detach_instances    | commands/figma/modify/property-manipulation/detach-instance-tools.ts |
-| set_node_locked     | commands/figma/modify/property-manipulation/node-visibility-lock.ts |
-| set_node_visible    | commands/figma/modify/property-manipulation/node-visibility-lock.ts |
-| create_page         | commands/figma/create/document-creation.ts                |
-| ...                 | ...                                                       |
-
----
-
 ## Command Categories
 
 ### Read Commands
@@ -1135,18 +1096,36 @@ Set the corner radius of a node in Figma.
 ---
 
 ### set_font_name
-Set the font name and style of a text node in Figma.
+Set the font name and style of one or more text nodes in Figma.
 
 **Parameters:**
-- nodeId (string)
-- family (string)
-- style (string, optional)
+- font (object, optional): Single font config: { nodeId, family, style }
+- fonts (array, optional): Array of font configs: [{ nodeId, family, style }]
 
-**Example:**
+**At least one of `font` or `fonts` must be provided.**
+
+**Examples:**
+
+_Single node:_
 ```json
 {
   "command": "set_font_name",
-  "params": { "nodeId": "123:456", "family": "Inter", "style": "Bold" }
+  "params": {
+    "font": { "nodeId": "123:456", "family": "Inter", "style": "Bold" }
+  }
+}
+```
+
+_Multiple nodes:_
+```json
+{
+  "command": "set_font_name",
+  "params": {
+    "fonts": [
+      { "nodeId": "123:456", "family": "Inter", "style": "Bold" },
+      { "nodeId": "789:101", "family": "Roboto", "style": "Regular" }
+    ]
+  }
 }
 ```
 

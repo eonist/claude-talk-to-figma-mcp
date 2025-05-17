@@ -38,7 +38,8 @@ Model Context Protocol (MCP) is the framework that allows an AI agent to communi
 
 - **Text manipulation** - Enables AI-powered control to add, edit, and style text elements within your Figma designs.
 - **Gradient support** - Allows the AI to create and apply vibrant gradient fills to various design elements.
-- **Font support** - Provides the capability for the AI to access and apply a diverse range of fonts and typographic styles.
+- **Font support** - Provides the capability for the AI to access and apply a diverse range of fonts and typographic styles.  
+  - Now supports unified batch and single font setting via the `set_font_name` tool. You can set the font for one or many text nodes in a single call.
 - **AutoLayout** - Facilitates the automatic creation of responsive and adaptive layouts by leveraging Figma's AutoLayout feature.
 - **Batch operations** - Allows the AI to perform actions on multiple Figma elements simultaneously, enhancing workflow efficiency.
 - **Geometric shapes** - Enables the AI to generate common geometric shapes like rectangles, circles, and polygons as needed.
@@ -46,7 +47,31 @@ Model Context Protocol (MCP) is the framework that allows an AI agent to communi
 - **Frame, Group, Component** - Allows the AI to structure designs effectively through the creation and management of frames, groups, and reusable components.
 - **Rename layers** - Provides the ability for the AI to programmatically rename layers, aiding in the organization of Figma files.
 
-### Compatibility
+### Batch Font Setting Example
+
+You can set the font for one or more text nodes using the same API:
+
+**Single node:**
+```json
+{
+  "font": {
+    "nodeId": "1:23",
+    "family": "Inter",
+    "style": "Bold"
+  }
+}
+```
+
+**Multiple nodes:**
+```json
+{
+  "fonts": [
+    { "nodeId": "1:23", "family": "Inter", "style": "Bold" },
+    { "nodeId": "2:34", "family": "Roboto", "style": "Regular" }
+  ]
+}
+```
+
 
 - VSCode w/ GitHub Copilot agent (Sonnet 3.7) (50 free Sonnet 3.5 requests per month)
 - VSCode w/ Cline (Multiple LLM's available)
