@@ -75,7 +75,6 @@ export function initializeCommands() {
   registerCommand('set_node_visible', setNodeVisible);
 
   // Layer reorder operations
-  registerCommand('reorder_node', reorderNode);
   registerCommand('reorder_nodes', reorderNodes);
 
   // Boolean operation commands

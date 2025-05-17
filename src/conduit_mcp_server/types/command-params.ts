@@ -127,16 +127,15 @@ export interface MoveNodesParams extends BaseCommandParams {
   y: number;
 }
 
-/** Parameters for reorder_node command */
-export interface ReorderNodeParams extends BaseCommandParams {
-  nodeId: string;
-  direction?: 'up' | 'down' | 'front' | 'back';
-  index?: number;
-}
 
-/** Parameters for reorder_nodes command */
+/** Parameters for reorder_nodes command (unified single/batch) */
 export interface ReorderNodesParams extends BaseCommandParams {
-  reorders: Array<{
+  reorder?: {
+    nodeId: string;
+    direction?: 'up' | 'down' | 'front' | 'back';
+    index?: number;
+  };
+  reorders?: Array<{
     nodeId: string;
     direction?: 'up' | 'down' | 'front' | 'back';
     index?: number;
@@ -146,7 +145,7 @@ export interface ReorderNodesParams extends BaseCommandParams {
   };
 }
 
-/** Parameters for resize_node command */
+ /** Parameters for resize_node command */
 export interface ResizeNodeParams extends BaseCommandParams {
   nodeId: string;
   width: number;
@@ -349,7 +348,6 @@ export interface CommandParamsMap {
   // Modify commands
   move_node: MoveNodeParams;
   move_nodes: MoveNodesParams;
-  reorder_node: ReorderNodeParams;
   reorder_nodes: ReorderNodesParams;
   resize_node: ResizeNodeParams;
   resize_nodes: ResizeNodesParams;

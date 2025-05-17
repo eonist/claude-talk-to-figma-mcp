@@ -335,7 +335,13 @@ export async function reorderNode(params) {
  * @returns {Promise<{success: boolean, results: Array<Object>, errors?: Array<string>}>}
  */
 export async function reorderNodes(params) {
-  const { reorders = [], options = {} } = params;
+  let reordersArr = [];
+  const options = params.options || {};
+  if (Array.isArray(params.reorders)) {
+    reordersArr = params.reorders;
+  } else if (params.reorder) {
+    reordersArr = [params.reorder];
+  }
   const results = [];
   const errors = [];
   for (const config of reorders) {
