@@ -916,6 +916,20 @@ Rename one or more nodes in Figma.
 
 ---
 
+## ai_rename_layers
+AI-powered rename of specified layers.
+
+**Parameters:**
+- layer_ids (array of string): Array of node IDs to rename.
+- context_prompt (string, optional): Context for the AI renaming.
+
+**Example:**
+```json
+{ "command": "ai_rename_layers", "params": { "layer_ids": ["123:456", "123:789"], "context_prompt": "Rename for navigation" } }
+```
+
+---
+
 ## rename_layer
 Rename one or more nodes in Figma.
 
