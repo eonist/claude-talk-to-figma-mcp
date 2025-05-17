@@ -18,12 +18,12 @@
  * @property {function} getStyles - Get all styles.
  * @property {function} setEffects - Set visual effects.
  * @property {function} setEffectStyleId - Set effect style by ID.
- * @property {function} createGradientVariable - Create a gradient variable.
- * @property {function} applyGradientStyle - Apply a gradient style.
+ * @property {function} createGradientStyle - Create a gradient style variable (single or batch).
+ * @property {function} setGradient - Set a gradient (direct or style, single or batch).
  */
 import { setFillColor, setStrokeColor } from './styles/styles-color.js';
 import { setEffects, setEffectStyleId } from './styles/styles-effects.js';
-import { createGradientVariable, applyGradientStyle } from './styles/styles-gradient.js';
+import { createGradientStyle, setGradient } from './styles/styles-gradient.js';
 import { getStyles } from './styles/styles-get.js';
 
 export const styleOperations = {
@@ -32,6 +32,6 @@ export const styleOperations = {
   getStyles,
   setEffects,
   setEffectStyleId,
-  createGradientVariable,
-  applyGradientStyle
+  createGradientStyle,
+  setGradient
 };
