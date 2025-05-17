@@ -105,10 +105,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [flatten_selection](#flatten_selection): Flatten a selection of nodes
 
 **Boolean Operations:**
-- [union_selection](#union_selection): Union selected shapes
-- [subtract_selection](#subtract_selection): Subtract shapes
-- [intersect_selection](#intersect_selection): Intersect shapes
-- [exclude_selection](#exclude_selection): Exclude overlapping areas
+- [boolean](#boolean): Perform union, subtract, intersect, or exclude on nodes or selection
 
 **Node Management:**
 - [group_or_ungroup_nodes](#group_or_ungroup_nodes): Group or ungroup nodes
@@ -732,28 +729,30 @@ _Flatten selection:_
 
 ---
 
-## intersect_selection
-Intersect selected shapes in Figma.
+## boolean
+Perform boolean operations (union, subtract, intersect, exclude) on Figma nodes or the current selection.
 
 **Parameters:**
-- nodeIds (array of string): Array of node IDs to intersect.
+- operation (string, required): One of "union", "subtract", "intersect", "exclude"
+- selection (boolean, optional): If true, use the current selection in Figma (nodeId/nodeIds ignored)
+- nodeId (string, optional): Single node ID
+- nodeIds (array of string, optional): Multiple node IDs (min 2)
 
-**Example:**
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the result.
+
+**Examples:**
+_Union on selection:_
 ```json
-{ "command": "intersect_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+{ "command": "boolean", "params": { "operation": "union", "selection": true } }
 ```
-
----
-
-## exclude_selection
-Exclude overlapping areas of selected shapes in Figma.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs to exclude.
-
-**Example:**
+_Subtract with explicit node IDs:_
 ```json
-{ "command": "exclude_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+{ "command": "boolean", "params": { "operation": "subtract", "nodeIds": ["123:456", "789:101"] } }
+```
+_Intersect a single node with others:_
+```json
+{ "command": "boolean", "params": { "operation": "intersect", "nodeId": "123:456", "nodeIds": ["789:101"] } }
 ```
 
 ---
@@ -781,31 +780,6 @@ _Ungrouping:_
 
 ---
 
-## union_selection
-Union selected shapes in Figma.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs to union.
-
-**Example:**
-```json
-{ "command": "union_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
-```
-
----
-
-## subtract_selection
-Subtract top shapes from bottom shape in Figma.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs to subtract.
-
-**Example:**
-```json
-{ "command": "subtract_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
-```
-
----
 
 ## intersect_selection
 Intersect selected shapes in Figma.

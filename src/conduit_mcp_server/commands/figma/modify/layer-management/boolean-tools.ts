@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
 /**
@@ -55,136 +55,64 @@ Returns:
     }
   );
 
-  // Boolean Operations
+  // Unified Boolean Operation Tool
   server.tool(
-    "union_selection",
-    `Union selected shapes.
+    "boolean",
+    `Perform boolean operations (union, subtract, intersect, exclude) on Figma nodes.
+
+Parameters:
+  - operation (string, required): One of "union", "subtract", "intersect", "exclude".
+  - selection (boolean, optional): If true, use the current selection in Figma.
+  - nodeId (string, optional): Single node ID.
+  - nodeIds (array of string, optional): Multiple node IDs (min 2).
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes unioned.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the result.
 `,
     {
-      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
-      nodeIds: NodeIdsArraySchema(2, 100),
+      operation: z.enum(["union", "subtract", "intersect", "exclude"]),
+      selection: z.boolean().optional(),
+      nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." }).optional(),
+      nodeIds: NodeIdsArraySchema(1, 100).optional(),
     },
     {
-      title: "Union Selection",
+      title: "Boolean Operation",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
+        { operation: "union", selection: true },
+        { operation: "subtract", nodeIds: ["123:456", "789:101"] },
+        { operation: "intersect", nodeId: "123:456", nodeIds: ["789:101"] }
       ]),
       edgeCaseWarnings: [
+        "If 'selection' is true, the current Figma selection is used and nodeId/nodeIds are ignored.",
+        "At least two nodes are required for boolean operations.",
         "All nodeIds must be valid and belong to the same parent.",
-        "Unioning nodes changes their z-order and shape.",
-        "Only nodes that support union operations are valid."
+        "Boolean operations change z-order and shape.",
+        "Only nodes that support boolean operations are valid."
       ],
-      extraInfo: "Unioning is useful for combining shapes into a single vector."
+      extraInfo: "Boolean operations are useful for combining or subtracting shapes in vector editing."
     },
-    async ({ nodeIds }) => {
-      await figmaClient.executeCommand("union_selection", { nodeIds });
-      return { content: [{ type: "text", text: `Unioned ${nodeIds.length} nodes` }] };
-    }
-  );
-
-  server.tool(
-    "subtract_selection",
-    `Subtract top shapes from bottom shape.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes subtracted.
-`,
-    {
-      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
-      nodeIds: NodeIdsArraySchema(2, 100),
-    },
-    {
-      title: "Subtract Selection",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Subtracting nodes changes their z-order and shape.",
-        "Only nodes that support subtraction operations are valid."
-      ],
-      extraInfo: "Subtracting is useful for removing overlapping areas from shapes."
-    },
-    async ({ nodeIds }) => {
-      await figmaClient.executeCommand("subtract_selection", { nodeIds });
-      return { content: [{ type: "text", text: `Subtracted ${nodeIds.length} nodes` }] };
-    }
-  );
-
-  server.tool(
-    "intersect_selection",
-    `Intersect selected shapes.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes intersected.
-`,
-    {
-      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
-      nodeIds: NodeIdsArraySchema(2, 100),
-    },
-    {
-      title: "Intersect Selection",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Intersecting nodes changes their z-order and shape.",
-        "Only nodes that support intersection operations are valid."
-      ],
-      extraInfo: "Intersecting is useful for creating new shapes from overlapping areas."
-    },
-    async ({ nodeIds }) => {
-      await figmaClient.executeCommand("intersect_selection", { nodeIds });
-      return { content: [{ type: "text", text: `Intersected ${nodeIds.length} nodes` }] };
-    }
-  );
-
-  server.tool(
-    "exclude_selection",
-    `Exclude overlapping areas of selected shapes.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes excluded.
-`,
-    {
-      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
-      nodeIds: NodeIdsArraySchema(2, 100),
-    },
-    {
-      title: "Exclude Selection",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "All nodeIds must be valid and belong to the same parent.",
-        "Excluding nodes changes their z-order and shape.",
-        "Only nodes that support exclusion operations are valid."
-      ],
-      extraInfo: "Excluding is useful for creating new shapes by removing overlapping areas."
-    },
-    async ({ nodeIds }) => {
-      await figmaClient.executeCommand("exclude_selection", { nodeIds });
-      return { content: [{ type: "text", text: `Excluded ${nodeIds.length} nodes` }] };
+    async ({ operation, selection, nodeId, nodeIds }) => {
+      let ids = [];
+      if (selection) {
+        const sel = await figmaClient.executeCommand("get_selection", {});
+        ids = sel.nodeIds || [];
+      } else {
+        if (nodeIds && nodeIds.length) ids = nodeIds.map(ensureNodeIdIsString);
+        if (nodeId) ids.push(ensureNodeIdIsString(nodeId));
+      }
+      if (ids.length < 2) throw new Error("At least two node IDs are required for boolean operations.");
+      const opMap = {
+        union: "union_selection",
+        subtract: "subtract_selection",
+        intersect: "intersect_selection",
+        exclude: "exclude_selection"
+      };
+      await figmaClient.executeCommand(opMap[operation], { nodeIds: ids });
+      return { content: [{ type: "text", text: `${operation[0].toUpperCase() + operation.slice(1)}d ${ids.length} nodes` }] };
     }
   );
 }

@@ -134,14 +134,8 @@ export type FigmaCommand =
   | "detach_instance"
   // Detach multiple component instances from their masters (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
   | "detach_instances"
-  // Union selected shapes (see commands/figma/modify/layer-management/boolean-tools.ts)
-  | "union_selection"
-  // Subtract top shapes from bottom shape (see commands/figma/modify/layer-management/boolean-tools.ts)
-  | "subtract_selection"
-  // Intersect selected shapes (see commands/figma/modify/layer-management/boolean-tools.ts)
-  | "intersect_selection"
-  // Exclude overlapping areas of selected shapes (see commands/figma/modify/layer-management/boolean-tools.ts)
-  | "exclude_selection"
+  // Boolean operations: union, subtract, intersect, exclude (see commands/figma/modify/layer-management/boolean-tools.ts)
+  | "boolean"
   // Insert an image from a URL (see commands/figma/create/image-creation/from-url.ts)
   | "insert_image"
   // Create a complete button with background and text (see commands/figma/create/component-creation/button-tools.ts)
