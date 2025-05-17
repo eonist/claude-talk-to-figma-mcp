@@ -6,7 +6,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 
 ## Unified Command Pattern
 
-**Most commands now support both single and batch operations via a unified API:**
+**Most commands support both single and batch operations via a unified API:**
 - You can pass either a single object or an array of objects (using a pluralized parameter) for batch operations.
 - The same command name is used for both single and batch; the input type determines the behavior.
 - For commands that require a specific batch parameter (e.g., `nodeIds`), this is documented per command.
@@ -49,14 +49,14 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [set_multiple_text_contents](#set_multiple_text_contents): Set multiple text contents
 
 **Components:**
-- [create_components_from_nodes](#create_components_from_nodes): Convert one or more nodes to components
-- [create_component_instance](#create_component_instance): Create one or more component instances
+- [create_components_from_nodes](#create_components_from_nodes): Convert nodes to components
+- [create_component_instance](#create_component_instance): Create component instances
 - [create_button](#create_button): Create a complete button
 
 **Images and SVG:**
-- [insert_image](#insert_image): Insert one or more images from URLs
-- [insert_local_image](#insert_local_image): Insert one or more local images
-- [insert_svg_vector](#insert_svg_vector): Insert one or more SVG vectors
+- [insert_image](#insert_image): Insert images from URLs
+- [insert_local_image](#insert_local_image): Insert local images
+- [insert_svg_vector](#insert_svg_vector): Insert SVG vectors
 
 **Pages:**
 - [create_page](#create_page): Create a new page
@@ -95,11 +95,9 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 ### Transformations and Management
 
 **Positioning and Sizing:**
-- [move_node](#move_node): Move a node
-- [move_nodes](#move_nodes): Move multiple nodes
-- [resize_node](#resize_node): Resize a node
-- [resize_nodes](#resize_nodes): Resize multiple nodes
-- [flatten_node](#flatten_node): Flatten a single node
+- [move_node](#move_node): Move a node (single or batch)
+- [resize_node](#resize_node): Resize a node (single or batch)
+- [flatten_node](#flatten_node): Flatten a single node (or batch)
 - [flatten_selection](#flatten_selection): Flatten a selection of nodes
 
 **Boolean Operations:**
@@ -111,11 +109,9 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 **Node Management:**
 - [group_nodes](#group_nodes): Group nodes
 - [ungroup_nodes](#ungroup_nodes): Ungroup a node
-- [delete_node](#delete_node): Delete a node
-- [delete_nodes](#delete_nodes): Delete multiple nodes
-- [clone_node](#clone_node): Clone a node
-- [insert_child](#insert_child): Insert a child node into a parent
-- [insert_children](#insert_children): Insert multiple child nodes into parents
+- [delete_node](#delete_node): Delete one or more nodes
+- [clone_node](#clone_node): Clone a node (single or batch)
+- [insert_child](#insert_child): Insert a child node into a parent (single or batch)
 - [set_node_locked](#set_node_locked): Lock or unlock nodes
 - [set_node_visible](#set_node_visible): Show or hide nodes
 
@@ -123,8 +119,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [detach_instances](#detach_instances): Detach one or more component instances
 
 **Naming:**
-- [rename_layer](#rename_layer): Rename nodes
-- [rename_layers](#rename_layers): Rename nodes (batch/pattern)
+- [rename_layer](#rename_layer): Rename nodes (single or batch)
 - [rename_multiple](#rename_multiple): Rename nodes with distinct names
 - [ai_rename_layers](#ai_rename_layers): AI-powered renaming
 
