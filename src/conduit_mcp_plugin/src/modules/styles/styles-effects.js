@@ -1,0 +1,78 @@
+/**
+ * Effects operations for Figma nodes.
+ * Exports: setEffects, setEffectStyleId
+ */
+
+/**
+ * Sets visual effects on a node.
+ * @async
+ * @function setEffects
+ */
+export async function setEffects(params) {
+  const { nodeId, effects } = params || {};
+  if (!nodeId) throw new Error("Missing nodeId parameter");
+  if (!effects || !Array.isArray(effects)) throw new Error("Invalid effects parameter");
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  if (!("effects" in node)) throw new Error(`Node does not support effects: ${nodeId}`);
+
+  const validEffects = effects.map(effect => {
+    switch (effect.type) {
+      case "DROP_SHADOW":
+      case "INNER_SHADOW":
+        return {
+          type: effect.type,
+          color: effect.color || { r: 0, g: 0, b: 0, a: 0.5 },
+          offset: effect.offset || { x: 0, y: 0 },
+          radius: effect.radius || 5,
+          spread: effect.spread || 0,
+          visible: effect.visible !== undefined ? effect.visible : true,
+          blendMode: effect.blendMode || "NORMAL"
+        };
+      case "LAYER_BLUR":
+      case "BACKGROUND_BLUR":
+        return {
+          type: effect.type,
+          radius: effect.radius || 5,
+          visible: effect.visible !== undefined ? effect.visible : true
+        };
+      default:
+        throw new Error(`Unsupported effect type: ${effect.type}`);
+    }
+  });
+
+  node.effects = validEffects;
+  return {
+    id: node.id,
+    name: node.name,
+    effects: node.effects
+  };
+}
+
+/**
+ * Applies an effect style to a node.
+ * @async
+ * @function setEffectStyleId
+ */
+export async function setEffectStyleId(params) {
+  const { nodeId, effectStyleId } = params || {};
+  if (!nodeId) throw new Error("Missing nodeId parameter");
+  if (!effectStyleId) throw new Error("Missing effectStyleId parameter");
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  if (!("effectStyleId" in node)) throw new Error(`Node does not support effect styles: ${nodeId}`);
+
+  const effectStyles = await figma.getLocalEffectStylesAsync();
+  const style = effectStyles.find(s => s.id === effectStyleId);
+  if (!style) throw new Error(`Effect style not found: ${effectStyleId}`);
+
+  node.effectStyleId = effectStyleId;
+  return {
+    id: node.id,
+    name: node.name,
+    effectStyleId: node.effectStyleId,
+    appliedEffects: node.effects
+  };
+}
