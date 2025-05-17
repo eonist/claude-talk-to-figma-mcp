@@ -20,108 +20,83 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  */
 export function registerFlattenNodeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "flatten_node",
-    `Flatten a single node in Figma, merging all its child vector layers and shapes into a single vector layer.
+    "flatten_nodes",
+    `Flatten one or more nodes in Figma, or the current selection, merging all child vector layers and shapes into a single vector layer.
+
+Input:
+  - nodeId: (optional) A single node ID to flatten.
+  - nodeIds: (optional) An array of node IDs to flatten.
+  - selection: (optional) If true, flattens all currently selected nodes.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the node ID and success status.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the results for each node.
+
+Examples:
+  { "nodeId": "123:456" }
+  { "nodeIds": ["123:456", "789:101"] }
+  { "selection": true }
 `,
     {
       nodeId: z.string()
         .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("ID of the node to flatten. Must be a Frame, Group, or node that supports flattening."),
+        .describe("ID of the node to flatten. Must be a Frame, Group, or node that supports flattening.")
+        .optional(),
+      nodeIds: z.array(
+        z.string()
+          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
+      )
+      .min(1)
+      .max(100)
+      .describe("Array of Figma node IDs to flatten. Must contain 1 to 100 items.")
+      .optional(),
+      selection: z.boolean().optional()
     },
     {
-      title: "Flatten Node",
+      title: "Flatten Nodes (Unified)",
       idempotentHint: false,
       destructiveHint: true,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
-        { nodeId: "123:456" }
+        { nodeId: "123:456" },
+        { nodeIds: ["123:456", "789:101"] },
+        { selection: true }
       ]),
       edgeCaseWarnings: [
         "Flattening is destructive and cannot be undone.",
         "All child layers are merged into a single vector.",
-        "Only nodes that support flattening (Frame, Group, etc.) are valid."
+        "Only nodes that support flattening (Frame, Group, etc.) are valid.",
+        "If 'selection' is true, nodeId/nodeIds are ignored."
       ],
-      extraInfo: "Flattening is useful for export and performance, but removes layer structure."
+      extraInfo: "Flattening is useful for export, performance, and simplification."
     },
-    async ({ nodeId }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      const result = await figmaClient.executeCommand("flatten_node", { nodeId: id });
-      return {
-        content: [{
-          type: "text",
-          text: `Flattened node ${id} (success: ${result.success ?? true})`
-        }]
-      };
-    }
-  );
-}
-
-/**
- * Registers the flatten_nodes batch command for flattening multiple nodes in Figma.
- *
- * The "flatten_nodes" command merges all child vector layers and shapes within each given node into a single vector layer.
- * This operation is commonly used to reduce complexity, optimize performance, or prepare artwork for export.
- * Flattening is destructive: after flattening, the original child layers are replaced by a single merged vector.
- *
- * Parameters:
- *   - nodeIds (string[]): Array of Figma node IDs to flatten. Each must be a valid node that supports flattening (e.g., Frame, Group, or selection of vector shapes).
- *
- * Returns:
- *   - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes flattened and their IDs.
- *
- * Example use case:
- *   - Flatten multiple groups of shapes into single vectors before exporting as SVG or PNG.
- *   - Simplify multiple complex groups to make editing or sharing easier.
- */
-export function registerFlattenNodesTools(server: McpServer, figmaClient: FigmaClient) {
-  server.tool(
-    "flatten_nodes",
-    `Flatten multiple nodes in Figma, merging all child vector layers and shapes within each node into a single vector layer.
-
-This operation is destructive: after flattening, the original child layers are replaced by a single merged vector. 
-Flattening is useful for reducing complexity, optimizing performance, or preparing artwork for export.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes flattened and their IDs.
-
-`,
-    {
-      nodeIds: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to flatten. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
-      )
-      .min(1)
-      .max(100)
-      .describe("Array of Figma node IDs to flatten. Must contain 1 to 100 items."),
-    },
-    {
-      title: "Flatten Nodes (Batch)",
-      idempotentHint: false,
-      destructiveHint: true,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "Batch flattening is destructive and cannot be undone.",
-        "All child layers in each node are merged into single vectors.",
-        "Only nodes that support flattening are valid."
-      ],
-      extraInfo: "Batch flattening is efficient for preparing multiple groups for export or simplification."
-    },
-    async ({ nodeIds }) => {
-      const ids = nodeIds.map(ensureNodeIdIsString);
+    async (args, extra) => {
+      let ids = [];
+      if (args.selection) {
+        // Get selected node IDs from Figma via the client
+        const selectionResult = await figmaClient.executeCommand("get_selection", {});
+        if (
+          selectionResult &&
+          Array.isArray(selectionResult.nodeIds) &&
+          selectionResult.nodeIds.length > 0
+        ) {
+          ids = selectionResult.nodeIds.map(ensureNodeIdIsString);
+        } else {
+          return { content: [{ type: "text", text: "No nodes selected." }] };
+        }
+      } else if (Array.isArray(args.nodeIds)) {
+        ids = args.nodeIds.map(ensureNodeIdIsString);
+      } else if (args.nodeId) {
+        ids = [ensureNodeIdIsString(args.nodeId)];
+      } else {
+        return { content: [{ type: "text", text: "You must provide 'nodeId', 'nodeIds', or 'selection: true'." }] };
+      }
+      // Flatten all nodes
       const result = await figmaClient.executeCommand("flatten_nodes", { nodeIds: ids });
       return {
         content: [{
           type: "text",
-          text: `Flattened ${ids.length} nodes: ${ids.join(", ")} (success: ${result.success ?? true})`
+          text: `Flattened ${ids.length} node(s): ${ids.join(", ")} (success: ${result.success ?? true})`
         }]
       };
     }

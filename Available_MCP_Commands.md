@@ -709,41 +709,26 @@ Resize a node in Figma.
 
 ---
 
-## flatten_node
-Flatten a single node in Figma, merging all its child vector layers and shapes into a single vector layer.
+## flatten_nodes
+Flatten one or more nodes, or the current selection, merging all child vector layers and shapes into a single vector layer.
 
 **Parameters:**
-- nodeId (string): The ID of the node to flatten.
+- nodeId (string, optional): The ID of a single node to flatten.
+- nodeIds (array of string, optional): Array of node IDs to flatten.
+- selection (boolean, optional): If true, flattens all currently selected nodes.
 
-**Example:**
+**Examples:**
+_Single node:_
 ```json
-{ "command": "flatten_node", "params": { "nodeId": "123:456" } }
+{ "command": "flatten_nodes", "params": { "nodeId": "123:456" } }
 ```
-
----
-
-## flatten_selection
-Flatten a selection of nodes in Figma.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs to flatten.
-
-**Example:**
+_Batch:_
 ```json
-{ "command": "flatten_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+{ "command": "flatten_nodes", "params": { "nodeIds": ["123:456", "789:101"] } }
 ```
-
----
-
-## subtract_selection
-Subtract top shapes from bottom shape in Figma.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs to subtract.
-
-**Example:**
+_Flatten selection:_
 ```json
-{ "command": "subtract_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+{ "command": "flatten_nodes", "params": { "selection": true } }
 ```
 
 ---

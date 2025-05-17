@@ -14,9 +14,19 @@
  * @throws {Error} If nodeIds is missing/invalid, or nodes cannot be found or flattened.
  */
 export async function flatten_nodes(params) {
-  const { nodeIds } = params || {};
-  if (!nodeIds || !Array.isArray(nodeIds) || nodeIds.length === 0) {
-    throw new Error("Must provide an array of nodeIds to flatten");
+  let nodeIds = [];
+  if (params && params.selection) {
+    // Flatten all currently selected nodes
+    nodeIds = (figma.currentPage.selection || []).map(node => node.id);
+    if (nodeIds.length === 0) {
+      throw new Error("No nodes selected to flatten");
+    }
+  } else if (params && Array.isArray(params.nodeIds)) {
+    nodeIds = params.nodeIds;
+  } else if (params && typeof params.nodeId === "string") {
+    nodeIds = [params.nodeId];
+  } else {
+    throw new Error("Must provide 'nodeId', 'nodeIds', or 'selection: true'");
   }
   const flattened = [];
   for (const nodeId of nodeIds) {

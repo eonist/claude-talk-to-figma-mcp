@@ -68,7 +68,6 @@ export function initializeCommands() {
   // Move operations
   registerCommand('move_node', shapeOperations.moveNode);
   // Flatten
-  registerCommand('flatten_node', shapeOperations.flattenNode);
 
   // Node lock/visibility operations
   registerCommand('set_node_locked', setNodeLocked);
@@ -86,18 +85,6 @@ export function initializeCommands() {
   // Rectangle to Frame conversion command
   registerCommand('convert_rectangle_to_frame', shapeOperations.convertRectangleToFrame);
 
-  // Flatten Selection Tool
-  registerCommand('flatten_selection', async ({ nodeIds }) => {
-    if (!Array.isArray(nodeIds) || nodeIds.length === 0) {
-      throw new Error('No nodes provided for flatten_selection');
-    }
-    const nodes = nodeIds
-      .map(id => figma.getNodeById(id))
-      .filter(node => node !== null);
-    figma.currentPage.selection = nodes;
-    figma.flatten();
-    return { success: true, message: `Flattened ${nodes.length} nodes.` };
-  });
 
   registerCommand('create_text', textOperations.createText);
   registerCommand('create_texts', textOperations.createTexts);
