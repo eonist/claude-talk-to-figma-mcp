@@ -508,21 +508,21 @@ _Batch:_
 
 ---
 
-## create_component_instance
-Create one or more component instances.
+## create_instances_from_components
+Create one or more component instances from components.
 
 **Parameters:**
-- componentKey (string), x, y (number)
-- instance (object) or instances (array of objects)
+- entry (object, optional): Single instance config: { componentKey, x, y }
+- entries (array, optional): Array of instance configs
 
 **Examples:**
 _Single:_
 ```json
-{ "command": "create_component_instance", "params": { "componentKey": "123:456", "x": 100, "y": 100 } }
+{ "command": "create_instances_from_components", "params": { "entry": { "componentKey": "123:456", "x": 100, "y": 100 } } }
 ```
 _Batch:_
 ```json
-{ "command": "create_component_instance", "params": { "instances": [
+{ "command": "create_instances_from_components", "params": { "entries": [
   { "componentKey": "123:456", "x": 100, "y": 100 },
   { "componentKey": "123:789", "x": 300, "y": 100 }
 ] } }
@@ -1472,18 +1472,6 @@ Detach one or more component instances from their masters.
 
 ---
 
-## flatten_selection
-Flatten a selection of nodes in Figma.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs to flatten.
-
-**Example:**
-```json
-{ "command": "flatten_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
-```
-
----
 
 ## flatten_selection
 Flatten a selection of nodes in Figma.
