@@ -10,6 +10,7 @@ import { setNodeLocked, setNodeVisible, reorderNode, reorderNodes } from '../nod
 import HTMLGenerator from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
+import { duplicatePage } from '../document/document-duplicate.js';
 
 /**
  * Internal registry to store command handler functions by name.
@@ -311,6 +312,11 @@ export function initializeCommands() {
 
   // Button creation
   registerCommand('create_button', createButton);
+
+  // Duplicate Page (MCP-only, no UI)
+  registerCommand('duplicate_page', async ({ pageId, newPageName }) => {
+    return await duplicatePage({ pageId, newPageName });
+  });
 }
 
 /**
