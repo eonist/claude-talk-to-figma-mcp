@@ -161,6 +161,9 @@ async function buildPlugin() {
       'rename.js',
       'svg.js',
       'html-generator.js',
+      // Include new split command modules before commands.js
+      'commands/commands-register.js',
+      'commands/commands-button.js',
       'commands.js', // Ensure commands.js is concatenated last as needed.
     ];
     
