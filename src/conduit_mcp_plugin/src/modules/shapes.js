@@ -20,13 +20,13 @@
  */
 
 import { setFill, setStroke } from "./shapes-helpers.js";
-import { createRectangle } from "./shapes-rectangle.js";
-import { createFrame } from "./shapes-frame.js";
-import { createEllipse } from "./shapes-ellipse.js";
-import { createPolygon } from "./shapes-polygon.js";
-import { createStar } from "./shapes-star.js";
-import { createVector, createVectors } from "./shapes-vector.js";
-import { createLine } from "./shapes-line.js";
+import { createRectangle } from "./shape/shapes-rectangle.js";
+import { createFrame } from "./shape/shapes-frame.js";
+import { createEllipse } from "./shape/shapes-ellipse.js";
+import { createPolygon } from "./shape/shapes-polygon.js";
+import { createStar } from "./shape/shapes-star.js";
+import { createVector, createVectors } from "./shape/shapes-vector.js";
+import { createLine } from "./shape/shapes-line.js";
 
 
 
