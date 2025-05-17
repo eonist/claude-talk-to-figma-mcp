@@ -223,111 +223,122 @@ bun run dev:all
 
 ## Commands
 
-The server supports an extensive set of commands for working with Figma. These are organized into several categories:
+The Conduit MCP Server supports a comprehensive set of commands for working with Figma. These are organized into several categories. For full parameter details and examples, see [Available_MCP_Commands.md](../../Available_MCP_Commands.md).
 
 ### Document and Information
 
-- `get_document_info()` - Get detailed information about the current Figma document
-- `get_selection()` - Get information about the current selection in Figma
-- `get_node_info(nodeId)` - Get detailed information about a specific node
-- `get_nodes_info(nodeIds)` - Get detailed information about multiple nodes
-- `get_styles()` - Get all styles from the document
-- `get_local_components()` - Get all local components
-- `get_remote_components()` - Get available components from team libraries
-- `get_styled_text_segments(nodeId, property)` - Get text segments with specific styling
-- `scan_text_nodes(nodeId)` - Scan all text nodes in the selected node
-- `get_css_async(nodeId, format)` - Get CSS properties from a node
+- `get_document_info` – Get detailed information about the current Figma document
+- `get_selection` – Get information about the current selection in Figma
+- `get_node_info` – Get detailed information about a specific node
+- `get_nodes_info` – Get detailed information about multiple nodes
+- `get_styles` – Get all styles from the document
+- `get_local_components` – Get all local components
+- `get_team_components` – Get components from a Figma team library
+- `get_remote_components` – Get available components from team libraries
+- `get_styled_text_segments` – Get text segments with specific styling
+- `scan_text_nodes` – Scan all text nodes in the selected node
+- `get_css_async` – Get CSS properties from a node
+- `get_pages` – Get all pages in the current Figma document
+- `set_current_page` – Set the current active page in Figma
 
 ### Creation
 
 - **Shapes:**
-  - `create_rectangle(x, y, width, height, ...)` - Create a rectangle
-  - `create_frame(x, y, width, height, ...)` - Create a frame
-  - `create_line(x1, y1, x2, y2, ...)` - Create a line
-  - `create_ellipse(x, y, width, height, ...)` - Create an ellipse
-  - `create_polygon(x, y, width, height, sides, ...)` - Create a polygon
-  - `create_star(x, y, width, height, ...)` - Create a star
-  - `create_vector(x, y, width, height, vectorPaths, ...)` - Create a vector
+  - `create_rectangle` / `create_rectangles` – Create one or more rectangles
+  - `create_frame` / `create_frames` – Create one or more frames
+  - `create_line` / `create_lines` – Create one or more lines
+  - `create_ellipse` / `create_ellipses` – Create one or more ellipses
+  - `create_polygon` / `create_polygons` – Create one or more polygons
+  - `create_vector` / `create_vectors` – Create one or more vectors
+  - `create_star` / `create_stars` – Create one or more stars
 
 - **Text:**
-  - `create_text(x, y, text, ...)` - Create a text element
-  - `create_bounded_text(x, y, width, height, text, ...)` - Create a bounded text box
-  - `set_text_content(nodeId, text)` - Set text content of an existing node
-  - `set_multiple_text_contents(nodeId, textArray)` - Set multiple text contents
+  - `create_text` / `create_texts` – Create one or more text elements
+  - `create_bounded_text` / `create_bounded_texts` – Create one or more bounded text boxes
+  - `set_text_content` – Set text content of an existing node
+  - `set_multiple_text_contents` – Set multiple text contents
 
-- **Components and Vectors:**
-  - `create_component_instance(componentKey, x, y)` - Create an instance of a component
-  - `create_component_from_node(nodeId)` - Convert a node to a component
-  - `create_button(x, y, width, height, text, ...)` - Create a complete button
+- **Components:**
+  - `create_component_from_node` / `create_components_from_nodes` – Convert one or more nodes to components
+  - `create_component_instance` / `create_component_instances` – Create one or more component instances
+  - `create_button` – Create a complete button
 
 - **Images and SVG:**
-  - `insert_image(url, x, y, ...)` - Insert an image from a URL
-  - `insert_local_image(imagePath/imageData, x, y, ...)` - Insert a local image
-  - `insert_svg_vector(svg, x, y, ...)` - Insert an SVG as vector
+  - `insert_image` / `insert_images` – Insert one or more images from URLs
+  - `insert_local_image` / `insert_local_images` – Insert one or more local images
+  - `insert_svg_vector` / `insert_svg_vectors` – Insert one or more SVG vectors
+
+- **Pages:**
+  - `create_page` – Create a new page
 
 ### Styling and Modification
 
 - **Basic Styling:**
-  - `set_fill_color(nodeId, r, g, b, a)` - Set fill color
-  - `set_stroke_color(nodeId, r, g, b, a, weight)` - Set stroke color
-  - `set_style(entries)` - Set both fill and stroke (single or batch)
+  - `set_fill_color` – Set fill color
+  - `set_stroke_color` – Set stroke color
+  - `set_style` – Set both fill and stroke (single or batch)
 
 - **Gradients:**
-  - `create_gradient_variable(gradients)` - Create one or more gradient styles (single object or array)
-  - `apply_gradient_style(entries)` - Apply one or more gradient styles (single object or array)
-  - `apply_direct_gradient(nodeId, gradientType, stops, applyTo)` - Apply gradient directly
+  - `create_gradient_variable` – Create one or more gradient styles
+  - `apply_gradient_style` / `apply_gradient_styles` – Apply one or more gradient styles
+  - `apply_direct_gradient` – Apply gradient directly
 
 - **Text Styling:**
-  - `set_font_name(nodeId, family, style)` - Set font name and style
-  - `set_font_size(nodeId, fontSize)` - Set font size
-  - `set_font_weight(nodeId, weight)` - Set font weight
-  - `set_letter_spacing(nodeId, letterSpacing, unit)` - Set letter spacing
-  - `set_line_height(nodeId, lineHeight, unit)` - Set line height
-  - `set_paragraph_spacing(nodeId, paragraphSpacing)` - Set paragraph spacing
-  - `set_text_case(nodeId, textCase)` - Set text case
-  - `set_text_decoration(nodeId, textDecoration)` - Set text decoration
-  - `load_font_async(family, style)` - Load a font asynchronously
+  - `set_font_name` – Set font name and style
+  - `set_font_size` – Set font size
+  - `set_font_weight` – Set font weight
+  - `set_letter_spacing` – Set letter spacing
+  - `set_line_height` – Set line height
+  - `set_paragraph_spacing` – Set paragraph spacing
+  - `set_text_case` – Set text case
+  - `set_text_decoration` – Set text decoration
+  - `load_font_async` – Load a font asynchronously
 
 - **Effects and Layout:**
-  - `set_effects(nodeId, effects)` - Set visual effects
-  - `set_effect_style_id(nodeId, effectStyleId)` - Apply an effect style
-  - `set_auto_layout(nodeId, layoutMode)` - Configure auto layout
-  - `set_auto_layout_resizing(nodeId, axis, mode)` - Set hug or fill sizing mode
-  - `set_corner_radius(nodeId, radius, corners)` - Set corner radius
+  - `set_effects` – Set visual effects
+  - `set_effect_style_id` – Apply an effect style
+  - `set_auto_layout` – Configure auto layout
+  - `set_auto_layout_resizing` – Set hug or fill sizing mode
+  - `set_corner_radius` – Set corner radius
 
 ### Transformations and Management
 
 - **Positioning and Sizing:**
-  - `move_node(nodeId, x, y)` - Move a node
-  - `resize_node(nodeId, width, height)` - Resize a node
-  - `flatten_selection(nodeIds)` - Flatten selected nodes
+  - `move_node` / `move_nodes` – Move one or more nodes
+  - `resize_node` / `resize_nodes` – Resize one or more nodes
+  - `flatten_node` / `flatten_nodes` – Flatten one or more nodes
+  - `flatten_selection` – Flatten a selection of nodes
 
 - **Boolean Operations:**
-  - `union_selection(nodeIds)` - Union selected shapes
-  - `subtract_selection(nodeIds)` - Subtract shapes
-  - `intersect_selection(nodeIds)` - Intersect shapes
-  - `exclude_selection(nodeIds)` - Exclude overlapping areas
+  - `union_selection` – Union selected shapes
+  - `subtract_selection` – Subtract shapes
+  - `intersect_selection` – Intersect shapes
+  - `exclude_selection` – Exclude overlapping areas
 
 - **Node Management:**
-  - `group_nodes(nodeIds, name)` - Group nodes
-  - `ungroup_nodes(nodeId)` - Ungroup a node
-  - `delete_node(nodeId)` - Delete a node
-  - `detach_instance(instanceId)` - Detach a component instance
+  - `group_nodes` – Group nodes
+  - `ungroup_nodes` – Ungroup a node
+  - `delete_node` / `delete_nodes` – Delete one or more nodes
+  - `clone_node` / `clone_nodes` – Clone one or more nodes
+  - `insert_child` / `insert_children` – Insert one or more child nodes into parents
+  - `detach_instance` / `detach_instances` – Detach one or more component instances
 
 - **Naming:**
-  - `rename_layer(nodeId, newName, setAutoRename)` - Rename a single layer
-  - `rename_multiple(layer_ids, new_names)` - Rename with distinct names
-  - `ai_rename_layers(layer_ids, context_prompt)` - AI-powered renaming
+  - `rename_layer` / `rename_layers` / `rename_multiple` – Rename nodes (single, batch, or with distinct names)
+  - `ai_rename_layers` – AI-powered renaming
 
 ### Export and Conversion
 
-- `export_node_as_image(nodeId, format, scale)` - Export a node as an image
-- `generate_html(nodeId, format, cssMode)` - Generate HTML structure from Figma nodes
+- `export_node_as_image` – Export a node as an image
+- `generate_html` – Generate HTML structure from Figma nodes
 
 ### Communication
 
-- `join_channel(channel)` - Join a specific communication channel
+- `join_channel` – Join a specific communication channel
 
+---
+
+**For full parameter details, examples, and the most up-to-date list, see [Available_MCP_Commands.md](../../Available_MCP_Commands.md).**
 ## Development
 
 - **Structure:**  

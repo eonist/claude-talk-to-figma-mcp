@@ -14,6 +14,7 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
 | get_nodes_info      | commands/figma/read/document-tools.ts                     |
 | get_styles          | commands/figma/read/document-tools.ts                     |
 | get_local_components| commands/figma/read/document-tools.ts                     |
+| get_team_components | commands/figma/read/component-tools.ts                    |
 | get_remote_components| commands/figma/read/document-tools.ts                    |
 | get_styled_text_segments| commands/figma/read/document-tools.ts                 |
 | scan_text_nodes     | commands/figma/read/document-tools.ts                     |
@@ -33,6 +34,10 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
 | insert_image        | commands/figma/create/image-creation/from-url.ts          |
 | insert_local_image  | commands/figma/create/image-creation/from-local.ts        |
 | insert_svg_vector   | commands/figma/create/svg-creation-tools.ts               |
+| insert_children     | commands/figma/modify/layer-management/insert-child-tools.ts |
+| detach_instances    | commands/figma/modify/property-manipulation/detach-instance-tools.ts |
+| set_node_locked     | commands/figma/modify/property-manipulation/node-visibility-lock.ts |
+| set_node_visible    | commands/figma/modify/property-manipulation/node-visibility-lock.ts |
 | create_page         | commands/figma/create/document-creation.ts                |
 | ...                 | ...                                                       |
 
@@ -48,6 +53,7 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
     - [get_node_info](#get_node_info): Get detailed information about a specific node
     - [get_styles](#get_styles): Get all styles from the current Figma document
     - [get_local_components](#get_local_components): Get all local components from the Figma document
+    - [get_team_components](#get_team_components): Get components from a Figma team library
     - [get_remote_components](#get_remote_components): Get available components from team libraries
     - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling in a text node
     - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected Figma node
@@ -123,6 +129,9 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
     - [ungroup_nodes](#ungroup_nodes): Ungroup a group node
     - [delete_node](#delete_node): Delete a node
     - [insert_child](#insert_child): Insert a child node into a parent node at an optional index
+    - [insert_children](#insert_children): Batch-insert multiple child nodes into parent nodes
+    - [set_node_locked](#set_node_locked): Lock or unlock one or more nodes
+    - [set_node_visible](#set_node_visible): Show or hide one or more nodes
 
 - Bulk/Batch Commands
     - [move_nodes](#move_nodes): Move multiple nodes to a new absolute position
@@ -142,6 +151,7 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
     - [rename_layers](#rename_layers): Rename specified layers by exact name or pattern replace
     - [rename_multiple](#rename_multiple): Rename multiple layers with distinct new names
     - [ai_rename_layers](#ai_rename_layers): AI-powered rename of specified layers
+    - [detach_instances](#detach_instances): Detach multiple component instances from their masters
 
 ### Channel/Interop/HTML
 
@@ -151,7 +161,96 @@ This documentation outlines all available Model Context Protocol (MCP) commands 
 
 ---
 
-### get_pages
+### get_team_components
+Get components from a Figma team library.
+
+**Parameters:**
+- team_id (string): Figma team ID
+- page_size (number, optional): Number of components per page
+- after (number, optional): Pagination cursor
+
+**Example:**
+```json
+{
+  "command": "get_team_components",
+  "params": { "team_id": "123456" }
+}
+```
+
+---
+
+### insert_children
+Batch-insert multiple child nodes into parent nodes.
+
+**Parameters:**
+- operations (array): Array of { parentId, childId, index (optional), maintainPosition (optional) }
+- options (object, optional): { skipErrors (optional) }
+
+**Example:**
+```json
+{
+  "command": "insert_children",
+  "params": {
+    "operations": [
+      { "parentId": "123:456", "childId": "123:789", "index": 2 }
+    ]
+  }
+}
+```
+
+---
+
+### detach_instances
+Detach multiple component instances from their masters.
+
+**Parameters:**
+- instanceIds (array of string): Array of instance node IDs
+
+**Example:**
+```json
+{
+  "command": "detach_instances",
+  "params": { "instanceIds": ["123:456", "123:789"] }
+}
+```
+
+---
+
+### set_node_locked
+Lock or unlock one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID
+- nodeIds (array of string, optional): Array of node IDs
+- locked (boolean): Lock (true) or unlock (false)
+
+**Example:**
+```json
+{
+  "command": "set_node_locked",
+  "params": { "nodeIds": ["123:456", "123:789"], "locked": true }
+}
+```
+
+---
+
+### set_node_visible
+Show or hide one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID
+- nodeIds (array of string, optional): Array of node IDs
+- visible (boolean): Show (true) or hide (false)
+
+**Example:**
+```json
+{
+  "command": "set_node_visible",
+  "params": { "nodeIds": ["123:456", "123:789"], "visible": false }
+}
+```
+
+---
 Get all pages in the current Figma document.
 
 **Parameters:** None
