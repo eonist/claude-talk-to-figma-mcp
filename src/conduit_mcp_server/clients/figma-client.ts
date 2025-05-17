@@ -58,7 +58,7 @@ export class FigmaClient {
    * @param {any} params - The command parameters
    * @returns {Promise<any>} - The command result
    */
-  async executeCommand(command: FigmaCommand, params: any = {}): Promise<any> {
+  async executeCommand(command: string, params: any = {}): Promise<any> {
     try {
       logger.debug(`Executing Figma command: ${command}`);
       const result = await sendCommandToFigma(command, params);

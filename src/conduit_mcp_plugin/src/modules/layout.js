@@ -32,11 +32,30 @@ import { insertChild, insertChildren } from './layout/layout-insert.js';
 import { flatten_nodes, union_selection, subtract_selection, intersect_selection, exclude_selection } from './node/node-misc.js';
 import { clone_node } from './layout/layout-clone.js';
 
+/**
+ * Merged group/ungroup operation for MCP.
+ * @param {object} params - Parameters for the operation.
+ * @param {boolean} params.group - If true, group nodes; if false, ungroup a group node.
+ * @param {array} [params.nodeIds] - Array of node IDs to group (if grouping).
+ * @param {string} [params.name] - Name for the group (if grouping).
+ * @param {string} [params.nodeId] - Node ID to ungroup (if ungrouping).
+ */
+async function groupOrUngroupNodes(params) {
+  if (params.group) {
+    // Forward to groupNodes
+    return await groupNodes(params);
+  } else {
+    // Forward to ungroupNodes
+    return await ungroupNodes(params);
+  }
+}
+
 export const layoutOperations = {
   setAutoLayout,
   setAutoLayoutResizing,
   groupNodes,
   ungroupNodes,
+  groupOrUngroupNodes,
   insertChild,
   insertChildren,
   flatten_nodes,

@@ -103,10 +103,8 @@ export type FigmaCommand =
   | "set_effects"
   // Apply an effect style to a node (see commands/figma/modify/property-manipulation/effects-tools.ts)
   | "set_effect_style_id"
-  // Group nodes (see commands/figma/modify/layer-management/group-tools.ts)
-  | "group_nodes"
-  // Ungroup a group node (see commands/figma/modify/layer-management/group-tools.ts)
-  | "ungroup_nodes"
+  // Group or ungroup nodes (see commands/figma/modify/layer-management/group-tools.ts)
+  | "group_or_ungroup_nodes"
   // Flatten a node (see commands/figma/modify/layer-management/boolean-tools.ts)
   | "flatten_node"
   // Flatten a selection of nodes (see commands/figma/modify/layer-management/boolean-tools.ts)

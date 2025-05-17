@@ -271,8 +271,7 @@ export function initializeCommands() {
   registerCommand('rename_layer', renameOperations.rename_layer);
 
   // Group/Ungroup operations
-  registerCommand('group_nodes', layoutOperations.groupNodes);
-  registerCommand('ungroup_nodes', layoutOperations.ungroupNodes);
+  registerCommand('group_or_ungroup_nodes', layoutOperations.groupOrUngroupNodes);
 
   // Auto Layout operations
   registerCommand('set_auto_layout', layoutOperations.setAutoLayout);

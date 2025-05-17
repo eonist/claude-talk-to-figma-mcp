@@ -111,8 +111,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [exclude_selection](#exclude_selection): Exclude overlapping areas
 
 **Node Management:**
-- [group_nodes](#group_nodes): Group nodes
-- [ungroup_nodes](#ungroup_nodes): Ungroup a node
+- [group_or_ungroup_nodes](#group_or_ungroup_nodes): Group or ungroup nodes
 - [delete_node](#delete_node): Delete one or more nodes
 - [clone_node](#clone_node): Clone a node (single or batch)
 - [insert_child](#insert_child): Insert a child node into a parent (single or batch)
@@ -759,29 +758,25 @@ Exclude overlapping areas of selected shapes in Figma.
 
 ---
 
-## group_nodes
-Group nodes in Figma.
+## group_or_ungroup_nodes
+Group or ungroup nodes in Figma, depending on the 'group' flag.
 
 **Parameters:**
-- nodeIds (array of string): Array of node IDs to group.
-- name (string, optional): Name for the group.
+- group (boolean, required): If true, group nodes; if false, ungroup a group node.
+- nodeIds (array of string, min 2, required if grouping): The nodes to group.
+- name (string, optional): Name for the group (only if grouping).
+- nodeId (string, required if ungrouping): The group node to ungroup.
 
-**Example:**
+**Examples:**
+
+_Grouping:_
 ```json
-{ "command": "group_nodes", "params": { "nodeIds": ["123:456", "789:101"], "name": "My Group" } }
+{ "command": "group_or_ungroup_nodes", "params": { "group": true, "nodeIds": ["123:456", "789:101"], "name": "My Group" } }
 ```
 
----
-
-## union_selection
-Union selected shapes in Figma.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs to union.
-
-**Example:**
+_Ungrouping:_
 ```json
-{ "command": "union_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+{ "command": "group_or_ungroup_nodes", "params": { "group": false, "nodeId": "123:456" } }
 ```
 
 ---
