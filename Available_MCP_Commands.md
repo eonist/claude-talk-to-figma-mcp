@@ -700,6 +700,265 @@ Flatten a selection of nodes in Figma.
 
 ---
 
+## subtract_selection
+Subtract top shapes from bottom shape in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to subtract.
+
+**Example:**
+```json
+{ "command": "subtract_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## intersect_selection
+Intersect selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to intersect.
+
+**Example:**
+```json
+{ "command": "intersect_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## exclude_selection
+Exclude overlapping areas of selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to exclude.
+
+**Example:**
+```json
+{ "command": "exclude_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## group_nodes
+Group nodes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to group.
+- name (string, optional): Name for the group.
+
+**Example:**
+```json
+{ "command": "group_nodes", "params": { "nodeIds": ["123:456", "789:101"], "name": "My Group" } }
+```
+
+---
+
+## union_selection
+Union selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to union.
+
+**Example:**
+```json
+{ "command": "union_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## union_selection
+Union selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to union.
+
+**Example:**
+```json
+{ "command": "union_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## subtract_selection
+Subtract top shapes from bottom shape in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to subtract.
+
+**Example:**
+```json
+{ "command": "subtract_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## intersect_selection
+Intersect selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to intersect.
+
+**Example:**
+```json
+{ "command": "intersect_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## exclude_selection
+Exclude overlapping areas of selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to exclude.
+
+**Example:**
+```json
+{ "command": "exclude_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## group_nodes
+Group nodes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Nodes to group.
+- name (string, optional): Name of the group.
+
+**Example:**
+```json
+{ "command": "group_nodes", "params": { "nodeIds": ["123:456", "789:101"], "name": "My Group" } }
+```
+
+---
+
+## ungroup_nodes
+Ungroup a group node in Figma.
+
+**Parameters:**
+- nodeId (string): The group node ID.
+
+**Example:**
+```json
+{ "command": "ungroup_nodes", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## delete_node
+Delete a node in Figma.
+
+**Parameters:**
+- nodeId (string): The node ID to delete.
+
+**Example:**
+```json
+{ "command": "delete_node", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## clone_node
+Clone a node in Figma.
+
+**Parameters:**
+- nodeId (string): The node ID to clone.
+- position (object, optional): { x, y } for the clone.
+- offsetX (number, optional): X offset.
+- offsetY (number, optional): Y offset.
+- parentId (string, optional): Parent node ID for the clone.
+
+**Example:**
+```json
+{ "command": "clone_node", "params": { "nodeId": "123:456", "offsetX": 100, "offsetY": 0 } }
+```
+
+---
+
+## insert_child
+Insert a child node into a parent node at an optional index.
+
+**Parameters:**
+- parentId (string): ID of the parent node.
+- childId (string): ID of the child node to insert.
+- index (number, optional): Insertion index (0-based).
+
+**Example:**
+```json
+{ "command": "insert_child", "params": { "parentId": "123:456", "childId": "123:789", "index": 2 } }
+```
+
+---
+
+## set_node_locked
+Lock or unlock one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID.
+- nodeIds (array of string, optional): Array of node IDs.
+- locked (boolean): Lock (true) or unlock (false).
+
+**Example:**
+```json
+{ "command": "set_node_locked", "params": { "nodeIds": ["123:456", "123:789"], "locked": true } }
+```
+
+---
+
+## set_node_visible
+Show or hide one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID.
+- nodeIds (array of string, optional): Array of node IDs.
+- visible (boolean): Show (true) or hide (false).
+
+**Example:**
+```json
+{ "command": "set_node_visible", "params": { "nodeIds": ["123:456", "123:789"], "visible": false } }
+```
+
+---
+
+## detach_instances
+Detach one or more component instances from their masters.
+
+**Parameters:**
+- instanceIds (array of string): Array of instance node IDs.
+
+**Example:**
+```json
+{ "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"] } }
+```
+
+---
+
+## flatten_selection
+Flatten a selection of nodes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to flatten.
+
+**Example:**
+```json
+{ "command": "flatten_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## flatten_selection
+Flatten a selection of nodes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to flatten.
+
+**Example:**
+```json
+{ "command": "flatten_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
 ## union_selection
 Union selected shapes in Figma.
 
@@ -814,12 +1073,147 @@ Resize a node in Figma.
 
 **Parameters:**
 - nodeId (string): The unique Figma node ID to resize.
-- width (number): The new width for the node, in pixels.
-- height (number): The new height for the node, in pixels.
+- width (number): The new width.
+- height (number): The new height.
 
 **Example:**
 ```json
 { "command": "resize_node", "params": { "nodeId": "123:456", "width": 200, "height": 100 } }
+```
+
+---
+
+## flatten_node
+Flatten a single node in Figma, merging all its child vector layers and shapes into a single vector layer.
+
+**Parameters:**
+- nodeId (string): The ID of the node to flatten.
+
+**Example:**
+```json
+{ "command": "flatten_node", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## flatten_selection
+Flatten a selection of nodes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to flatten.
+
+**Example:**
+```json
+{ "command": "flatten_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## union_selection
+Union selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to union.
+
+**Example:**
+```json
+{ "command": "union_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## subtract_selection
+Subtract top shapes from bottom shape in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to subtract.
+
+**Example:**
+```json
+{ "command": "subtract_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## intersect_selection
+Intersect selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to intersect.
+
+**Example:**
+```json
+{ "command": "intersect_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## exclude_selection
+Exclude overlapping areas of selected shapes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Array of node IDs to exclude.
+
+**Example:**
+```json
+{ "command": "exclude_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## group_nodes
+Group nodes in Figma.
+
+**Parameters:**
+- nodeIds (array of string): Nodes to group.
+- name (string, optional): Name of the group.
+
+**Example:**
+```json
+{ "command": "group_nodes", "params": { "nodeIds": ["123:456", "789:101"], "name": "My Group" } }
+```
+
+---
+
+## ungroup_nodes
+Ungroup a group node in Figma.
+
+**Parameters:**
+- nodeId (string): The group node ID.
+
+**Example:**
+```json
+{ "command": "ungroup_nodes", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## delete_node
+Delete a node in Figma.
+
+**Parameters:**
+- nodeId (string): The node ID to delete.
+
+**Example:**
+```json
+{ "command": "delete_node", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## clone_node
+Clone a node in Figma.
+
+**Parameters:**
+- nodeId (string): The node ID to clone.
+- position (object, optional): { x, y } for the clone.
+- offsetX (number, optional): X offset.
+- offsetY (number, optional): Y offset.
+- parentId (string, optional): Parent node ID for the clone.
+
+**Example:**
+```json
+{ "command": "clone_node", "params": { "nodeId": "123:456", "offsetX": 100, "offsetY": 0 } }
 ```
 
 ---
