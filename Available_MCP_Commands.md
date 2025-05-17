@@ -916,6 +916,19 @@ Rename one or more nodes in Figma.
 
 ---
 
+## rename_layer
+Rename one or more nodes in Figma.
+
+**Parameters:**
+- rename (object) or renames (array of objects): { nodeId, newName, setAutoRename (optional) }
+
+**Example:**
+```json
+{ "command": "rename_layer", "params": { "rename": { "nodeId": "123:456", "newName": "Header Section" } } }
+```
+
+---
+
 ## ungroup_nodes
 Ungroup a group node in Figma.
 
