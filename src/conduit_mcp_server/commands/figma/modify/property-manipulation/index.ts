@@ -7,6 +7,7 @@ import { registerFontTools } from "./font-tools.js";
 import { registerEffectsTools } from "./effects-tools.js";
 import { registerAutoLayoutTools } from "./auto-layout-tools.js";
 import { registerDetachInstanceTools } from "./detach-instance-tools.js";
+import { registerNodeLockVisibilityCommands } from "./node-visibility-lock.js";
 
 /**
  * Registers all property manipulation commands by delegating to submodules.
@@ -19,6 +20,7 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   registerEffectsTools(server, figmaClient);
   registerAutoLayoutTools(server, figmaClient);
   registerDetachInstanceTools(server, figmaClient);
+  registerNodeLockVisibilityCommands(server, figmaClient);
 }
 
 // Re-export for granular imports if needed
@@ -30,4 +32,5 @@ export {
   registerEffectsTools,
   registerAutoLayoutTools,
   registerDetachInstanceTools,
+  registerNodeLockVisibilityCommands,
 };

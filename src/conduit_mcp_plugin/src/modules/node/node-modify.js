@@ -24,6 +24,44 @@ export async function resizeNode(params) {
 }
 
 /**
+ * Sets the locked property of a node.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for locking.
+ * @param {string} params.nodeId - The ID of the node.
+ * @param {boolean} params.locked - Whether to lock (true) or unlock (false) the node.
+ * @returns {Promise<{success: boolean}>} Operation result.
+ * @throws {Error} If nodeId is missing or node cannot be found.
+ */
+export async function setNodeLocked(params) {
+  const { nodeId, locked } = params;
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  node.locked = !!locked;
+  return { success: true };
+}
+
+/**
+ * Sets the visible property of a node.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for visibility.
+ * @param {string} params.nodeId - The ID of the node.
+ * @param {boolean} params.visible - Whether to show (true) or hide (false) the node.
+ * @returns {Promise<{success: boolean}>} Operation result.
+ * @throws {Error} If nodeId is missing or node cannot be found.
+ */
+export async function setNodeVisible(params) {
+  const { nodeId, visible } = params;
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  node.visible = !!visible;
+  return { success: true };
+}
+
+/**
  * Resizes multiple nodes to the same dimensions.
  *
  * @async

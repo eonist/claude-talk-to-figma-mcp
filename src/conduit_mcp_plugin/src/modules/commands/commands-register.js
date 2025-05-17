@@ -6,6 +6,7 @@ import * as styleOperations from '../styles.js';
 import * as componentOperations from '../components.js';
 import * as layoutOperations from '../layout.js';
 import * as renameOperations from '../rename.js';
+import { setNodeLocked, setNodeVisible } from '../node/node-modify.js';
 import HTMLGenerator from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
@@ -67,6 +68,10 @@ export function initializeCommands() {
   registerCommand('move_node', shapeOperations.moveNode);
   // Flatten
   registerCommand('flatten_node', shapeOperations.flattenNode);
+
+  // Node lock/visibility operations
+  registerCommand('set_node_locked', setNodeLocked);
+  registerCommand('set_node_visible', setNodeVisible);
 
   // Boolean operation commands
   registerCommand('union_selection', shapeOperations.union_selection);
