@@ -1,6 +1,13 @@
 /**
- * Enhanced build script for the AI Agent Figma plugin.
+ * @file Enhanced build script for the AI Agent Figma plugin.
  * Compiles TypeScript and inlines it directly into ui.html.
+ * 
+ * This script:
+ * - Compiles TypeScript sources for the plugin UI
+ * - Combines and inlines the resulting JavaScript into the HTML template
+ * - Handles backup, cleanup, and error reporting
+ * 
+ * Usage: Run directly with Node.js (ESM).
  */
 
 import fs from 'fs';
@@ -8,18 +15,36 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 
-// Convert ESM module URL to filesystem path for __dirname support in ESM
+/**
+ * Convert ESM module URL to filesystem path for __dirname support in ESM
+ * @constant {string} __filename - Absolute path to this file
+ * @constant {string} __dirname - Directory containing this file
+ */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define paths
+/**
+ * @constant {string} SRC_DIR - Path to the TypeScript source directory
+ * @constant {string} TEMP_DIST_DIR - Path to the temporary build output directory
+ * @constant {string} UI_TEMPLATE_PATH - Path to the HTML template file
+ * @constant {string} UI_OUTPUT_PATH - Path to the final output HTML file
+ */
 const SRC_DIR = path.join(__dirname, 'src');
 const TEMP_DIST_DIR = path.join(__dirname, 'temp-dist');
 const UI_TEMPLATE_PATH = path.join(__dirname, 'ui-template.html');
 const UI_OUTPUT_PATH = path.join(__dirname, 'dist', 'ui.html');
 
 /**
- * Compiles TypeScript files, combines the result, and inlines into ui.html
+ * Compiles TypeScript files, combines the result, and inlines into ui.html.
+ * 
+ * Steps:
+ * 1. Compiles TypeScript sources using a plugin-specific tsconfig.
+ * 2. Reads and combines the resulting JavaScript files.
+ * 3. Inlines the combined JS into the HTML template, replacing the external script tag.
+ * 4. Backs up the previous output, writes the new HTML, and cleans up temp files.
+ * 
+ * @throws {Error} If compilation or file operations fail.
+ * @returns {void}
  */
 function buildTypeScript() {
   console.log('Building TypeScript files for Figma plugin UI...');
@@ -146,5 +171,5 @@ function buildTypeScript() {
   }
 }
 
-// Run the build
+// Entrypoint: run the build when this script is executed directly
 buildTypeScript();

@@ -29,14 +29,24 @@ import { execSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define paths
+/**
+ * @constant {string} SRC_DIR - Path to the TypeScript source directory
+ * @constant {string} TEMP_DIR - Path to the temporary build output directory
+ * @constant {string} UI_TEMPLATE_PATH - Path to the HTML template file
+ * @constant {string} UI_OUTPUT_PATH - Path to the final output HTML file
+ * @constant {string} BUNDLE_PATH - Path to the bundled JavaScript file
+ */
 const SRC_DIR = path.join(__dirname, 'src');
 const TEMP_DIR = path.join(__dirname, 'temp');
 const UI_TEMPLATE_PATH = path.join(__dirname, 'ui-template.html');
 const UI_OUTPUT_PATH = path.join(__dirname, 'dist', 'ui.html');
 const BUNDLE_PATH = path.join(TEMP_DIR, 'bundle.js');
 
-// CSS and Components paths
+/**
+ * @constant {string} COMPONENTS_DIR - Directory containing HTML UI components
+ * @constant {string} JS_DIR - Directory containing JavaScript modules for UI
+ * @constant {Array<{path: string, name: string}>} CSS_FILES - List of CSS files to include
+ */
 const COMPONENTS_DIR = path.join(__dirname, 'components');
 const JS_DIR = path.join(__dirname, 'js');
 const CSS_FILES = [
@@ -46,7 +56,9 @@ const CSS_FILES = [
   { path: path.join(__dirname, 'progress.css'), name: 'progress.css' }
 ];
 
-// Component mappings - placeholders to HTML files
+/**
+ * @constant {Array<{placeholder: string, file: string}>} COMPONENT_MAPPINGS - HTML placeholders to component file mappings
+ */
 const COMPONENT_MAPPINGS = [
   { placeholder: '<!-- HEADER_PLACEHOLDER -->', file: 'header.html' },
   { placeholder: '<!-- TABS_PLACEHOLDER -->', file: 'tabs.html' },
@@ -55,7 +67,9 @@ const COMPONENT_MAPPINGS = [
   { placeholder: '<!-- ABOUT_PANEL_PLACEHOLDER -->', file: 'about-panel.html' }
 ];
 
-// JS modules to include
+/**
+ * @constant {Array<string>} JS_MODULES - JavaScript modules to include in the UI
+ */
 const JS_MODULES = [
   'state.js',
   'connection.js',
@@ -66,7 +80,19 @@ const JS_MODULES = [
 ];
 
 /**
- * Main build function that orchestrates the entire UI building process
+ * Main build function that orchestrates the entire UI building process.
+ * 
+ * Steps:
+ * 1. Ensures temp directory exists
+ * 2. Bundles TypeScript using esbuild
+ * 3. Reads and combines CSS files
+ * 4. Inlines HTML components
+ * 5. Inlines JavaScript modules
+ * 6. Inlines the TypeScript bundle
+ * 7. Writes the final HTML output and cleans up temp files
+ * 
+ * @throws {Error} If any build step fails
+ * @returns {void}
  */
 function buildUI() {
   console.log('Building UI with enhanced process...');
@@ -202,5 +228,8 @@ function buildUI() {
   }
 }
 
-// Run the build
+
+/**
+ * Entrypoint: Run the build when this script is executed directly.
+ */
 buildUI();

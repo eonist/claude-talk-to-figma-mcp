@@ -29,14 +29,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Directory structure configuration
-const SRC_DIR = path.join(__dirname, 'src');         // Root source directory for plugin code
-const MODULES_DIR = path.join(SRC_DIR, 'modules');   // Contains feature-specific modules (shapes, text, etc.)
-const UTILS_DIR = path.join(MODULES_DIR, 'utils');   // Common utilities and helper functions
-const OUTPUT_FILE = path.join(__dirname, 'dist', 'code.js'); // Final bundled output file for Figma
 
-// UI component directories
-const COMPONENTS_DIR = path.join(__dirname, 'components'); // HTML components
-const JS_DIR = path.join(__dirname, 'js');               // JavaScript modules
+/**
+ * @constant {string} SRC_DIR - Root source directory for plugin code
+ * @constant {string} MODULES_DIR - Directory containing feature-specific modules (shapes, text, etc.)
+ * @constant {string} UTILS_DIR - Directory for common utilities and helper functions
+ * @constant {string} OUTPUT_FILE - Final bundled output file for Figma
+ */
+const SRC_DIR = path.join(__dirname, 'src');
+const MODULES_DIR = path.join(SRC_DIR, 'modules');
+const UTILS_DIR = path.join(MODULES_DIR, 'utils');
+const OUTPUT_FILE = path.join(__dirname, 'dist', 'code.js');
+
+/**
+ * @constant {string} COMPONENTS_DIR - Directory containing HTML UI components
+ * @constant {string} JS_DIR - Directory containing JavaScript modules for UI
+ */
+const COMPONENTS_DIR = path.join(__dirname, 'components');
+const JS_DIR = path.join(__dirname, 'js');
 
 /**
  * Reads a file's contents synchronously
@@ -54,7 +64,7 @@ function readFile(filePath) {
 }
 
 /**
- * Builds the Figma plugin by combining all source files into a single bundle
+ * Builds the Figma plugin by combining all source files into a single bundle.
  * 
  * Build process stages:
  * 1. Validation - Checks if required directories exist
@@ -68,7 +78,9 @@ function readFile(filePath) {
  * - Preserves the actual implementation code
  * - Adds section headers for better code organization
  * 
+ * @async
  * @throws {Error} If any critical build step fails
+ * @returns {Promise<void>}
  */
 async function buildPlugin() {
   console.log('Building Figma plugin...');
@@ -349,7 +361,9 @@ async function buildPlugin() {
   }
 }
 
-// Initiate the build process
+/**
+ * Entrypoint: Initiates the build process when this script is run directly.
+ */
 buildPlugin().catch(error => {
   console.error("Build process failed:", error);
   process.exit(1);

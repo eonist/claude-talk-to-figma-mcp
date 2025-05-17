@@ -37,12 +37,16 @@ function uniqBy(arr, predicate) {
 /**
  * Sets text characters on a Figma TextNode with optional font fallback and strategies.
  *
+ * Handles mixed-font nodes, font loading, and fallback strategies.
+ *
+ * @async
  * @param {TextNode} node - Figma TextNode to update.
  * @param {string} characters - The text string to set.
  * @param {object} [options] - Configuration options.
  * @param {{family:string, style:string}} [options.fallbackFont={family:'Roboto',style:'Regular'}] - Fallback font if loading fails.
  * @param {'prevail'|'strict'|'experimental'} [options.smartStrategy] - Strategy for mixed-font nodes.
  * @returns {Promise<boolean>} Resolves to true if characters set successfully, false otherwise.
+ * @throws {Error} If font loading or character assignment fails.
  * @example
  * // Simple usage:
  * await setCharacters(textNode, 'Hello World');
@@ -109,10 +113,13 @@ export const setCharacters = async (node, characters, options) => {
 /**
  * Helper: Sets characters on a Figma TextNode preserving original fonts using the strict-match strategy.
  *
+ * @private
+ * @async
  * @param {TextNode} node - Figma TextNode to update.
  * @param {string} characters - The text string to set.
  * @param {{family:string, style:string}} fallbackFont - Fallback font to use if strict matching fails.
  * @returns {Promise<boolean>} Resolves to true once strict-match font assignment is complete.
+ * @throws {Error} If font loading or assignment fails.
  */
 const setCharactersWithStrictMatchFont = async (
   node,
@@ -156,6 +163,7 @@ const setCharactersWithStrictMatchFont = async (
 /**
  * Determines ranges between delimiters in a string.
  *
+ * @private
  * @param {string} str - Input string to scan.
  * @param {string} delimiter - Character delimiter to split on (e.g., '\\n' or ' ').
  * @param {number} [startIdx=0] - Starting index in the string.
@@ -185,6 +193,7 @@ const getDelimiterPos = (str, delimiter, startIdx = 0, endIdx = str.length) => {
 /**
  * Builds a linear font sequence for a TextNode by scanning newline and space delimiters.
  *
+ * @private
  * @param {TextNode} node - Figma TextNode to analyze.
  * @returns {Array<{family:string, style:string, delimiter:string}>} Sorted array describing fonts and delimiters sequence.
  */
@@ -245,10 +254,13 @@ const buildLinearOrder = (node) => {
 /**
  * Helper: Sets characters on a Figma TextNode using a smart-match font strategy.
  *
+ * @private
+ * @async
  * @param {TextNode} node - Figma TextNode to update.
  * @param {string} characters - The text string to set.
  * @param {{family:string, style:string}} fallbackFont - Fallback font to load.
  * @returns {Promise<boolean>} Resolves to true once smart-match font assignment is complete.
+ * @throws {Error} If font loading or assignment fails.
  * @example
  * await setCharactersWithSmartMatchFont(textNode, 'Hello', { family: 'Roboto', style: 'Regular' });
  */
