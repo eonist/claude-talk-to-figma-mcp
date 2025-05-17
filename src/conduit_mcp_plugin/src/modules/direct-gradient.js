@@ -1,21 +1,24 @@
 /**
  * Utility module for directly applying gradients to nodes without using styles.
  * This provides a workaround for cases where style application fails.
- * 
+ *
  * @module modules/direct-gradient
+ * @see {@link https://help.figma.com/hc/en-us/articles/360040451373-Gradients-in-Figma}
  */
 
 /**
- * Directly applies a gradient to a node without using styles
+ * Directly applies a gradient to a node without using styles.
+ *
  * @async
  * @function applyDirectGradient
- * 
- * @param {object} params - Parameters for gradient application
- * @param {string} params.nodeId - The ID of the node to apply gradient to
- * @param {string} params.gradientType - LINEAR, RADIAL, ANGULAR, or DIAMOND
- * @param {Array} params.stops - Array of {position, color} objects
- * @param {string} params.applyTo - FILL, STROKE, or BOTH
- * @returns {object} Operation result with node info
+ * @param {object} params - Parameters for gradient application.
+ * @param {string} params.nodeId - The ID of the node to apply the gradient to.
+ * @param {'LINEAR'|'RADIAL'|'ANGULAR'|'DIAMOND'} [params.gradientType='LINEAR'] - Type of gradient.
+ * @param {Array<{position: number, color: number[]|object}>} params.stops - Array of gradient stops, each with a position (0-1) and color (RGBA array or object).
+ * @param {'FILL'|'STROKE'|'BOTH'} [params.applyTo='FILL'] - Where to apply the gradient.
+ * @returns {Promise<{id: string, name: string, success: boolean}>} Operation result with node info.
+ * @throws {Error} If nodeId is missing, node not found, stops are invalid, or node does not support fills/strokes.
+ * @see {@link https://help.figma.com/hc/en-us/articles/360040451373-Gradients-in-Figma}
  */
 export async function applyDirectGradient(params) {
   const { nodeId, gradientType = "LINEAR", stops, applyTo = "FILL" } = params || {};
@@ -78,6 +81,11 @@ export async function applyDirectGradient(params) {
 }
 
 // Use a default export instead of named export
+/**
+ * Collection of direct gradient utilities.
+ * @namespace directGradient
+ * @property {function} applyDirectGradient - Directly apply a gradient to a node.
+ */
 export default {
   applyDirectGradient
 };

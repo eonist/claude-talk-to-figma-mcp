@@ -5,8 +5,14 @@
 
 /**
  * Sets visual effects on a node.
+ *
  * @async
- * @function setEffects
+ * @function
+ * @param {Object} params - Parameters for effects.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {Array<Object>} params.effects - Array of effect objects (see Figma Effect type).
+ * @returns {Promise<{ id: string, name: string, effects: Array<Object> }>} Updated node info.
+ * @throws {Error} If parameters are missing, node cannot be found, node does not support effects, or effect type is invalid.
  */
 export async function setEffects(params) {
   const { nodeId, effects } = params || {};
@@ -52,8 +58,14 @@ export async function setEffects(params) {
 
 /**
  * Applies an effect style to a node.
+ *
  * @async
- * @function setEffectStyleId
+ * @function
+ * @param {Object} params - Parameters for effect style.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {string} params.effectStyleId - The ID of the effect style to apply.
+ * @returns {Promise<{ id: string, name: string, effectStyleId: string, appliedEffects: Array<Object> }>} Updated node info.
+ * @throws {Error} If parameters are missing, node cannot be found, node does not support effect styles, or style is not found.
  */
 export async function setEffectStyleId(params) {
   const { nodeId, effectStyleId } = params || {};

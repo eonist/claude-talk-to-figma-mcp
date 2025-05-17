@@ -7,7 +7,17 @@ import { sendProgressUpdate, delay } from "./text-helpers.js";
  */
 
 /**
- * Scan text nodes within a specified parent node.
+ * Scans all text nodes within a specified parent node, optionally in chunks.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Scan parameters.
+ * @param {string} params.nodeId - The ID of the parent node to scan.
+ * @param {boolean} [params.useChunking=true] - Whether to use chunked processing.
+ * @param {number} [params.chunkSize=10] - Number of nodes per chunk.
+ * @param {string} [params.commandId] - Optional command ID for progress updates.
+ * @returns {Promise<Object>} Scan result with found text nodes and progress info.
+ * @throws {Error} If nodeId is missing or node cannot be found.
  */
 export async function scanTextNodes(params) {
   console.log(`Starting to scan text nodes from node ID: ${params.nodeId}`);
@@ -191,6 +201,17 @@ export async function scanTextNodes(params) {
   };
 }
 
+/**
+ * Gets styled text segments for a given property in a text node.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for styled segment extraction.
+ * @param {string} params.nodeId - The ID of the text node.
+ * @param {string} params.property - The property to extract segments for.
+ * @returns {Promise<{ id: string, name: string, characters: string, property: string, segments: Array<Object> }>} Segments info.
+ * @throws {Error} If nodeId or property is missing/invalid, node cannot be found, or node is not a text node.
+ */
 export async function getStyledTextSegments(params) {
   const { nodeId, property } = params || {};
   if (!nodeId) throw new Error("Missing nodeId parameter");
@@ -251,6 +272,17 @@ export async function getStyledTextSegments(params) {
   }
 }
 
+/**
+ * Recursively finds all text nodes within a node and adds them to the textNodes array.
+ *
+ * @async
+ * @function
+ * @param {SceneNode} node - The node to search within.
+ * @param {Array<string>} [parentPath=[]] - Path of parent node names.
+ * @param {number} [depth=0] - Current depth in the tree.
+ * @param {Array<Object>} [textNodes=[]] - Array to collect found text nodes.
+ * @returns {Promise<void>}
+ */
 export async function findTextNodes(node, parentPath = [], depth = 0, textNodes = []) {
   if (node.visible === false) return;
   const nodePath = [...parentPath, node.name || `Unnamed ${node.type}`];
@@ -309,6 +341,17 @@ export async function findTextNodes(node, parentPath = [], depth = 0, textNodes 
   }
 }
 
+/**
+ * Recursively collects all nodes to process within a node and adds them to nodesToProcess array.
+ *
+ * @async
+ * @function
+ * @param {SceneNode} node - The node to search within.
+ * @param {Array<string>} [parentPath=[]] - Path of parent node names.
+ * @param {number} [depth=0] - Current depth in the tree.
+ * @param {Array<Object>} [nodesToProcess=[]] - Array to collect nodes to process.
+ * @returns {Promise<void>}
+ */
 export async function collectNodesToProcess(node, parentPath = [], depth = 0, nodesToProcess = []) {
   if (node.visible === false) return;
   const nodePath = [...parentPath, node.name || `Unnamed ${node.type}`];
@@ -324,6 +367,16 @@ export async function collectNodesToProcess(node, parentPath = [], depth = 0, no
   }
 }
 
+/**
+ * Processes a single text node, extracting safe info and highlighting it briefly.
+ *
+ * @async
+ * @function
+ * @param {SceneNode} node - The text node to process.
+ * @param {Array<string>} parentPath - Path of parent node names.
+ * @param {number} depth - Depth in the tree.
+ * @returns {Promise<Object|null>} Safe text node info, or null if not a text node.
+ */
 export async function processTextNode(node, parentPath, depth) {
   if (node.type !== "TEXT") return null;
   try {

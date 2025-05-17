@@ -6,10 +6,11 @@
  * - getLocalComponents(): Promise<{ count: number, components: Array<{ id: string, name: string, key: string|null }> }>
  * - getRemoteComponents(): Promise<{ success: boolean, count?: number, components?: Array<any>, error?: boolean, message?: string }>
  * - createComponentFromNode(params): Promise<{ success: boolean, componentId: string }>
- * - createComponentInstance(params): Promise<{ id: string, name: string, x: number, y: number, width: number, height: number, componentId: string }>
- * - createComponentInstances(params): Promise<{ instances: Array<any> }>
+ * - createComponentInstance(params): Promise<{ instances: Array<any> }>
  * - exportNodeAsImage(params): Promise<{ nodeId: string, format: string, scale: number, mimeType: string, imageData: string }>
  *
+ * @module modules/components
+ * @see {@link https://help.figma.com/hc/en-us/articles/360040451373-Components-in-Figma}
  * @example
  * import { componentOperations } from './modules/components.js';
  * const locals = await componentOperations.getLocalComponents();
@@ -102,8 +103,14 @@ export async function createComponentFromNode(params) {
 /**
  * Creates one or more instances of a component by key.
  * Accepts either a single object (instance) or an array (instances).
- * @param {{instance?: {componentKey: string, x?: number, y?: number}, instances?: Array<{componentKey: string, x?: number, y?: number}>}} params
- * @returns {Promise<{instances: Array<any>}>}
+ *
+ * @async
+ * @function createComponentInstance
+ * @param {object} params - Parameters for instance creation.
+ * @param {{componentKey: string, x?: number, y?: number}} [params.instance] - Single instance config.
+ * @param {Array<{componentKey: string, x?: number, y?: number}>} [params.instances] - Array of instance configs.
+ * @returns {Promise<{instances: Array<{id: string, name: string, x: number, y: number, width: number, height: number, componentId: string}>}>} Array of created instance details.
+ * @throws {Error} If componentKey is missing in any config.
  * @example
  * // Single instance
  * const { instances } = await createComponentInstance({ instance: { componentKey: 'ABC123', x: 100, y: 200 } });
@@ -141,9 +148,19 @@ export async function createComponentInstance(params) {
 }
 
 /**
- * Exports a node as an image.
- * @param {{nodeId: string, format?: 'PNG'|'JPG'|'SVG'|'PDF', scale?: number}} params
- * @returns {Promise<{nodeId: string, format: string, scale: number, mimeType: string, imageData: string}>}
+ * Exports a node as an image in the specified format and scale.
+ *
+ * @async
+ * @function exportNodeAsImage
+ * @param {object} params - Parameters for export.
+ * @param {string} params.nodeId - Node ID to export.
+ * @param {'PNG'|'JPG'|'SVG'|'PDF'} [params.format='PNG'] - Image format.
+ * @param {number} [params.scale=1] - Export scale factor.
+ * @returns {Promise<{nodeId: string, format: string, scale: number, mimeType: string, imageData: string}>} Exported image data.
+ * @throws {Error} If nodeId is missing or node cannot be exported.
+ * @example
+ * const image = await exportNodeAsImage({ nodeId: '123:45', format: 'PNG', scale: 2 });
+ * console.log(image.mimeType, image.imageData);
  */
 export async function exportNodeAsImage(params) {
   const { nodeId, format = "PNG", scale = 1 } = params;
@@ -211,6 +228,16 @@ export async function getTeamComponents(params) {
   };
 }
 
+/**
+ * Collection of component operation functions for Figma nodes.
+ * @namespace componentOperations
+ * @property {function} getLocalComponents - Retrieve local components.
+ * @property {function} getRemoteComponents - Retrieve remote components.
+ * @property {function} getTeamComponents - Retrieve team library components.
+ * @property {function} createComponentFromNode - Convert node to component.
+ * @property {function} createComponentInstance - Create component instance(s).
+ * @property {function} exportNodeAsImage - Export node as image.
+ */
 export const componentOperations = {
   getLocalComponents,
   getRemoteComponents,

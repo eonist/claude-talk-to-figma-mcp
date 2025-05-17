@@ -4,11 +4,14 @@
  */
 
 /**
- * Detects current Figma theme and sets up observer for theme changes
+ * Detects current Figma theme and sets up observer for theme changes.
+ * Applies theme classes to the body element and updates on-the-fly.
  */
 function setupThemeDetection() {
   /**
    * Handles theme changes by updating the body class based on Figma's theme.
+   * Adds/removes 'theme-light' or 'theme-dark' classes on the body.
+   * @returns {void}
    */
   function handleThemeChange() {
     const isDarkTheme = document.documentElement.classList.contains('figma-dark');
@@ -28,7 +31,12 @@ function setupThemeDetection() {
   // Detect initial theme
   handleThemeChange();
   
-  // Set up observer to detect theme changes
+  /**
+   * MutationObserver callback to detect changes to the HTML element's class attribute.
+   * Triggers theme update if the class attribute changes.
+   * @param {MutationRecord[]} mutations - List of mutations observed.
+   * @returns {void}
+   */
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.attributeName === 'class') {
@@ -41,7 +49,11 @@ function setupThemeDetection() {
   observer.observe(document.documentElement, { attributes: true });
 }
 
-// Initialize all UI components when the DOM is loaded
+/**
+ * Initializes all UI components and event listeners when the DOM is loaded.
+ * Sets up UI elements, tab navigation, message listener, and theme detection.
+ * @listens DOMContentLoaded
+ */
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize UI elements
   initUIElements();

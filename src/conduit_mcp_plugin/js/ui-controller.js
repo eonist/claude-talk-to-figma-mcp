@@ -5,22 +5,80 @@
 
 
 /**
- * UI element references for the plugin UI.
- * @type {HTMLElement|undefined}
+ * Reference to the port input element.
+ * @global
+ * @type {HTMLInputElement|undefined}
  */
 let portInput;
+
+/**
+ * Reference to the connect button element.
+ * @global
+ * @type {HTMLButtonElement|undefined}
+ */
 let connectButton;
+
+/**
+ * Reference to the copy channel button element.
+ * @global
+ * @type {HTMLButtonElement|undefined}
+ */
 let copyChannelButton;
+
+/**
+ * Reference to the connection status element.
+ * @global
+ * @type {HTMLElement|undefined}
+ */
 let connectionStatus;
+
+/**
+ * Reference to the auto-reconnect toggle element.
+ * @global
+ * @type {HTMLInputElement|undefined}
+ */
 let autoReconnectToggle;
+
+/**
+ * Reference to the progress container element.
+ * @global
+ * @type {HTMLElement|undefined}
+ */
 let progressContainer;
+
+/**
+ * Reference to the progress bar element.
+ * @global
+ * @type {HTMLElement|undefined}
+ */
 let progressBar;
+
+/**
+ * Reference to the progress message element.
+ * @global
+ * @type {HTMLElement|undefined}
+ */
 let progressMessage;
+
+/**
+ * Reference to the progress status element.
+ * @global
+ * @type {HTMLElement|undefined}
+ */
 let progressStatus;
+
+/**
+ * Reference to the progress percentage element.
+ * @global
+ * @type {HTMLElement|undefined}
+ */
 let progressPercentage;
 
 /**
  * Initializes UI elements and sets up event listeners for the plugin UI.
+ * Queries the DOM for UI elements, assigns them to global variables, and sets up event listeners for user interaction.
+ * Side effects: Modifies DOM, sets global variables, and triggers connection logic.
+ * @returns {void}
  */
 function initUIElements() {
   portInput = document.getElementById("port");
@@ -163,7 +221,13 @@ function initUIElements() {
   }
 }
 
-// Update connection status UI
+/**
+ * Updates the connection status UI elements based on the current connection state.
+ * Updates status text, button states, and channel info.
+ * @param {boolean} isConnected - Whether the plugin is currently connected.
+ * @param {string} [message] - Optional status message to display.
+ * @returns {void}
+ */
 function updateConnectionStatus(isConnected, message) {
   pluginState.connection.connected = isConnected;
   
@@ -201,7 +265,12 @@ function updateConnectionStatus(isConnected, message) {
   portInput.disabled = isConnected;
 }
 
-// Update progress UI
+/**
+ * Updates the progress UI elements based on the provided progress data.
+ * Shows/hides the progress container, updates bar, message, and status.
+ * @param {object} progressData - Progress information (should include progress, message, status).
+ * @returns {void}
+ */
 function updateProgressUI(progressData) {
   // Show progress container if hidden
   progressContainer.classList.remove("hidden");
@@ -235,7 +304,10 @@ function updateProgressUI(progressData) {
   }
 }
 
-// Reset progress UI
+/**
+ * Resets the progress UI to its initial state (hidden, 0% progress, default messages).
+ * @returns {void}
+ */
 function resetProgressUI() {
   progressContainer.classList.add("hidden");
   progressBar.style.width = "0%";

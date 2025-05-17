@@ -31,6 +31,25 @@ import {
  * console.log('Resized node', result);
  */
 
+/**
+ * Collection of node operation functions for Figma.
+ * @namespace nodeOperations
+ * @property {function} resizeNode - Resize a node.
+ * @property {function} resizeNodes - Resize multiple nodes.
+ * @property {function} moveNode - Move a node.
+ * @property {function} moveNodes - Move multiple nodes.
+ * @property {function} setNodeCornerRadii - Set corner radii for a node.
+ * @property {function} setNodesCornerRadii - Set corner radii for multiple nodes.
+ * @property {function} deleteNode - Delete a node.
+ * @property {function} deleteNodes - Delete multiple nodes.
+ * @property {function} convertRectangleToFrame - Convert a rectangle to a frame.
+ * @property {function} flattenNode - Flatten a node.
+ * @property {function} union_selection - Union selection.
+ * @property {function} subtract_selection - Subtract selection.
+ * @property {function} intersect_selection - Intersect selection.
+ * @property {function} exclude_selection - Exclude selection.
+ * @property {function} clone_node - Clone a node.
+ */
 export const nodeOperations = {
   resizeNode,
   resizeNodes,

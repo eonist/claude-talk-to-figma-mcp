@@ -1,14 +1,35 @@
 /**
- * Simple HTML generator for FRAME, TEXT, and RECTANGLE nodes.
- * Supports inline style output; other cssMode values fall back to inline.
+ * HTML generator module for Figma nodes.
+ * Generates HTML for FRAME, TEXT, and RECTANGLE nodes with inline styles.
+ *
+ * @module modules/html-generator
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML}
+ */
+
+/**
+ * Class for generating HTML from Figma node objects.
+ * Supports FRAME, TEXT, and RECTANGLE node types.
  */
 class HTMLGenerator {
+  /**
+   * Create an HTMLGenerator.
+   * @param {object} options - Generator options.
+   * @param {'semantic'|'div-based'} [options.format='semantic'] - Output format: 'semantic' uses section/p, 'div-based' uses divs.
+   * @param {function} options.cssExtractor - Async function(node): Promise<object> to extract CSS properties for a node.
+   */
   constructor(options) {
     this.options = options;
     // cssExtractor: function(node) => Promise<cssProps>
     this.cssExtractor = options.cssExtractor;
   }
 
+  /**
+   * Generate HTML for a Figma node and its children.
+   * @async
+   * @param {object} node - Figma node object (FRAME, TEXT, or RECTANGLE).
+   * @param {string} node.type - Node type.
+   * @returns {Promise<string>} Generated HTML string.
+   */
   async generate(node) {
     if (!node || !node.type) {
       return '';
@@ -25,6 +46,12 @@ class HTMLGenerator {
     }
   }
 
+  /**
+   * Generate HTML for a FRAME node and its children.
+   * @async
+   * @param {object} node - FRAME node.
+   * @returns {Promise<string>} HTML string for the frame and its children.
+   */
   async processFrame(node) {
     var htmlParts = [];
     var children = node.children || [];
@@ -38,6 +65,12 @@ class HTMLGenerator {
       '\n</' + tag + '>';
   }
 
+  /**
+   * Generate HTML for a TEXT node.
+   * @async
+   * @param {object} node - TEXT node.
+   * @returns {Promise<string>} HTML string for the text node.
+   */
   async processText(node) {
     var tag = (this.options.format === 'semantic') ? 'p' : 'div';
     var attr = await this.buildStyleAttr(node);
@@ -45,12 +78,24 @@ class HTMLGenerator {
     return '<' + tag + attr + '>' + text + '</' + tag + '>';
   }
 
+  /**
+   * Generate HTML for a RECTANGLE node.
+   * @async
+   * @param {object} node - RECTANGLE node.
+   * @returns {Promise<string>} HTML string for the rectangle node.
+   */
   async processRectangle(node) {
     var tag = 'div';
     var attr = await this.buildStyleAttr(node);
     return '<' + tag + attr + '></' + tag + '>';
   }
 
+  /**
+   * Build the style attribute string for a node using the cssExtractor.
+   * @async
+   * @param {object} node - Node to extract styles from.
+   * @returns {Promise<string>} Style attribute string (e.g., ' style="color: red;"') or empty string.
+   */
   async buildStyleAttr(node) {
     try {
       var cssProps = await this.cssExtractor(node);

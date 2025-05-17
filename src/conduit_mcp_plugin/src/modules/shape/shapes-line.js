@@ -1,15 +1,26 @@
 import { setStroke } from "./shapes-helpers.js";
 
 /**
- * Creates a line in the Figma document.
+ * Creates one or more lines in the Figma document.
  *
  * @async
- * @function createLine
- * @param {{ x1?: number, y1?: number, x2?: number, y2?: number, strokeColor?: object, strokeWeight?: number, name?: string, parentId?: string }} params
- * @returns {Promise<{ id: string }>} Created line node ID
+ * @function
+ * @param {Object} params - Configuration parameters.
+ * @param {Object} [params.line] - Single line config (see below).
+ * @param {Array<Object>} [params.lines] - Array of line configs (see below).
+ * @param {number} [params.line.x1=0] - X1 position.
+ * @param {number} [params.line.y1=0] - Y1 position.
+ * @param {number} [params.line.x2=100] - X2 position.
+ * @param {number} [params.line.y2=0] - Y2 position.
+ * @param {object} [params.line.strokeColor={r:0,g:0,b:0,a:1}] - RGBA stroke color.
+ * @param {number} [params.line.strokeWeight=1] - Stroke weight.
+ * @param {string} [params.line.name="Line"] - Name of the line node.
+ * @param {string} [params.line.parentId] - Optional parent node ID to append the line.
+ * @returns {Promise<{ ids: Array<string> }>} Object with array of created line node IDs.
+ * @throws {Error} If neither 'line' nor 'lines' is provided, or if parent is not found.
  * @example
- * const line = await createLine({ x1:0, y1:0, x2:100, y2:0 });
- * console.log(line.id);
+ * const lineRes = await createLine({ line: { x1:0, y1:0, x2:100, y2:0 } });
+ * const batchRes = await createLine({ lines: [{ x2:50 }, { x2:60 }] });
  */
 export async function createLine(params) {
   let linesArr;

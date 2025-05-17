@@ -3,12 +3,27 @@
  * Handles tab switching functionality.
  */
 
+/**
+ * NodeList of tab elements in the UI.
+ * @global
+ * @type {NodeListOf<Element>|undefined}
+ */
 let tabs;
+
+/**
+ * NodeList of tab content elements in the UI.
+ * @global
+ * @type {NodeListOf<Element>|undefined}
+ */
 let tabContents;
 
 
 /**
  * Initializes tab navigation by setting up click handlers and toggling active classes.
+ * Queries the DOM for tab and tab-content elements, sets up event listeners,
+ * and manages the "active" class for tabs and their content.
+ * Side effects: Modifies DOM classes and sets global variables {@link tabs} and {@link tabContents}.
+ * @returns {void}
  */
 function initTabNavigation() {
   // Get all tab elements and content

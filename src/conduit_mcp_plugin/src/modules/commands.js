@@ -1,6 +1,6 @@
 /**
  * Command registry and handler module for the Conduit MCP Figma plugin.
- * This file now delegates to the split modules in ./commands/.
+ * This file acts as a facade, delegating all command logic to the split modules in ./commands/.
  *
  * Exposed functions:
  * - registerCommand(name: string, fn: Function): void
@@ -9,6 +9,7 @@
  * - commandOperations: { initializeCommands, handleCommand }
  *
  * @module modules/commands
+ * @see {@link ./commands/commands-register.js}
  * @example
  * import { initializeCommands, handleCommand } from './modules/commands.js';
  * initializeCommands();

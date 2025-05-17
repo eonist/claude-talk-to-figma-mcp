@@ -5,8 +5,19 @@
 
 /**
  * Clones one or more nodes by ID, with optional positions, offsets, and parent.
+ *
  * @async
- * @function clone_node
+ * @function
+ * @param {Object|Array} params - Clone configuration. Can be a single config object, an array of configs, or an object with a 'nodes' or 'node' property.
+ * @param {Array<Object>} [params.nodes] - Array of node clone configs.
+ * @param {Object} [params.node] - Single node clone config.
+ * @param {string} [params.nodeId] - Node ID to clone (if not using nodes/node).
+ * @param {Object} [params.position] - Optional position {x, y} for the clone.
+ * @param {number} [params.offsetX=0] - Optional X offset for the clone.
+ * @param {number} [params.offsetY=0] - Optional Y offset for the clone.
+ * @param {string} [params.parentId] - Optional parent node ID to append the clone to.
+ * @returns {Promise<{newNodeIds: Array<string>}>} Object with array of new node IDs.
+ * @throws {Error} If required parameters are missing, nodes cannot be found, or cannot be cloned.
  */
 export async function clone_node(params) {
   let nodesArr;

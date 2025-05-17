@@ -5,6 +5,10 @@
 
 /**
  * Safely converts a node ID to a string.
+ *
+ * @param {string|number} nodeId - The node ID to convert.
+ * @returns {string} The node ID as a string.
+ * @throws {Error} If nodeId is null, undefined, or an object.
  */
 export function ensureNodeIdIsString(nodeId) {
   if (nodeId === null || nodeId === undefined) {
@@ -18,6 +22,12 @@ export function ensureNodeIdIsString(nodeId) {
 
 /**
  * Retrieves detailed information about a specific node in the Figma document.
+ *
+ * @async
+ * @function
+ * @param {string|Object} nodeIdOrParams - Node ID as a string, or an object with nodeId or id property.
+ * @returns {Promise<Object>} The node's document info, or a fallback with id, name, and type.
+ * @throws {Error} If the node is not found or the parameter is invalid.
  */
 export async function getNodeInfo(nodeIdOrParams) {
   let id;
@@ -48,6 +58,12 @@ export async function getNodeInfo(nodeIdOrParams) {
 
 /**
  * Retrieves information for multiple nodes simultaneously using parallel processing.
+ *
+ * @async
+ * @function
+ * @param {Array<string>|Object} nodeIdsOrParams - Array of node IDs, or an object with a nodeIds property.
+ * @returns {Promise<Array<{nodeId: string, document: Object}>>} Array of node info objects.
+ * @throws {Error} If parameters are invalid or nodes cannot be found.
  */
 export async function getNodesInfo(nodeIdsOrParams) {
   try {

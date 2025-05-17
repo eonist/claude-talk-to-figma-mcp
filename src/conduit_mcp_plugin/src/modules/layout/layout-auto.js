@@ -5,8 +5,23 @@
 
 /**
  * Configures auto layout properties for a node in Figma.
+ *
  * @async
- * @function setAutoLayout
+ * @function
+ * @param {Object} params - Parameters for auto layout configuration.
+ * @param {string} params.nodeId - The ID of the node to configure.
+ * @param {"NONE"|"HORIZONTAL"|"VERTICAL"} params.layoutMode - The auto layout mode to set.
+ * @param {number} [params.paddingTop] - Top padding.
+ * @param {number} [params.paddingBottom] - Bottom padding.
+ * @param {number} [params.paddingLeft] - Left padding.
+ * @param {number} [params.paddingRight] - Right padding.
+ * @param {number} [params.itemSpacing] - Spacing between items.
+ * @param {string} [params.primaryAxisAlignItems] - Alignment along the primary axis.
+ * @param {string} [params.counterAxisAlignItems] - Alignment along the counter axis.
+ * @param {string} [params.layoutWrap] - Layout wrap mode.
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout.
+ * @returns {Promise<Object>} Updated node layout properties.
+ * @throws {Error} If nodeId or layoutMode is missing, node is not found, or does not support auto layout.
  */
 export async function setAutoLayout(params) {
   const { 
@@ -63,8 +78,15 @@ export async function setAutoLayout(params) {
 
 /**
  * Adjusts auto-layout resizing behavior for a node along a specified axis.
+ *
  * @async
- * @function setAutoLayoutResizing
+ * @function
+ * @param {Object} params - Parameters for resizing configuration.
+ * @param {string} params.nodeId - The ID of the node to configure.
+ * @param {"horizontal"|"vertical"} params.axis - The axis to set sizing mode for.
+ * @param {"HUG"|"FIXED"|"FILL"} params.mode - The sizing mode to set.
+ * @returns {Promise<{id: string, primaryAxisSizingMode: string, counterAxisSizingMode: string}>} Updated sizing modes.
+ * @throws {Error} If parameters are missing/invalid, or node does not support auto layout.
  */
 export async function setAutoLayoutResizing(params) {
   const { nodeId, axis, mode } = params || {};

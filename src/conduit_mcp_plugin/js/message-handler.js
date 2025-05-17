@@ -12,6 +12,15 @@ if (!window.commandIdMap) {
   window.commandIdMap = new Map();
 }
 
+
+/**
+ * Handles incoming messages from the WebSocket server.
+ * Resolves or rejects pending requests, or dispatches new commands to the plugin code.
+ * @async
+ * @param {object} payload - The message payload from the WebSocket server.
+ * @param {object} payload.message - The actual message data.
+ * @returns {Promise<void>}
+ */
 async function handleSocketMessage(payload) {
   const data = payload.message;
   console.log("handleSocketMessage", data);
@@ -34,15 +43,15 @@ async function handleSocketMessage(payload) {
     try {
       // Store the command type and ID for later lookup
       // Storing the full command along with the ID ensures we can match responses properly
-          if (!window.commandIdMap.has(data.command)) {
-            window.commandIdMap.set(data.command, []);
-          }
-          var entry = {
-            id: data.id,
-            timestamp: Date.now(),
-            params: data.params
-          };
-          window.commandIdMap.get(data.command).push(entry);
+      if (!window.commandIdMap.has(data.command)) {
+        window.commandIdMap.set(data.command, []);
+      }
+      var entry = {
+        id: data.id,
+        timestamp: Date.now(),
+        params: data.params
+      };
+      window.commandIdMap.get(data.command).push(entry);
       
       // Limit the stored commands to the most recent 10 for each command type
       if (window.commandIdMap.get(data.command).length > 10) {
@@ -73,7 +82,13 @@ async function handleSocketMessage(payload) {
   }
 }
 
-// Helper to find the most recent command ID
+
+/**
+ * Finds the most recent command ID for a given command type.
+ * Used for correlating responses with original requests.
+ * @param {string} commandType - The command type to search for.
+ * @returns {string|null} The most recent command ID, or null if not found.
+ */
 function findCommandId(commandType) {
   if (!window.commandIdMap || !window.commandIdMap.has(commandType)) {
     console.warn(`No stored command IDs found for command type: ${commandType}`);
@@ -93,9 +108,18 @@ function findCommandId(commandType) {
   return commandEntries[0].id;
 }
 
-// Initialize event listener for messages from plugin code
+
+/**
+ * Initializes the event listener for messages from the plugin code.
+ * Handles connection status, auto-connect/disconnect, command results, errors, and progress updates.
+ * @returns {void}
+ */
 function initMessageListener() {
-  // Listen for messages from the plugin code
+  /**
+   * Handles messages sent from the plugin code to the UI.
+   * @param {MessageEvent} event - The message event from the plugin code.
+   * @returns {void}
+   */
   window.onmessage = (event) => {
     const message = event.data.pluginMessage;
     if (!message) return;

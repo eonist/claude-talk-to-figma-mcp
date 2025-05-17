@@ -1,25 +1,28 @@
 import { setFill, setStroke } from "./shapes-helpers.js";
 
 /**
- * Creates a polygon node in the Figma document.
+ * Creates one or more polygon nodes in the Figma document.
  *
  * @async
- * @function createPolygon
- * @param {{ x?: number, y?: number, width?: number, height?: number, sides?: number, name?: string, parentId?: string, fillColor?: {r:number,g:number,b:number,a?:number}, strokeColor?: {r:number,g:number,b:number,a?:number}, strokeWeight?: number }} params
- *   - x: X position (default 0)
- *   - y: Y position (default 0)
- *   - width: Width of polygon (default 100)
- *   - height: Height of polygon (default 100)
- *   - sides: Number of sides (default 6)
- *   - name: Node name (default "Polygon")
- *   - parentId: Optional parent node ID
- *   - fillColor: Optional fill color
- *   - strokeColor: Optional stroke color
- *   - strokeWeight: Optional stroke weight
- * @returns {Promise<{ id: string }>} Created polygon node ID
+ * @function
+ * @param {Object} params - Configuration parameters.
+ * @param {Object} [params.polygon] - Single polygon config (see below).
+ * @param {Array<Object>} [params.polygons] - Array of polygon configs (see below).
+ * @param {number} [params.polygon.x=0] - X position.
+ * @param {number} [params.polygon.y=0] - Y position.
+ * @param {number} [params.polygon.width=100] - Width of the polygon.
+ * @param {number} [params.polygon.height=100] - Height of the polygon.
+ * @param {number} [params.polygon.sides=6] - Number of sides.
+ * @param {string} [params.polygon.name="Polygon"] - Name of the polygon node.
+ * @param {string} [params.polygon.parentId] - Optional parent node ID to append the polygon.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.polygon.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.polygon.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.polygon.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ ids: Array<string> }>} Object with array of created polygon node IDs.
+ * @throws {Error} If neither 'polygon' nor 'polygons' is provided, or if parent is not found.
  * @example
- * const poly = await createPolygon({ x:10, y:10, width:80, height:80, sides:5 });
- * console.log(poly.id);
+ * const polyRes = await createPolygon({ polygon: { x:10, y:10, width:80, height:80, sides:5 } });
+ * const batchRes = await createPolygon({ polygons: [{ sides:3 }, { sides:4 }] });
  */
 export async function createPolygon(params) {
   let polygonsArr;

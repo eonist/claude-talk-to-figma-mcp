@@ -13,8 +13,11 @@
  */
 /**
  * Encodes a Uint8Array of binary data to a Base64 string.
+ *
+ * @function
  * @param {Uint8Array} bytes - The binary data to encode.
  * @returns {string} The Base64-encoded string.
+ * @throws {Error} If input is not a Uint8Array.
  * @example
  * customBase64Encode(new Uint8Array([72,65,84])); // "SEFU"
  */

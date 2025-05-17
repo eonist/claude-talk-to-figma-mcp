@@ -5,6 +5,16 @@
 
 /**
  * Retrieves detailed information about the current Figma page and its contents.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Object>} An object containing information about the current page, its children, and summary info.
+ * @property {string} name - Name of the current page.
+ * @property {string} id - ID of the current page.
+ * @property {string} type - Always "PAGE".
+ * @property {Array<Object>} children - Array of child node info ({id, name, type}).
+ * @property {Object} currentPage - Info about the current page ({id, name, childCount}).
+ * @property {Array<Object>} pages - Array with info about the current page ({id, name, childCount}).
  */
 export async function getDocumentInfo() {
   const page = figma.currentPage;
@@ -34,7 +44,10 @@ export async function getDocumentInfo() {
 
 /**
  * Gets information about all pages in the document.
- * @returns {Array} An array of page information objects.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Array<{id: string, name: string, childCount: number}>>} An array of page information objects.
  */
 export async function getPages() {
   const pages = figma.root.children;
@@ -47,8 +60,11 @@ export async function getPages() {
 
 /**
  * Sets the current active page in the document.
+ *
+ * @async
+ * @function
  * @param {string} pageId - The ID of the page to make active.
- * @returns {Object} Information about the newly active page.
+ * @returns {Promise<{id: string, name: string, childCount: number}>} Information about the newly active page.
  * @throws {Error} If the page with the given ID is not found or is not a page.
  */
 export async function setCurrentPage(pageId) {
@@ -70,8 +86,11 @@ export async function setCurrentPage(pageId) {
 
 /**
  * Creates a new page in the document.
+ *
+ * @async
+ * @function
  * @param {string} [name="New Page"] - The name for the new page.
- * @returns {Object} Information about the newly created page.
+ * @returns {Promise<{id: string, name: string, childCount: number}>} Information about the newly created page.
  */
 export async function createPage(name = "New Page") {
   const page = figma.createPage();

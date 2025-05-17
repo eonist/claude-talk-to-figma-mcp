@@ -219,10 +219,8 @@ export async function rename_multiples(params) {
  * Collection of all rename operation functions for convenience.
  *
  * @namespace renameOperations
- * @property {Function} rename_layers - Rename multiple layers using a template or regex.
- * @property {Function} ai_rename_layers - AI-assisted batch renaming of layers.
  * @property {Function} rename_layer - Rename a single layer with optional auto-rename for text.
- * @property {Function} rename_multiples - Rename multiple layers to specific names.
+ * @property {Function} ai_rename_layers - AI-assisted batch renaming of layers.
  */
 export const renameOperations = {
   rename_layer,

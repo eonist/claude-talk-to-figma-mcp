@@ -7,6 +7,7 @@
  * - insertLocalImage({ image } | { images }): Promise<{ ids: string[] }>
  *
  * @module modules/image
+ * @see {@link https://help.figma.com/hc/en-us/articles/360040451373-Images-in-Figma}
  * @example
  * import { imageOperations } from './modules/image.js';
  * // Insert from URL
@@ -86,6 +87,26 @@ export async function insertImage(params) {
   return { ids };
 }
 
+/**
+ * Inserts a single local image into the document.
+ * Accepts image data as a Uint8Array or array of bytes, and places it in a new rectangle node.
+ *
+ * @async
+ * @function insertLocalImage
+ * @param {{ data: Uint8Array|Array<number>, x?: number, y?: number, width?: number, height?: number, name?: string, parentId?: string }|{ images: Array<object> }} params
+ *   - data: Image data as Uint8Array or array of bytes.
+ *   - x: X coordinate for placement (default 0).
+ *   - y: Y coordinate for placement (default 0).
+ *   - width: Desired width (intrinsic if omitted).
+ *   - height: Desired height (intrinsic or equal to width if omitted).
+ *   - name: Node name (default "Local Image").
+ *   - parentId: Optional parent node ID for placement.
+ *   - images: Array of image configs for batch insert.
+ * @returns {Promise<{ ids: string[] }>} Array of created rectangle node IDs.
+ * @throws {Error} If image data is missing or parent node is not found.
+ * @example
+ * const { ids } = await insertLocalImage({ data: myImageBytes, x: 10, y: 10 });
+ */
 export async function insertLocalImage(params) {
   let imagesArr;
   if (params.images) {
@@ -131,6 +152,12 @@ export async function insertLocalImage(params) {
   return { ids };
 }
 
+/**
+ * Collection of image operation functions for Figma.
+ * @namespace imageOperations
+ * @property {function} insertImage - Insert image from URL.
+ * @property {function} insertLocalImage - Insert image from local data.
+ */
 export const imageOperations = {
   insertImage,
   insertLocalImage

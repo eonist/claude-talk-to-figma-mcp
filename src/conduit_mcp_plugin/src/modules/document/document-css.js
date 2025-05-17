@@ -5,8 +5,14 @@
 
 /**
  * Gets CSS properties from a node.
+ *
  * @async
- * @function getCssAsync
+ * @function
+ * @param {Object} [params={}] - Parameters for CSS extraction.
+ * @param {string} [params.nodeId] - The Figma node ID to extract CSS from. If omitted, uses the current selection.
+ * @param {"object"|"string"|"inline"} [params.format="string"] - Output format: "object" (raw object), "string" (CSS block), or "inline" (single-line CSS).
+ * @returns {Promise<Object|string>} The CSS properties as an object, string, or inline string depending on the format.
+ * @throws {Error} If no node is found for extraction.
  */
 export async function getCssAsync(params = {}) {
   const { nodeId, format = "string" } = params;

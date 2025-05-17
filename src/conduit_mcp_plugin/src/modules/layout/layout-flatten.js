@@ -5,8 +5,13 @@
 
 /**
  * Batch flatten nodes: flattens each node in the nodeIds array.
+ *
  * @async
- * @function flatten_nodes
+ * @function
+ * @param {Object} params - Parameters for flattening nodes.
+ * @param {Array<string>} params.nodeIds - Array of node IDs to flatten.
+ * @returns {Promise<{success: boolean, flattened: Array<string>}>} Object with success flag and array of flattened node IDs.
+ * @throws {Error} If nodeIds is missing/invalid, or nodes cannot be found or flattened.
  */
 export async function flatten_nodes(params) {
   const { nodeIds } = params || {};

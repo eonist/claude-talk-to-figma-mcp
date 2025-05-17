@@ -6,6 +6,7 @@
  * - insertSvgVector(params)
  *
  * @module modules/svg
+ * @see {@link https://help.figma.com/hc/en-us/articles/360040451373-Working-with-SVG-in-Figma}
  */
 
 /**

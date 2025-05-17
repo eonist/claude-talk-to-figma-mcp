@@ -4,7 +4,17 @@
 
 /**
  * Sends a progress update message to the plugin UI.
- * @function sendProgressUpdate
+ *
+ * @function
+ * @param {string} commandId - Unique command identifier.
+ * @param {string} commandType - Type of command.
+ * @param {string} status - Status string (e.g., "in_progress", "done").
+ * @param {number} progress - Progress percentage (0-100).
+ * @param {number} totalItems - Total number of items to process.
+ * @param {number} processedItems - Number of items processed so far.
+ * @param {string} message - Progress message.
+ * @param {Object} [payload=null] - Optional additional payload (may include chunk info).
+ * @returns {Object} The progress update object sent to the UI.
  */
 export function sendProgressUpdate(commandId, commandType, status, progress, totalItems, processedItems, message, payload = null) {
   const update = {
@@ -33,8 +43,10 @@ export function sendProgressUpdate(commandId, commandType, status, progress, tot
 
 /**
  * Returns a promise that resolves after a specified delay.
+ *
+ * @function
  * @param {number} ms - The delay duration in milliseconds.
- * @returns {Promise<void>}
+ * @returns {Promise<void>} Promise that resolves after the delay.
  */
 export function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

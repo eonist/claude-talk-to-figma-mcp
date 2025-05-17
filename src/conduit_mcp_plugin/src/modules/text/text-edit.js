@@ -1,9 +1,15 @@
 import { setCharacters } from "../utils.js";
 
 /**
- * Update the text content of an existing text node.
- * @param {object} params - Configuration object.
- * @returns {Promise<object>} Updated node information.
+ * Updates the text content of an existing text node.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Configuration object.
+ * @param {string} params.nodeId - The ID of the text node to update.
+ * @param {string} params.text - The new text content.
+ * @returns {Promise<{ id: string, name: string, characters: string, fontName: object }>} Updated node information.
+ * @throws {Error} If nodeId or text is missing, node cannot be found, or node is not a text node.
  */
 export async function setTextContent(params) {
   const { nodeId, text } = params || {};
@@ -33,8 +39,13 @@ export async function setTextContent(params) {
 
 /**
  * Replace text content in multiple text nodes in a batch operation.
- * @param {object} params - Batch operation parameters.
- * @returns {Promise<object>} Summary of the replacement operation.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Batch operation parameters.
+ * @param {Array<{ nodeId: string, text: string }>} params.texts - Array of nodeId/text pairs.
+ * @returns {Promise<Object>} Summary of the replacement operation.
+ * @throws {Error} Always throws, not yet implemented.
  */
 export async function setMultipleTextContents(params) {
   // This function will be refactored to import sendProgressUpdate and delay from text-helpers.js in the next step.
@@ -43,9 +54,15 @@ export async function setMultipleTextContents(params) {
 }
 
 /**
- * Update the text case of a text node.
- * @param {object} params - Configuration for text case update.
- * @returns {Promise<object>} Updated node information including text case.
+ * Updates the text case of a text node.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Configuration for text case update.
+ * @param {string} params.nodeId - The ID of the text node to update.
+ * @param {"ORIGINAL"|"UPPER"|"LOWER"|"TITLE"} params.textCase - The text case to set.
+ * @returns {Promise<{ id: string, name: string, textCase: string }>} Updated node information including text case.
+ * @throws {Error} If nodeId or textCase is missing/invalid, node cannot be found, or node is not a text node.
  */
 export async function setTextCase(params) {
   const { nodeId, textCase } = params || {};
@@ -65,9 +82,15 @@ export async function setTextCase(params) {
 }
 
 /**
- * Update the text decoration of a text node.
- * @param {object} params - Configuration for text decoration.
- * @returns {Promise<object>} Updated node information including text decoration.
+ * Updates the text decoration of a text node.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Configuration for text decoration.
+ * @param {string} params.nodeId - The ID of the text node to update.
+ * @param {"NONE"|"UNDERLINE"|"STRIKETHROUGH"} params.textDecoration - The text decoration to set.
+ * @returns {Promise<{ id: string, name: string, textDecoration: string }>} Updated node information including text decoration.
+ * @throws {Error} If nodeId or textDecoration is missing/invalid, node cannot be found, or node is not a text node.
  */
 export async function setTextDecoration(params) {
   const { nodeId, textDecoration } = params || {};

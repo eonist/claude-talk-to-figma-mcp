@@ -13,6 +13,7 @@
  * - getStyledTextSegments(params)
  *
  * @module modules/text
+ * @see {@link https://help.figma.com/hc/en-us/articles/360040451373-Text-in-Figma}
  * @example
  * import { textOperations } from './modules/text.js';
  * const result = await textOperations.createText({ x: 0, y: 0, text: 'Hello' });
@@ -24,8 +25,17 @@ import { setTextContent, setMultipleTextContents, setTextCase, setTextDecoration
 import { scanTextNodes, getStyledTextSegments } from './text/text-scan.js';
 
 /**
- * Named group of text operation functions for convenient importing.
+ * Collection of text operation functions for Figma.
  * @namespace textOperations
+ * @property {function} createText - Create a text node.
+ * @property {function} createBoundedText - Create a bounded text node.
+ * @property {function} createTexts - Create multiple text nodes.
+ * @property {function} setTextContent - Set the content of a text node.
+ * @property {function} scanTextNodes - Scan text nodes for analysis.
+ * @property {function} setMultipleTextContents - Set multiple text node contents.
+ * @property {function} setTextCase - Set the case of text.
+ * @property {function} setTextDecoration - Set text decoration.
+ * @property {function} getStyledTextSegments - Get styled text segments.
  * @example
  * const { setTextContent } = textOperations;
  * const updateResult = await setTextContent({ nodeId: '123', text: 'Goodbye' });

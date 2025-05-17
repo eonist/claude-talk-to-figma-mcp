@@ -4,7 +4,14 @@
  */
 
 /**
- * Deletes a node from the document
+ * Deletes a node from the document.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for node deletion.
+ * @param {string} params.nodeId - The ID of the node to delete.
+ * @returns {Promise<{success: boolean}>} Deletion result.
+ * @throws {Error} If nodeId is missing or node cannot be found.
  */
 export async function deleteNode(params) {
   const { nodeId } = params;
@@ -15,7 +22,14 @@ export async function deleteNode(params) {
 }
 
 /**
- * Deletes multiple nodes from the document
+ * Deletes multiple nodes from the document.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for batch node deletion.
+ * @param {Array<string>} params.nodeIds - Array of node IDs to delete.
+ * @returns {Promise<{success: Array<string>, failed: Array<string>}>} Object with arrays of successfully deleted and failed node IDs.
+ * @throws {Error} If nodeIds is missing.
  */
 export async function deleteNodes(params) {
   const { nodeIds } = params;
@@ -35,6 +49,15 @@ export async function deleteNodes(params) {
 
 /**
  * Converts a rectangle node to a frame, preserving all properties and optionally placing elements inside it.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for conversion.
+ * @param {string} params.nodeId - The ID of the rectangle node to convert.
+ * @param {Array<string>} [params.elementsToPlace=[]] - Optional array of element IDs to place inside the new frame.
+ * @param {boolean} [params.deleteOriginal=true] - Whether to delete the original rectangle.
+ * @returns {Promise<{id: string, name: string, width: number, height: number}>} Info about the new frame.
+ * @throws {Error} If nodeId is missing, node cannot be found, or is not a rectangle.
  */
 export async function convertRectangleToFrame(params) {
   const { nodeId, elementsToPlace = [], deleteOriginal = true } = params || {};

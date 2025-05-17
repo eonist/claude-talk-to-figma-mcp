@@ -4,14 +4,16 @@
  */
 
 /**
- * Resizes a node to the specified dimensions
+ * Resizes a node to the specified dimensions.
+ *
  * @async
- * @function resizeNode
- * @param {object} params - Parameters
- * @param {string} params.nodeId - ID of the node to resize
- * @param {number} params.width - New width
- * @param {number} params.height - New height
- * @returns {Promise<{success: boolean}>}
+ * @function
+ * @param {Object} params - Parameters for resizing.
+ * @param {string} params.nodeId - ID of the node to resize.
+ * @param {number} params.width - New width.
+ * @param {number} params.height - New height.
+ * @returns {Promise<{success: boolean}>} Resize result.
+ * @throws {Error} If nodeId is missing or node cannot be found.
  */
 export async function resizeNode(params) {
   const { nodeId, width, height } = params;
@@ -22,15 +24,17 @@ export async function resizeNode(params) {
 }
 
 /**
- * Resizes multiple nodes to the same dimensions
+ * Resizes multiple nodes to the same dimensions.
+ *
  * @async
- * @function resizeNodes
- * @param {object} params - Parameters
- * @param {string[]} params.nodeIds - Array of node IDs to resize
- * @param {object} params.targetSize - Target dimensions
- * @param {number} params.targetSize.width - New width
- * @param {number} params.targetSize.height - New height
- * @returns {Promise<{success: boolean, resized: number}>}
+ * @function
+ * @param {Object} params - Parameters for resizing.
+ * @param {Array<string>} params.nodeIds - Array of node IDs to resize.
+ * @param {Object} params.targetSize - Target dimensions {width, height}.
+ * @param {number} params.targetSize.width - New width.
+ * @param {number} params.targetSize.height - New height.
+ * @returns {Promise<{success: boolean, resized: number}>} Resize result.
+ * @throws {Error} If nodeIds or targetSize is missing.
  */
 export async function resizeNodes(params) {
   const { nodeIds, targetSize } = params;

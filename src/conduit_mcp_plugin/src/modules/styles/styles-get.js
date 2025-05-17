@@ -1,8 +1,15 @@
 /**
  * Retrieves local style definitions from Figma.
+ *
  * @async
- * @function getStyles
- * @returns {Promise<object>} Styles categorized by type.
+ * @function
+ * @returns {Promise<{
+ *   colors: Array<{ id: string, name: string, key: string, paint: object }>,
+ *   texts: Array<{ id: string, name: string, key: string, fontSize: number, fontName: object }>,
+ *   effects: Array<{ id: string, name: string, key: string }>,
+ *   grids: Array<{ id: string, name: string, key: string }>
+ * }>} Styles categorized by type.
+ * @throws {Error} If Figma API calls fail.
  */
 export async function getStyles() {
   const styles = {

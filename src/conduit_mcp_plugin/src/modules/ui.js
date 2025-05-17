@@ -146,6 +146,11 @@ export async function createButton(params) {
 export { createButton };
 
 // Grouped export for namespace imports
+/**
+ * Collection of UI component creation functions for Figma.
+ * @namespace uiComponents
+ * @property {function} createButton - Create a button component (frame, background, text).
+ */
 export const uiComponents = {
   createButton
 };

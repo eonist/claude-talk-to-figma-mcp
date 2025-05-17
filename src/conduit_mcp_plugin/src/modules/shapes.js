@@ -39,6 +39,18 @@ export {
   createLine
 };
 
+/**
+ * Collection of shape operation functions for Figma.
+ * @namespace shapeOperations
+ * @property {function} createRectangle - Create a rectangle node.
+ * @property {function} createFrame - Create a frame node.
+ * @property {function} createEllipse - Create an ellipse node.
+ * @property {function} createPolygon - Create a polygon node.
+ * @property {function} createStar - Create a star node.
+ * @property {function} createVector - Create a vector node.
+ * @property {function} createVectors - Create multiple vector nodes.
+ * @property {function} createLine - Create a line node.
+ */
 export const shapeOperations = {
   createRectangle,
   createFrame,

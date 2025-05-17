@@ -1,13 +1,20 @@
 /**
- * Global state management for the Condut MCP Figma plugin.
- * Provides a central store for application state that can be accessed by all modules.
+ * Global state management for the Conduit MCP Figma plugin.
+ * Provides a central store for application state that can be accessed and mutated by all modules.
+ * This module exposes a single global object, {@link pluginState}, for tracking connection and UI state.
+ * 
+ * Usage:
+ *   - Import or reference pluginState in any module to read or update shared state.
+ *   - All properties are mutable and reflect the current state of the plugin.
  */
 
 
 /**
  * Global plugin state object for the Conduit MCP Figma plugin.
  * Stores WebSocket connection state, UI state, and other shared properties.
- *
+ * All properties are mutable and reflect the current state of the plugin.
+ * 
+ * @global
  * @type {{
  *   connection: {
  *     connected: boolean,
@@ -24,8 +31,12 @@
  *     countdownTimer: any,
  *     countdownSeconds: number
  *   },
- *   ui: object
+ *   ui: object  // UI state properties (expand as needed)
  * }}
+ * 
+ * Example usage:
+ *   pluginState.connection.connected = true;
+ *   pluginState.ui.somePanelOpen = false;
  */
 const pluginState = {
   connection: {

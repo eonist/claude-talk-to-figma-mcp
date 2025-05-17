@@ -1,22 +1,27 @@
 import { setFill, setStroke } from "./shapes-helpers.js";
 
 /**
- * Creates a new rectangle node in the Figma document.
+ * Creates one or more rectangle nodes in the Figma document.
+ *
  * @async
- * @function createRectangle
- * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - X position.
- * @param {number} [params.y=0] - Y position.
- * @param {number} [params.width=100] - Width of the rectangle.
- * @param {number} [params.height=100] - Height of the rectangle.
- * @param {string} [params.name="Rectangle"] - Name of the rectangle node.
- * @param {string} [params.parentId] - Optional parent node ID to append the rectangle.
- * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
- * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
- * @param {number} [params.strokeWeight] - Optional stroke weight.
- * @returns {Promise<{ id: string, name: string, x: number, y: number, width: number, height: number }>}
+ * @function
+ * @param {Object} params - Configuration parameters.
+ * @param {Object} [params.rectangle] - Single rectangle config (see below).
+ * @param {Array<Object>} [params.rectangles] - Array of rectangle configs (see below).
+ * @param {number} [params.rectangle.x=0] - X position.
+ * @param {number} [params.rectangle.y=0] - Y position.
+ * @param {number} [params.rectangle.width=100] - Width of the rectangle.
+ * @param {number} [params.rectangle.height=100] - Height of the rectangle.
+ * @param {string} [params.rectangle.name="Rectangle"] - Name of the rectangle node.
+ * @param {string} [params.rectangle.parentId] - Optional parent node ID to append the rectangle.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.rectangle.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.rectangle.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.rectangle.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ ids: Array<string> }>} Object with array of created rectangle node IDs.
+ * @throws {Error} If neither 'rectangle' nor 'rectangles' is provided, or if parent is not found.
  * @example
- * const result = await createRectangle({ x: 0, y: 0, width: 100, height: 100 });
+ * const result = await createRectangle({ rectangle: { x: 0, y: 0, width: 100, height: 100 } });
+ * const batchResult = await createRectangle({ rectangles: [{ width: 50 }, { width: 60 }] });
  */
 export async function createRectangle(params) {
   let rectanglesArr;

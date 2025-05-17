@@ -5,8 +5,14 @@
 
 /**
  * Groups multiple Figma nodes into a single group.
+ *
  * @async
- * @function groupNodes
+ * @function
+ * @param {Object} params - Parameters for grouping nodes.
+ * @param {Array<string>} params.nodeIds - Array of node IDs to group (must be at least two).
+ * @param {string} [params.name] - Optional name for the group.
+ * @returns {Promise<{id: string, name: string, type: string, children: Array<{id: string, name: string, type: string}>}>} Group info.
+ * @throws {Error} If nodeIds is missing/invalid, nodes cannot be found, or do not share the same parent.
  */
 export async function groupNodes(params) {
   const { nodeIds, name } = params || {};
@@ -39,8 +45,13 @@ export async function groupNodes(params) {
 
 /**
  * Ungroups a Figma group or frame, promoting its children to the parent level.
+ *
  * @async
- * @function ungroupNodes
+ * @function
+ * @param {Object} params - Parameters for ungrouping.
+ * @param {string} params.nodeId - The ID of the group or frame to ungroup.
+ * @returns {Promise<{success: boolean, ungroupedCount: number, items: Array<{id: string, name: string, type: string}>}>} Ungroup result.
+ * @throws {Error} If nodeId is missing, node cannot be found, or is not a group/frame.
  */
 export async function ungroupNodes(params) {
   const { nodeId } = params || {};

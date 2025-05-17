@@ -1,22 +1,27 @@
 import { setFill, setStroke } from "./shapes-helpers.js";
 
 /**
- * Creates a new ellipse node in the Figma document.
+ * Creates one or more ellipse nodes in the Figma document.
+ *
  * @async
- * @function createEllipse
- * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - X position.
- * @param {number} [params.y=0] - Y position.
- * @param {number} [params.width=100] - Width of the ellipse.
- * @param {number} [params.height=100] - Height of the ellipse.
- * @param {string} [params.name="Ellipse"] - Name of the ellipse node.
- * @param {string} [params.parentId] - Optional parent node ID to append the ellipse.
- * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
- * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
- * @param {number} [params.strokeWeight] - Optional stroke weight.
- * @returns {Promise<{ id: string }>}
+ * @function
+ * @param {Object} params - Configuration parameters.
+ * @param {Object} [params.ellipse] - Single ellipse config (see below).
+ * @param {Array<Object>} [params.ellipses] - Array of ellipse configs (see below).
+ * @param {number} [params.ellipse.x=0] - X position.
+ * @param {number} [params.ellipse.y=0] - Y position.
+ * @param {number} [params.ellipse.width=100] - Width of the ellipse.
+ * @param {number} [params.ellipse.height=100] - Height of the ellipse.
+ * @param {string} [params.ellipse.name="Ellipse"] - Name of the ellipse node.
+ * @param {string} [params.ellipse.parentId] - Optional parent node ID to append the ellipse.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.ellipse.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.ellipse.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.ellipse.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ ids: Array<string> }>} Object with array of created ellipse node IDs.
+ * @throws {Error} If neither 'ellipse' nor 'ellipses' is provided, or if parent is not found.
  * @example
- * const ellipseRes = await createEllipse({ width: 80, height: 80 });
+ * const ellipseRes = await createEllipse({ ellipse: { width: 80, height: 80 } });
+ * const batchRes = await createEllipse({ ellipses: [{ width: 50 }, { width: 60 }] });
  */
 export async function createEllipse(params) {
   let ellipsesArr;

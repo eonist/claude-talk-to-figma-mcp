@@ -1,22 +1,27 @@
 import { setFill, setStroke } from "./shapes-helpers.js";
 
 /**
- * Creates a new frame node in the Figma document.
+ * Creates one or more frame nodes in the Figma document.
+ *
  * @async
- * @function createFrame
- * @param {object} params - Configuration parameters.
- * @param {number} [params.x=0] - X position.
- * @param {number} [params.y=0] - Y position.
- * @param {number} [params.width=100] - Width of the frame.
- * @param {number} [params.height=100] - Height of the frame.
- * @param {string} [params.name="Frame"] - Name of the frame node.
- * @param {string} [params.parentId] - Optional parent node ID to append the frame.
- * @param {{ r: number, g: number, b: number, a?: number }} [params.fillColor] - Optional RGBA fill color.
- * @param {{ r: number, g: number, b: number, a?: number }} [params.strokeColor] - Optional RGBA stroke color.
- * @param {number} [params.strokeWeight] - Optional stroke weight.
- * @returns {Promise<{ id: string, name: string, width: number, height: number }>}
+ * @function
+ * @param {Object} params - Configuration parameters.
+ * @param {Object} [params.frame] - Single frame config (see below).
+ * @param {Array<Object>} [params.frames] - Array of frame configs (see below).
+ * @param {number} [params.frame.x=0] - X position.
+ * @param {number} [params.frame.y=0] - Y position.
+ * @param {number} [params.frame.width=100] - Width of the frame.
+ * @param {number} [params.frame.height=100] - Height of the frame.
+ * @param {string} [params.frame.name="Frame"] - Name of the frame node.
+ * @param {string} [params.frame.parentId] - Optional parent node ID to append the frame.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.frame.fillColor] - Optional RGBA fill color.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.frame.strokeColor] - Optional RGBA stroke color.
+ * @param {number} [params.frame.strokeWeight] - Optional stroke weight.
+ * @returns {Promise<{ ids: Array<string> }>} Object with array of created frame node IDs.
+ * @throws {Error} If neither 'frame' nor 'frames' is provided, or if parent is not found.
  * @example
- * const frameResult = await createFrame({ x: 10, y: 10, width: 200, height: 150 });
+ * const frameResult = await createFrame({ frame: { x: 10, y: 10, width: 200, height: 150 } });
+ * const batchResult = await createFrame({ frames: [{ width: 100 }, { width: 120 }] });
  */
 export async function createFrame(params) {
   let framesArr;

@@ -4,7 +4,16 @@
  */
 
 /**
- * Resizes a node to the specified dimensions
+ * Resizes a node to the specified dimensions.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for resizing.
+ * @param {string} params.nodeId - The ID of the node to resize.
+ * @param {number} params.width - The new width.
+ * @param {number} params.height - The new height.
+ * @returns {Promise<{success: boolean}>} Resize result.
+ * @throws {Error} If nodeId is missing or node cannot be found.
  */
 export async function resizeNode(params) {
   const { nodeId, width, height } = params;
@@ -15,7 +24,15 @@ export async function resizeNode(params) {
 }
 
 /**
- * Resizes multiple nodes to the same dimensions
+ * Resizes multiple nodes to the same dimensions.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for resizing.
+ * @param {Array<string>} params.nodeIds - Array of node IDs to resize.
+ * @param {Object} params.targetSize - Target size {width, height}.
+ * @returns {Promise<{success: boolean, resized: number}>} Resize result.
+ * @throws {Error} If nodeIds or targetSize is missing.
  */
 export async function resizeNodes(params) {
   const { nodeIds, targetSize } = params;
@@ -31,7 +48,16 @@ export async function resizeNodes(params) {
 }
 
 /**
- * Moves a node to a new position
+ * Moves a node to a new position.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for moving.
+ * @param {string} params.nodeId - The ID of the node to move.
+ * @param {number} params.x - The new X position.
+ * @param {number} params.y - The new Y position.
+ * @returns {Promise<{success: boolean}>} Move result.
+ * @throws {Error} If nodeId is missing or node cannot be found.
  */
 export async function moveNode(params) {
   const { nodeId, x, y } = params;
@@ -43,7 +69,16 @@ export async function moveNode(params) {
 }
 
 /**
- * Moves multiple nodes to a new position
+ * Moves multiple nodes to a new position.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for moving.
+ * @param {Array<string>} params.nodeIds - Array of node IDs to move.
+ * @param {number} params.x - The new X position.
+ * @param {number} params.y - The new Y position.
+ * @returns {Promise<{success: boolean, moved: number}>} Move result.
+ * @throws {Error} If nodeIds is missing.
  */
 export async function moveNodes(params) {
   const { nodeIds, x, y } = params;
@@ -60,7 +95,20 @@ export async function moveNodes(params) {
 }
 
 /**
- * Sets custom corner radii for a single node
+ * Sets custom corner radii for a single node.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for corner radii.
+ * @param {string} params.nodeId - The ID of the node.
+ * @param {number} [params.all] - Uniform radius for all corners.
+ * @param {number} [params.top_left] - Top-left corner radius.
+ * @param {number} [params.top_right] - Top-right corner radius.
+ * @param {number} [params.bottom_left] - Bottom-left corner radius.
+ * @param {number} [params.bottom_right] - Bottom-right corner radius.
+ * @param {boolean} [params.maintain_aspect] - If true, sets all corners to the minimum radius.
+ * @returns {Promise<{success: boolean}>} Operation result.
+ * @throws {Error} If nodeId is missing, node cannot be found, or node type is unsupported.
  */
 export async function setNodeCornerRadii(params) {
   const { nodeId, all, top_left, top_right, bottom_left, bottom_right, maintain_aspect } = params;
@@ -110,7 +158,15 @@ export async function setNodeCornerRadii(params) {
 }
 
 /**
- * Sets corner radii for multiple nodes with per-corner control
+ * Sets corner radii for multiple nodes with per-corner control.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for batch corner radii.
+ * @param {Array<Object>} params.radii - Array of radii configs ({node_id, all, top_left, top_right, bottom_left, bottom_right}).
+ * @param {Object} [params.options] - Optional options ({maintain_aspect, skip_errors}).
+ * @returns {Promise<{success: boolean, modifiedNodes: Array<string>, errors?: Array<string>}>} Operation result.
+ * @throws {Error} If a node cannot be found or is unsupported, unless skip_errors is set.
  */
 export async function setNodesCornerRadii(params) {
   const { radii = [], options = {} } = params;

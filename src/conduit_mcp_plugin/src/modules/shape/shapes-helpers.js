@@ -6,8 +6,10 @@
 /**
  * Applies a solid fill color to a node.
  *
- * @param {SceneNode} node - The Figma node to style.
+ * @param {SceneNode} node - The Figma node to style (must support fills).
  * @param {{ r: number, g: number, b: number, a?: number }} color - RGBA color.
+ * @returns {void}
+ * @throws {Error} If the node does not support fills.
  * @example
  * setFill(rect, { r:1, g:0, b:0 });
  */
@@ -22,9 +24,11 @@ export function setFill(node, color) {
 /**
  * Applies a solid stroke color and weight to a node.
  *
- * @param {SceneNode} node - The Figma node to style.
+ * @param {SceneNode} node - The Figma node to style (must support strokes).
  * @param {{ r: number, g: number, b: number, a?: number }} color - RGBA color.
  * @param {number} [weight] - Stroke weight.
+ * @returns {void}
+ * @throws {Error} If the node does not support strokes.
  * @example
  * setStroke(rect, { r:0, g:0, b:1 }, 2);
  */

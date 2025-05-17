@@ -5,8 +5,15 @@
 
 /**
  * Inserts a child node into a parent node at an optional index position.
+ *
  * @async
- * @function insertChild
+ * @function
+ * @param {Object} params - Parameters for child insertion.
+ * @param {string} params.parentId - The ID of the parent node.
+ * @param {string} params.childId - The ID of the child node to insert.
+ * @param {number} [params.index] - Optional index at which to insert the child.
+ * @returns {Promise<{parentId: string, childId: string, index: number, success: boolean, previousParentId: string|null}>} Insertion result.
+ * @throws {Error} If parentId or childId is missing, nodes cannot be found, or parent cannot accept children.
  */
 export async function insertChild(params) {
   const { parentId, childId, index } = params || {};
@@ -39,8 +46,14 @@ export async function insertChild(params) {
 
 /**
  * Batch-inserts multiple child nodes into parent nodes.
+ *
  * @async
- * @function insertChildren
+ * @function
+ * @param {Object} params - Parameters for batch insertion.
+ * @param {Array<Object>} params.operations - Array of insertion operations (see insertChild params).
+ * @param {Object} [params.options] - Optional options (e.g., skipErrors).
+ * @returns {Promise<{results: Array<{parentId: string, childId: string, index: number, success: boolean, error: string|null}>}>} Batch insertion results.
+ * @throws {Error} If operations is missing/invalid, or if an error occurs and skipErrors is not set.
  */
 export async function insertChildren(params) {
   const { operations, options } = params || {};

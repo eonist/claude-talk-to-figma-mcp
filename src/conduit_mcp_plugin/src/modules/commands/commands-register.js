@@ -18,6 +18,10 @@ const commandRegistry = {};
 
 /**
  * Registers a command handler function under a specific name.
+ *
+ * @param {string} name - The unique name for the command.
+ * @param {Function} fn - The handler function to execute for this command.
+ * @returns {void}
  */
 export function registerCommand(name, fn) {
   commandRegistry[name] = fn;
@@ -25,7 +29,10 @@ export function registerCommand(name, fn) {
 
 /**
  * Initializes and registers all available commands in the plugin.
- * This function is called once during plugin initialization to set up the command system.
+ * Should be called once during plugin initialization to set up the command system.
+ *
+ * @function
+ * @returns {void}
  */
 export function initializeCommands() {
   // Document Operations
@@ -230,7 +237,13 @@ export function initializeCommands() {
 }
 
 /**
- * Handles an incoming command by routing it to the appropriate registered handler function
+ * Handles an incoming command by routing it to the appropriate registered handler function.
+ *
+ * @async
+ * @param {string} command - The name of the command to execute.
+ * @param {any} params - Parameters to pass to the command handler.
+ * @returns {Promise<any>} The result of the command handler.
+ * @throws {Error} If the command is not registered.
  */
 export async function handleCommand(command, params) {
   if (!commandRegistry[command]) {

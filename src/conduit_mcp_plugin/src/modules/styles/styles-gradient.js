@@ -5,8 +5,15 @@
 
 /**
  * Creates a gradient paint style in Figma.
+ *
  * @async
- * @function createGradientVariable
+ * @function
+ * @param {Object} params - Parameters for gradient variable.
+ * @param {string} params.name - Name for the gradient style.
+ * @param {"LINEAR"|"RADIAL"|"ANGULAR"|"DIAMOND"} params.gradientType - Type of gradient.
+ * @param {Array<{ position: number, color: [number, number, number, number] }>} params.stops - Array of color stops.
+ * @returns {Promise<{ id: string, name: string }>} Created gradient style info.
+ * @throws {Error} If parameters are missing or invalid.
  */
 export async function createGradientVariable(params) {
   const { name, gradientType, stops } = params || {};
@@ -34,8 +41,15 @@ export async function createGradientVariable(params) {
 
 /**
  * Applies a gradient paint style to a node in Figma.
+ *
  * @async
- * @function applyGradientStyle
+ * @function
+ * @param {Object} params - Parameters for applying gradient style.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {string} params.gradientStyleId - The ID of the gradient style to apply.
+ * @param {"FILL"|"STROKE"|"BOTH"} [params.applyTo] - Where to apply the gradient.
+ * @returns {Promise<{ id: string, name: string, usedFallback?: boolean }>} Updated node info.
+ * @throws {Error} If parameters are missing, node or style cannot be found, or node does not support fills/strokes.
  */
 export async function applyGradientStyle(params) {
   const { nodeId, gradientStyleId, applyTo } = params || {};

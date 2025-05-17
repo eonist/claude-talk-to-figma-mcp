@@ -3,18 +3,18 @@
  * Handles establishing and maintaining connections to the MCP server.
  */
 
-// Helper to generate unique IDs
 /**
- * Generates a unique identifier string.
- * @returns {string} A unique ID.
+ * Generates a unique identifier string for correlating requests and responses.
+ * Uses current timestamp and random characters for uniqueness.
+ * @returns {string} A unique request/command ID.
  */
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
 
-// Generate random channel name
 /**
  * Generates a random channel name for WebSocket communication.
+ * Used to isolate plugin sessions on the server.
  * @returns {string} An 8-character alphanumeric channel name.
  */
 function generateChannelName() {
@@ -26,9 +26,9 @@ function generateChannelName() {
   return result;
 }
 
-// Calculate reconnect delay with exponential backoff
 /**
  * Calculates the reconnect delay using exponential backoff.
+ * Uses pluginState.connection.reconnectAttempts to determine delay.
  * @returns {number} Delay in milliseconds before the next reconnect attempt.
  */
 function getReconnectDelay() {
@@ -42,10 +42,11 @@ function getReconnectDelay() {
   return delay;
 }
 
-// Start countdown timer for reconnection
 /**
  * Starts a countdown timer for the next reconnection attempt.
+ * Updates pluginState and UI every second.
  * @param {number} seconds - Number of seconds for the countdown.
+ * @returns {void}
  */
 function startCountdownTimer(seconds) {
   // Clear any existing countdown timer
@@ -72,9 +73,10 @@ function startCountdownTimer(seconds) {
   }, 1000); // Update every second
 }
 
-// Clear countdown timer
 /**
  * Clears the active countdown timer for reconnection.
+ * Resets pluginState.connection.countdownTimer to null.
+ * @returns {void}
  */
 function clearCountdownTimer() {
   if (pluginState.connection.countdownTimer) {
@@ -83,9 +85,10 @@ function clearCountdownTimer() {
   }
 }
 
-// Update the UI with current countdown value
 /**
  * Updates the UI to display the current countdown value for reconnection.
+ * Only updates if in persistent retry mode.
+ * @returns {void}
  */
 function updateCountdownDisplay() {
   if (pluginState.connection.inPersistentRetryMode) {
@@ -97,9 +100,10 @@ function updateCountdownDisplay() {
   }
 }
 
-// Attempt to reconnect to the WebSocket server
 /**
  * Attempts to reconnect to the WebSocket server using exponential backoff and persistent retry.
+ * Updates pluginState and schedules the next connection attempt.
+ * @returns {void}
  */
 function attemptReconnect() {
   // Clear any existing reconnect timer
@@ -151,11 +155,13 @@ function attemptReconnect() {
   }
 }
 
-// Connect to WebSocket server
 /**
  * Connects to the WebSocket server on the specified port.
  * Handles connection lifecycle, event listeners, and channel joining.
+ * Updates pluginState.connection and UI status.
+ * @async
  * @param {number} port - The port number to connect to.
+ * @returns {Promise<void>}
  */
 async function connectToServer(port) {
   try {
@@ -262,9 +268,10 @@ async function connectToServer(port) {
   }
 }
 
-// Disconnect from websocket server
 /**
  * Disconnects from the WebSocket server and resets connection state.
+ * Cleans up timers and resets pluginState.connection.
+ * @returns {void}
  */
 function disconnectFromServer() {
   // Clear any reconnection timers
@@ -289,9 +296,10 @@ function disconnectFromServer() {
   }
 }
 
-// Send a command to the WebSocket server
 /**
  * Sends a command to the WebSocket server and returns a promise for the response.
+ * Stores the request in pluginState.connection.pendingRequests for correlation.
+ * @async
  * @param {string} command - The command name to send.
  * @param {object} params - Parameters for the command.
  * @returns {Promise<any>} Promise resolving with the server response.
@@ -329,11 +337,12 @@ async function sendCommand(command, params) {
   });
 }
 
-// Send success response back to WebSocket
 /**
  * Sends a success response back to the WebSocket server.
+ * Used for plugin-to-server communication after command completion.
  * @param {string} id - The request ID to respond to.
  * @param {any} result - The result data to send.
+ * @returns {void}
  */
 function sendSuccessResponse(id, result) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {
@@ -375,11 +384,12 @@ function sendSuccessResponse(id, result) {
   );
 }
 
-// Send error response back to WebSocket
 /**
  * Sends an error response back to the WebSocket server.
+ * Used for plugin-to-server communication on command failure.
  * @param {string} id - The request ID to respond to.
  * @param {string} errorMessage - The error message to send.
+ * @returns {void}
  */
 function sendErrorResponse(id, errorMessage) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {
@@ -430,9 +440,9 @@ function sendErrorResponse(id, errorMessage) {
   );
 }
 
-// Helper to find the most recent command ID (duplicated from message-handler.js for self-containment)
 /**
  * Finds the most recent command ID for a given command type.
+ * Searches window.commandIdMap for the latest entry.
  * @param {string} commandType - The command type to search for.
  * @returns {string|null} The most recent command ID, or null if not found.
  */
@@ -455,10 +465,10 @@ function findCommandId(commandType) {
   return commandEntries[0].id;
 }
 
-// Send operation progress update to server
 /**
  * Sends a progress update to the server for a long-running operation.
- * @param {object} progressData - Data describing the current progress.
+ * @param {object} progressData - Data describing the current progress. Should include a commandId property.
+ * @returns {void}
  */
 function sendProgressUpdateToServer(progressData) {
   if (!pluginState.connection.connected || !pluginState.connection.socket) {

@@ -1,9 +1,21 @@
 import { setCharacters, canAcceptChildren } from "../utils.js";
 
 /**
- * Create a new text node in the Figma document.
- * @param {object} params - Object containing text node configuration.
- * @returns {Promise<object>} Details of the created text node.
+ * Creates one or more text nodes in the Figma document.
+ *
+ * @async
+ * @function
+ * @param {Object|Array|{text?:Object,texts?:Array}} params - Text node configuration. Can be a single config, an object with 'text' or 'texts', or an array.
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {string} [params.text="Text"] - Text content.
+ * @param {number} [params.fontSize=14] - Font size.
+ * @param {number} [params.fontWeight=400] - Font weight.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fontColor={r:0,g:0,b:0,a:1}] - Font color.
+ * @param {string} [params.name="Text"] - Name of the text node.
+ * @param {string} [params.parentId] - Optional parent node ID.
+ * @returns {Promise<Object|{nodes:Array<Object>}>} Details of the created text node(s).
+ * @throws {Error} If parent is not found or cannot accept children.
  */
 export async function createText(params) {
   let textsArr;
@@ -114,9 +126,23 @@ export async function createText(params) {
 }
 
 /**
- * Create a new bounded text node in the Figma document.
- * @param {object} params - Object containing text node configuration.
- * @returns {Promise<object>} Details of the created text node.
+ * Creates one or more bounded text nodes in the Figma document.
+ *
+ * @async
+ * @function
+ * @param {Object|Array|{text?:Object,texts?:Array}} params - Text node configuration. Can be a single config, an object with 'text' or 'texts', or an array.
+ * @param {number} [params.x=0] - X position.
+ * @param {number} [params.y=0] - Y position.
+ * @param {string} [params.text=""] - Text content.
+ * @param {number} [params.width] - Width of the text box.
+ * @param {number} [params.height] - Height of the text box.
+ * @param {number} [params.fontSize=14] - Font size.
+ * @param {number} [params.fontWeight=400] - Font weight.
+ * @param {{ r: number, g: number, b: number, a?: number }} [params.fontColor={r:0,g:0,b:0,a:1}] - Font color.
+ * @param {string} [params.name="Text"] - Name of the text node.
+ * @param {string} [params.parentId] - Optional parent node ID.
+ * @returns {Promise<Object|{nodes:Array<Object>}>} Details of the created text node(s).
+ * @throws {Error} If parent is not found or cannot accept children.
  */
 export async function createBoundedText(params) {
   let textsArr;
@@ -231,8 +257,13 @@ export async function createBoundedText(params) {
 
 /**
  * Batch-create multiple text nodes in the Figma document.
- * @param {object} params - Object with a 'texts' array of text configs.
- * @returns {Promise<Array<object>>} Array of created text node details.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Object with a 'texts' array of text configs.
+ * @param {Array<Object>} params.texts - Array of text node configs (see createText for config shape).
+ * @returns {Promise<Array<Object>>} Array of created text node details.
+ * @throws {Error} If 'texts' is missing or invalid.
  */
 export async function createTexts(params) {
   const { texts } = params || {};

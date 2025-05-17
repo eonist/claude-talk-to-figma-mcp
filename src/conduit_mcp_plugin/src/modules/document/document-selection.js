@@ -5,8 +5,11 @@
 
 /**
  * Retrieves information about the currently selected nodes on the active Figma page.
+ *
  * @async
- * @function getSelection
+ * @function
+ * @returns {Promise<{selectionCount: number, selection: Array<{id: string, name: string, type: string, visible: boolean}>}>}
+ *   An object with the count of selected nodes and an array of selection details.
  */
 export async function getSelection() {
   const selection = figma.currentPage.selection || [];

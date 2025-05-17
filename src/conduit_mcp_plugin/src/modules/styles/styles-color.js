@@ -2,8 +2,14 @@ import { customBase64Encode } from "../utils.js";
 
 /**
  * Sets the fill color of a specified node.
+ *
  * @async
- * @function setFillColor
+ * @function
+ * @param {Object} params - Parameters for fill color.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {{ r: number, g: number, b: number, a?: number }} params.color - RGBA fill color (0-1).
+ * @returns {Promise<{ id: string, name: string, fills: Array<Object> }>} Updated node info.
+ * @throws {Error} If parameters are missing, node cannot be found, or node does not support fills.
  */
 export async function setFillColor(params) {
   if (!params) throw new Error("Missing parameters for setFillColor");
@@ -40,8 +46,15 @@ export async function setFillColor(params) {
 
 /**
  * Sets the stroke color and weight for a specified node.
+ *
  * @async
- * @function setStrokeColor
+ * @function
+ * @param {Object} params - Parameters for stroke color.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {{ r: number, g: number, b: number, a?: number }} params.color - RGBA stroke color (0-1).
+ * @param {number} [params.weight=1] - Stroke weight.
+ * @returns {Promise<{ id: string, name: string, strokes: Array<Object>, strokeWeight?: number }>} Updated node info.
+ * @throws {Error} If parameters are missing, node cannot be found, or node does not support strokes.
  */
 export async function setStrokeColor(params) {
   if (!params) throw new Error("Missing parameters for setStrokeColor");
@@ -82,8 +95,15 @@ export async function setStrokeColor(params) {
 
 /**
  * Sets both fill and stroke properties on a node.
+ *
  * @async
- * @function setStyle
+ * @function
+ * @param {Object} params - Parameters for style.
+ * @param {string} params.nodeId - The ID of the node to update.
+ * @param {Object} [params.fillProps] - Fill properties ({ color: [r,g,b,a], ... }).
+ * @param {Object} [params.strokeProps] - Stroke properties ({ color: [r,g,b,a], weight }).
+ * @returns {Promise<{ id: string, name: string, fills: Array<Object>, strokes: Array<Object> }>} Updated node info.
+ * @throws {Error} If parameters are missing, node cannot be found, or color arrays are invalid.
  */
 export async function setStyle(params) {
   if (!params) throw new Error("Missing parameters for setStyle");
