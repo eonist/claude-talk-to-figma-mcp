@@ -99,7 +99,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 ### Transformations and Management
 
 **Positioning and Sizing:**
-- [move_node](#move_node): Move a node (single or batch)
+- [move_nodes](#move_nodes): Move one or more nodes (single or batch)
 - [resize_node](#resize_node): Resize a node (single or batch)
 - [flatten_node](#flatten_node): Flatten a single node (or batch)
 - [flatten_selection](#flatten_selection): Flatten a selection of nodes
@@ -644,17 +644,24 @@ Create a new page in the Figma document.
 
 ---
 
-## move_node
+## move_nodes
 Move one or more nodes to a new position in Figma.
 
 **Parameters:**
-- nodeId (string): The unique Figma node ID to move.
-- x (number): New X position.
-- y (number): New Y position.
+- move (object): { nodeId (string), x (number), y (number) }
+- moves (array of objects): Each with { nodeId (string), x (number), y (number) }
 
-**Example:**
+**Examples:**
+_Single:_
 ```json
-{ "command": "move_node", "params": { "nodeId": "123:456", "x": 100, "y": 200 } }
+{ "command": "move_nodes", "params": { "move": { "nodeId": "123:456", "x": 100, "y": 200 } } }
+```
+_Batch:_
+```json
+{ "command": "move_nodes", "params": { "moves": [
+  { "nodeId": "123:456", "x": 100, "y": 200 },
+  { "nodeId": "789:101", "x": 300, "y": 400 }
+] } }
 ```
 
 ---
