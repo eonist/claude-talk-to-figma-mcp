@@ -181,30 +181,19 @@ export function initializeCommands() {
   });
 
   // Detach Instance Tool (calls batch logic for DRYness)
-  registerCommand('detach_instance', async (params) => {
-    const { instanceId } = params;
-    // Call the batch handler with a single-element array
-    const results = await commandRegistry['detach_instances']({
-      instanceIds: [instanceId],
-      options: {} // No options for single detach by default
-    });
-    // Return the first result (or error if any)
-    if (Array.isArray(results) && results.length > 0) {
-      const r = results[0];
-      if (r.error) throw new Error(r.error);
-      return { id: r.id, name: r.name };
-    }
-    throw new Error(`No instance detached for ${instanceId}`);
-  });
-
   // Detach Instances Tool (Batch)
   registerCommand('detach_instances', async (params) => {
-    const { instanceIds, options } = params || {};
-    if (!Array.isArray(instanceIds) || instanceIds.length === 0) {
-      throw new Error('No instanceIds provided for detach_instances');
+    let instanceIds = [];
+    const options = params && params.options ? params.options : {};
+    if (Array.isArray(params.instanceIds) && params.instanceIds.length > 0) {
+      instanceIds = params.instanceIds;
+    } else if (typeof params.instanceId === "string") {
+      instanceIds = [params.instanceId];
+    } else {
+      throw new Error("You must provide 'instanceId' or 'instanceIds'");
     }
-    const maintainPosition = options && options.maintain_position;
-    const skipErrors = options && options.skip_errors;
+    const maintainPosition = options.maintain_position;
+    const skipErrors = options.skip_errors;
     const results = [];
 
     for (const instanceId of instanceIds) {

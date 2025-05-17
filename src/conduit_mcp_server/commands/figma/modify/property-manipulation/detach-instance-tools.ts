@@ -19,53 +19,26 @@ import { InstanceIdSchema } from "./instance-id-schema.js";
  * registerDetachInstanceTools(server, figmaClient);
  */
 export function registerDetachInstanceTools(server: McpServer, figmaClient: FigmaClient) {
-  // Detach Instance (single)
-  server.tool(
-    "detach_instance",
-    `Detaches a Figma component instance from its master.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the detached instance's ID.
-`,
-    { instanceId: InstanceIdSchema },
-    {
-      title: "Detach Instance",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { instanceId: "123:456" }
-      ]),
-      edgeCaseWarnings: [
-        "instanceId must be a valid Figma instance ID.",
-        "Detaching an instance is irreversible.",
-        "Detached instances lose connection to their master component."
-      ],
-      extraInfo: "Use this command to detach a component instance from its master."
-    },
-    // For a common API, internally call the batch logic with a single-element array
-    async ({ instanceId }) => {
-      const id = ensureNodeIdIsString(instanceId);
-      const resultArr = await figmaClient.executeCommand("detach_instances", { instanceIds: [id] });
-      // Return the first result for single instance
-      if (Array.isArray(resultArr) && resultArr.length > 0) {
-        return { content: [{ type: "text", text: `Detached instance ${resultArr[0].id}` }] };
-      }
-      return { content: [{ type: "text", text: `No instance detached for ${id}` }] };
-    }
-  );
-
-  // Detach Instances (batch)
+  // Unified detach_instances tool (single or batch)
   server.tool(
     "detach_instances",
-    `Detaches multiple Figma component instances from their masters.
+    `Detaches one or more Figma component instances from their masters.
+
+Input:
+  - instanceId: (optional) A single instance ID to detach.
+  - instanceIds: (optional) An array of instance IDs to detach.
+  - options: (optional) { maintain_position?: boolean, skip_errors?: boolean }
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the detached instance's ID or error info.
+
+Examples:
+  { "instanceId": "123:456" }
+  { "instanceIds": ["123:456", "789:101"], "options": { "skip_errors": true } }
 `,
     {
-      instanceIds: z.array(InstanceIdSchema).min(1, "At least one instanceId is required"),
+      instanceId: InstanceIdSchema.optional(),
+      instanceIds: z.array(InstanceIdSchema).optional(),
       options: z
         .object({
           maintain_position: z.boolean().optional(),
@@ -74,24 +47,33 @@ Returns:
         .optional(),
     },
     {
-      title: "Detach Instances (Batch)",
+      title: "Detach Instances (Unified)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
+        { instanceId: "123:456" },
         { instanceIds: ["123:456", "789:101"], options: { maintain_position: true, skip_errors: true } }
       ]),
       edgeCaseWarnings: [
         "Each instanceId must be a valid Figma instance ID.",
         "Detaching an instance is irreversible.",
         "Detached instances lose connection to their master component.",
-        "If skip_errors is false, the operation will stop on the first error."
+        "If skip_errors is false, the operation will stop on the first error.",
+        "You must provide either 'instanceId' or 'instanceIds'."
       ],
-      extraInfo: "Use this command to detach multiple component instances from their masters in a single call."
+      extraInfo: "Use this command to detach one or more component instances from their masters in a single call."
     },
-    async ({ instanceIds, options }) => {
-      const ids = instanceIds.map(ensureNodeIdIsString);
+    async ({ instanceId, instanceIds, options }) => {
+      let ids = [];
+      if (Array.isArray(instanceIds) && instanceIds.length > 0) {
+        ids = instanceIds.map(ensureNodeIdIsString);
+      } else if (instanceId) {
+        ids = [ensureNodeIdIsString(instanceId)];
+      } else {
+        return { content: [{ type: "text", text: "You must provide 'instanceId' or 'instanceIds'." }] };
+      }
       // Call the batch detach command on the Figma client
       const resultArr = await figmaClient.executeCommand("detach_instances", { instanceIds: ids, options });
       // Return all results (could be array of {id, error?})

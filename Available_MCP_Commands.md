@@ -914,11 +914,18 @@ Show or hide one or more nodes.
 Detach one or more component instances from their masters.
 
 **Parameters:**
-- instanceIds (array of string): Array of instance node IDs.
+- instanceId (string, optional): A single instance node ID to detach.
+- instanceIds (array of string, optional): Array of instance node IDs to detach.
+- options (object, optional): { maintain_position (boolean, optional), skip_errors (boolean, optional) }
 
-**Example:**
+**Examples:**
+_Single:_
 ```json
-{ "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"] } }
+{ "command": "detach_instances", "params": { "instanceId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"], "options": { "skip_errors": true } } }
 ```
 
 ---
