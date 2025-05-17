@@ -19,7 +19,7 @@
  * console.log('Created rectangle', rect);
  */
 
-import { setFill, setStroke } from "./shapes-helpers.js";
+import { setFill, setStroke } from "./shape/shapes-helpers.js";
 import { createRectangle } from "./shape/shapes-rectangle.js";
 import { createFrame } from "./shape/shapes-frame.js";
 import { createEllipse } from "./shape/shapes-ellipse.js";
@@ -27,16 +27,6 @@ import { createPolygon } from "./shape/shapes-polygon.js";
 import { createStar } from "./shape/shapes-star.js";
 import { createVector, createVectors } from "./shape/shapes-vector.js";
 import { createLine } from "./shape/shapes-line.js";
-
-
-
-
-
-
-
-
-
-
 
 export {
   createRectangle,

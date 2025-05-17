@@ -117,6 +117,15 @@ src/conduit_mcp_plugin/
         ├── components.js
         ├── document.js
         ├── shapes.js
+        ├── shapes-helpers.js
+        ├── shape/
+        │   ├── shapes-rectangle.js
+        │   ├── shapes-frame.js
+        │   ├── shapes-ellipse.js
+        │   ├── shapes-polygon.js
+        │   ├── shapes-star.js
+        │   ├── shapes-vector.js
+        │   └── shapes-line.js
         ├── styles.js
         ├── text.js
         ├── layout.js
