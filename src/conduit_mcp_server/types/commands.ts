@@ -42,6 +42,12 @@ export type FigmaCommand =
   | "set_stroke_color"
   // Move a node to a new position (see commands/figma/modify/positioning-tools.ts)
   | "move_node"
+  // Move multiple nodes to a new position (see commands/figma/modify/positioning-tools.ts)
+  | "move_nodes"
+  // Reorder a node in its parent's children array (see commands/figma/modify/layer-management/reorder-layer-tools.ts)
+  | "reorder_node"
+  // Batch reorder multiple nodes (see commands/figma/modify/layer-management/reorder-layer-tools.ts)
+  | "reorder_nodes"
   // Resize a node (see commands/figma/modify/transform-tools.ts)
   | "resize_node"
   // Delete a node (see commands/figma/modify/layer-management/delete-tools.ts)

@@ -659,6 +659,48 @@ Move one or more nodes to a new position in Figma.
 
 ---
 
+## reorder_node
+Reorder a node in its parent's children array (z-order/layer order).
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to reorder.
+- direction (string, optional): "up", "down", "front", or "back". Moves the node in the stacking order.
+- index (number, optional): Absolute index to move the node to (overrides direction if provided).
+
+**Example (move up):**
+```json
+{ "command": "reorder_node", "params": { "nodeId": "123:456", "direction": "up" } }
+```
+**Example (move to index):**
+```json
+{ "command": "reorder_node", "params": { "nodeId": "123:456", "index": 2 } }
+```
+
+---
+
+## reorder_nodes
+Batch reorder multiple nodes in their respective parents' children arrays.
+
+**Parameters:**
+- reorders (array): Array of reorder configs, each with:
+  - nodeId (string): The node to reorder.
+  - direction (string, optional): "up", "down", "front", or "back".
+  - index (number, optional): Absolute index to move the node to (overrides direction if provided).
+- options (object, optional): { skip_errors (boolean, optional) }
+
+**Example:**
+```json
+{ "command": "reorder_nodes", "params": {
+  "reorders": [
+    { "nodeId": "123:456", "direction": "up" },
+    { "nodeId": "789:101", "index": 1 }
+  ],
+  "options": { "skip_errors": true }
+} }
+```
+
+---
+
 ## resize_node
 Resize a node in Figma.
 
