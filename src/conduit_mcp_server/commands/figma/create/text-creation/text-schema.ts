@@ -17,6 +17,16 @@ export const SingleTextSchema = z.object({
     .min(1)
     .max(10000)
     .describe("The text content. Must be a non-empty string up to 10,000 characters."),
+  width: z.number()
+    .min(1)
+    .max(2000)
+    .optional()
+    .describe("Optional. Width of the text box. If provided, creates a bounded text box. Must be between 1 and 2000."),
+  height: z.number()
+    .min(1)
+    .max(2000)
+    .optional()
+    .describe("Optional. Height of the text box. If provided, creates a bounded text box. Must be between 1 and 2000."),
   fontSize: z.number()
     .min(1)
     .max(200)
@@ -46,25 +56,5 @@ export const TextSchema = z.union([
   BatchTextsSchema
 ]);
 
-export const SingleBoundedTextSchema = SingleTextSchema.extend({
-  width: z.number()
-    .min(1)
-    .max(2000)
-    .describe("Width of the text box. Must be between 1 and 2000."),
-  height: z.number()
-    .min(1)
-    .max(2000)
-    .describe("Height of the text box. Must be between 1 and 2000."),
-});
-
-export const BatchBoundedTextsSchema = z.array(SingleBoundedTextSchema);
-
-export const BoundedTextSchema = z.union([
-  SingleBoundedTextSchema,
-  BatchBoundedTextsSchema
-]);
-
 export type BaseTextConfig = z.infer<typeof SingleTextSchema>;
 export type BatchTextsConfig = z.infer<typeof BatchTextsSchema>;
-export type BoundedTextConfig = z.infer<typeof SingleBoundedTextSchema>;
-export type BatchBoundedTextsConfig = z.infer<typeof BatchBoundedTextsSchema>;

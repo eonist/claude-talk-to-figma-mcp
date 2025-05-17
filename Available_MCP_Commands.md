@@ -427,19 +427,31 @@ _Batch:_
 ---
 
 ## create_text
-Create one or more text elements.
+Create one or more text elements in Figma. This unified command supports both single and batch creation.
 
 **Parameters:**
-- x, y, text (number/string)
-- fontSize, fontWeight, fontColor (optional)
-- name, parentId (string, optional)
-- text (object) or texts (array of objects)
+- text (object, optional): Single text configuration
+- texts (array of objects, optional): Array of text configurations (batch)
+- Each text config supports:
+  - x (number): X coordinate
+  - y (number): Y coordinate
+  - text (string): Text content
+  - fontSize (number, optional): Font size
+  - fontWeight (number, optional): Font weight
+  - fontColor (object, optional): Font color
+  - name (string, optional): Node name
+  - parentId (string, optional): Parent node ID
+  - ...other supported text properties
+
+**At least one of `text` or `texts` is required.**
 
 **Examples:**
+
 _Single:_
 ```json
-{ "command": "create_text", "params": { "x": 100, "y": 100, "text": "Hello, Figma!", "fontSize": 24, "name": "Heading" } }
+{ "command": "create_text", "params": { "text": { "x": 100, "y": 100, "text": "Hello, Figma!", "fontSize": 24, "name": "Heading" } } }
 ```
+
 _Batch:_
 ```json
 { "command": "create_text", "params": { "texts": [
@@ -447,30 +459,7 @@ _Batch:_
   { "x": 100, "y": 200, "text": "Subtitle", "fontSize": 18 }
 ] } }
 ```
-
 ---
-
-## create_bounded_text
-Create one or more bounded text boxes.
-
-**Parameters:**
-- x, y, width, height, text (number/string)
-- fontSize, fontWeight, fontColor (optional)
-- name, parentId (string, optional)
-- text (object) or texts (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_bounded_text", "params": { "x": 100, "y": 100, "width": 200, "height": 100, "text": "Wrapped text", "fontSize": 16 } }
-```
-_Batch:_
-```json
-{ "command": "create_bounded_text", "params": { "texts": [
-  { "x": 100, "y": 100, "width": 200, "height": 100, "text": "Box 1" },
-  { "x": 400, "y": 100, "width": 200, "height": 100, "text": "Box 2" }
-] } }
-```
 
 ---
 
