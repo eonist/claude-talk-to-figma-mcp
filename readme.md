@@ -66,16 +66,16 @@ irm bun.sh/install.ps1 | iex
 
 ## Installation
 
-### Step 1: Start the server
+### Step 1: Install the server
 
 1. Clone this repository:
    ```bash
    git clone https://github.com/eonist/conduit.git
    ```
-2, Terminal: `cd path-to-conduit`
-3. Terminal: `bunx install` -> Builds dependencies
-4. Terminal: `bun run build:all` -> Builds the Server and Plugin
-5. Terminal: `bun socket` -> Starts the Server 
+2, Terminal: `cd path-to-conduit`  
+3. Terminal: `bunx install` -> Builds dependencies  
+4. Terminal: `bun run build:all` -> Builds the Server and Plugin  
+5. Terminal: `bun socket` -> Starts the Server   
 
 ### Step 2: Install the Figma Plugin
 
@@ -88,7 +88,7 @@ irm bun.sh/install.ps1 | iex
 
 1. Open Agent App (GitHub Copilot Agent, Cline, Cursor, Claude desktop)
 2. Find MCP settings in your agent app of choice. `~/.app-name/mcp.json`
-3. Add a new MCP connection with this config: 
+3. Add a new MCP connection with this config:   
 ```yaml
 {
   "mcpServers": {
@@ -99,8 +99,8 @@ irm bun.sh/install.ps1 | iex
   }
 }
 ```
-4. AI Agent app: Ensure MCP “Conduit” is enabled.
-5. AI Agent app: "Talk to Figma on channel: (unique channel id)"
+4. AI Agent app: Ensure MCP “Conduit” is enabled.  
+5. AI Agent app: "Talk to Figma on channel: (unique channel id)"  
 
 
 ### Quick Example
