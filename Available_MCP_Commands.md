@@ -832,6 +832,32 @@ Group nodes in Figma.
 
 ---
 
+## delete_node
+Delete a node in Figma.
+
+**Parameters:**
+- nodeId (string): The node ID to delete.
+
+**Example:**
+```json
+{ "command": "delete_node", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## ungroup_nodes
+Ungroup a group node in Figma.
+
+**Parameters:**
+- nodeId (string): The group node ID to ungroup.
+
+**Example:**
+```json
+{ "command": "ungroup_nodes", "params": { "nodeId": "123:456" } }
+```
+
+---
+
 ## ungroup_nodes
 Ungroup a group node in Figma.
 
