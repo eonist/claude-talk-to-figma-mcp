@@ -15,13 +15,6 @@
  * // The plugin UI is shown automatically and commands are ready to execute
  */
 
-import { documentOperations } from './modules/document.js';
-import { shapeOperations } from './modules/shapes.js';
-import { textOperations } from './modules/text.js';
-import { styleOperations } from './modules/styles.js';
-import { componentOperations } from './modules/components.js';
-import { layoutOperations } from './modules/layout.js';
-import { renameOperations } from './modules/rename.js';
 import { initializeCommands, handleCommand } from './modules/commands.js';
 import {
   sendProgressUpdate,

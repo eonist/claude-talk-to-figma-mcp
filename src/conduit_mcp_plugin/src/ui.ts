@@ -22,7 +22,7 @@
  * connect(3055);
  * onProgress(data => updateProgressUI(data));
  */
-import { connect, disconnect, send, onMessage, onProgress, ProgressData, setAutoReconnect } from './client';
+import { connect, disconnect, onMessage, onProgress, ProgressData, setAutoReconnect } from './client';
 
 // UI Elements
 const portInput = document.getElementById('port') as HTMLInputElement;
