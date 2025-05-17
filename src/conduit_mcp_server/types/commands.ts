@@ -113,7 +113,6 @@ export type FigmaCommand =
   // Rename a single node (see commands/figma/modify/rename.ts)
   | "rename_layer"
   // Rename multiple layers with distinct names (see commands/figma/modify/rename.ts)
-  | "rename_multiple" 
   // AI-powered rename of specified layers (see commands/figma/modify/rename.ts)
   | "ai_rename_layers"
   // Insert an SVG as a vector (see commands/figma/create/svg-creation-tools.ts)

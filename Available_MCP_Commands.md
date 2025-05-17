@@ -119,8 +119,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [detach_instances](#detach_instances): Detach one or more component instances
 
 **Naming:**
-- [rename_layer](#rename_layer): Rename nodes (single or batch)
-- [rename_multiple](#rename_multiple): Rename nodes with distinct names
+- [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
 - [ai_rename_layers](#ai_rename_layers): AI-powered renaming
 
 ### Export and Conversion

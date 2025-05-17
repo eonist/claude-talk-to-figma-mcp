@@ -158,62 +158,6 @@ export async function rename_layer(params) {
   return { success: true, nodeId, originalName, newName: node.name };
 }
 
-/**
- * Rename Multiple Figma Layers with Individual Names
- * @async
- * @function rename_multiples
- *
- * Assigns specific names to multiple layers in a single operation.
- * Useful when each layer needs a unique, predetermined name.
- *
- * @param {object} params - Parameters for batch renaming
- * @param {string[]} params.layer_ids - Array of layer IDs to rename
- * @param {string[]} params.new_names - Array of new names to assign
- *   Must match layer_ids array in length and order
- *
- * @returns {Promise<object>} Object containing:
- *   - success: boolean indicating overall success
- *   - results: array of objects with:
- *     - nodeId: ID of the processed node
- *     - status: "renamed" or "error"
- *     - result: details of rename operation or error message
- *
- * @throws {Error} When:
- *   - layer_ids or new_names are not arrays
- *   - Arrays have different lengths
- *
- * @example Renaming multiple layers:
- * await rename_multiples({
- *   layer_ids: ['id1', 'id2'],
- *   new_names: ['Header Section', 'Navigation Menu']
- * });
- */
-export async function rename_multiples(params) {
-  const { layer_ids, new_names } = params || {};
-  
-  if (!Array.isArray(layer_ids) || !Array.isArray(new_names)) {
-    throw new Error("layer_ids and new_names must be arrays");
-  }
-  
-  if (layer_ids.length !== new_names.length) {
-    throw new Error("layer_ids and new_names must be of equal length");
-  }
-  
-  const results = [];
-  
-  for (let i = 0; i < layer_ids.length; i++) {
-    const nodeId = layer_ids[i];
-    const newName = new_names[i];
-    try {
-      const result = await rename_layer({ nodeId, newName });
-      results.push({ nodeId, status: "renamed", result });
-    } catch (error) {
-      results.push({ nodeId, status: "error", error: error.message || String(error) });
-    }
-  }
-  
-  return { success: true, results };
-}
 
 /**
  * Collection of all rename operation functions for convenience.
