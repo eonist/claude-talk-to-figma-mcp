@@ -20,43 +20,6 @@ import { EffectsArraySchema } from "./effect-schema.js";
  * registerEffectsTools(server, figmaClient);
  */
 export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient) {
-  // Set Effects
-  server.tool(
-    "set_effects",
-    `Sets visual effects of a node in Figma.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-`,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      effects: EffectsArraySchema,
-    },
-    {
-      title: "Set Effects",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", effects: [{ type: "DROP_SHADOW", color: "#000000", radius: 4 }] }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "Effects array must contain valid effect objects.",
-        "Invalid effect properties may cause failure."
-      ],
-      extraInfo: "Use this command to set visual effects like shadows or blurs on a node."
-    },
-    async ({ nodeId, effects }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_effects", { nodeId: id, effects });
-      return { content: [{ type: "text", text: `Effects set for ${id}` }] };
-    }
-  );
-
   // Set Effect Style ID
   server.tool(
     "set_effect_style_id",

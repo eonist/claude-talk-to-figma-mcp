@@ -1234,16 +1234,28 @@ Load a font asynchronously in Figma.
 
 ---
 
-## set_effects
-Set visual effects of a node in Figma.
+## set_effect
+Set effect(s) directly or by style variable on one or more nodes in Figma (single or batch).
 
 **Parameters:**
-- nodeId (string): The unique Figma node ID to update.
-- effects (array): Array of effect objects to apply.
+- entries (object or array): Each entry:
+  - nodeId (string): Node to update
+  - effects (object or array, optional): Effect(s) to set directly (see EffectSchema)
+  - effectStyleId (string, optional): Effect style variable to apply
 
-**Example:**
+**At least one of `effects` or `effectStyleId` is required per entry.**
+
+**Examples:**
+_Single:_
 ```json
-{ "command": "set_effects", "params": { "nodeId": "123:456", "effects": [] } }
+{ "command": "set_effect", "params": { "entries": { "nodeId": "123:456", "effects": { "type": "DROP_SHADOW", "color": "#000", "radius": 4 } } } }
+```
+_Batch:_
+```json
+{ "command": "set_effect", "params": { "entries": [
+  { "nodeId": "123:456", "effects": [{ "type": "DROP_SHADOW", "color": "#000", "radius": 4 }] },
+  { "nodeId": "789:101", "effectStyleId": "S:effect123" }
+] } }
 ```
 
 ---
