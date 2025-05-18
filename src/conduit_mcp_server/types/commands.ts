@@ -80,6 +80,31 @@ export interface UnsubscribeEventParams {
   subscriptionId: string;
 }
 
+/**
+ * Unified variant command parameter types
+ */
+export interface VariantOp {
+  componentSetId: string;
+  action: "create" | "add" | "rename" | "delete" | "organize" | "batch_create";
+  properties?: { [key: string]: string };
+  variantId?: string;
+  propertyName?: string;
+  newPropertyName?: string;
+  propertyValue?: string;
+  newPropertyValue?: string;
+  templateComponentId?: string;
+  propertiesList?: { [key: string]: string }[];
+  organizeBy?: string[];
+}
+export interface SetVariantParams {
+  variant?: VariantOp;
+  variants?: VariantOp[];
+}
+export interface GetVariantParams {
+  componentSetId?: string;
+  componentSetIds?: string[];
+}
+
 export type FigmaCommand =
   // Get detailed information about the current Figma document (see commands/figma/read/document-tools.ts)
   | "get_document_info"
@@ -235,7 +260,10 @@ export type FigmaCommand =
   | "get_constraints"
   // Event subscription commands
   | "subscribe_event"
-  | "unsubscribe_event";
+  | "unsubscribe_event"
+  // Variant commands (component variants)
+  | "set_variant"
+  | "get_variant";
 
 /**
  * Map each command to its specific params

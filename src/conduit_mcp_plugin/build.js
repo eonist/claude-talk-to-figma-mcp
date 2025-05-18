@@ -159,6 +159,7 @@ async function buildPlugin() {
       'styles/styles-gradient.js',
       'styles/styles-get.js',
       'styles.js',
+      'components/component-variant.js',
       'components.js',
       'layout/layout-auto.js',
       'layout/layout-group.js',

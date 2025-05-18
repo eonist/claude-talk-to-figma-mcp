@@ -28,6 +28,7 @@ import { registerGuideCommands } from "./figma/modify/guide-tools.js";
 import { registerConstraintCommands } from "./figma/modify/constraint-tools.js";
 import { registerPageCommands } from "./figma/modify/page-tools.js";
 import { registerEventCommands } from "./figma/modify/event-tools.js";
+import { registerVariantCommands } from "./figma/modify/variant-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.
@@ -76,6 +77,9 @@ export function registerAllCommands(server: McpServer): void {
 
     // Register event commands (subscribe_event, unsubscribe_event)
     registerEventCommands(server, figmaClient);
+
+    // Register variant commands (set_variant, get_variant)
+    registerVariantCommands(server, figmaClient);
 
     // Register annotation commands
     registerAnnotationCommands(server, figmaClient);

@@ -1,155 +1,5 @@
 # MCP Commands for Conduit Integration
 
----
-
-## Event Subscription & Notification
-
-### subscribe_event
-Subscribe to a Figma event (e.g., selection_change, document_change).
-
-**Parameters:**
-- eventType (string): Event type to subscribe to (e.g., "selection_change", "document_change")
-- filter (object, optional): Optional filter for event payloads
-
-**Returns:** `{ subscriptionId }`
-
-**Example:**
-```json
-{ "command": "subscribe_event", "params": { "eventType": "selection_change" } }
-```
-
----
-
-### unsubscribe_event
-Unsubscribe from a previously subscribed event.
-
-**Parameters:**
-- subscriptionId (string): The subscription ID to remove
-
-**Returns:** `{ success: true }`
-
-**Example:**
-```json
-{ "command": "unsubscribe_event", "params": { "subscriptionId": "sub-abc123" } }
-```
-
----
-
-### Event Notification
-When an event occurs, the server pushes a message to all matching subscribers:
-
-**Example:**
-```json
-{
-  "event": "selection_change",
-  "payload": {
-    "selectedNodeIds": ["123:456", "789:101"],
-    "timestamp": 1716000000000
-  },
-  "subscriptionId": "sub-abc123"
-}
-```
-
----
-
-This document lists all available Model Context Protocol (MCP) commands for the Conduit integration, enabling AI-assisted design in Figma via natural language instructions.
-
----
-
-## get_style
-Get all styles from the current Figma document.
-
-**Parameters:** none
-
-**Example:**
-```json
-{ "command": "get_style", "params": {} }
-```
-
----
-
-## set_style
-Create, update, or delete one or more Figma styles (PAINT, EFFECT, TEXT, GRID) in a unified call.
-
-**Parameters:**
-- entry (object, optional): Single style operation
-  - styleId (string, optional): Required for update/delete, omitted for create
-  - styleType (string, required): "PAINT", "EFFECT", "TEXT", or "GRID"
-  - properties (object, optional): Properties to set (required for create/update, omitted for delete)
-  - delete (boolean, optional): If true, deletes the style (ignores properties)
-- entries (array of objects, optional): Batch style operations (same shape as above)
-
-**Operation Semantics:**
-- Create: `styleId` omitted, `delete` false/omitted, `properties` present → create new style.
-- Update: `styleId` present, `delete` false/omitted, `properties` present → update existing style.
-- Delete: `styleId` present, `delete: true`, `properties` ignored/omitted → delete style.
-
-**Returns:**
-- Array of result objects: `{ styleId, styleType, action: "created" | "updated" | "deleted", success: true, [error?: string] }`
-
-**Examples:**
-
-_Single Create:_
-```json
-{ "command": "set_style", "params": {
-  "entry": {
-    "styleType": "PAINT",
-    "properties": {
-      "name": "Accent",
-      "paints": [{ "type": "SOLID", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } }]
-    }
-  }
-} }
-```
-
-_Single Update:_
-```json
-{ "command": "set_style", "params": {
-  "entry": {
-    "styleId": "S:1234",
-    "styleType": "PAINT",
-    "properties": {
-      "name": "Accent Updated",
-      "paints": [{ "type": "SOLID", "color": { "r": 0, "g": 1, "b": 0, "a": 1 } }]
-    }
-  }
-} }
-```
-
-_Single Delete:_
-```json
-{ "command": "set_style", "params": {
-  "entry": {
-    "styleId": "S:1234",
-    "styleType": "PAINT",
-    "delete": true
-  }
-} }
-```
-
-_Batch Mixed:_
-```json
-{ "command": "set_style", "params": {
-  "entries": [
-    {
-      "styleType": "PAINT",
-      "properties": { "name": "New Style", "paints": [{ "type": "SOLID", "color": { "r": 0.5, "g": 0.5, "b": 0.5, "a": 1 } }] }
-    },
-    {
-      "styleId": "S:5678",
-      "styleType": "EFFECT",
-      "properties": { "name": "Shadow", "effects": [{ "type": "DROP_SHADOW", "color": { "r": 0, "g": 0, "b": 0, "a": 0.5 }, "radius": 8 }] }
-    },
-    {
-      "styleId": "S:9999",
-      "styleType": "TEXT",
-      "delete": true
-    }
-  ]
-} }
-```
-
----
 
 ## Unified Command Pattern
 
@@ -216,240 +66,6 @@ _Batch Mixed:_
 ### Styling and Modification
 
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
-
----
-
-## Constraint Commands
-
-### set_constraints
-Set constraints (left/right/top/bottom/center/scale/stretch) for one or more Figma nodes.
-
-**Parameters:**
-- constraint (object, optional): Single constraint operation
-  - nodeId (string): Target node
-  - horizontal (string): "left", "right", "center", "scale", "stretch"
-  - vertical (string): "top", "bottom", "center", "scale", "stretch"
-- constraints (array, optional): Batch of constraint operations (same shape as above)
-- applyToChildren (boolean, optional): If true, apply to all children
-- maintainAspectRatio (boolean, optional): If true, use "scale" for both axes
-
-**Returns:** Array of result objects for each operation.
-
-**Examples:**
-
-_Set constraints (single):_
-```json
-{ "command": "set_constraints", "params": {
-  "constraint": {
-    "nodeId": "123:456",
-    "horizontal": "right",
-    "vertical": "bottom"
-  }
-} }
-```
-
-_Set constraints (batch):_
-```json
-{ "command": "set_constraints", "params": {
-  "constraints": [
-    { "nodeId": "123:456", "horizontal": "left", "vertical": "top" },
-    { "nodeId": "789:101", "horizontal": "center", "vertical": "scale" }
-  ]
-} }
-```
-
-_Set constraints for all children:_
-```json
-{ "command": "set_constraints", "params": {
-  "constraint": {
-    "nodeId": "123:456",
-    "horizontal": "scale",
-    "vertical": "scale"
-  },
-  "applyToChildren": true
-} }
-```
-
----
-
-### get_constraints
-Get constraints for one or more Figma nodes (optionally including children).
-
-**Parameters:**
-- nodeId (string, optional): Single node ID (if omitted, use current selection)
-- nodeIds (array, optional): Multiple node IDs
-- includeChildren (boolean, optional): If true, include constraints for all children
-
-**Returns:** Array of constraint info for each node, including children if requested.
-
-**Examples:**
-
-_Get constraints for a single node:_
-```json
-{ "command": "get_constraints", "params": { "nodeId": "123:456" } }
-```
-
-_Get constraints for multiple nodes, including children:_
-```json
-{ "command": "get_constraints", "params": { "nodeIds": ["123:456", "789:101"], "includeChildren": true } }
-```
-
-_Get constraints for current selection:_
-```json
-{ "command": "get_constraints", "params": {} }
-```
-
----
-
-## Guide Commands
-
-### set_guide
-Add or delete one or more guides on the current Figma page.
-
-**Parameters:**
-- guide (object, optional): Single guide operation
-  - axis ("X"|"Y"): Guide direction (vertical/horizontal)
-  - offset (number): Position in canvas coordinates
-  - delete (boolean, optional): If true, delete the guide at axis/offset
-- guides (array, optional): Batch of guide operations (same shape as above)
-
-**Returns:** Array of result objects for each operation.
-
-**Examples:**
-
-_Add a guide (single):_
-```json
-{ "command": "set_guide", "params": {
-  "guide": { "axis": "X", "offset": 100 }
-} }
-```
-
-_Add guides (batch):_
-```json
-{ "command": "set_guide", "params": {
-  "guides": [
-    { "axis": "X", "offset": 100 },
-    { "axis": "Y", "offset": 200 }
-  ]
-} }
-```
-
-_Delete a guide (single):_
-```json
-{ "command": "set_guide", "params": {
-  "guide": { "axis": "X", "offset": 100, "delete": true }
-} }
-```
-
-_Batch create and delete:_
-```json
-{ "command": "set_guide", "params": {
-  "guides": [
-    { "axis": "X", "offset": 100 },
-    { "axis": "Y", "offset": 200, "delete": true }
-  ]
-} }
-```
-
----
-
-### get_guide
-Get all guides on the current Figma page.
-
-**Parameters:** none
-
-**Returns:** Array of guides, each with `{ axis, offset }`.
-
-**Example:**
-```json
-{ "command": "get_guide", "params": {} }
-```
-
----
-
-## Grid Commands
-
-### set_grid
-Create, update, or delete one or more layout grids on Figma nodes (FRAME, COMPONENT, INSTANCE).
-
-**Parameters:**
-- entry (object, optional): Single grid operation
-  - nodeId (string): Node to modify
-  - gridIndex (number, optional): Index of grid to update/delete (omit for create)
-  - properties (object, optional): Grid properties (for create/update)
-  - delete (boolean, optional): If true, delete the grid at gridIndex
-- entries (array, optional): Batch of grid operations (same shape as above)
-
-**Returns:** Array of result objects for each operation.
-
-**Examples:**
-
-_Create a grid:_
-```json
-{ "command": "set_grid", "params": {
-  "entry": {
-    "nodeId": "123:456",
-    "properties": { "pattern": "COLUMNS", "count": 12, "gutterSize": 16 }
-  }
-} }
-```
-
-_Update a grid:_
-```json
-{ "command": "set_grid", "params": {
-  "entry": {
-    "nodeId": "123:456",
-    "gridIndex": 0,
-    "properties": { "visible": false }
-  }
-} }
-```
-
-_Delete a grid:_
-```json
-{ "command": "set_grid", "params": {
-  "entry": {
-    "nodeId": "123:456",
-    "gridIndex": 0,
-    "delete": true
-  }
-} }
-```
-
-_Batch create:_
-```json
-{ "command": "set_grid", "params": {
-  "entries": [
-    { "nodeId": "123:456", "properties": { "pattern": "GRID", "sectionSize": 8 } },
-    { "nodeId": "789:101", "properties": { "pattern": "COLUMNS", "count": 6 } }
-  ]
-} }
-```
-
----
-
-### get_grid
-Get all layout grids for one or more Figma nodes (FRAME, COMPONENT, INSTANCE).
-
-**Parameters:**
-- nodeId (string, optional): Single node ID
-- nodeIds (array of string, optional): Multiple node IDs
-
-**Returns:** For single: `{ nodeId, grids: [...] }`, for batch: `Array<{ nodeId, grids: [...] }>`
-
-**Examples:**
-
-_Single node:_
-```json
-{ "command": "get_grid", "params": { "nodeId": "123:456" } }
-```
-
-_Batch:_
-```json
-{ "command": "get_grid", "params": { "nodeIds": ["123:456", "789:101"] } }
-```
-
----
 
 **Selection:**
 - [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
@@ -2226,6 +1842,511 @@ Clone a node in Figma.
 **Example:**
 ```json
 { "command": "clone_node", "params": { "nodeId": "123:456", "offsetX": 100, "offsetY": 0 } }
+```
+
+---
+
+
+---
+
+## Constraint Commands
+
+### set_constraints
+Set constraints (left/right/top/bottom/center/scale/stretch) for one or more Figma nodes.
+
+**Parameters:**
+- constraint (object, optional): Single constraint operation
+  - nodeId (string): Target node
+  - horizontal (string): "left", "right", "center", "scale", "stretch"
+  - vertical (string): "top", "bottom", "center", "scale", "stretch"
+- constraints (array, optional): Batch of constraint operations (same shape as above)
+- applyToChildren (boolean, optional): If true, apply to all children
+- maintainAspectRatio (boolean, optional): If true, use "scale" for both axes
+
+**Returns:** Array of result objects for each operation.
+
+**Examples:**
+
+_Set constraints (single):_
+```json
+{ "command": "set_constraints", "params": {
+  "constraint": {
+    "nodeId": "123:456",
+    "horizontal": "right",
+    "vertical": "bottom"
+  }
+} }
+```
+
+_Set constraints (batch):_
+```json
+{ "command": "set_constraints", "params": {
+  "constraints": [
+    { "nodeId": "123:456", "horizontal": "left", "vertical": "top" },
+    { "nodeId": "789:101", "horizontal": "center", "vertical": "scale" }
+  ]
+} }
+```
+
+_Set constraints for all children:_
+```json
+{ "command": "set_constraints", "params": {
+  "constraint": {
+    "nodeId": "123:456",
+    "horizontal": "scale",
+    "vertical": "scale"
+  },
+  "applyToChildren": true
+} }
+```
+
+---
+
+### get_constraints
+Get constraints for one or more Figma nodes (optionally including children).
+
+**Parameters:**
+- nodeId (string, optional): Single node ID (if omitted, use current selection)
+- nodeIds (array, optional): Multiple node IDs
+- includeChildren (boolean, optional): If true, include constraints for all children
+
+**Returns:** Array of constraint info for each node, including children if requested.
+
+**Examples:**
+
+_Get constraints for a single node:_
+```json
+{ "command": "get_constraints", "params": { "nodeId": "123:456" } }
+```
+
+_Get constraints for multiple nodes, including children:_
+```json
+{ "command": "get_constraints", "params": { "nodeIds": ["123:456", "789:101"], "includeChildren": true } }
+```
+
+_Get constraints for current selection:_
+```json
+{ "command": "get_constraints", "params": {} }
+```
+
+---
+
+## Guide Commands
+
+### set_guide
+Add or delete one or more guides on the current Figma page.
+
+**Parameters:**
+- guide (object, optional): Single guide operation
+  - axis ("X"|"Y"): Guide direction (vertical/horizontal)
+  - offset (number): Position in canvas coordinates
+  - delete (boolean, optional): If true, delete the guide at axis/offset
+- guides (array, optional): Batch of guide operations (same shape as above)
+
+**Returns:** Array of result objects for each operation.
+
+**Examples:**
+
+_Add a guide (single):_
+```json
+{ "command": "set_guide", "params": {
+  "guide": { "axis": "X", "offset": 100 }
+} }
+```
+
+_Add guides (batch):_
+```json
+{ "command": "set_guide", "params": {
+  "guides": [
+    { "axis": "X", "offset": 100 },
+    { "axis": "Y", "offset": 200 }
+  ]
+} }
+```
+
+_Delete a guide (single):_
+```json
+{ "command": "set_guide", "params": {
+  "guide": { "axis": "X", "offset": 100, "delete": true }
+} }
+```
+
+_Batch create and delete:_
+```json
+{ "command": "set_guide", "params": {
+  "guides": [
+    { "axis": "X", "offset": 100 },
+    { "axis": "Y", "offset": 200, "delete": true }
+  ]
+} }
+```
+
+---
+
+### get_guide
+Get all guides on the current Figma page.
+
+**Parameters:** none
+
+**Returns:** Array of guides, each with `{ axis, offset }`.
+
+**Example:**
+```json
+{ "command": "get_guide", "params": {} }
+```
+
+---
+
+## Grid Commands
+
+### set_grid
+Create, update, or delete one or more layout grids on Figma nodes (FRAME, COMPONENT, INSTANCE).
+
+**Parameters:**
+- entry (object, optional): Single grid operation
+  - nodeId (string): Node to modify
+  - gridIndex (number, optional): Index of grid to update/delete (omit for create)
+  - properties (object, optional): Grid properties (for create/update)
+  - delete (boolean, optional): If true, delete the grid at gridIndex
+- entries (array, optional): Batch of grid operations (same shape as above)
+
+**Returns:** Array of result objects for each operation.
+
+**Examples:**
+
+_Create a grid:_
+```json
+{ "command": "set_grid", "params": {
+  "entry": {
+    "nodeId": "123:456",
+    "properties": { "pattern": "COLUMNS", "count": 12, "gutterSize": 16 }
+  }
+} }
+```
+
+_Update a grid:_
+```json
+{ "command": "set_grid", "params": {
+  "entry": {
+    "nodeId": "123:456",
+    "gridIndex": 0,
+    "properties": { "visible": false }
+  }
+} }
+```
+
+_Delete a grid:_
+```json
+{ "command": "set_grid", "params": {
+  "entry": {
+    "nodeId": "123:456",
+    "gridIndex": 0,
+    "delete": true
+  }
+} }
+```
+
+_Batch create:_
+```json
+{ "command": "set_grid", "params": {
+  "entries": [
+    { "nodeId": "123:456", "properties": { "pattern": "GRID", "sectionSize": 8 } },
+    { "nodeId": "789:101", "properties": { "pattern": "COLUMNS", "count": 6 } }
+  ]
+} }
+```
+
+---
+
+### get_grid
+Get all layout grids for one or more Figma nodes (FRAME, COMPONENT, INSTANCE).
+
+**Parameters:**
+- nodeId (string, optional): Single node ID
+- nodeIds (array of string, optional): Multiple node IDs
+
+**Returns:** For single: `{ nodeId, grids: [...] }`, for batch: `Array<{ nodeId, grids: [...] }>`
+
+**Examples:**
+
+_Single node:_
+```json
+{ "command": "get_grid", "params": { "nodeId": "123:456" } }
+```
+
+_Batch:_
+```json
+{ "command": "get_grid", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+
+---
+
+## Component Variant Commands
+
+### set_variant
+Create, add, rename, delete, organize, or batch create variants/properties in a component set (single or batch).
+
+**Parameters:**
+- variant (object, optional): Single variant operation
+  - componentSetId (string): Target component set node
+  - action (string): "create", "add", "rename", "delete", "organize", "batch_create"
+  - properties (object, optional): Property name/value pairs for the variant
+  - variantId (string, optional): For rename/delete
+  - propertyName/newPropertyName (string, optional): For renaming properties
+  - propertyValue/newPropertyValue (string, optional): For renaming property values
+  - templateComponentId (string, optional): For batch create
+  - propertiesList (array, optional): For batch create
+  - organizeBy (array, optional): For organizing variants in a grid
+- variants (array, optional): Batch of variant operations (same shape as above)
+
+**Returns:** Array of result objects for each operation.
+
+**Examples:**
+
+_Add a new variant:_
+```json
+{ "command": "set_variant", "params": {
+  "variant": {
+    "componentSetId": "123:456",
+    "action": "add",
+    "properties": { "state": "hover", "size": "large" }
+  }
+} }
+```
+
+_Batch create variants from a template:_
+```json
+{ "command": "set_variant", "params": {
+  "variant": {
+    "componentSetId": "123:456",
+    "action": "batch_create",
+    "templateComponentId": "789:101",
+    "propertiesList": [
+      { "state": "active", "size": "small" },
+      { "state": "disabled", "size": "large" }
+    ]
+  }
+} }
+```
+
+_Organize variants in a grid:_
+```json
+{ "command": "set_variant", "params": {
+  "variant": {
+    "componentSetId": "123:456",
+    "action": "organize",
+    "organizeBy": ["state", "size"]
+  }
+} }
+```
+
+_Rename a property:_
+```json
+{ "command": "set_variant", "params": {
+  "variant": {
+    "componentSetId": "123:456",
+    "action": "rename",
+    "propertyName": "state",
+    "newPropertyName": "status"
+  }
+} }
+```
+
+_Delete a variant:_
+```json
+{ "command": "set_variant", "params": {
+  "variant": {
+    "componentSetId": "123:456",
+    "action": "delete",
+    "variantId": "789:101"
+  }
+} }
+```
+
+_Batch add and delete:_
+```json
+{ "command": "set_variant", "params": { "variants": [
+  { "componentSetId": "123:456", "action": "add", "properties": { "state": "active" } },
+  { "componentSetId": "123:456", "action": "delete", "variantId": "789:101" }
+] } }
+```
+
+---
+
+### get_variant
+Get info about variants/properties for one or more component sets.
+
+**Parameters:**
+- componentSetId (string, optional): Single component set node
+- componentSetIds (array, optional): Multiple component set nodes
+
+**Returns:** For single: `{ componentSetId, variants: [...] }`, for batch: `Array<{ componentSetId, variants: [...] }>`
+
+**Examples:**
+
+_Get all variants for a component set:_
+```json
+{ "command": "get_variant", "params": { "componentSetId": "123:456" } }
+```
+
+_Batch get:_
+```json
+{ "command": "get_variant", "params": { "componentSetIds": ["123:456", "789:101"] } }
+```
+
+---
+
+
+---
+
+## Event Subscription & Notification
+
+### subscribe_event
+Subscribe to a Figma event (e.g., selection_change, document_change).
+
+**Parameters:**
+- eventType (string): Event type to subscribe to (e.g., "selection_change", "document_change")
+- filter (object, optional): Optional filter for event payloads
+
+**Returns:** `{ subscriptionId }`
+
+**Example:**
+```json
+{ "command": "subscribe_event", "params": { "eventType": "selection_change" } }
+```
+
+---
+
+### unsubscribe_event
+Unsubscribe from a previously subscribed event.
+
+**Parameters:**
+- subscriptionId (string): The subscription ID to remove
+
+**Returns:** `{ success: true }`
+
+**Example:**
+```json
+{ "command": "unsubscribe_event", "params": { "subscriptionId": "sub-abc123" } }
+```
+
+---
+
+### Event Notification
+When an event occurs, the server pushes a message to all matching subscribers:
+
+**Example:**
+```json
+{
+  "event": "selection_change",
+  "payload": {
+    "selectedNodeIds": ["123:456", "789:101"],
+    "timestamp": 1716000000000
+  },
+  "subscriptionId": "sub-abc123"
+}
+```
+
+---
+
+This document lists all available Model Context Protocol (MCP) commands for the Conduit integration, enabling AI-assisted design in Figma via natural language instructions.
+
+---
+
+## get_style
+Get all styles from the current Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_style", "params": {} }
+```
+
+---
+
+## set_style
+Create, update, or delete one or more Figma styles (PAINT, EFFECT, TEXT, GRID) in a unified call.
+
+**Parameters:**
+- entry (object, optional): Single style operation
+  - styleId (string, optional): Required for update/delete, omitted for create
+  - styleType (string, required): "PAINT", "EFFECT", "TEXT", or "GRID"
+  - properties (object, optional): Properties to set (required for create/update, omitted for delete)
+  - delete (boolean, optional): If true, deletes the style (ignores properties)
+- entries (array of objects, optional): Batch style operations (same shape as above)
+
+**Operation Semantics:**
+- Create: `styleId` omitted, `delete` false/omitted, `properties` present → create new style.
+- Update: `styleId` present, `delete` false/omitted, `properties` present → update existing style.
+- Delete: `styleId` present, `delete: true`, `properties` ignored/omitted → delete style.
+
+**Returns:**
+- Array of result objects: `{ styleId, styleType, action: "created" | "updated" | "deleted", success: true, [error?: string] }`
+
+**Examples:**
+
+_Single Create:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleType": "PAINT",
+    "properties": {
+      "name": "Accent",
+      "paints": [{ "type": "SOLID", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } }]
+    }
+  }
+} }
+```
+
+_Single Update:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleId": "S:1234",
+    "styleType": "PAINT",
+    "properties": {
+      "name": "Accent Updated",
+      "paints": [{ "type": "SOLID", "color": { "r": 0, "g": 1, "b": 0, "a": 1 } }]
+    }
+  }
+} }
+```
+
+_Single Delete:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleId": "S:1234",
+    "styleType": "PAINT",
+    "delete": true
+  }
+} }
+```
+
+_Batch Mixed:_
+```json
+{ "command": "set_style", "params": {
+  "entries": [
+    {
+      "styleType": "PAINT",
+      "properties": { "name": "New Style", "paints": [{ "type": "SOLID", "color": { "r": 0.5, "g": 0.5, "b": 0.5, "a": 1 } }] }
+    },
+    {
+      "styleId": "S:5678",
+      "styleType": "EFFECT",
+      "properties": { "name": "Shadow", "effects": [{ "type": "DROP_SHADOW", "color": { "r": 0, "g": 0, "b": 0, "a": 0.5 }, "radius": 8 }] }
+    },
+    {
+      "styleId": "S:9999",
+      "styleType": "TEXT",
+      "delete": true
+    }
+  ]
+} }
 ```
 
 ---
