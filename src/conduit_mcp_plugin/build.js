@@ -28,25 +28,120 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Directory structure configuration
+// Configuration Section
 
-/**
- * @constant {string} SRC_DIR - Root source directory for plugin code
- * @constant {string} MODULES_DIR - Directory containing feature-specific modules (shapes, text, etc.)
- * @constant {string} UTILS_DIR - Directory for common utilities and helper functions
- * @constant {string} OUTPUT_FILE - Final bundled output file for Figma
- */
 const SRC_DIR = path.join(__dirname, 'src');
 const MODULES_DIR = path.join(SRC_DIR, 'modules');
 const UTILS_DIR = path.join(MODULES_DIR, 'utils');
 const OUTPUT_FILE = path.join(__dirname, 'dist', 'code.js');
-
-/**
- * @constant {string} COMPONENTS_DIR - Directory containing HTML UI components
- * @constant {string} JS_DIR - Directory containing JavaScript modules for UI
- */
 const COMPONENTS_DIR = path.join(__dirname, 'components');
 const JS_DIR = path.join(__dirname, 'js');
+
+const cssFiles = [
+  { path: path.join(__dirname, 'styles.css'), name: 'styles.css' },
+  { path: path.join(__dirname, 'connection.css'), name: 'connection.css' },
+  { path: path.join(__dirname, 'tabs.css'), name: 'tabs.css' },
+  { path: path.join(__dirname, 'progress.css'), name: 'progress.css' }
+];
+
+const componentMappings = [
+  { placeholder: '<!-- HEADER_PLACEHOLDER -->', file: 'header.html' },
+  { placeholder: '<!-- TABS_PLACEHOLDER -->', file: 'tabs.html' },
+  { placeholder: '<!-- CONNECTION_PANEL_PLACEHOLDER -->', file: 'connection-panel.html' },
+  { placeholder: '<!-- PROGRESS_CONTAINER_PLACEHOLDER -->', file: 'progress-container.html' },
+  { placeholder: '<!-- ABOUT_PANEL_PLACEHOLDER -->', file: 'about-panel.html' }
+];
+
+const jsModules = [
+  'state.js',
+  'connection.js',
+  'ui-controller.js',
+  'tab-manager.js',
+  'message-handler.js',
+  'main.js'
+];
+
+// WARNING: Every file to be included in the build MUST be listed in moduleOrder below.
+// Do NOT re-export or include files elsewhere if they are already listed here.
+// Double-inclusion (listing a file here and also re-exporting it elsewhere) will cause
+// duplicate declarations and build errors (e.g., "invalid redefinition of lexical identifier").
+// Always update moduleOrder when adding, removing, or renaming modules.
+// This applies to ALL modules, not just utils.
+const moduleOrder = [
+  // Utilities and helpers
+  'utils/plugin.js',
+  'utils/encoding.js',
+  'utils/helpers.js',
+  'utils.js',
+  // Events
+  'events/event-emitter.js',
+  // Document and related
+  'document/document-info.js',
+  'document/document-selection.js',
+  'document/document-node.js',
+  'document/document-css.js',
+  'document/document-page.js',
+  'document.js',
+  // Shapes and geometry
+  'shape/shapes-helpers.js',
+  'shape/shapes-rectangle.js',
+  'shape/shapes-frame.js',
+  'shape/shapes-ellipse.js',
+  'shape/shapes-polygon.js',
+  'shape/shapes-star.js',
+  'shape/shapes-vector.js',
+  'shape/shapes-line.js',
+  'shapes.js',
+  // Text
+  'text/text-create.js',
+  'text/text-edit.js',
+  'text/text-scan.js',
+  'text/text-helpers.js',
+  'text.js',
+  //Styles
+  'styles/styles-color.js',
+  'styles/styles-effects.js',
+  'styles/styles-gradient.js',
+  'styles/styles-get.js',
+  'styles.js',
+   // Layout
+  'layout/layout-auto.js',
+  'layout/layout-group.js',
+  'layout/layout-insert.js',
+  'layout/layout-flatten.js',
+  'layout/layout-clone.js',
+  'layout/layout-grid.js',
+  'layout/layout-grid-unified.js',
+  'layout/layout-guide.js',
+  'layout/layout-constraint.js',
+  'layout.js',
+  // Node
+  'node/node-modify.js',
+  'node/node-edit.js',
+  'node/node-misc.js',
+  // Components
+  'components/component-variant.js',
+  'components.js',
+  // Font
+  'font/font-set.js',
+  'font/font-load.js',
+  'font/font-bulk.js',
+  'font.js',
+  // Include new split command modules before commands.js
+  'commands/commands-register.js',
+  'commands/commands-button.js',
+  'commands.js', // Ensure commands.js is concatenated last as needed.
+  // Misc
+  'rename.js',
+  'svg.js',
+  'html-generator.js',
+  'variables.js',
+  'direct-gradient.js',
+  'image.js',
+  'ui.js'
+];
+
+// Helper Functions
 
 /**
  * Reads a file's contents synchronously
@@ -54,29 +149,27 @@ const JS_DIR = path.join(__dirname, 'js');
  * @param {string} filePath - Absolute path to the file
  * @returns {string} Raw file contents as UTF-8 string
  * @throws {Error} If file reading fails
- * @example
- * // Read a module file's contents
- * // const contents = readFile(path.join(__dirname, 'src', 'modules', 'document.js'));
- * // console.log(contents);
  */
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');
 }
 
 /**
+ * Reads and strips import/export statements from a module file.
+ * @param {string} filePath
+ * @returns {string}
+ */
+function readAndStripModule(filePath) {
+  let content = readFile(filePath);
+  content = content.replace(/import\s+.*from\s+['"].*['"];?\n?/g, '');
+  content = content.replace(/export\s+/g, '');
+  return content;
+}
+
+// Build Process
+
+/**
  * Builds the Figma plugin by combining all source files into a single bundle.
- * 
- * Build process stages:
- * 1. Validation - Checks if required directories exist
- * 2. Utils Processing - Processes utility functions first (plugin.js, encoding.js, helpers.js)
- * 3. Module Processing - Processes feature modules in specific order
- * 4. Index Processing - Processes main plugin entry point (index.js)
- * 
- * For each file processed:
- * - Removes ES module import/export syntax
- * - Removes module operation exports
- * - Preserves the actual implementation code
- * - Adds section headers for better code organization
  * 
  * @async
  * @throws {Error} If any critical build step fails
@@ -86,120 +179,22 @@ async function buildPlugin() {
   console.log('Building Figma plugin...');
   
   try {
-    // Ensure the primary source directory exists.
+    // 1. Validation
     if (!fs.existsSync(SRC_DIR)) {
       console.error(`Error: Source directory not found: ${SRC_DIR}`);
       process.exit(1);
     }
-    
-    // Ensure the modular code directory exists.
     if (!fs.existsSync(MODULES_DIR)) {
       console.error(`Error: Modules directory not found: ${MODULES_DIR}`);
       process.exit(1);
     }
     
-    // Initialize the output string with a header comment.
+    // 2. Module Concatenation
     let output = '// Figma Plugin - Auto-generated code from build.js\n\n';
-    
-    // ==========================================================================================
-    // WARNING: Every file to be included in the build MUST be listed in moduleOrder below.
-    // - Do NOT re-export or include files elsewhere if they are already listed here.
-    // - Double-inclusion (listing a file here and also re-exporting it elsewhere) will cause
-    //   duplicate declarations and build errors (e.g., "invalid redefinition of lexical identifier").
-    // - Always update moduleOrder when adding, removing, or renaming modules.
-    // - This applies to ALL modules, not just utils.
-    // ==========================================================================================
-    const moduleOrder = [
-      // Utilities and helpers
-      // WARNING: All utility files (plugin.js, encoding.js, helpers.js, utils.js) must be listed here at the top.
-      // Do NOT re-export or include these files elsewhere in the build (e.g., via export * in another file or in another part of moduleOrder),
-      // or you will get duplicate declarations and build errors (e.g., "invalid redefinition of lexical identifier").
-      // Always update this section if you add/remove utility modules.
-      'utils/plugin.js',
-      'utils/encoding.js',
-      'utils/helpers.js',
-      'utils.js',
-      // Events
-      'events/event-emitter.js',
-            // Document and related
-      'document/document-info.js',
-      'document/document-selection.js',
-      'document/document-node.js',
-      'document/document-css.js',
-      'document/document-page.js',
-      'document.js',
-      // Shapes and geometry
-      'shape/shapes-helpers.js',
-      'shape/shapes-rectangle.js',
-      'shape/shapes-frame.js',
-      'shape/shapes-ellipse.js',
-      'shape/shapes-polygon.js',
-      'shape/shapes-star.js',
-      'shape/shapes-vector.js',
-      'shape/shapes-line.js',
-      'shapes.js',
-      // Text
-      'text/text-create.js',
-      'text/text-edit.js',
-      'text/text-scan.js',
-      'text/text-helpers.js',
-      'text.js',
-      //Styles
-      'styles/styles-color.js',
-      'styles/styles-effects.js',
-      'styles/styles-gradient.js',
-      'styles/styles-get.js',
-      'styles.js',
-       // Layout
-      'layout/layout-auto.js',
-      'layout/layout-group.js',
-      'layout/layout-insert.js',
-      'layout/layout-flatten.js',
-      'layout/layout-clone.js',
-      'layout/layout-grid.js',
-      'layout/layout-grid-unified.js',
-      'layout/layout-guide.js',
-      'layout/layout-constraint.js',
-      'layout.js',
-      // Node
-      'node/node-modify.js',
-      'node/node-edit.js',
-      'node/node-misc.js',
-      // Components
-      'components/component-variant.js',
-      'components.js',
-      // Font
-      'font/font-set.js',
-      'font/font-load.js',
-      'font/font-bulk.js',
-      'font.js',
-      // Include new split command modules before commands.js
-      'commands/commands-register.js',
-      'commands/commands-button.js',
-      'commands.js', // Ensure commands.js is concatenated last as needed.
-      // Misc
-      'rename.js',
-      'svg.js',
-      'html-generator.js',
-      'variables.js',
-      'direct-gradient.js',
-      'image.js',
-      'ui.js'
-    ];
-    
-    // Process each module file.
     for (const moduleFile of moduleOrder) {
       const modulePath = path.join(MODULES_DIR, moduleFile);
       if (fs.existsSync(modulePath)) {
-        let moduleContent = readFile(modulePath);
-        
-        // Remove any import statements as they will be inlined.
-        moduleContent = moduleContent.replace(/import\s+.*from\s+['"].*['"];?\n?/g, '');
-        // Remove export keywords to embed the declarations directly.
-        moduleContent = moduleContent.replace(/export\s+/g, '');
-        // Optionally remove export objects declarations.
-        // moduleContent = moduleContent.replace(/export\s+const\s+\w+Operations\s*=\s*{[^}]*};?\n?/g, '');
-        
+        let moduleContent = readAndStripModule(modulePath);
         output += `// ----- ${path.basename(moduleFile, '.js')} Module -----\n`;
         output += moduleContent + '\n\n';
       } else {
@@ -207,95 +202,47 @@ async function buildPlugin() {
       }
     }
     
-    // Process the main index.js file.
+    // 3. Main Entrypoint
     const indexPath = path.join(SRC_DIR, 'index.js');
     let indexContent = readFile(indexPath);
-    
-    // Remove import statements from index.js.
     indexContent = indexContent.replace(/import\s+.*from\s+['"].*['"];?\n?/g, '');
     indexContent = indexContent.replace(/import\s+{[^}]*}\s+from\s+['"].*['"];?\n?/g, '');
     indexContent = indexContent.replace(/const\s+{[^}]*}\s*=\s*\w+Operations;?\n?/g, '');
-    
-    // Remove comment lines referencing imports.
     indexContent = indexContent.replace(/\/\/\s*Import\s+modules.*\n/gi, '');
-    
-    // Remove any export statements at the end from index.js.
     indexContent = indexContent.replace(/export\s+{[^}]*};?\n?/g, '');
-    
     output += '// ----- Main Plugin Code -----\n';
     output += indexContent;
     
-    // Create the dist directory if it doesn't exist
+    // 4. Write plugin bundle
     const distDir = path.join(__dirname, 'dist');
     if (!fs.existsSync(distDir)) {
       fs.mkdirSync(distDir, { recursive: true });
     }
-    
-    // Write the output to the dist directory
     fs.writeFileSync(OUTPUT_FILE, output);
     console.log(`✅ Generated code.js in dist directory`);
     
-    // Generate the UI HTML file from template and CSS and components
+    // 5. UI HTML/CSS/JS Bundling
     try {
-      // Define paths
       const templatePath = path.join(__dirname, 'ui-template.html');
-      const stylesPath = path.join(__dirname, 'styles.css');
-      const connectionPath = path.join(__dirname, 'connection.css');
-      const tabsPath = path.join(__dirname, 'tabs.css');
-      const progressPath = path.join(__dirname, 'progress.css');
-      const outputPath = path.join(__dirname, 'dist', 'ui.html');
-      
-      // Check if template and CSS files exist
       if (!fs.existsSync(templatePath)) {
         throw new Error(`Template file not found: ${templatePath}`);
       }
-      
-      const cssFiles = [
-        { path: stylesPath, name: 'styles.css' },
-        { path: connectionPath, name: 'connection.css' },
-        { path: tabsPath, name: 'tabs.css' },
-        { path: progressPath, name: 'progress.css' }
-      ];
-      
       for (const cssFile of cssFiles) {
         if (!fs.existsSync(cssFile.path)) {
           throw new Error(`CSS file not found: ${cssFile.path}`);
         }
       }
-      
-      // Read content from template and CSS files
-      console.log('Reading template and CSS files...');
+      // Read and combine CSS
       let templateContent = fs.readFileSync(templatePath, 'utf8');
-      
-      // Read and combine all CSS files
-      console.log('Combining CSS files...');
       let combinedCss = '';
-      
       for (const cssFile of cssFiles) {
         console.log(`Adding ${cssFile.name}...`);
         const cssContent = fs.readFileSync(cssFile.path, 'utf8');
         combinedCss += `/* ${cssFile.name} */\n${cssContent}\n\n`;
       }
-      
-      // Create style tag with combined CSS content
       const styleTag = `<style>\n${combinedCss}</style>`;
-      
-      // Replace placeholder with actual styles
       templateContent = templateContent.replace('<!-- STYLES_PLACEHOLDER -->', styleTag);
-      
-      // Process HTML components
-      console.log('Processing HTML components...');
-      
-      // Define component placeholders and file mappings
-      const componentMappings = [
-        { placeholder: '<!-- HEADER_PLACEHOLDER -->', file: 'header.html' },
-        { placeholder: '<!-- TABS_PLACEHOLDER -->', file: 'tabs.html' },
-        { placeholder: '<!-- CONNECTION_PANEL_PLACEHOLDER -->', file: 'connection-panel.html' },
-        { placeholder: '<!-- PROGRESS_CONTAINER_PLACEHOLDER -->', file: 'progress-container.html' },
-        { placeholder: '<!-- ABOUT_PANEL_PLACEHOLDER -->', file: 'about-panel.html' }
-      ];
-      
-      // Replace each component placeholder with the actual component content
+      // HTML components
       for (const component of componentMappings) {
         const componentPath = path.join(COMPONENTS_DIR, component.file);
         if (fs.existsSync(componentPath)) {
@@ -307,23 +254,8 @@ async function buildPlugin() {
           templateContent = templateContent.replace(component.placeholder, `<!-- Component ${component.file} not found -->`);
         }
       }
-      
-      // Process JavaScript modules
-      console.log('Processing JavaScript modules...');
-      
-      // Define JavaScript module order
-      const jsModules = [
-        'state.js',
-        'connection.js',
-        'ui-controller.js',
-        'tab-manager.js',
-        'message-handler.js',
-        'main.js'
-      ];
-      
-      // Combine JS modules
+      // JS modules
       let combinedJs = '';
-      
       for (const jsModule of jsModules) {
         const jsPath = path.join(JS_DIR, jsModule);
         if (fs.existsSync(jsPath)) {
@@ -334,17 +266,12 @@ async function buildPlugin() {
           console.warn(`Warning: JavaScript module not found: ${jsPath}`);
         }
       }
-      
-      // Create script tag with combined JS
       const scriptTag = `<script>\n${combinedJs}</script>`;
-      
-      // Replace script placeholder
       templateContent = templateContent.replace('<!-- SCRIPTS_PLACEHOLDER -->', scriptTag);
-      
-      // Write to the dist directory
+      // Write UI HTML
+      const outputPath = path.join(__dirname, 'dist', 'ui.html');
       fs.writeFileSync(outputPath, templateContent);
       console.log('✅ Generated ui.html with embedded styles, components, and scripts in dist directory');
-      
     } catch (error) {
       console.error('❌ Error generating ui.html:', error);
       process.exit(1);
@@ -352,7 +279,7 @@ async function buildPlugin() {
     
     console.log('✅ Figma plugin core built successfully!');
     
-    // Now compile and inline TypeScript
+    // 6. TypeScript Build for UI
     try {
       console.log('Building TypeScript for UI...');
       const { execSync } = await import('child_process');
