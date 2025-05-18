@@ -9,6 +9,8 @@
 
 ---
 
+# Available MCP Commands
+
 # Quick Reference
 
 > **Note:** For batch operations, pass an array to the singular command (e.g., `rectangles` for `create_rectangle`). Plural command names are deprecated.
@@ -105,6 +107,14 @@
 - [set_constraints](#set_constraints): Set constraints for one or more nodes
 - [get_constraints](#get_constraints): Get constraints for one or more nodes
 
+### Figma Variables (Design Tokens)
+- [create_variable](#create_variable): Create one or more Figma Variables (design tokens)
+- [update_variable](#update_variable): Update one or more Figma Variables
+- [delete_variable](#delete_variable): Delete one or more Figma Variables
+- [get_variables](#get_variables): Query Figma Variables by type, collection, mode, or IDs
+- [apply_variable_to_node](#apply_variable_to_node): Apply a Figma Variable to a node property
+- [switch_variable_mode](#switch_variable_mode): Switch the mode for a Figma Variable collection
+
 ### Export 
 - [export_node_as_image](#export_node_as_image): Export a node as an image
 - [generate_html](#generate_html): Generate HTML structure from Figma nodes
@@ -123,6 +133,120 @@
 ---
 
 # Command Index
+
+## apply_variable_to_node
+Apply a Figma Variable to a node property.
+
+**Parameters:**
+- nodeId (string): Figma node ID
+- variableId (string): Variable ID
+- property (string): Node property (e.g., "fill", "stroke", "fontSize")
+
+**Example:**
+```json
+{ "command": "apply_variable_to_node", "params": {
+  "nodeId": "123:456",
+  "variableId": "var123",
+  "property": "fill"
+} }
+```
+
+---
+
+## create_variable
+Create one or more Figma Variables (design tokens).
+
+**Parameters:**
+- variables (object or array): Each with:
+  - name (string): Variable name
+  - type (string): "COLOR" | "NUMBER" | "STRING" | "BOOLEAN"
+  - value (any): Initial value
+  - collection (string, optional): Collection name
+  - mode (string, optional): Mode name
+  - description (string, optional): Description
+
+**Example:**
+```json
+{ "command": "create_variable", "params": {
+  "variables": [
+    { "name": "Primary Color", "type": "COLOR", "value": "#3366FF", "collection": "Theme" }
+  ]
+} }
+```
+
+---
+
+## delete_variable
+Delete one or more Figma Variables.
+
+**Parameters:**
+- ids (string or array): Variable ID(s) to delete
+
+**Example:**
+```json
+{ "command": "delete_variable", "params": {
+  "ids": ["var123", "var456"]
+} }
+```
+
+---
+
+## get_variables
+Query Figma Variables by type, collection, mode, or IDs.
+
+**Parameters:**
+- type (string, optional): "COLOR" | "NUMBER" | "STRING" | "BOOLEAN"
+- collection (string, optional): Collection ID
+- mode (string, optional): Mode name or ID
+- ids (array, optional): Array of variable IDs
+
+**Example:**
+```json
+{ "command": "get_variables", "params": {
+  "type": "COLOR",
+  "collection": "Theme"
+} }
+```
+
+---
+
+## switch_variable_mode
+Switch the mode for a Figma Variable collection (e.g., light/dark theme).
+
+**Parameters:**
+- collection (string): Collection name or ID
+- mode (string): Mode name or ID
+
+**Example:**
+```json
+{ "command": "switch_variable_mode", "params": {
+  "collection": "Theme",
+  "mode": "Dark"
+} }
+```
+
+---
+
+## update_variable
+Update one or more Figma Variables.
+
+**Parameters:**
+- variables (object or array): Each with:
+  - id (string): Variable ID
+  - name (string, optional): New name
+  - value (any, optional): New value
+  - mode (string, optional): Mode name
+
+**Example:**
+```json
+{ "command": "update_variable", "params": {
+  "variables": [
+    { "id": "var123", "value": "#654321" }
+  ]
+} }
+```
+
+---
 
 ## set_selection
 Set the current selection in Figma to the specified node(s) by ID.
