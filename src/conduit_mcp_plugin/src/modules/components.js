@@ -267,10 +267,34 @@ export async function getTeamComponents(params) {
  * @property {function} createComponentInstance - Create component instance(s).
  * @property {function} exportNodeAsImage - Export node as image.
  */
+/**
+ * Unified getComponents: retrieves local, team, or remote components based on source param.
+ * @param {object} params
+ * @param {"local"|"team"|"remote"} params.source
+ * @param {string} [params.team_id] - Required if source is "team"
+ * @param {number} [params.page_size]
+ * @param {string|number} [params.after]
+ * @returns {Promise<any>}
+ */
+export async function getComponents(params) {
+  const { source, team_id, page_size, after } = params || {};
+  if (source === "local") {
+    return await getLocalComponents();
+  } else if (source === "team") {
+    if (!team_id) throw new Error("team_id is required when source is 'team'");
+    return await getTeamComponents({ teamId: team_id, pageSize: page_size, after });
+  } else if (source === "remote") {
+    return await getRemoteComponents();
+  } else {
+    throw new Error("Invalid source parameter. Must be 'local', 'team', or 'remote'.");
+  }
+}
+
 export const componentOperations = {
   getLocalComponents,
   getRemoteComponents,
   getTeamComponents,
+  getComponents,
   createComponentsFromNodes,
   createComponentInstance,
   exportNodeAsImage

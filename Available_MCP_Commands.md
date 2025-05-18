@@ -24,9 +24,10 @@
 - [get_node_info](#get_node_info): Get detailed information about one or more nodes (single or batch)
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [get_styles](#get_styles): Get all styles from the document
-- [get_local_components](#get_local_components): Get all local components
-- [get_team_components](#get_team_components): Get components from a Figma team library
-- [get_remote_components](#get_remote_components): Get available components from team libraries
+- [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
+- [get_local_components](#get_local_components) **[DEPRECATED]**
+- [get_team_components](#get_team_components) **[DEPRECATED]**
+- [get_remote_components](#get_remote_components) **[DEPRECATED]**
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 - [get_css_async](#get_css_async): Get CSS properties from a node
@@ -358,42 +359,42 @@ Get all styles from the current Figma document.
 
 ---
 
-## get_local_components
-Get all local components from the Figma document.
-
-**Parameters:** none
-
-**Example:**
-```json
-{ "command": "get_local_components", "params": {} }
-```
-
----
-
-## get_team_components
-Get components from a Figma team library.
+## get_components
+Get components from the current document, a team library, or remote team libraries (unified).
 
 **Parameters:**
-- team_id (string): Figma team ID
-- page_size (number, optional)
-- after (number, optional)
+- source (string, required): "local", "team", or "remote"
+- team_id (string, required if source is "team")
+- page_size (number, optional, for team/remote)
+- after (string/number, optional, for team/remote)
 
-**Example:**
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the components info as JSON.
+
+**Examples:**
+_Local components:_
 ```json
-{ "command": "get_team_components", "params": { "team_id": "123456" } }
+{ "command": "get_components", "params": { "source": "local" } }
+```
+_Team components:_
+```json
+{ "command": "get_components", "params": { "source": "team", "team_id": "123456" } }
+```
+_Remote components:_
+```json
+{ "command": "get_components", "params": { "source": "remote" } }
 ```
 
 ---
 
-## get_remote_components
-Get available components from team libraries.
+## get_local_components **[DEPRECATED]**
+Use `get_components` with `{ "source": "local" }` instead.
 
-**Parameters:** none
+## get_team_components **[DEPRECATED]**
+Use `get_components` with `{ "source": "team", "team_id": "..." }` instead.
 
-**Example:**
-```json
-{ "command": "get_remote_components", "params": {} }
-```
+## get_remote_components **[DEPRECATED]**
+Use `get_components` with `{ "source": "remote" }` instead.
 
 ---
 

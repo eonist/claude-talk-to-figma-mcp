@@ -213,8 +213,7 @@ export function initializeCommands() {
   // Component Conversion
   registerCommand('create_components_from_nodes', componentOperations.createComponentsFromNodes);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
-  registerCommand('get_team_components', componentOperations.getTeamComponents);
-
+  registerCommand('get_components', componentOperations.getComponents);
   // Gradient Operations (Unified)
   registerCommand('create_gradient_style', styleOperations.createGradientStyle);
   registerCommand('set_gradient', styleOperations.setGradient);
