@@ -82,6 +82,7 @@
 **Effects and Layout:**
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
 - [set_effect](#set_effect): Set effect(s) directly or by style variable
+- [set_effects](#set_effects): Set visual effects
 - [set_effect_style_id](#set_effect_style_id): Apply an effect style
 - [set_auto_layout](#set_auto_layout): Configure auto layout
 - [set_auto_layout_resizing](#set_auto_layout_resizing): Set hug or fill sizing mode

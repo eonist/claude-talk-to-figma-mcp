@@ -194,8 +194,6 @@ export type FigmaCommand =
   | "load_font_async"
   // Get remote components from team libraries (see commands/figma/read/component-tools.ts)
   | "get_remote_components"
-  // Set visual effects of a node (see commands/figma/modify/property-manipulation/effects-tools.ts)
-  | "set_effects"
   // Apply an effect style to a node (see commands/figma/modify/property-manipulation/effects-tools.ts)
   | "set_effect_style_id"
   // Group or ungroup nodes (see commands/figma/modify/layer-management/group-tools.ts)
