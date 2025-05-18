@@ -105,7 +105,7 @@ export async function set_auto_layout(
  * Registers the set_auto_layout tool with the MCP server.
  */
 export function registerLayoutAutoTools(server: McpServer, figmaClient: FigmaClient) {
-  server.registerTool("set_auto_layout", async (params: SetAutoLayoutParams) =>
+  server.tool("set_auto_layout", async (params: SetAutoLayoutParams) =>
     set_auto_layout(figmaClient, params)
   );
 }

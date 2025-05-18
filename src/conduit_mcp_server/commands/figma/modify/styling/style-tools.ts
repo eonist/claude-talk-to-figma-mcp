@@ -16,19 +16,6 @@ const StyleBatchSchema = z.object({
 });
 
 export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) {
-  // get_style: returns all local styles
-  server.tool(
-    "get_style",
-    `Get all styles from the current Figma document.
-
-Parameters: none
-
-Returns: Array of style objects grouped by type.`,
-    {},
-    async () => {
-      return await figmaClient.executeCommand("getStyles", {});
-    }
-  );
 
   // set_style: create, update, or delete styles (single or batch)
   server.tool(

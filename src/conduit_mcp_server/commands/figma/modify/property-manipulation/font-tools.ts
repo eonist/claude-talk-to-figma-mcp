@@ -160,38 +160,6 @@ Returns:
     }
   );
 
-  // Set Letter Spacing
-  server.tool(
-    "set_letter_spacing",
-    `Set the letter spacing of a text node in Figma.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-`,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      letterSpacing: z.number()
-        .min(-100)
-        .max(1000)
-        .describe("The letter spacing value to set. Can be negative or positive, typically between -100 and 1000."),
-      unit: z.enum(["PIXELS", "PERCENT"]).optional()
-        .describe('Optional. The unit for letter spacing: "PIXELS" or "PERCENT". Defaults to "PIXELS" if omitted.'),
-    },
-    {
-      title: "Set Letter Spacing",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false
-    },
-    async ({ nodeId, letterSpacing, unit }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_letter_spacing", { nodeId: id, letterSpacing, unit });
-      return { content: [{ type: "text", text: `Letter spacing set for ${id}` }] };
-    }
-  );
 
   // Set Line Height
   server.tool(
@@ -226,59 +194,7 @@ Returns:
     }
   );
 
-  // Set Paragraph Spacing
-  server.tool(
-    "set_paragraph_spacing",
-    `Set the paragraph spacing of a text node in Figma.
 
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-`,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
-      paragraphSpacing: z.number()
-        .min(0)
-        .max(1000)
-        .describe("The paragraph spacing value to set. Must be a non-negative number between 0 and 1000."),
-    },
-    {
-      title: "Set Paragraph Spacing",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false
-    },
-    async ({ nodeId, paragraphSpacing }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_paragraph_spacing", { nodeId: id, paragraphSpacing });
-      return { content: [{ type: "text", text: `Paragraph spacing set for ${id}` }] };
-    }
-  );
-
-  // Set Text Case
-  server.tool(
-    "set_text_case",
-    `Set the text case of a text node in Figma.
-
-Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Text case set for 123:456" }] }
-`,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
-      textCase: z.enum(["ORIGINAL", "UPPER", "LOWER", "TITLE"])
-        .describe('The text case to set: "ORIGINAL", "UPPER", "LOWER", or "TITLE".'),
-    },
-    async ({ nodeId, textCase }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_text_case", { nodeId: id, textCase });
-      return { content: [{ type: "text", text: `Text case set for ${id}` }] };
-    }
-  );
 
 
   // Load Font Async

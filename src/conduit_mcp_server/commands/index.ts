@@ -21,7 +21,6 @@ import { logger } from "../utils/logger.js";
 import { registerHtmlCommands } from "./html-tools.js";
 import { registerReorderLayerTools } from "./figma/modify/layer-management/reorder-layer-tools.js";
 import { registerAnnotationCommands } from "./figma/annotation-tools.js";
-import { registerStyleTools } from "./figma/modify/styling/style-tools.js";
 import { registerGridCommands } from "./figma/modify/grid-tools.js";
 import { registerUnifiedGridCommands } from "./figma/modify/grid-unified-tools.js";
 import { registerGuideCommands } from "./figma/modify/guide-tools.js";
@@ -57,8 +56,6 @@ export function registerAllCommands(server: McpServer): void {
     registerChannelCommand(server, figmaClient);
     registerHtmlCommands(server, figmaClient);
 
-    // Register style management commands (set_style, get_style)
-    registerStyleTools(server, figmaClient);
 
     // Register grid commands (layout grid support)
     registerGridCommands(server, figmaClient);

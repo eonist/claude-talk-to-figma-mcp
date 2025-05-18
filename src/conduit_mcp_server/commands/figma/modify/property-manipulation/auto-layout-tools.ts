@@ -22,41 +22,6 @@ import { AutoLayoutConfigSchema, AutoLayoutResizingSchema } from "./auto-layout-
 export function registerAutoLayoutTools(server: McpServer, figmaClient: FigmaClient) {
   // Auto Layout
   server.tool(
-    "set_auto_layout",
-    `Configures auto layout properties for a node in Figma.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
-`,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      ...AutoLayoutConfigSchema.shape,
-    },
-    {
-      title: "Set Auto Layout",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", layoutMode: "HORIZONTAL" }
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "layoutMode must be one of 'HORIZONTAL', 'VERTICAL', or 'NONE'.",
-        "Changing layout mode may affect child node positioning."
-      ],
-      extraInfo: "Configures auto layout properties for a Figma node."
-    },
-    async ({ nodeId, layoutMode }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_auto_layout", { nodeId: id, layoutMode });
-      return { content: [{ type: "text", text: `Auto layout set for ${id}` }] };
-    }
-  );
-  server.tool(
     "set_auto_layout_resizing",
     `Sets hug or fill sizing mode on an auto layout frame or child node in Figma.
 

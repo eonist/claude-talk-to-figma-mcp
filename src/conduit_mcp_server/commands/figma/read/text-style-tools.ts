@@ -75,7 +75,7 @@ export async function get_text_style(
  * Registers the get_text_style tool with the MCP server.
  */
 export function registerTextStyleTools(server: McpServer, figmaClient: FigmaClient) {
-  server.registerTool("get_text_style", async (params: GetTextStyleParams) =>
+  server.tool("get_text_style", async (params: GetTextStyleParams) =>
     get_text_style(figmaClient, params)
   );
 }

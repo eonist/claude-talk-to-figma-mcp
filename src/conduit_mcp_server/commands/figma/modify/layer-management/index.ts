@@ -4,7 +4,7 @@ import { registerBooleanTools } from "./boolean-tools.js";
 import { registerGroupTools } from "./group-tools.js";
 import { registerDeleteTools } from "./delete-tools.js";
 import { registerInsertChildTools } from "./insert-child-tools.js";
-import { registerFlattenNodeTools, registerFlattenNodesTools } from "./flatten-node-tools.js";
+import { registerFlattenNodeTools } from "./flatten-node-tools.js";
 import { registerCloneNodeTools } from "./clone-node-tools.js";
 
 /**
@@ -27,7 +27,6 @@ export function registerLayerManagementCommands(server: McpServer, figmaClient: 
   registerDeleteTools(server, figmaClient);
   registerInsertChildTools(server, figmaClient);
   registerFlattenNodeTools(server, figmaClient);
-  registerFlattenNodesTools(server, figmaClient);
   registerCloneNodeTools(server, figmaClient);
 }
 
@@ -38,6 +37,5 @@ export {
   registerDeleteTools,
   registerInsertChildTools,
   registerFlattenNodeTools,
-  registerFlattenNodesTools,
   registerCloneNodeTools,
 };

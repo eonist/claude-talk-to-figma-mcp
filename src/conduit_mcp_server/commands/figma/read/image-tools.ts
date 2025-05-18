@@ -120,7 +120,7 @@ export async function get_image(
  * Registers the get_image tool with the MCP server.
  */
 export function registerImageTools(server: McpServer, figmaClient: FigmaClient) {
-  server.registerTool("get_image", async (params: GetImageParams) =>
+  server.tool("get_image", async (params: GetImageParams) =>
     get_image(figmaClient, params)
   );
 }
