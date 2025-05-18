@@ -23,17 +23,16 @@
 - [get_selection](#get_selection): Get information about the current selection in Figma
 - [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
 - [get_node_info](#get_node_info): Get detailed information about one or more nodes (single or batch)
-- [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
-- [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
-- [get_styles](#get_styles): Get all styles from the document
 - [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 - [get_css_async](#get_css_async): Get CSS properties from a node
+
+**Pages:**
 - [get_pages](#get_pages): Get all pages in the current Figma document
 - [set_current_page](#set_current_page): Set the current active page in Figma
 - [create_page](#create_page): Create a new page
-- [duplicate_page](#duplicate_page): Duplicate a Figma page and all its children as a new page
+- [duplicate_page](#duplicate_page): Duplicate a Figma page and all its children as a new page**
 
 **Shapes:**
 - [create_rectangle](#create_rectangle): Create one or more rectangles
@@ -61,6 +60,7 @@
 - [insert_svg_vector](#insert_svg_vector): Insert SVG vectors
 
 **Styling:**
+- [get_styles](#get_styles): Get all styles from the document
 - [set_fill_color](#set_fill_color): Set fill color
 - [set_stroke_color](#set_stroke_color): Set stroke color
 - [set_style](#set_style): Set both fill and stroke
@@ -82,7 +82,6 @@
 **Effects and Layout:**
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
 - [set_effect](#set_effect): Set effect(s) directly or by style variable
-- [set_effects](#set_effects): Set visual effects
 - [set_effect_style_id](#set_effect_style_id): Apply an effect style
 - [set_auto_layout](#set_auto_layout): Configure auto layout
 - [set_auto_layout_resizing](#set_auto_layout_resizing): Set hug or fill sizing mode
@@ -105,14 +104,6 @@
 - [set_node_locked](#set_node_locked): Lock or unlock nodes
 - [set_node_visible](#set_node_visible): Show or hide nodes
 
-**Naming:**
-- [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
-- [ai_rename_layers](#ai_rename_layers): AI-powered renaming
-
-### Export and Conversion
-- [export_node_as_image](#export_node_as_image): Export a node as an image
-- [generate_html](#generate_html): Generate HTML structure from Figma nodes
-
 ### Grids, Guides, and Constraints
 - [set_grid](#set_grid): Create, update, or delete one or more layout grids on nodes
 - [get_grid](#get_grid): Get all layout grids for one or more nodes
@@ -121,15 +112,18 @@
 - [set_constraints](#set_constraints): Set constraints for one or more nodes
 - [get_constraints](#get_constraints): Get constraints for one or more nodes
 
-### Variants
+### Misc
+- [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
+- [ai_rename_layers](#ai_rename_layers): AI-powered renaming
+- [export_node_as_image](#export_node_as_image): Export a node as an image
+- [generate_html](#generate_html): Generate HTML structure from Figma nodes
 - [set_variant](#set_variant): Create, add, rename, delete, organize, or batch create variants/properties in a component set
 - [get_variant](#get_variant): Get info about variants/properties for one or more component sets
-
-### Event Subscription
 - [subscribe_event](#subscribe_event): Subscribe to a Figma event (e.g., selection_change, document_change)
 - [unsubscribe_event](#unsubscribe_event): Unsubscribe from a previously subscribed event
+- [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
+- [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
- 
 ## set_selection
 Set the current selection in Figma to the specified node(s) by ID.
 
