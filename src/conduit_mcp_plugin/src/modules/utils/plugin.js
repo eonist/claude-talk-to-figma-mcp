@@ -21,7 +21,7 @@
  * Plugin state object for server port and auto-reconnect settings.
  * @type {{ serverPort: number, autoReconnect: boolean }}
  */
-export const state = {
+export const pluginCoreState = {
   serverPort: 3055,
   autoReconnect: true,
 };
@@ -96,10 +96,10 @@ export async function initializePlugin() {
     const savedSettings = await figma.clientStorage.getAsync("settings");
     if (savedSettings) {
       if (savedSettings.serverPort) {
-        state.serverPort = savedSettings.serverPort;
+        pluginCoreState.serverPort = savedSettings.serverPort;
       }
       if (savedSettings.autoReconnect !== undefined) {
-        state.autoReconnect = savedSettings.autoReconnect;
+        pluginCoreState.autoReconnect = savedSettings.autoReconnect;
       }
     }
   } catch (error) {
@@ -109,8 +109,8 @@ export async function initializePlugin() {
   figma.ui.postMessage({
     type: "init-settings",
     settings: {
-      serverPort: state.serverPort,
-      autoReconnect: state.autoReconnect,
+      serverPort: pluginCoreState.serverPort,
+      autoReconnect: pluginCoreState.autoReconnect,
     },
   });
 }
@@ -133,15 +133,15 @@ export function updateSettings(settings) {
     ) {
       throw new Error('Invalid server port. Must be a number between 1 and 65535');
     }
-    state.serverPort = settings.serverPort;
+    pluginCoreState.serverPort = settings.serverPort;
   }
   if (settings.autoReconnect !== undefined) {
-    state.autoReconnect = !!settings.autoReconnect;
+    pluginCoreState.autoReconnect = !!settings.autoReconnect;
   }
   figma.clientStorage
     .setAsync("settings", {
-      serverPort: state.serverPort,
-      autoReconnect: state.autoReconnect,
+      serverPort: pluginCoreState.serverPort,
+      autoReconnect: pluginCoreState.autoReconnect,
     })
     .catch(error => {
       console.error('Failed to persist settings:', error);
