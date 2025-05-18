@@ -137,6 +137,7 @@ async function buildPlugin() {
       'document/document-selection.js',
       'document/document-node.js',
       'document/document-css.js',
+      'document/document-page.js',
       'document.js',
       'shapes.js',
       'shape/shapes-rectangle.js',
