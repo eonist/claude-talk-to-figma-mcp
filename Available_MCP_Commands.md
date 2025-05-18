@@ -167,6 +167,72 @@ _Batch Mixed:_
 
 ---
 
+## Guide Commands
+
+### set_guide
+Add or delete one or more guides on the current Figma page.
+
+**Parameters:**
+- guide (object, optional): Single guide operation
+  - axis ("X"|"Y"): Guide direction (vertical/horizontal)
+  - offset (number): Position in canvas coordinates
+  - delete (boolean, optional): If true, delete the guide at axis/offset
+- guides (array, optional): Batch of guide operations (same shape as above)
+
+**Returns:** Array of result objects for each operation.
+
+**Examples:**
+
+_Add a guide (single):_
+```json
+{ "command": "set_guide", "params": {
+  "guide": { "axis": "X", "offset": 100 }
+} }
+```
+
+_Add guides (batch):_
+```json
+{ "command": "set_guide", "params": {
+  "guides": [
+    { "axis": "X", "offset": 100 },
+    { "axis": "Y", "offset": 200 }
+  ]
+} }
+```
+
+_Delete a guide (single):_
+```json
+{ "command": "set_guide", "params": {
+  "guide": { "axis": "X", "offset": 100, "delete": true }
+} }
+```
+
+_Batch create and delete:_
+```json
+{ "command": "set_guide", "params": {
+  "guides": [
+    { "axis": "X", "offset": 100 },
+    { "axis": "Y", "offset": 200, "delete": true }
+  ]
+} }
+```
+
+---
+
+### get_guide
+Get all guides on the current Figma page.
+
+**Parameters:** none
+
+**Returns:** Array of guides, each with `{ axis, offset }`.
+
+**Example:**
+```json
+{ "command": "get_guide", "params": {} }
+```
+
+---
+
 ## Grid Commands
 
 ### set_grid

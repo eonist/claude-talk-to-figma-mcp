@@ -24,6 +24,7 @@ import { registerAnnotationCommands } from "./figma/annotation-tools.js";
 import { registerStyleTools } from "./figma/modify/styling/style-tools.js";
 import { registerGridCommands } from "./figma/modify/grid-tools.js";
 import { registerUnifiedGridCommands } from "./figma/modify/grid-unified-tools.js";
+import { registerGuideCommands } from "./figma/modify/guide-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.
@@ -60,6 +61,9 @@ export function registerAllCommands(server: McpServer): void {
 
     // Register unified grid commands (set_grid, get_grid)
     registerUnifiedGridCommands(server, figmaClient);
+
+    // Register guide commands (set_guide, get_guide)
+    registerGuideCommands(server, figmaClient);
 
     // Register annotation commands
     registerAnnotationCommands(server, figmaClient);

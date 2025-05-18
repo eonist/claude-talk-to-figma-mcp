@@ -35,6 +35,20 @@ export interface GetGridParams {
   nodeIds?: string[];
 }
 
+/**
+ * Unified guide command parameter types
+ */
+export interface GuideEntry {
+  axis: "X" | "Y";
+  offset: number;
+  delete?: boolean;
+}
+export interface SetGuideParams {
+  guide?: GuideEntry;
+  guides?: GuideEntry[];
+}
+export interface GetGuideParams {} // No params
+
 export type FigmaCommand =
   // Get detailed information about the current Figma document (see commands/figma/read/document-tools.ts)
   | "get_document_info"
@@ -181,7 +195,10 @@ export type FigmaCommand =
   | "join"
   // Grid commands (layoutGrids on frames)
   | "set_grid"
-  | "get_grid";
+  | "get_grid"
+  // Guide commands (canvas guides)
+  | "set_guide"
+  | "get_guide";
 
 /**
  * Map each command to its specific params
