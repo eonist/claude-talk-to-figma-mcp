@@ -44,6 +44,8 @@
 - [set_text_content](#set_text_content): Set text content of an existing node
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
+- [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
+- [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**
 - [create_components_from_nodes](#create_components_from_nodes): Convert nodes to components
@@ -63,10 +65,6 @@
 - [set_style](#set_style): Set both fill and stroke
 - [create_gradient_style](#create_gradient_style): Create one or more gradient styles
 - [set_gradient](#set_gradient): Set gradient(s) directly or by style variable
- 
-**Text Styling:**
-- [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
-- [load_font_async](#load_font_async): Load a font asynchronously
 
 **Effects and Layout:**
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
