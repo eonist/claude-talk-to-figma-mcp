@@ -122,8 +122,6 @@ export type FigmaCommand =
   | "create_frame"
   // Create a new text element (see commands/figma/create/text-creation/text-tools.ts)
   | "create_text"
-  // Create a bounded text box (see commands/figma/create/text-creation/text-tools.ts)
-  | "create_bounded_text"
   // Create a new ellipse shape node (see commands/figma/create/shape-creation/ellipses.ts)
   | "create_ellipse"
   // Create a new polygon shape node (see commands/figma/create/shape-creation/polygons.ts)
@@ -200,8 +198,6 @@ export type FigmaCommand =
   | "group_or_ungroup_nodes"
   // Flatten a node (see commands/figma/modify/layer-management/boolean-tools.ts)
   | "flatten_node"
-  // Flatten a selection of nodes (see commands/figma/modify/layer-management/boolean-tools.ts)
-  | "flatten_selection"
   // Flatten multiple nodes (see commands/figma/modify/layer-management/flatten-nodes-tools.ts)
   | "flatten_nodes"
   // Insert a child node (see commands/figma/modify/layer-management/index.ts)

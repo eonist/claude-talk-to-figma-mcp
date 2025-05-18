@@ -44,8 +44,6 @@
 - [create_vector](#create_vector): Create one or more vectors
 
 **Text:**
-- [create_text](#create_text): Create one or more text elements
-- [create_bounded_text](#create_bounded_text): Create one or more bounded text boxes
 - [set_text_content](#set_text_content): Set text content of an existing node
 - [set_multiple_text_contents](#set_multiple_text_contents): Set multiple text contents
 
@@ -82,7 +80,6 @@
 **Effects and Layout:**
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
 - [set_effect](#set_effect): Set effect(s) directly or by style variable
-- [set_effects](#set_effects): Set visual effects
 - [set_effect_style_id](#set_effect_style_id): Apply an effect style
 - [set_auto_layout](#set_auto_layout): Configure auto layout
 - [set_auto_layout_resizing](#set_auto_layout_resizing): Set hug or fill sizing mode
@@ -115,7 +112,7 @@
 
 ### Misc
 - [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
-- [ai_rename_layers](#ai_rename_layers): AI-powered renaming
+- [ai_rename_layers](#ai_rename_layers): AI-powered renaming 
 - [export_node_as_image](#export_node_as_image): Export a node as an image
 - [generate_html](#generate_html): Generate HTML structure from Figma nodes
 - [set_variant](#set_variant): Create, add, rename, delete, organize, or batch create variants/properties in a component set
