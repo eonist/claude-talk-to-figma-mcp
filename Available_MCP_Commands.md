@@ -42,6 +42,7 @@
 - [create_line](#create_line): Create one or more lines
 - [create_ellipse](#create_ellipse): Create one or more ellipses
 - [create_polygon](#create_polygon): Create one or more polygons
+- [create_star](#create_star): Create one or more star shapes
 - [create_vector](#create_vector): Create one or more vectors
 
 **Text:**
@@ -92,6 +93,7 @@
 - [set_paragraph_spacing](#set_paragraph_spacing): Set paragraph spacing
 - [set_text_case](#set_text_case): Set text case
 - [set_text_decoration](#set_text_decoration): Set text decoration
+- [set_bulk_font](#set_bulk_font): Set font for multiple nodes in bulk
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Effects and Layout:**
@@ -105,6 +107,8 @@
 
 **Positioning and Sizing:**
 - [move_nodes](#move_nodes): Move one or more nodes (single or batch)
+- [reorder_node](#reorder_node): Reorder a node in its parent's children array
+- [reorder_nodes](#reorder_nodes): Batch reorder multiple nodes
 - [resize_node](#resize_node): Resize a node (single or batch)
 - [flatten_node](#flatten_node): Flatten a single node (or batch)
 - [flatten_selection](#flatten_selection): Flatten a selection of nodes
@@ -114,6 +118,7 @@
 
 **Node Management:**
 - [group_or_ungroup_nodes](#group_or_ungroup_nodes): Group or ungroup nodes
+- [convert_rectangle_to_frame](#convert_rectangle_to_frame): Convert a rectangle to a frame
 - [delete_node](#delete_node): Delete one or more nodes
 - [clone_node](#clone_node): Clone a node (single or batch)
 - [insert_child](#insert_child): Insert a child node into a parent (single or batch)
@@ -121,6 +126,7 @@
 - [set_node_visible](#set_node_visible): Show or hide nodes
 
 **Component/Instance Management:**
+- [detach_instance](#detach_instance): Detach a single component instance from its master
 - [detach_instances](#detach_instances): Detach one or more component instances
 
 **Naming:**
@@ -133,6 +139,29 @@
 - [generate_html](#generate_html): Generate HTML structure from Figma nodes
 
 ---
+
+### Grids, Guides, and Constraints
+
+- [set_grid](#set_grid): Create, update, or delete one or more layout grids on nodes
+- [get_grid](#get_grid): Get all layout grids for one or more nodes
+- [set_guide](#set_guide): Add or delete one or more guides on the current page
+- [get_guide](#get_guide): Get all guides on the current page
+- [set_constraints](#set_constraints): Set constraints for one or more nodes
+- [get_constraints](#get_constraints): Get constraints for one or more nodes
+
+### Variants
+
+- [set_variant](#set_variant): Create, add, rename, delete, organize, or batch create variants/properties in a component set
+- [get_variant](#get_variant): Get info about variants/properties for one or more component sets
+
+### Event Subscription
+
+- [subscribe_event](#subscribe_event): Subscribe to a Figma event (e.g., selection_change, document_change)
+- [unsubscribe_event](#unsubscribe_event): Unsubscribe from a previously subscribed event
+
+### Other
+
+- [join](#join): Join a specific communication channel (note: previously listed as join_channel)
 
 ## set_selection
 Set the current selection in Figma to the specified node(s) by ID.
@@ -789,6 +818,105 @@ _Batch:_
 Reorder one or more nodes in their parents' children arrays (z-order/layer order).
 
 **Parameters:**
+
+---
+
+## create_star
+Create one or more star shapes in Figma.
+
+**Parameters:**
+- x, y, width, height (number): Position and size of the star.
+- name (string, optional): Name for the star node.
+- parentId (string, optional): Parent node ID.
+- points (number, optional): Number of points for the star (default: 5).
+- star (object) or stars (array of objects): Single or batch.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_star", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star" } }
+```
+_Batch:_
+```json
+{ "command": "create_star", "params": { "stars": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star1" },
+  { "x": 200, "y": 100, "width": 40, "height": 40, "points": 6, "name": "Star2" }
+] } }
+```
+
+---
+
+## set_bulk_font
+Set the font for multiple nodes in bulk.
+
+**Parameters:**
+- fonts (array): Array of font configuration objects, each with:
+  - nodeId (string): Node to update.
+  - family (string): Font family.
+  - style (string, optional): Font style.
+
+**Example:**
+```json
+{ "command": "set_bulk_font", "params": { "fonts": [
+  { "nodeId": "123:456", "family": "Inter", "style": "Bold" },
+  { "nodeId": "789:101", "family": "Roboto" }
+] } }
+```
+
+---
+
+## detach_instance
+Detach a single component instance from its master.
+
+**Parameters:**
+- instanceId (string): The unique Figma instance ID to detach.
+
+**Example:**
+```json
+{ "command": "detach_instance", "params": { "instanceId": "123:456" } }
+```
+
+---
+
+## convert_rectangle_to_frame
+Convert a rectangle node to a frame node.
+
+**Parameters:**
+- nodeId (string): The rectangle node ID to convert.
+
+**Example:**
+```json
+{ "command": "convert_rectangle_to_frame", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+## join
+Join a specific communication channel.
+
+**Parameters:**
+- channel (string): The name of the channel to join.
+
+**Example:**
+```json
+{ "command": "join", "params": { "channel": "figma" } }
+```
+
+---
+
+## reorder_node
+Reorder a node in its parent's children array (z-order/layer order).
+
+**Parameters:**
+- nodeId (string): Node to reorder.
+- direction (string, optional): "up", "down", "top", "bottom".
+- index (number, optional): Target index in the parent's children array.
+
+**Example:**
+```json
+{ "command": "reorder_node", "params": { "nodeId": "123:456", "direction": "up" } }
+```
+
 - reorder (object, optional): Single reorder config: { nodeId (string), direction (string, optional), index (number, optional) }
 - reorders (array, optional): Array of reorder configs (same shape as above)
 - options (object, optional): { skip_errors (boolean, optional) }
