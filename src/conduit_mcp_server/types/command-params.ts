@@ -41,8 +41,20 @@ export interface GetNodeStylesParams {
   nodeIds?: string[];
 }
 
+/**
+ * Parameters for get_svg_vector (single or batch).
+ * - nodeId: (string, optional) Single vector node to extract SVG from.
+ * - nodeIds: (array of string, optional) Array of vector node IDs for batch.
+ * At least one of nodeId or nodeIds is required.
+ */
+export interface GetSvgVectorParams {
+  nodeId?: string;
+  nodeIds?: string[];
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
+  get_svg_vector: GetSvgVectorParams;
   // ...other command mappings
 }

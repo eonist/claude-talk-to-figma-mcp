@@ -309,6 +309,7 @@ export function initializeCommands() {
 
   // Node style inspection
   registerCommand('get_node_styles', getNodeStyles);
+  registerCommand('get_svg_vector', getSvgVector);
 
   // Batch flatten nodes operation
   registerCommand('flatten_nodes', layoutOperations.flatten_nodes);

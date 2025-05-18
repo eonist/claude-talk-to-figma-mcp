@@ -56,6 +56,55 @@ export async function getNodeStyles(params) {
 }
 
 /**
+ * Unified handler for get_svg_vector (single or batch).
+ * Returns SVG markup for one or more vector nodes.
+ *
+ * @async
+ * @function
+ * @param {Object} params - { nodeId } or { nodeIds }
+ * @returns {Promise<Array<{ nodeId: string, svg: string }>>}
+ */
+export async function getSvgVector(params) {
+  let ids = [];
+  if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    ids = params.nodeIds;
+  } else if (params.nodeId) {
+    ids = [params.nodeId];
+  } else {
+    throw new Error("getSvgVector: Provide either nodeId or nodeIds.");
+  }
+  const results = [];
+  for (const nodeId of ids) {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      results.push({ nodeId, error: "Node not found" });
+      continue;
+    }
+    // Check if node is a vector or compatible type
+    if (
+      node.type !== "VECTOR" &&
+      node.type !== "LINE" &&
+      node.type !== "ELLIPSE" &&
+      node.type !== "POLYGON" &&
+      node.type !== "STAR" &&
+      node.type !== "RECTANGLE"
+    ) {
+      results.push({ nodeId, error: `Node type ${node.type} is not a vector-compatible type` });
+      continue;
+    }
+    // Export as SVG using Figma API
+    try {
+      const svgBytes = await node.exportAsync({ format: "SVG" });
+      const svg = new TextDecoder("utf-8").decode(svgBytes);
+      results.push({ nodeId, svg });
+    } catch (error) {
+      results.push({ nodeId, error: error instanceof Error ? error.message : String(error) });
+    }
+  }
+  return results;
+}
+
+/**
  * Deletes a node from the document.
  *
  * @async
