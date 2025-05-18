@@ -5,6 +5,7 @@ import * as textOperations from '../text.js';
 import * as styleOperations from '../styles.js';
 import * as componentOperations from '../components.js';
 import * as layoutOperations from '../layout.js';
+import { setAutoLayoutUnified } from '../layout/layout-auto.js';
 import { createGrid, updateGrid, removeGrid } from '../layout/layout-grid.js';
 import { setGrid, getGrid } from '../layout/layout-grid-unified.js';
 import { setGuide, getGuide } from '../layout/layout-guide.js';
@@ -296,7 +297,7 @@ export function initializeCommands() {
   registerCommand('group_or_ungroup_nodes', layoutOperations.groupOrUngroupNodes);
 
   // Auto Layout operations
-  registerCommand('set_auto_layout', layoutOperations.setAutoLayout);
+  registerCommand('set_auto_layout', setAutoLayoutUnified);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
 
   // Insert child node operation

@@ -88,6 +88,79 @@ export async function setAutoLayout(params) {
  * @returns {Promise<{id: string, primaryAxisSizingMode: string, counterAxisSizingMode: string}>} Updated sizing modes.
  * @throws {Error} If parameters are missing/invalid, or node does not support auto layout.
  */
+export async function setAutoLayoutUnified(params) {
+  const { layout, layouts, options } = params || {};
+  const configs = [];
+  if (layout) configs.push(layout);
+  if (layouts && Array.isArray(layouts)) configs.push(...layouts);
+
+  if (configs.length === 0) {
+    throw new Error("At least one of layout or layouts is required.");
+  }
+
+  const results = [];
+  for (const config of configs) {
+    const { nodeId, mode, primaryAxisSizing, counterAxisSizing, itemSpacing, padding, alignItems } = config;
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node) {
+        if (options?.skipErrors) {
+          results.push({ nodeId, success: false, error: "Node not found" });
+          continue;
+        } else {
+          throw new Error("Node not found");
+        }
+      }
+      if (!("layoutMode" in node)) {
+        if (options?.skipErrors) {
+          results.push({ nodeId, success: false, error: `Node type ${node.type} doesn't support auto-layout` });
+          continue;
+        } else {
+          throw new Error(`Node type ${node.type} doesn't support auto-layout`);
+        }
+      }
+
+      // Maintain original position if requested
+      const originalPosition = { x: node.x, y: node.y };
+
+      // Set layout mode first
+      node.layoutMode = mode;
+
+      // Set sizing modes
+      if (primaryAxisSizing) node.primaryAxisSizingMode = primaryAxisSizing;
+      if (counterAxisSizing) node.counterAxisSizingMode = counterAxisSizing;
+
+      // Set spacing and padding
+      if (typeof itemSpacing === "number") node.itemSpacing = itemSpacing;
+      if (padding) {
+        if (typeof padding.top === "number") node.paddingTop = padding.top;
+        if (typeof padding.right === "number") node.paddingRight = padding.right;
+        if (typeof padding.bottom === "number") node.paddingBottom = padding.bottom;
+        if (typeof padding.left === "number") node.paddingLeft = padding.left;
+      }
+
+      // Set alignment
+      if (alignItems) node.primaryAxisAlignItems = alignItems;
+
+      // Maintain original position if requested
+      if (options?.maintainPosition) {
+        node.x = originalPosition.x;
+        node.y = originalPosition.y;
+      }
+
+      results.push({ nodeId, success: true });
+    } catch (error) {
+      if (options?.skipErrors) {
+        results.push({ nodeId: config.nodeId, success: false, error: error && error.message ? error.message : String(error) });
+        continue;
+      } else {
+        throw error;
+      }
+    }
+  }
+  return results;
+}
+
 export async function setAutoLayoutResizing(params) {
   const { nodeId, axis, mode } = params || {};
   if (!nodeId) throw new Error("Missing nodeId parameter");

@@ -72,7 +72,7 @@
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
 - [set_effect](#set_effect): Set effect(s) directly or by style variable
 - [set_effect_style_id](#set_effect_style_id): Apply an effect style
-- [set_auto_layout](#set_auto_layout): Configure auto layout
+- [set_auto_layout](#set_auto_layout): Configure auto layout (single or batch)
 - [set_auto_layout_resizing](#set_auto_layout_resizing): Set hug or fill sizing mode
 - [set_corner_radius](#set_corner_radius): Set corner radius
 
@@ -1379,16 +1379,43 @@ Apply an effect style to a node in Figma.
 ---
 
 ## set_auto_layout
-Configure auto layout properties for a node in Figma.
+Configure auto layout properties for one or more nodes (single or batch).
 
 **Parameters:**
-- nodeId (string): The unique Figma node ID to update.
-- layoutMode (string): "HORIZONTAL", "VERTICAL", or "NONE".
+- layout (object, optional): Single auto-layout config.
+- layouts (array of objects, optional): Batch of auto-layout configs.
+  - Each config:
+    - nodeId (string): Node to update
+    - mode ("HORIZONTAL" | "VERTICAL" | "NONE"): Layout mode
+    - primaryAxisSizing ("FIXED" | "AUTO", optional)
+    - counterAxisSizing ("FIXED" | "AUTO", optional)
+    - itemSpacing (number, optional)
+    - padding (object, optional): { top, right, bottom, left }
+    - alignItems ("MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN", optional)
+- options (object, optional): { skipErrors?: boolean, maintainPosition?: boolean }
+- At least one of layout or layouts is required.
 
-**Example:**
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
 ```json
-{ "command": "set_auto_layout", "params": { "nodeId": "123:456", "layoutMode": "VERTICAL" } }
+{ "command": "set_auto_layout", "params": { "layout": { "nodeId": "1:23", "mode": "VERTICAL", "itemSpacing": 20 } } }
 ```
+_Batch:_
+```json
+{ "command": "set_auto_layout", "params": { "layouts": [
+  { "nodeId": "1:23", "mode": "VERTICAL", "itemSpacing": 20 },
+  { "nodeId": "4:56", "mode": "HORIZONTAL", "counterAxisSizing": "FIXED", "itemSpacing": 10 }
+], "options": { "maintainPosition": true } } }
+```
+
+**Limitations & Notes:**
+- Only nodes supporting auto layout (FRAME, COMPONENT, INSTANCE, etc.) will be updated; others return an error.
+- All Figma auto-layout properties are supported.
+- Optionally skips errors or maintains node position after layout change.
 
 ---
 

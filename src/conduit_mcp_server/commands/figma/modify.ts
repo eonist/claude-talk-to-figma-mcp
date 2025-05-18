@@ -8,6 +8,7 @@ import { registerLayerManagementCommands } from "./modify/layer-management/index
 import { registerPropertyManipulationCommands } from "./modify/property-manipulation/index.js";
 import { registerRenameCommands } from "./modify/rename.js";
 import { registerSelectionModifyTools } from "./modify/selection-tools.js";
+import { registerLayoutAutoTools } from "./modify/layout-auto-tools.js";
 
 /**
  * Registers all modify commands by delegating to category modules.
@@ -23,4 +24,5 @@ export function registerModifyCommands(server: McpServer, figmaClient: FigmaClie
   registerPropertyManipulationCommands(server, figmaClient);
   registerRenameCommands(server, figmaClient);
   registerSelectionModifyTools(server);
+  registerLayoutAutoTools(server, figmaClient);
 }

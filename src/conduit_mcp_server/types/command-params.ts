@@ -76,6 +76,48 @@ export interface GetTextStyleParams {
   nodeIds?: string[];
 }
 
+/**
+ * Parameters for set_auto_layout (single or batch).
+ * - layout: (object, optional) Single auto-layout config.
+ * - layouts: (array of objects, optional) Batch of auto-layout configs.
+ * - options: (object, optional) { skipErrors?: boolean, maintainPosition?: boolean }
+ * At least one of layout or layouts is required.
+ */
+export interface SetAutoLayoutParams {
+  layout?: {
+    nodeId: string;
+    mode: "HORIZONTAL" | "VERTICAL" | "NONE";
+    primaryAxisSizing?: "FIXED" | "AUTO";
+    counterAxisSizing?: "FIXED" | "AUTO";
+    itemSpacing?: number;
+    padding?: {
+      top?: number;
+      right?: number;
+      bottom?: number;
+      left?: number;
+    };
+    alignItems?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
+  };
+  layouts?: Array<{
+    nodeId: string;
+    mode: "HORIZONTAL" | "VERTICAL" | "NONE";
+    primaryAxisSizing?: "FIXED" | "AUTO";
+    counterAxisSizing?: "FIXED" | "AUTO";
+    itemSpacing?: number;
+    padding?: {
+      top?: number;
+      right?: number;
+      bottom?: number;
+      left?: number;
+    };
+    alignItems?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
+  }>;
+  options?: {
+    skipErrors?: boolean;
+    maintainPosition?: boolean;
+  };
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
