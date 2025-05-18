@@ -169,80 +169,84 @@ _Batch Mixed:_
 
 ## Grid Commands
 
-### create_grid
-Create a layout grid (GRID, COLUMNS, or ROWS) on a Figma frame.
+### set_grid
+Create, update, or delete one or more layout grids on Figma nodes (FRAME, COMPONENT, INSTANCE).
 
 **Parameters:**
-- frameId (string): The Figma frame node ID.
-- gridType (string): "GRID", "COLUMNS", or "ROWS".
-- gridOptions (object): Grid properties (visible, color, alignment, gutterSize, count, sectionSize, offset).
+- entry (object, optional): Single grid operation
+  - nodeId (string): Node to modify
+  - gridIndex (number, optional): Index of grid to update/delete (omit for create)
+  - properties (object, optional): Grid properties (for create/update)
+  - delete (boolean, optional): If true, delete the grid at gridIndex
+- entries (array, optional): Batch of grid operations (same shape as above)
 
-**Example:**
+**Returns:** Array of result objects for each operation.
+
+**Examples:**
+
+_Create a grid:_
 ```json
-{
-  "command": "create_grid",
-  "params": {
-    "frameId": "123:456",
-    "gridType": "COLUMNS",
-    "gridOptions": {
-      "count": 12,
-      "gutterSize": 20,
-      "alignment": "STRETCH",
-      "color": { "r": 0.2, "g": 0.2, "b": 0.8, "a": 0.1 }
-    }
+{ "command": "set_grid", "params": {
+  "entry": {
+    "nodeId": "123:456",
+    "properties": { "pattern": "COLUMNS", "count": 12, "gutterSize": 16 }
   }
-}
+} }
 ```
 
----
-
-### update_grid
-Update an existing layout grid on a Figma frame.
-
-**Parameters:**
-- frameId (string): The Figma frame node ID.
-- gridIndex (number): Index of the grid in frame.layoutGrids to update.
-- gridOptions (object): Properties to update.
-
-**Example:**
+_Update a grid:_
 ```json
-{
-  "command": "update_grid",
-  "params": {
-    "frameId": "123:456",
+{ "command": "set_grid", "params": {
+  "entry": {
+    "nodeId": "123:456",
     "gridIndex": 0,
-    "gridOptions": { "visible": false }
+    "properties": { "visible": false }
   }
-}
+} }
+```
+
+_Delete a grid:_
+```json
+{ "command": "set_grid", "params": {
+  "entry": {
+    "nodeId": "123:456",
+    "gridIndex": 0,
+    "delete": true
+  }
+} }
+```
+
+_Batch create:_
+```json
+{ "command": "set_grid", "params": {
+  "entries": [
+    { "nodeId": "123:456", "properties": { "pattern": "GRID", "sectionSize": 8 } },
+    { "nodeId": "789:101", "properties": { "pattern": "COLUMNS", "count": 6 } }
+  ]
+} }
 ```
 
 ---
 
-### remove_grid
-Remove a layout grid from a Figma frame.
+### get_grid
+Get all layout grids for one or more Figma nodes (FRAME, COMPONENT, INSTANCE).
 
 **Parameters:**
-- frameId (string): The Figma frame node ID.
-- gridIndex (number, optional): Index of the grid to remove. If omitted, removes all grids.
+- nodeId (string, optional): Single node ID
+- nodeIds (array of string, optional): Multiple node IDs
 
-**Example (remove one):**
+**Returns:** For single: `{ nodeId, grids: [...] }`, for batch: `Array<{ nodeId, grids: [...] }>`
+
+**Examples:**
+
+_Single node:_
 ```json
-{
-  "command": "remove_grid",
-  "params": {
-    "frameId": "123:456",
-    "gridIndex": 0
-  }
-}
+{ "command": "get_grid", "params": { "nodeId": "123:456" } }
 ```
-**Example (remove all):**
+
+_Batch:_
 ```json
-{
-  "command": "remove_grid",
-  "params": {
-    "frameId": "123:456"
-  }
-}
+{ "command": "get_grid", "params": { "nodeIds": ["123:456", "789:101"] } }
 ```
 
 ---

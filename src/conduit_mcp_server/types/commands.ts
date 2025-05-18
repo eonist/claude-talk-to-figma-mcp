@@ -8,29 +8,31 @@
 import { CommandParamsMap } from "./command-params.js";
 
 /**
- * Grid command parameter types
+ * Unified grid command parameter types
  */
-export interface CreateGridCommandParams {
-  frameId: string;
-  gridType: "GRID" | "COLUMNS" | "ROWS";
-  gridOptions: {
-    visible?: boolean;
-    color?: { r: number; g: number; b: number; a?: number };
-    alignment?: "MIN" | "MAX" | "STRETCH" | "CENTER";
-    gutterSize?: number;
-    count?: number;
-    sectionSize?: number;
-    offset?: number;
-  };
+export interface GridProperties {
+  pattern: "GRID" | "COLUMNS" | "ROWS";
+  visible?: boolean;
+  color?: { r: number; g: number; b: number; a?: number };
+  alignment?: "MIN" | "MAX" | "STRETCH" | "CENTER";
+  gutterSize?: number;
+  count?: number;
+  sectionSize?: number;
+  offset?: number;
 }
-export interface UpdateGridCommandParams {
-  frameId: string;
-  gridIndex: number;
-  gridOptions: Partial<CreateGridCommandParams["gridOptions"]>;
-}
-export interface RemoveGridCommandParams {
-  frameId: string;
+export interface SetGridEntry {
+  nodeId: string;
   gridIndex?: number;
+  properties?: GridProperties;
+  delete?: boolean;
+}
+export interface SetGridParams {
+  entry?: SetGridEntry;
+  entries?: SetGridEntry[];
+}
+export interface GetGridParams {
+  nodeId?: string;
+  nodeIds?: string[];
 }
 
 export type FigmaCommand =
@@ -178,9 +180,8 @@ export type FigmaCommand =
   // Join a specific channel (see commands/channel.ts)
   | "join"
   // Grid commands (layoutGrids on frames)
-  | "createGrid"
-  | "updateGrid"
-  | "removeGrid";
+  | "set_grid"
+  | "get_grid";
 
 /**
  * Map each command to its specific params

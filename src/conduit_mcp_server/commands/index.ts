@@ -23,6 +23,7 @@ import { registerReorderLayerTools } from "./figma/modify/layer-management/reord
 import { registerAnnotationCommands } from "./figma/annotation-tools.js";
 import { registerStyleTools } from "./figma/modify/styling/style-tools.js";
 import { registerGridCommands } from "./figma/modify/grid-tools.js";
+import { registerUnifiedGridCommands } from "./figma/modify/grid-unified-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.
@@ -56,6 +57,9 @@ export function registerAllCommands(server: McpServer): void {
 
     // Register grid commands (layout grid support)
     registerGridCommands(server, figmaClient);
+
+    // Register unified grid commands (set_grid, get_grid)
+    registerUnifiedGridCommands(server, figmaClient);
 
     // Register annotation commands
     registerAnnotationCommands(server, figmaClient);
