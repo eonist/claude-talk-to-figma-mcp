@@ -231,7 +231,6 @@ export type FigmaCommand =
   // Create an effect style variable (see commands/figma/modify/styling/effect-tools.ts)
   | "create_effect_style_variable"
   // Detach a component instance from its master (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
-  | "detach_instance"
   // Detach multiple component instances from their masters (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
   | "detach_instances"
   // Boolean operations: union, subtract, intersect, exclude (see commands/figma/modify/layer-management/boolean-tools.ts)

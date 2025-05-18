@@ -824,18 +824,6 @@ Set the font for multiple nodes in bulk.
 
 ---
 
-## detach_instance
-Detach a single component instance from its master.
-
-**Parameters:**
-- instanceId (string): The unique Figma instance ID to detach.
-
-**Example:**
-```json
-{ "command": "detach_instance", "params": { "instanceId": "123:456" } }
-```
-
----
 
 ## convert_rectangle_to_frame
 Convert a rectangle node to a frame node.

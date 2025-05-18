@@ -395,17 +395,6 @@ export class FigmaClient {
 
   // Batch SVG insertion
   /**
-   * Detaches a Figma component instance from its master
-   * 
-   * @param {object} params - Detach parameters
-   * @param {string} params.instanceId - The ID of the instance to detach
-   * @returns {Promise<{id: string; name: string}>} The detached node info
-   */
-  async detachInstance(params: { instanceId: string }): Promise<{ id: string; name: string }> {
-    const idString = ensureNodeIdIsString(params.instanceId);
-    return this.executeCommand("detach_instance", { instanceId: idString });
-  }
-  /**
    * Sets the fill color of a node
    * 
    * @param {object} params - Fill color parameters
