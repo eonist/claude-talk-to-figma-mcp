@@ -322,6 +322,32 @@ export interface CreateComponentsFromNodesParams extends BaseCommandParams {
   skip_errors?: boolean;
 }
 
+/** Annotation input for set_annotation */
+export interface AnnotationInput {
+  label?: string;
+  labelMarkdown?: string;
+  // Add more fields as Figma API supports
+}
+
+/** Entry for set_annotation (single node) */
+export interface SetAnnotationEntry {
+  nodeId: string;
+  annotation?: AnnotationInput;
+  delete?: boolean;
+}
+
+/** Parameters for set_annotation (unified single/batch) */
+export interface SetAnnotationParams extends BaseCommandParams {
+  entry?: SetAnnotationEntry;
+  entries?: SetAnnotationEntry[];
+}
+
+/** Parameters for get_annotation (unified single/batch) */
+export interface GetAnnotationParams extends BaseCommandParams {
+  nodeId?: string;
+  nodeIds?: string[];
+}
+
 export interface CommandParamsMap {
   // Read commands
   get_document_info: BaseCommandParams;
@@ -371,6 +397,10 @@ export interface CommandParamsMap {
   flatten_nodes: FlattenNodesParams;
   clone_node: CloneNodeParams;
   clone_nodes: CloneNodesParams;
+
+  // Annotation commands
+  get_annotation: GetAnnotationParams;
+  set_annotation: SetAnnotationParams;
 
   // Allow for any other commands with base params
   [command: string]: BaseCommandParams;

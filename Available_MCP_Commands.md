@@ -265,6 +265,61 @@ Get detailed information about multiple nodes.
 
 ---
 
+## get_annotation
+Get annotation(s) for one or more Figma nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID for single node.
+- nodeIds (array of string, optional): Array of node IDs for batch.
+
+**Returns:**
+- For single: `{ nodeId, annotations }`
+- For batch: `Array<{ nodeId, annotations }>`
+
+**Examples:**
+_Single:_
+```json
+{ "command": "get_annotation", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "get_annotation", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## set_annotation
+Set, update, or delete annotation(s) for one or more Figma nodes.
+
+**Parameters:**
+- entry (object, optional): `{ nodeId, annotation, delete }` (for single)
+- entries (array of objects, optional): Array of `{ nodeId, annotation, delete }` (for batch)
+  - annotation (object, optional): `{ label, labelMarkdown }`
+  - delete (boolean, optional): If true, deletes annotation(s) for node(s).
+
+**Returns:**
+- For single: `{ nodeId, updated/deleted }`
+- For batch: `Array<{ nodeId, updated/deleted }>`
+
+**Examples:**
+_Single (set/update):_
+```json
+{ "command": "set_annotation", "params": { "entry": { "nodeId": "123:456", "annotation": { "labelMarkdown": "## Note" } } } }
+```
+_Single (delete):_
+```json
+{ "command": "set_annotation", "params": { "entry": { "nodeId": "123:456", "delete": true } } }
+```
+_Batch:_
+```json
+{ "command": "set_annotation", "params": { "entries": [
+  { "nodeId": "123:456", "annotation": { "label": "A" } },
+  { "nodeId": "789:101", "annotation": { "labelMarkdown": "**B**" }, "delete": true }
+] } }
+```
+
+---
+
 ## get_styles
 Get all styles from the current Figma document.
 

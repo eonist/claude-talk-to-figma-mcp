@@ -146,6 +146,9 @@ export type FigmaCommand =
   | "convert_rectangle_to_frame"
   // Generate HTML structure from Figma nodes (see commands/html-tools.ts)
   | "generate_html"
+  // Annotation commands (see commands/figma/annotation-tools.ts)
+  | "get_annotation"
+  | "set_annotation"
   // Join a specific channel (see commands/channel.ts)
   | "join";
 
