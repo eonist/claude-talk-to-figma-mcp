@@ -57,8 +57,22 @@ export function initializeCommands() {
   registerCommand('insert_image', imageOperations.insertImage);
   registerCommand('insert_svg_vector', insertSvgVector);
   // Shape Operations (Unified)
-  registerCommand('create_rectangle', shapeOperations.createRectangle);
-  registerCommand('create_frame', shapeOperations.createFrame);
+  registerCommand('create_rectangle', (params) => {
+    // Accept both { rectangle }, { rectangles }, or flat { x, y, ... }
+    if (params && (params.rectangle || params.rectangles)) {
+      return shapeOperations.createRectangle(params);
+    } else {
+      return shapeOperations.createRectangle({ rectangle: params });
+    }
+  });
+  registerCommand('create_frame', (params) => {
+    // Accept both { frame }, { frames }, or flat { x, y, ... }
+    if (params && (params.frame || params.frames)) {
+      return shapeOperations.createFrame(params);
+    } else {
+      return shapeOperations.createFrame({ frame: params });
+    }
+  });
   registerCommand('create_ellipse', shapeOperations.createEllipse);
   registerCommand('create_polygon', shapeOperations.createPolygon);
   registerCommand('create_star', shapeOperations.createStar);
