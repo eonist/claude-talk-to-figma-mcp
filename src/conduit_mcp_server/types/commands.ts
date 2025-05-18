@@ -7,6 +7,32 @@
  */
 import { CommandParamsMap } from "./command-params.js";
 
+/**
+ * Grid command parameter types
+ */
+export interface CreateGridCommandParams {
+  frameId: string;
+  gridType: "GRID" | "COLUMNS" | "ROWS";
+  gridOptions: {
+    visible?: boolean;
+    color?: { r: number; g: number; b: number; a?: number };
+    alignment?: "MIN" | "MAX" | "STRETCH" | "CENTER";
+    gutterSize?: number;
+    count?: number;
+    sectionSize?: number;
+    offset?: number;
+  };
+}
+export interface UpdateGridCommandParams {
+  frameId: string;
+  gridIndex: number;
+  gridOptions: Partial<CreateGridCommandParams["gridOptions"]>;
+}
+export interface RemoveGridCommandParams {
+  frameId: string;
+  gridIndex?: number;
+}
+
 export type FigmaCommand =
   // Get detailed information about the current Figma document (see commands/figma/read/document-tools.ts)
   | "get_document_info"
@@ -150,7 +176,11 @@ export type FigmaCommand =
   | "get_annotation"
   | "set_annotation"
   // Join a specific channel (see commands/channel.ts)
-  | "join";
+  | "join"
+  // Grid commands (layoutGrids on frames)
+  | "createGrid"
+  | "updateGrid"
+  | "removeGrid";
 
 /**
  * Map each command to its specific params

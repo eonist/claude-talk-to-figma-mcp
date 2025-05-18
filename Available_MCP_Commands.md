@@ -165,6 +165,88 @@ _Batch Mixed:_
 
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
+---
+
+## Grid Commands
+
+### create_grid
+Create a layout grid (GRID, COLUMNS, or ROWS) on a Figma frame.
+
+**Parameters:**
+- frameId (string): The Figma frame node ID.
+- gridType (string): "GRID", "COLUMNS", or "ROWS".
+- gridOptions (object): Grid properties (visible, color, alignment, gutterSize, count, sectionSize, offset).
+
+**Example:**
+```json
+{
+  "command": "create_grid",
+  "params": {
+    "frameId": "123:456",
+    "gridType": "COLUMNS",
+    "gridOptions": {
+      "count": 12,
+      "gutterSize": 20,
+      "alignment": "STRETCH",
+      "color": { "r": 0.2, "g": 0.2, "b": 0.8, "a": 0.1 }
+    }
+  }
+}
+```
+
+---
+
+### update_grid
+Update an existing layout grid on a Figma frame.
+
+**Parameters:**
+- frameId (string): The Figma frame node ID.
+- gridIndex (number): Index of the grid in frame.layoutGrids to update.
+- gridOptions (object): Properties to update.
+
+**Example:**
+```json
+{
+  "command": "update_grid",
+  "params": {
+    "frameId": "123:456",
+    "gridIndex": 0,
+    "gridOptions": { "visible": false }
+  }
+}
+```
+
+---
+
+### remove_grid
+Remove a layout grid from a Figma frame.
+
+**Parameters:**
+- frameId (string): The Figma frame node ID.
+- gridIndex (number, optional): Index of the grid to remove. If omitted, removes all grids.
+
+**Example (remove one):**
+```json
+{
+  "command": "remove_grid",
+  "params": {
+    "frameId": "123:456",
+    "gridIndex": 0
+  }
+}
+```
+**Example (remove all):**
+```json
+{
+  "command": "remove_grid",
+  "params": {
+    "frameId": "123:456"
+  }
+}
+```
+
+---
+
 **Selection:**
 - [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
 

@@ -5,6 +5,7 @@ import * as textOperations from '../text.js';
 import * as styleOperations from '../styles.js';
 import * as componentOperations from '../components.js';
 import * as layoutOperations from '../layout.js';
+import { createGrid, updateGrid, removeGrid } from '../layout/layout-grid.js';
 import * as renameOperations from '../rename.js';
 import { setNodeLocked, setNodeVisible, reorderNode, reorderNodes } from '../node/node-modify.js';
 import HTMLGenerator from '../html-generator.js';
@@ -57,6 +58,11 @@ export function initializeCommands() {
   registerCommand('create_vector', shapeOperations.createVector);
   registerCommand('create_vectors', shapeOperations.createVectors);
   registerCommand('create_line', shapeOperations.createLine);
+
+  // Grid commands (layoutGrids on frames)
+  registerCommand('createGrid', createGrid);
+  registerCommand('updateGrid', updateGrid);
+  registerCommand('removeGrid', removeGrid);
 
   // Resize operations
   registerCommand('resize_node', shapeOperations.resizeNode);
