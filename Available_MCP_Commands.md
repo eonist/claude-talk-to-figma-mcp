@@ -21,8 +21,10 @@
 ### Document and Information
 - [get_document_info](#get_document_info): Get detailed information about the current Figma document
 - [get_selection](#get_selection): Get information about the current selection in Figma
+- [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
 - [get_node_info](#get_node_info): Get detailed information about one or more nodes (single or batch)
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
+- [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 - [get_styles](#get_styles): Get all styles from the document
 - [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
@@ -30,8 +32,8 @@
 - [get_css_async](#get_css_async): Get CSS properties from a node
 - [get_pages](#get_pages): Get all pages in the current Figma document
 - [set_current_page](#set_current_page): Set the current active page in Figma
-
-### Creation
+- [create_page](#create_page): Create a new page
+- [duplicate_page](#duplicate_page): Duplicate a Figma page and all its children as a new page
 
 **Shapes:**
 - [create_rectangle](#create_rectangle): Create one or more rectangles
@@ -57,30 +59,13 @@
 - [insert_image](#insert_image): Insert images from URLs, local files, or base64 data (single or batch)
 - [insert_svg_vector](#insert_svg_vector): Insert SVG vectors
 
-**Pages:**
-- [create_page](#create_page): Create a new page
-- [duplicate_page](#duplicate_page): Duplicate a Figma page and all its children as a new page
-
-### Styling and Modification
-
-- [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
-
-**Selection:**
-- [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
-
-**Basic Styling:**
+**Styling:**
 - [set_fill_color](#set_fill_color): Set fill color
 - [set_stroke_color](#set_stroke_color): Set stroke color
 - [set_style](#set_style): Set both fill and stroke
-
-**Gradients:**
 - [create_gradient_style](#create_gradient_style): Create one or more gradient styles
 - [set_gradient](#set_gradient): Set gradient(s) directly or by style variable
-
-**Effects:**
-- [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
-- [set_effect](#set_effect): Set effect(s) directly or by style variable
-
+ 
 **Text Styling:**
 - [set_font_name](#set_font_name): Set font name and style
 - [set_font_size](#set_font_size): Set font size
@@ -94,23 +79,21 @@
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Effects and Layout:**
+- [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
+- [set_effect](#set_effect): Set effect(s) directly or by style variable
 - [set_effects](#set_effects): Set visual effects
 - [set_effect_style_id](#set_effect_style_id): Apply an effect style
 - [set_auto_layout](#set_auto_layout): Configure auto layout
 - [set_auto_layout_resizing](#set_auto_layout_resizing): Set hug or fill sizing mode
 - [set_corner_radius](#set_corner_radius): Set corner radius
 
-### Transformations and Management
-
-**Positioning and Sizing:**
+**Positioning & Sizing & Boolean Operations:**
 - [move_nodes](#move_nodes): Move one or more nodes (single or batch)
 - [reorder_node](#reorder_node): Reorder a node in its parent's children array
 - [reorder_nodes](#reorder_nodes): Batch reorder multiple nodes
 - [resize_node](#resize_node): Resize a node (single or batch)
 - [flatten_node](#flatten_node): Flatten a single node (or batch)
 - [flatten_selection](#flatten_selection): Flatten a selection of nodes
-
-**Boolean Operations:**
 - [boolean](#boolean): Perform union, subtract, intersect, or exclude on nodes or selection
 
 **Node Management:**
@@ -131,14 +114,10 @@
 - [ai_rename_layers](#ai_rename_layers): AI-powered renaming
 
 ### Export and Conversion
-
 - [export_node_as_image](#export_node_as_image): Export a node as an image
 - [generate_html](#generate_html): Generate HTML structure from Figma nodes
 
----
-
 ### Grids, Guides, and Constraints
-
 - [set_grid](#set_grid): Create, update, or delete one or more layout grids on nodes
 - [get_grid](#get_grid): Get all layout grids for one or more nodes
 - [set_guide](#set_guide): Add or delete one or more guides on the current page
@@ -147,19 +126,14 @@
 - [get_constraints](#get_constraints): Get constraints for one or more nodes
 
 ### Variants
-
 - [set_variant](#set_variant): Create, add, rename, delete, organize, or batch create variants/properties in a component set
 - [get_variant](#get_variant): Get info about variants/properties for one or more component sets
 
 ### Event Subscription
-
 - [subscribe_event](#subscribe_event): Subscribe to a Figma event (e.g., selection_change, document_change)
 - [unsubscribe_event](#unsubscribe_event): Unsubscribe from a previously subscribed event
 
-### Other
-
-- [join](#join): Join a specific communication channel (note: previously listed as join_channel)
-
+ 
 ## set_selection
 Set the current selection in Figma to the specified node(s) by ID.
 
