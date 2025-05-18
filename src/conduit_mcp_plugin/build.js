@@ -141,6 +141,7 @@ async function buildPlugin() {
       'document/document-page.js',
       'document.js',
       'shapes.js',
+      'shape/shapes-helpers.js',
       'shape/shapes-rectangle.js',
       'shape/shapes-frame.js',
       'shape/shapes-ellipse.js',
