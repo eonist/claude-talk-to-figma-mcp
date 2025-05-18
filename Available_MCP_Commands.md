@@ -24,8 +24,6 @@
 - [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
 - [get_node_info](#get_node_info): Get detailed information about one or more nodes (single or batch)
 - [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
-- [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
-- [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 
 **Pages:**
 - [get_pages](#get_pages): Get all pages in the current Figma document
@@ -45,6 +43,8 @@
 **Text:**
 - [create_text](#create_text): Create one or more text elements
 - [set_text_content](#set_text_content): Set text content of an existing node
+- [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
+- [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 
 **Components:**
 - [create_components_from_nodes](#create_components_from_nodes): Convert nodes to components
