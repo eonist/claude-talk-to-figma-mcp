@@ -2,6 +2,7 @@ import * as documentOperations from '../document.js';
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
+import { setParagraphSpacingUnified } from '../text/text-edit.js';
 import * as styleOperations from '../styles.js';
 import * as componentOperations from '../components.js';
 import * as layoutOperations from '../layout.js';
@@ -196,7 +197,7 @@ export function initializeCommands() {
   registerCommand('set_font_weight', textOperations.setFontWeight);
   registerCommand('set_letter_spacing', textOperations.setLetterSpacing);
   registerCommand('set_line_height', textOperations.setLineHeight);
-  registerCommand('set_paragraph_spacing', textOperations.setParagraphSpacing);
+  registerCommand('set_paragraph_spacing', setParagraphSpacingUnified);
   registerCommand('set_text_case', textOperations.setTextCase);
   registerCommand('set_text_decoration', textOperations.setTextDecoration);
   registerCommand('get_styled_text_segments', textOperations.getStyledTextSegments);

@@ -46,6 +46,7 @@
 - [get_text_style](#get_text_style): Get text style properties for one or more nodes (single or batch)
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 - [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
+- [set_paragraph_spacing](#set_paragraph_spacing): Set the paragraph spacing of one or more text nodes (single or batch)
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**
@@ -251,28 +252,59 @@ _Batch:_
 
 ---
 
-
-## set_effect
-Set effect(s) directly or by style variable on one or more nodes in Figma.
+## set_paragraph_spacing
+Set the paragraph spacing of one or more text nodes (single or batch).
 
 **Parameters:**
-- entries (object or array): Each entry:
-  - nodeId (string): Node to update
-  - effects (object or array, optional): Effect(s) to set directly (see EffectSchema)
-  - effectStyleId (string, optional): Effect style variable to apply
+- entry (object, optional): Single config { nodeId, paragraphSpacing }
+- entries (array of objects, optional): Batch of configs [{ nodeId, paragraphSpacing }, ...]
+- At least one of entry or entries is required.
 
-**At least one of `effects` or `effectStyleId` is required per entry.**
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
 
-**Example:**
-_Direct:_
+**Examples:**
+_Single:_
 ```json
-{ "command": "set_effect", "params": { "entries": { "nodeId": "123:456", "effects": { "type": "DROP_SHADOW", "color": "#000", "radius": 4 } } } }
+{ "command": "set_paragraph_spacing", "params": { "entry": { "nodeId": "123:456", "paragraphSpacing": 12 } } }
 ```
 _Batch:_
 ```json
-{ "command": "set_effect", "params": { "entries": [
-  { "nodeId": "123:456", "effects": [{ "type": "DROP_SHADOW", "color": "#000", "radius": 4 }] },
-  { "nodeId": "789:101", "effectStyleId": "S:effect123" }
+{ "command": "set_paragraph_spacing", "params": { "entries": [
+  { "nodeId": "123:456", "paragraphSpacing": 12 },
+  { "nodeId": "789:101", "paragraphSpacing": 16 }
+] } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Optionally skips errors if implemented in the future.
+
+---
+
+## set_text_style
+Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes in Figma (unified).
+
+**Parameters:**
+- nodeId (string, optional): Single node to update.
+- styles (object, optional): Key-value pairs of style properties to set.
+- entries (array, optional): Array of { nodeId, styles } for batch updates.
+- At least one of (nodeId + styles) or entries is required.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the update result.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_text_style", "params": { "nodeId": "123:456", "styles": { "fontSize": 18, "fontWeight": 700 } } }
+```
+_Batch:_
+```json
+{ "command": "set_text_style", "params": { "entries": [
+  { "nodeId": "123:456", "styles": { "fontSize": 18 } },
+  { "nodeId": "789:101", "styles": { "fontWeight": 400, "letterSpacing": 2 } }
 ] } }
 ```
 

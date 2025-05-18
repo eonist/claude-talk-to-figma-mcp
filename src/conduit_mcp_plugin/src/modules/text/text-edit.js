@@ -114,16 +114,46 @@ export async function setMultipleTextContents(params) {
 }
 
 /**
- * Updates the text case of a text node.
+ * Unified handler for set_paragraph_spacing (single or batch).
+ * Sets the paragraph spacing for one or more text nodes.
  *
  * @async
  * @function
- * @param {Object} params - Configuration for text case update.
- * @param {string} params.nodeId - The ID of the text node to update.
- * @param {"ORIGINAL"|"UPPER"|"LOWER"|"TITLE"} params.textCase - The text case to set.
- * @returns {Promise<{ id: string, name: string, textCase: string }>} Updated node information including text case.
- * @throws {Error} If nodeId or textCase is missing/invalid, node cannot be found, or node is not a text node.
+ * @param {Object} params - { entry: { nodeId, paragraphSpacing } } or { entries: [{ nodeId, paragraphSpacing }, ...] }
+ * @returns {Promise<Array<{ nodeId: string, success?: boolean, error?: string }>>}
  */
+export async function setParagraphSpacingUnified(params) {
+  let updates = [];
+  if (Array.isArray(params.entries) && params.entries.length > 0) {
+    updates = params.entries;
+  } else if (params.entry && params.entry.nodeId && typeof params.entry.paragraphSpacing === "number") {
+    updates = [params.entry];
+  } else {
+    throw new Error("setParagraphSpacingUnified: Provide either entry or entries array.");
+  }
+
+  const results = [];
+  for (const { nodeId, paragraphSpacing } of updates) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node) {
+        results.push({ nodeId, error: "Node not found" });
+        continue;
+      }
+      if (node.type !== "TEXT") {
+        results.push({ nodeId, error: "Node is not a text node" });
+        continue;
+      }
+      await figma.loadFontAsync(node.fontName);
+      node.paragraphSpacing = paragraphSpacing;
+      results.push({ nodeId, success: true });
+    } catch (err) {
+      results.push({ nodeId, error: err && err.message ? err.message : String(err) });
+    }
+  }
+  return results;
+}
+
 export async function setTextCase(params) {
   const { nodeId, textCase } = params || {};
   if (!nodeId || textCase === undefined) throw new Error("Missing nodeId or textCase");

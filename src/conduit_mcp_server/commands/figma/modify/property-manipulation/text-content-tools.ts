@@ -77,6 +77,86 @@ Examples:
 }
 
 /**
+ * Registers the unified "set_paragraph_spacing" tool on the MCP server.
+ */
+export function registerParagraphSpacingTool(server: McpServer, figmaClient: FigmaClient) {
+  server.tool(
+    "set_paragraph_spacing",
+    `Sets the paragraph spacing of one or more text nodes in Figma.
+
+Input:
+  - entry: (optional) Single config { nodeId, paragraphSpacing }
+  - entries: (optional) Array of configs [{ nodeId, paragraphSpacing }, ...]
+
+At least one of entry or entries is required.
+
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the update result.
+
+Examples:
+  // Single
+  { entry: { nodeId: "123:456", paragraphSpacing: 12 } }
+  // Batch
+  { entries: [{ nodeId: "123:456", paragraphSpacing: 12 }, { nodeId: "789:101", paragraphSpacing: 16 }] }
+`,
+    {
+      entry: z.object({
+        nodeId: z.string().refine(isValidNodeId),
+        paragraphSpacing: z.number()
+      }).optional(),
+      entries: z.array(
+        z.object({
+          nodeId: z.string().refine(isValidNodeId),
+          paragraphSpacing: z.number()
+        })
+      ).optional(),
+    },
+    {
+      title: "Set Paragraph Spacing (Unified)",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { entry: { nodeId: "123:456", paragraphSpacing: 12 } },
+        { entries: [
+            { nodeId: "123:456", paragraphSpacing: 12 },
+            { nodeId: "789:101", paragraphSpacing: 16 }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma text node ID.",
+        "paragraphSpacing must be a number.",
+        "Batch update replaces paragraph spacing for all specified nodes.",
+        "You must provide either entry or entries."
+      ],
+      extraInfo: "Use this command to update the paragraph spacing of one or more text nodes."
+    },
+    async ({ entry, entries }) => {
+      let updates = [];
+      if (Array.isArray(entries) && entries.length > 0) {
+        updates = entries.map(e => ({ nodeId: ensureNodeIdIsString(e.nodeId), paragraphSpacing: e.paragraphSpacing }));
+      } else if (entry && entry.nodeId && typeof entry.paragraphSpacing === "number") {
+        updates = [{ nodeId: ensureNodeIdIsString(entry.nodeId), paragraphSpacing: entry.paragraphSpacing }];
+      } else {
+        return { content: [{ type: "text", text: "Error: Provide either entry or entries array." }] };
+      }
+      const results = [];
+      for (const { nodeId, paragraphSpacing } of updates) {
+        try {
+          await figmaClient.executeCommand("set_paragraph_spacing", { nodeId, paragraphSpacing });
+          results.push({ nodeId, success: true });
+        } catch (err: any) {
+          results.push({ nodeId, success: false, error: err && err.message ? err.message : String(err) });
+        }
+      }
+      return { content: [{ type: "text", text: JSON.stringify(results) }] };
+    }
+  );
+}
+
+/**
  * Registers the unified "set_text_style" tool on the MCP server.
  */
 export function registerTextStyleTool(server: McpServer, figmaClient: FigmaClient) {

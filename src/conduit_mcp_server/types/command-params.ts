@@ -118,11 +118,29 @@ export interface SetAutoLayoutParams {
   };
 }
 
+/**
+ * Parameters for set_paragraph_spacing (single or batch).
+ * - entry: (object, optional) Single paragraph spacing config.
+ * - entries: (array of objects, optional) Batch of configs.
+ * At least one of entry or entries is required.
+ */
+export interface SetParagraphSpacingParams {
+  entry?: {
+    nodeId: string;
+    paragraphSpacing: number;
+  };
+  entries?: Array<{
+    nodeId: string;
+    paragraphSpacing: number;
+  }>;
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
   get_svg_vector: GetSvgVectorParams;
   get_image: GetImageParams;
   get_text_style: GetTextStyleParams;
+  set_paragraph_spacing: SetParagraphSpacingParams;
   // ...other command mappings
 }
