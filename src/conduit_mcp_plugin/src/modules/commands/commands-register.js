@@ -206,16 +206,26 @@ export function initializeCommands() {
   registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
   registerCommand('set_bulk_font', textOperations.setBulkFont);
 
-  // Style Operations
-  registerCommand('set_fill_color', styleOperations.setFillColor);
-  registerCommand('set_stroke_color', styleOperations.setStrokeColor);
-  registerCommand('get_styles', styleOperations.getStyles);
-  registerCommand('set_effects', styleOperations.setEffects);
-  registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
-  registerCommand('set_style', styleOperations.setStyle);
-  registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
+import * as variableOperations from "../variables.js";
 
-  // Component Conversion
+// Style Operations
+registerCommand('set_fill_color', styleOperations.setFillColor);
+registerCommand('set_stroke_color', styleOperations.setStrokeColor);
+registerCommand('get_styles', styleOperations.getStyles);
+registerCommand('set_effects', styleOperations.setEffects);
+registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
+registerCommand('set_style', styleOperations.setStyle);
+registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
+
+// Figma Variable (Design Token) Operations
+registerCommand('create_variable', variableOperations.createVariable);
+registerCommand('update_variable', variableOperations.updateVariable);
+registerCommand('delete_variable', variableOperations.deleteVariable);
+registerCommand('get_variables', variableOperations.getVariables);
+registerCommand('apply_variable_to_node', variableOperations.applyVariableToNode);
+registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
+
+// Component Conversion
   registerCommand('create_components_from_nodes', componentOperations.createComponentsFromNodes);
   registerCommand('create_component_instance', componentOperations.createComponentInstance);
   registerCommand('get_components', componentOperations.getComponents);

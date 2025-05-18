@@ -42,6 +42,7 @@ import { effectCommands } from "./effect-commands.js";
 import { gradientCommands } from "./gradient-commands.js";
 import { miscCommands } from "./misc-commands.js";
 import { layoutCommands } from "./layout-commands.js";
+import { variableCommands } from "./variable-commands.js";
 
 Object.assign(
   FigmaClient.prototype,
@@ -51,5 +52,6 @@ Object.assign(
   effectCommands,
   gradientCommands,
   miscCommands,
-  layoutCommands
+  layoutCommands,
+  variableCommands
 );
