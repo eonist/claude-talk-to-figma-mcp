@@ -26,6 +26,7 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [get_selection](#get_selection): Get information about the current selection in Figma
 - [get_node_info](#get_node_info): Get detailed information about a specific node
 - [get_nodes_info](#get_nodes_info): Get detailed information about multiple nodes
+- [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [get_styles](#get_styles): Get all styles from the document
 - [get_local_components](#get_local_components): Get all local components
 - [get_team_components](#get_team_components): Get components from a Figma team library
@@ -66,6 +67,8 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 - [duplicate_page](#duplicate_page): Duplicate a Figma page and all its children as a new page
 
 ### Styling and Modification
+
+- [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
 **Selection:**
 - [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
