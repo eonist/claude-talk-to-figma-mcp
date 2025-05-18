@@ -44,8 +44,11 @@ export async function createGrid({ frameId, gridType, gridOptions }) {
   if (!frame || frame.type !== "FRAME") {
     return { status: "error", message: "Invalid frame ID or node is not a frame" };
   }
-  const layoutGrid = createLayoutGrid(gridType, gridOptions || {});
-  frame.layoutGrids = [...(frame.layoutGrids || []), layoutGrid];
+  var layoutGrid = createLayoutGrid(gridType, gridOptions || {});
+  // ES5-compatible: use slice and push instead of array spread
+  var grids = frame.layoutGrids && frame.layoutGrids.length ? frame.layoutGrids.slice() : [];
+  grids.push(layoutGrid);
+  frame.layoutGrids = grids;
   return { status: "success", message: "Grid created successfully", gridId: frame.id };
 }
 
@@ -57,8 +60,9 @@ export async function updateGrid({ frameId, gridIndex, gridOptions }) {
   if (!Array.isArray(frame.layoutGrids) || gridIndex < 0 || gridIndex >= frame.layoutGrids.length) {
     return { status: "error", message: "Invalid grid index" };
   }
-  const updatedGrid = { ...frame.layoutGrids[gridIndex], ...gridOptions };
-  frame.layoutGrids = frame.layoutGrids.map((g, i) => (i === gridIndex ? updatedGrid : g));
+  // ES5-compatible: use Object.assign instead of object spread
+  var updatedGrid = Object.assign({}, frame.layoutGrids[gridIndex], gridOptions);
+  frame.layoutGrids = frame.layoutGrids.map(function(g, i) { return i === gridIndex ? updatedGrid : g; });
   return { status: "success", message: "Grid updated successfully", gridId: frame.id };
 }
 
@@ -77,4 +81,9 @@ export async function removeGrid({ frameId, gridIndex }) {
     frame.layoutGrids = [];
     return { status: "success", message: "All grids removed", gridId: frame.id };
   }
+}
+
+// For CommonJS compatibility (plugin build system)
+if (typeof module !== "undefined") {
+  module.exports = { createGrid, updateGrid, removeGrid };
 }

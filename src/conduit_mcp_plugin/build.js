@@ -163,6 +163,7 @@ async function buildPlugin() {
       'layout/layout-insert.js',
       'layout/layout-flatten.js',
       'layout/layout-clone.js',
+      'layout/layout-grid.js',
       'layout.js',
       'node/node-modify.js',
       'node/node-edit.js',
