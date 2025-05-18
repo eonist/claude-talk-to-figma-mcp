@@ -4,6 +4,101 @@ This document lists all available Model Context Protocol (MCP) commands for the 
 
 ---
 
+## get_style
+Get all styles from the current Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_style", "params": {} }
+```
+
+---
+
+## set_style
+Create, update, or delete one or more Figma styles (PAINT, EFFECT, TEXT, GRID) in a unified call.
+
+**Parameters:**
+- entry (object, optional): Single style operation
+  - styleId (string, optional): Required for update/delete, omitted for create
+  - styleType (string, required): "PAINT", "EFFECT", "TEXT", or "GRID"
+  - properties (object, optional): Properties to set (required for create/update, omitted for delete)
+  - delete (boolean, optional): If true, deletes the style (ignores properties)
+- entries (array of objects, optional): Batch style operations (same shape as above)
+
+**Operation Semantics:**
+- Create: `styleId` omitted, `delete` false/omitted, `properties` present → create new style.
+- Update: `styleId` present, `delete` false/omitted, `properties` present → update existing style.
+- Delete: `styleId` present, `delete: true`, `properties` ignored/omitted → delete style.
+
+**Returns:**
+- Array of result objects: `{ styleId, styleType, action: "created" | "updated" | "deleted", success: true, [error?: string] }`
+
+**Examples:**
+
+_Single Create:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleType": "PAINT",
+    "properties": {
+      "name": "Accent",
+      "paints": [{ "type": "SOLID", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } }]
+    }
+  }
+} }
+```
+
+_Single Update:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleId": "S:1234",
+    "styleType": "PAINT",
+    "properties": {
+      "name": "Accent Updated",
+      "paints": [{ "type": "SOLID", "color": { "r": 0, "g": 1, "b": 0, "a": 1 } }]
+    }
+  }
+} }
+```
+
+_Single Delete:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleId": "S:1234",
+    "styleType": "PAINT",
+    "delete": true
+  }
+} }
+```
+
+_Batch Mixed:_
+```json
+{ "command": "set_style", "params": {
+  "entries": [
+    {
+      "styleType": "PAINT",
+      "properties": { "name": "New Style", "paints": [{ "type": "SOLID", "color": { "r": 0.5, "g": 0.5, "b": 0.5, "a": 1 } }] }
+    },
+    {
+      "styleId": "S:5678",
+      "styleType": "EFFECT",
+      "properties": { "name": "Shadow", "effects": [{ "type": "DROP_SHADOW", "color": { "r": 0, "g": 0, "b": 0, "a": 0.5 }, "radius": 8 }] }
+    },
+    {
+      "styleId": "S:9999",
+      "styleType": "TEXT",
+      "delete": true
+    }
+  ]
+} }
+```
+
+---
+
 ## Unified Command Pattern
 
 **Most commands support both single and batch operations via a unified API:**

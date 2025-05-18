@@ -21,6 +21,7 @@ import { logger } from "../utils/logger.js";
 import { registerHtmlCommands } from "./html-tools.js";
 import { registerReorderLayerTools } from "./figma/modify/layer-management/reorder-layer-tools.js";
 import { registerAnnotationCommands } from "./figma/annotation-tools.js";
+import { registerStyleTools } from "./figma/modify/styling/style-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.
@@ -48,6 +49,9 @@ export function registerAllCommands(server: McpServer): void {
     registerModifyCommands(server, figmaClient);
     registerChannelCommand(server, figmaClient);
     registerHtmlCommands(server, figmaClient);
+
+    // Register style management commands (set_style, get_style)
+    registerStyleTools(server, figmaClient);
 
     // Register annotation commands
     registerAnnotationCommands(server, figmaClient);

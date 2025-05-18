@@ -1,78 +1,67 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z, ensureNodeIdIsString } from "../utils.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
-import { FillPropsSchema, StrokePropsSchema } from "./style-schema.js";
+import { z } from "zod";
 
-/**
- * Registers style application command:
- * - set_style (unified: supports single or batch)
- */
+// Type definitions for style operations
+const StyleTypeEnum = z.enum(["PAINT", "EFFECT", "TEXT", "GRID"]);
+const StyleEntrySchema = z.object({
+  styleId: z.string().optional(),
+  styleType: StyleTypeEnum,
+  properties: z.record(z.any()).optional(),
+  delete: z.boolean().optional(),
+});
+const StyleBatchSchema = z.object({
+  entry: StyleEntrySchema.optional(),
+  entries: z.array(StyleEntrySchema).optional(),
+});
+
 export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) {
-  // Unified Set Style Tool (single or batch)
-  const StyleEntrySchema = z.object({
-    nodeId: z.string()
-      .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-      .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-    fillProps: FillPropsSchema.optional(),
-    strokeProps: StrokePropsSchema.optional(),
-  });
+  // get_style: returns all local styles
+  server.tool(
+    "get_style",
+    `Get all styles from the current Figma document.
 
-  // Accepts either a single entry or an array of entries
-  const ParamsSchema = z.object({
-    entries: z.union([
-      StyleEntrySchema,
-      z.array(StyleEntrySchema).min(1).max(100)
-    ])
-  });
+Parameters: none
 
+Returns: Array of style objects grouped by type.`,
+    {},
+    async () => {
+      return await figmaClient.executeCommand("getStyles", {});
+    }
+  );
+
+  // set_style: create, update, or delete styles (single or batch)
   server.tool(
     "set_style",
-    `Sets both fill and stroke properties for one or more Figma nodes.
+    `Create, update, or delete one or more Figma styles (PAINT, EFFECT, TEXT, GRID) in a unified call.
 
-Params:
-  - entries: Either a single style entry or an array of style entries.
+Parameters:
+- entry (object, optional): Single style operation
+  - styleId (string, optional): Required for update/delete, omitted for create
+  - styleType (string, required): "PAINT", "EFFECT", "TEXT", or "GRID"
+  - properties (object, optional): Properties to set (required for create/update, omitted for delete)
+  - delete (boolean, optional): If true, deletes the style (ignores properties)
+- entries (array of objects, optional): Batch style operations (same shape as above)
 
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the updated node(s) ID(s) or a summary.
-`,
-    ParamsSchema.shape,
-    {
-      title: "Set Style (Single or Batch)",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { entries: { nodeId: "123:456", fillProps: { color: [1, 0, 0, 1] }, strokeProps: { color: [0, 0, 0, 1], weight: 2 } } },
-        { entries: [
-          { nodeId: "123:456", fillProps: { color: [1, 0, 0, 1] } },
-          { nodeId: "789:101", strokeProps: { color: [0, 0, 0, 1], weight: 2 } }
-        ]}
-      ]),
-      edgeCaseWarnings: [
-        "nodeId must be a valid Figma node ID.",
-        "fillProps and strokeProps are both optional, but at least one should be provided.",
-        "Color arrays must have four values between 0 and 1."
-      ],
-      extraInfo: "Supports both single and batch style updates in one call."
-    },
-    async ({ entries }) => {
-      const entryList = Array.isArray(entries) ? entries : [entries];
-      const results: string[] = [];
-      for (const e of entryList) {
-        const id = ensureNodeIdIsString(e.nodeId);
-        if (e.fillProps?.color) {
-          const [r, g, b, a] = e.fillProps.color;
-          await figmaClient.setFillColor({ nodeId: id, r, g, b, a });
+Returns: Array of result objects: { styleId, styleType, action: "created" | "updated" | "deleted", success: true, [error?: string] }`,
+    StyleBatchSchema,
+    async (params: z.infer<typeof StyleBatchSchema>) => {
+      // Normalize to array of entries
+      let entries: any[] = [];
+      if (params.entry) entries = [params.entry];
+      if (params.entries) entries = entries.concat(params.entries);
+
+      // Call plugin for each entry, collect results
+      const results = [];
+      for (const entry of entries) {
+        try {
+          const result = await figmaClient.executeCommand("setStyle", entry);
+          results.push({ ...result, styleId: result.styleId || entry.styleId, styleType: entry.styleType, success: true });
+        } catch (err: any) {
+          results.push({ styleId: entry.styleId, styleType: entry.styleType, success: false, error: err?.message || String(err) });
         }
-        if (e.strokeProps?.color) {
-          const [r, g, b, a] = e.strokeProps.color;
-          await figmaClient.setStrokeColor({ nodeId: id, r, g, b, a, weight: e.strokeProps.weight });
-        }
-        results.push(id);
       }
-      return { content: [{ type: "text", text: `Styled ${results.length} node(s): ${results.join(", ")}` }] };
+      return results;
     }
   );
 }
