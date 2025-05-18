@@ -4,32 +4,41 @@
  * TODO: Implement actual Figma Variables API logic.
  */
 
-export async function createVariable(params) {
+async function createVariable(params) {
   // TODO: Implement Figma Variables API logic
   return { status: "not_implemented", params };
 }
 
-export async function updateVariable(params) {
+async function updateVariable(params) {
   // TODO: Implement Figma Variables API logic
   return { status: "not_implemented", params };
 }
 
-export async function deleteVariable(params) {
+async function deleteVariable(params) {
   // TODO: Implement Figma Variables API logic
   return { status: "not_implemented", params };
 }
 
-export async function getVariables(params) {
+async function getVariables(params) {
   // TODO: Implement Figma Variables API logic
   return { status: "not_implemented", params };
 }
 
-export async function applyVariableToNode(params) {
+async function applyVariableToNode(params) {
   // TODO: Implement Figma Variables API logic
   return { status: "not_implemented", params };
 }
 
-export async function switchVariableMode(params) {
+async function switchVariableMode(params) {
   // TODO: Implement Figma Variables API logic
   return { status: "not_implemented", params };
 }
+
+const variableOperations = {
+  createVariable,
+  updateVariable,
+  deleteVariable,
+  getVariables,
+  applyVariableToNode,
+  switchVariableMode
+};

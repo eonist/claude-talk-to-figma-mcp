@@ -206,7 +206,9 @@ export function initializeCommands() {
   registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
   registerCommand('set_bulk_font', textOperations.setBulkFont);
 
-import * as variableOperations from "../variables.js";
+/*
+// variableOperations is now defined globally by variables.js in the build output.
+*/
 
 // Style Operations
 registerCommand('set_fill_color', styleOperations.setFillColor);
