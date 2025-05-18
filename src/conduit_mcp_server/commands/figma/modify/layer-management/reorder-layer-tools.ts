@@ -5,7 +5,7 @@ import { z } from "../utils.js";
 /**
  * Registers reorder layer commands on the MCP server.
  *
- * This function adds tools named "reorder_node" and "reorder_nodes" to the MCP server,
+ * This function adds the unified "reorder_nodes" tool to the MCP server,
  * enabling reordering of single or multiple nodes in Figma. It validates inputs,
  * executes corresponding Figma commands, and returns informative results.
  *

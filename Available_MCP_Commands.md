@@ -54,6 +54,7 @@
 - [create_components_from_nodes](#create_components_from_nodes): Convert nodes to components
 - [create_component_instance](#create_component_instance): Create component instances
 - [create_button](#create_button): Create a complete button
+- [detach_instances](#detach_instances): Detach one or more component instances from their masters (single or batch)
 
 **Images and SVG:**
 - [insert_image](#insert_image): Insert images from URLs, local files, or base64 data (single or batch)
@@ -89,8 +90,7 @@
 
 **Positioning & Sizing & Boolean Operations:**
 - [move_nodes](#move_nodes): Move one or more nodes (single or batch)
-- [reorder_node](#reorder_node): Reorder a node in its parent's children array
-- [reorder_nodes](#reorder_nodes): Batch reorder multiple nodes
+- [reorder_nodes](#reorder_nodes): Reorder one or more nodes in their parents' children arrays (single or batch)
 - [resize_node](#resize_node): Resize a node (single or batch)
 - [flatten_node](#flatten_node): Flatten a single node (or batch)
 - [flatten_selection](#flatten_selection): Flatten a selection of nodes
@@ -104,9 +104,6 @@
 - [insert_child](#insert_child): Insert a child node into a parent (single or batch)
 - [set_node_locked](#set_node_locked): Lock or unlock nodes
 - [set_node_visible](#set_node_visible): Show or hide nodes
-
-**Component/Instance Management:**
-- [detach_instances](#detach_instances): Detach one or more component instances from their masters (single or batch)
 
 **Naming:**
 - [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
@@ -850,22 +847,17 @@ Join a specific communication channel.
 
 ---
 
-## reorder_node
-Reorder a node in its parent's children array (z-order/layer order).
+## reorder_nodes
+Reorder one or more nodes in their parents' children arrays (single or batch).
 
 **Parameters:**
-- nodeId (string): Node to reorder.
-- direction (string, optional): "up", "down", "top", "bottom".
-- index (number, optional): Target index in the parent's children array.
-
-**Example:**
-```json
-{ "command": "reorder_node", "params": { "nodeId": "123:456", "direction": "up" } }
-```
-
 - reorder (object, optional): Single reorder config: { nodeId (string), direction (string, optional), index (number, optional) }
 - reorders (array, optional): Array of reorder configs (same shape as above)
 - options (object, optional): { skip_errors (boolean, optional) }
+- At least one of `reorder` or `reorders` is required.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the reorder result as JSON.
 
 **Examples:**
 _Single:_
