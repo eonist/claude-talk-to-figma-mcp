@@ -101,38 +101,13 @@ async function buildPlugin() {
     // Initialize the output string with a header comment.
     let output = '// Figma Plugin - Auto-generated code from build.js\n\n';
     
-    // Process utilities first.
-    if (fs.existsSync(UTILS_DIR)) {
-      // Define the order to process specific utility files.
-      const utilsFiles = ['plugin.js', 'encoding.js', 'helpers.js'];
-      output += '// ----- Utils Module -----\n';
-      
-      for (const utilFile of utilsFiles) {
-        const utilPath = path.join(UTILS_DIR, utilFile);
-        if (fs.existsSync(utilPath)) {
-          let utilContent = readFile(utilPath);
-          // Remove any export statements to convert module exports to regular declarations.
-          utilContent = utilContent.replace(/export\s+/g, '');
-          // Remove import statements as dependencies will be concatenated in this build.
-          utilContent = utilContent.replace(/import\s+.*from\s+['"].*['"];?\n?/g, '');
-          
-          output += `// ----- Utils/${utilFile} -----\n`;
-          output += utilContent + '\n\n';
-        }
-      }
-    } else {
-      // Fallback: If UTILS_DIR doesn't exist, attempt to process the older utils.js file located in modules.
-      const utilsPath = path.join(MODULES_DIR, 'utils.js');
-      if (fs.existsSync(utilsPath)) {
-        let utilsContent = readFile(utilsPath);
-        utilsContent = utilsContent.replace(/export\s+/g, '');
-        output += '// ----- Utils Module -----\n';
-        output += utilsContent + '\n\n';
-      }
-    }
-    
     // List of other module files to be added in the defined order.
     const moduleOrder = [
+      // Utilities and helpers
+      'utils/encoding.js',
+      'utils/helpers.js',
+      'utils/plugin.js',
+      'utils.js',
         // Events
       'events/event-emitter.js',
             // Document and related
@@ -198,12 +173,7 @@ async function buildPlugin() {
       'variables.js',
       'direct-gradient.js',
       'image.js',
-      'ui.js',
-      // Utilities and helpers
-      'utils/encoding.js',
-      'utils/helpers.js',
-      //'utils/plugin.js',
-      //'utils.js',
+      'ui.js'
     ];
     
     // Process each module file.
