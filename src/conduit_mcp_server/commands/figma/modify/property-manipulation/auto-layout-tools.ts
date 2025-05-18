@@ -20,7 +20,6 @@ import { AutoLayoutConfigSchema, AutoLayoutResizingSchema } from "./auto-layout-
  * registerAutoLayoutTools(server, figmaClient);
  */
 export function registerAutoLayoutTools(server: McpServer, figmaClient: FigmaClient) {
-  // Auto Layout
   server.tool(
     "set_auto_layout_resizing",
     `Sets hug or fill sizing mode on an auto layout frame or child node in Figma.
