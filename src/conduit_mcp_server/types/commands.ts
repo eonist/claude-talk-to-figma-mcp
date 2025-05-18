@@ -164,8 +164,6 @@ export type FigmaCommand =
   | "get_css_async"
   // Scan all text nodes in a node (see commands/figma/read/text-analysis-tools.ts)
   | "scan_text_nodes"
-  // Set multiple text contents in parallel (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_multiple_text_contents"
   // Configure auto layout properties (see commands/figma/modify/property-manipulation/auto-layout-tools.ts)
   | "set_auto_layout"
   // Set hug/fill sizing mode on auto layout (see commands/figma/modify/property-manipulation/auto-layout-tools.ts)

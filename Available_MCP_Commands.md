@@ -26,7 +26,6 @@
 - [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
-- [get_css_async](#get_css_async): Get CSS properties from a node
 
 **Pages:**
 - [get_pages](#get_pages): Get all pages in the current Figma document
@@ -44,8 +43,8 @@
 - [create_vector](#create_vector): Create one or more vectors
 
 **Text:**
+- [create_text](#create_text): Create one or more text elements
 - [set_text_content](#set_text_content): Set text content of an existing node
-- [set_multiple_text_contents](#set_multiple_text_contents): Set multiple text contents
 
 **Components:**
 - [create_components_from_nodes](#create_components_from_nodes): Convert nodes to components
@@ -110,11 +109,14 @@
 - [set_constraints](#set_constraints): Set constraints for one or more nodes
 - [get_constraints](#get_constraints): Get constraints for one or more nodes
 
+### Export 
+- [export_node_as_image](#export_node_as_image): Export a node as an image
+- [generate_html](#generate_html): Generate HTML structure from Figma nodes
+- [get_css_async](#get_css_async): Get CSS properties from a node
+
 ### Misc
 - [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
 - [ai_rename_layers](#ai_rename_layers): AI-powered renaming 
-- [export_node_as_image](#export_node_as_image): Export a node as an image
-- [generate_html](#generate_html): Generate HTML structure from Figma nodes
 - [set_variant](#set_variant): Create, add, rename, delete, organize, or batch create variants/properties in a component set
 - [get_variant](#get_variant): Get info about variants/properties for one or more component sets
 - [subscribe_event](#subscribe_event): Subscribe to a Figma event (e.g., selection_change, document_change)

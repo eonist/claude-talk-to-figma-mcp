@@ -644,9 +644,9 @@ export class FigmaClient {
       text: item.text
     }));
     
-    return this.executeCommand("set_multiple_text_contents", {
-      nodeId: parentNodeIdString,
-      text: validatedTextNodes
+    // Unified set_text_content now handles both single and batch updates.
+    return this.executeCommand("set_text_content", {
+      texts: validatedTextNodes
     });
   }
   
