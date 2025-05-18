@@ -79,7 +79,7 @@ const jsModules = [
 // Always update moduleOrder when adding, removing, or renaming modules.
 // This applies to ALL modules, not just utils.
 const moduleOrder = [
-  // Utilities and helpers
+  // Utilities and helpers (Must be added first)
   'utils/plugin.js',
   'utils/encoding.js',
   'utils/helpers.js',
