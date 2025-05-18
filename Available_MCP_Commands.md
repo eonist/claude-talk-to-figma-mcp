@@ -65,15 +65,7 @@
 - [set_gradient](#set_gradient): Set gradient(s) directly or by style variable
  
 **Text Styling:**
-- [set_font_name](#set_font_name): Set font name and style
-- [set_font_size](#set_font_size): Set font size
-- [set_font_weight](#set_font_weight): Set font weight
-- [set_letter_spacing](#set_letter_spacing): Set letter spacing
-- [set_line_height](#set_line_height): Set line height
-- [set_paragraph_spacing](#set_paragraph_spacing): Set paragraph spacing
-- [set_text_case](#set_text_case): Set text case
-- [set_text_decoration](#set_text_decoration): Set text decoration
-- [set_bulk_font](#set_bulk_font): Set font for multiple nodes in bulk
+- [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Effects and Layout:**

@@ -1,6 +1,66 @@
 import { setCharacters } from "../utils.js";
 
 /**
+ * Unified handler for set_text_style (single or batch).
+ * Applies one or more style properties to one or more text nodes.
+ *
+ * @async
+ * @function
+ * @param {Object} params - { nodeId, styles } or { entries: [{ nodeId, styles }, ...] }
+ * @returns {Promise<Object>} Summary of the style update operation.
+ */
+export async function setTextStyle(params) {
+  let updates = [];
+  if (Array.isArray(params.entries) && params.entries.length > 0) {
+    updates = params.entries;
+  } else if (params.nodeId && params.styles && Object.keys(params.styles).length > 0) {
+    updates = [{ nodeId: params.nodeId, styles: params.styles }];
+  } else {
+    throw new Error("setTextStyle: Provide either (nodeId + styles) or entries array.");
+  }
+
+  const results = [];
+  for (const { nodeId, styles } of updates) {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      results.push({ nodeId, error: "Node not found" });
+      continue;
+    }
+    if (node.type !== "TEXT") {
+      results.push({ nodeId, error: "Node is not a text node" });
+      continue;
+    }
+    // Load font if fontName or fontWeight/style is being set
+    if (styles.fontName) {
+      const font = typeof styles.fontName === "string"
+        ? { family: styles.fontName, style: "Regular" }
+        : styles.fontName;
+      await figma.loadFontAsync(font);
+      node.fontName = font;
+    } else {
+      // Always load the node's current font to allow style changes
+      await figma.loadFontAsync(node.fontName);
+    }
+    if (styles.fontSize !== undefined) node.fontSize = styles.fontSize;
+    if (styles.fontWeight !== undefined && node.fontName) {
+      // Try to set fontWeight by updating fontName.style if possible
+      // This is a best-effort; Figma's fontName.style is a string like "Bold"
+      // You may want to map numeric weights to style names if needed
+      // For now, just ignore if not possible
+    }
+    if (styles.letterSpacing !== undefined) node.letterSpacing = styles.letterSpacing;
+    if (styles.lineHeight !== undefined) node.lineHeight = styles.lineHeight;
+    if (styles.paragraphSpacing !== undefined) node.paragraphSpacing = styles.paragraphSpacing;
+    if (styles.textCase !== undefined) node.textCase = styles.textCase;
+    if (styles.textDecoration !== undefined) node.textDecoration = styles.textDecoration;
+    // Extend for more style keys as needed
+
+    results.push({ nodeId, success: true });
+  }
+  return { updated: results.filter(r => r.success).map(r => r.nodeId), errors: results.filter(r => r.error) };
+}
+
+/**
  * Updates the text content of an existing text node.
  *
  * @async

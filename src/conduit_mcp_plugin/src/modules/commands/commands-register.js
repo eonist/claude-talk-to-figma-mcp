@@ -187,6 +187,7 @@ export function initializeCommands() {
 
   registerCommand('create_text', textOperations.createText);
   registerCommand('set_text_content', textOperations.setTextContent);
+  registerCommand('set_text_style', textOperations.setTextStyle);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);
   registerCommand('set_font_name', textOperations.setFontName);
   registerCommand('set_font_size', textOperations.setFontSize);

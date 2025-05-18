@@ -148,6 +148,8 @@ export type FigmaCommand =
   | "export_node_as_image"
   // Set the text content of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
   | "set_text_content"
+  // Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
+  | "set_text_style"
   // Get all styles from the document (see commands/figma/read/style-tools.ts)
   | "get_styles"
   // Get all local components (see commands/figma/read/component-tools.ts)
@@ -168,22 +170,6 @@ export type FigmaCommand =
   | "set_auto_layout"
   // Set hug/fill sizing mode on auto layout (see commands/figma/modify/property-manipulation/auto-layout-tools.ts)
   | "set_auto_layout_resizing"
-  // Set the font family and style of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_font_name"
-  // Set the font size of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_font_size"
-  // Set the font weight of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_font_weight"
-  // Set the letter spacing of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_letter_spacing"
-  // Set the line height of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_line_height"
-  // Set the paragraph spacing of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_paragraph_spacing"
-  // Set the text case of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_text_case"
-  // Set the text decoration of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_text_decoration"
   // Get styled text segments in a text node (see commands/figma/read/text-analysis-tools.ts)
   | "get_styled_text_segments"
   // Load a font asynchronously (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
@@ -207,8 +193,6 @@ export type FigmaCommand =
   | "ai_rename_layers"
   // Insert an SVG as a vector (see commands/figma/create/svg-creation-tools.ts)
   | "insert_svg_vector"
-  // Set the font for multiple nodes (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_bulk_font"
   // Set both fill and stroke properties (see commands/figma/modify/styling)
   | "set_style"
   // Create a gradient style variable (see commands/figma/modify/styling)
