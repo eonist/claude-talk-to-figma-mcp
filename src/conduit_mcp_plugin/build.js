@@ -30,10 +30,21 @@ const __dirname = path.dirname(__filename);
 
 // Configuration Section
 
+/**
+ * @constant {string} SRC_DIR - Root source directory for plugin code
+ * @constant {string} MODULES_DIR - Directory containing feature-specific modules (shapes, text, etc.)
+ * @constant {string} UTILS_DIR - Directory for common utilities and helper functions
+ * @constant {string} OUTPUT_FILE - Final bundled output file for Figma
+ */
 const SRC_DIR = path.join(__dirname, 'src');
 const MODULES_DIR = path.join(SRC_DIR, 'modules');
 const UTILS_DIR = path.join(MODULES_DIR, 'utils');
 const OUTPUT_FILE = path.join(__dirname, 'dist', 'code.js');
+
+/**
+ * @constant {string} COMPONENTS_DIR - Directory containing HTML UI components
+ * @constant {string} JS_DIR - Directory containing JavaScript modules for UI
+ */
 const COMPONENTS_DIR = path.join(__dirname, 'components');
 const JS_DIR = path.join(__dirname, 'js');
 
@@ -150,6 +161,17 @@ const moduleOrder = [
  * @returns {string} Raw file contents as UTF-8 string
  * @throws {Error} If file reading fails
  */
+/**
+ * Reads a file's contents synchronously
+ * 
+ * @param {string} filePath - Absolute path to the file
+ * @returns {string} Raw file contents as UTF-8 string
+ * @throws {Error} If file reading fails
+ * @example
+ * // Read a module file's contents
+ * // const contents = readFile(path.join(__dirname, 'src', 'modules', 'document.js'));
+ * // console.log(contents);
+ */
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');
 }
@@ -171,6 +193,18 @@ function readAndStripModule(filePath) {
 /**
  * Builds the Figma plugin by combining all source files into a single bundle.
  * 
+ * Build process stages:
+ * 1. Validation - Checks if required directories exist
+ * 2. Utils Processing - Processes utility functions first (plugin.js, encoding.js, helpers.js)
+ * 3. Module Processing - Processes feature modules in specific order
+ * 4. Index Processing - Processes main plugin entry point (index.js)
+ * 
+ * For each file processed:
+ * - Removes ES module import/export syntax
+ * - Removes module operation exports
+ * - Preserves the actual implementation code
+ * - Adds section headers for better code organization
+ *
  * @async
  * @throws {Error} If any critical build step fails
  * @returns {Promise<void>}
