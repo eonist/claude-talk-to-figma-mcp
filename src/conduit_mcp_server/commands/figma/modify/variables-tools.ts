@@ -1,6 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+// @ts-ignore
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z } from "../utils.js";
+import type { FigmaClient as FigmaClientType } from "../../../../clients/figma-client.js";
+import { z } from "zod";
 
 /**
  * Registers Figma Variables (Design Tokens) commands:
