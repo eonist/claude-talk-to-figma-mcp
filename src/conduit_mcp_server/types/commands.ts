@@ -49,6 +49,26 @@ export interface SetGuideParams {
 }
 export interface GetGuideParams {} // No params
 
+/**
+ * Unified constraint command parameter types
+ */
+export interface ConstraintEntry {
+  nodeId: string;
+  horizontal: "left" | "right" | "center" | "scale" | "stretch";
+  vertical: "top" | "bottom" | "center" | "scale" | "stretch";
+}
+export interface SetConstraintsParams {
+  constraint?: ConstraintEntry;
+  constraints?: ConstraintEntry[];
+  applyToChildren?: boolean;
+  maintainAspectRatio?: boolean;
+}
+export interface GetConstraintsParams {
+  nodeId?: string;
+  nodeIds?: string[];
+  includeChildren?: boolean;
+}
+
 export type FigmaCommand =
   // Get detailed information about the current Figma document (see commands/figma/read/document-tools.ts)
   | "get_document_info"
@@ -198,7 +218,10 @@ export type FigmaCommand =
   | "get_grid"
   // Guide commands (canvas guides)
   | "set_guide"
-  | "get_guide";
+  | "get_guide"
+  // Constraint commands (set/get constraints)
+  | "set_constraints"
+  | "get_constraints";
 
 /**
  * Map each command to its specific params

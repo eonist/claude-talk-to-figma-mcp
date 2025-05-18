@@ -8,6 +8,7 @@ import * as layoutOperations from '../layout.js';
 import { createGrid, updateGrid, removeGrid } from '../layout/layout-grid.js';
 import { setGrid, getGrid } from '../layout/layout-grid-unified.js';
 import { setGuide, getGuide } from '../layout/layout-guide.js';
+import { setConstraints, getConstraints } from '../layout/layout-constraint.js';
 import * as renameOperations from '../rename.js';
 import { setNodeLocked, setNodeVisible, reorderNode, reorderNodes } from '../node/node-modify.js';
 import HTMLGenerator from '../html-generator.js';
@@ -73,6 +74,10 @@ export function initializeCommands() {
   // Unified guide commands (setGuide, getGuide)
   registerCommand('setGuide', setGuide);
   registerCommand('getGuide', getGuide);
+
+  // Unified constraint commands (setConstraints, getConstraints)
+  registerCommand('setConstraints', setConstraints);
+  registerCommand('getConstraints', getConstraints);
 
   // Resize operations
   registerCommand('resize_node', shapeOperations.resizeNode);

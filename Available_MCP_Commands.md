@@ -167,6 +167,88 @@ _Batch Mixed:_
 
 ---
 
+## Constraint Commands
+
+### set_constraints
+Set constraints (left/right/top/bottom/center/scale/stretch) for one or more Figma nodes.
+
+**Parameters:**
+- constraint (object, optional): Single constraint operation
+  - nodeId (string): Target node
+  - horizontal (string): "left", "right", "center", "scale", "stretch"
+  - vertical (string): "top", "bottom", "center", "scale", "stretch"
+- constraints (array, optional): Batch of constraint operations (same shape as above)
+- applyToChildren (boolean, optional): If true, apply to all children
+- maintainAspectRatio (boolean, optional): If true, use "scale" for both axes
+
+**Returns:** Array of result objects for each operation.
+
+**Examples:**
+
+_Set constraints (single):_
+```json
+{ "command": "set_constraints", "params": {
+  "constraint": {
+    "nodeId": "123:456",
+    "horizontal": "right",
+    "vertical": "bottom"
+  }
+} }
+```
+
+_Set constraints (batch):_
+```json
+{ "command": "set_constraints", "params": {
+  "constraints": [
+    { "nodeId": "123:456", "horizontal": "left", "vertical": "top" },
+    { "nodeId": "789:101", "horizontal": "center", "vertical": "scale" }
+  ]
+} }
+```
+
+_Set constraints for all children:_
+```json
+{ "command": "set_constraints", "params": {
+  "constraint": {
+    "nodeId": "123:456",
+    "horizontal": "scale",
+    "vertical": "scale"
+  },
+  "applyToChildren": true
+} }
+```
+
+---
+
+### get_constraints
+Get constraints for one or more Figma nodes (optionally including children).
+
+**Parameters:**
+- nodeId (string, optional): Single node ID (if omitted, use current selection)
+- nodeIds (array, optional): Multiple node IDs
+- includeChildren (boolean, optional): If true, include constraints for all children
+
+**Returns:** Array of constraint info for each node, including children if requested.
+
+**Examples:**
+
+_Get constraints for a single node:_
+```json
+{ "command": "get_constraints", "params": { "nodeId": "123:456" } }
+```
+
+_Get constraints for multiple nodes, including children:_
+```json
+{ "command": "get_constraints", "params": { "nodeIds": ["123:456", "789:101"], "includeChildren": true } }
+```
+
+_Get constraints for current selection:_
+```json
+{ "command": "get_constraints", "params": {} }
+```
+
+---
+
 ## Guide Commands
 
 ### set_guide
