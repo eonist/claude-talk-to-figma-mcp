@@ -15,7 +15,6 @@
 > **Note:** For batch operations, pass an array to the singular command (e.g., `rectangles` for `create_rectangle`). Plural command names are deprecated.
 
 ### Communication
-
 - [join_channel](#join_channel): Join a specific communication channel
 
 ### Document and Information
@@ -55,6 +54,7 @@
 **Images and SVG:**
 - [insert_image](#insert_image): Insert images from URLs, local files, or base64 data (single or batch)
 - [insert_svg_vector](#insert_svg_vector): Insert SVG vectors
+- [get_svg_vector](#get_svg_vector): Get SVG markup for one or more vector nodes
 
 **Styling:**
 - [get_styles](#get_styles): Get all styles from the document
@@ -135,6 +135,37 @@ _Single:_
 _Batch:_
 ```json
 { "command": "set_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+## get_svg_vector
+Get SVG markup for one or more vector nodes (single or batch).
+
+**Parameters:**
+- nodeId (string, optional): Single vector node to extract SVG from.
+- nodeIds (array of string, optional): Array of vector node IDs for batch.
+- At least one of nodeId or nodeIds is required.
+
+**Returns:**
+- Array of `{ nodeId, svg }` objects, one per node.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "get_svg_vector", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "get_svg_vector", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+**Example Response:**
+```json
+[
+  { "nodeId": "123:456", "svg": "<svg .../>" },
+  { "nodeId": "789:101", "svg": "<svg .../>" }
+]
 ```
 
 ---
