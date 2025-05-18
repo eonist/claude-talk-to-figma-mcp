@@ -332,6 +332,7 @@ async function buildPlugin() {
 
 /**
  * Entrypoint: Initiates the build process when this script is run directly.
+ * Handles any uncaught errors and exits with a non-zero code on failure.
  */
 buildPlugin().catch(error => {
   console.error("Build process failed:", error);
