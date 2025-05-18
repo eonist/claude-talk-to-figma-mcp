@@ -250,14 +250,12 @@ export interface GetCssAsyncParams extends BaseCommandParams {
   format?: "object" | "string" | "inline";
 }
 
-/** Parameters for get_node_info command */
+/** Parameters for get_node_info command (unified single/batch) */
 export interface GetNodeInfoParams extends BaseCommandParams {
-  nodeId: string;
-}
-
-/** Parameters for get_nodes_info command */
-export interface GetNodesInfoParams extends BaseCommandParams {
-  nodeIds: string[];
+  /** The unique Figma node ID to get information about. */
+  nodeId?: string;
+  /** An array of Figma node IDs to get information about. */
+  nodeIds?: string[];
 }
 
 /** Parameters for join channel command */
@@ -353,7 +351,6 @@ export interface CommandParamsMap {
   get_document_info: BaseCommandParams;
   get_selection: BaseCommandParams;
   get_node_info: GetNodeInfoParams;
-  get_nodes_info: GetNodesInfoParams;
   get_css_async: GetCssAsyncParams;
   get_pages: BaseCommandParams;
   set_current_page: SetCurrentPageParams;
