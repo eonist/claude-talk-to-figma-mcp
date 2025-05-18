@@ -9,6 +9,7 @@ import { registerTextAnalysisTools } from "./text-analysis-tools.js";
 import { registerCssTools } from "./css-tools.js";
 import { registerSvgVectorTool } from "./vector-tools.js";
 import { registerImageTools } from "./image-tools.js";
+import { registerTextStyleTools } from "./text-style-tools.js";
 
 /**
  * Registers all read commands by delegating to submodules.
@@ -24,6 +25,7 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
   registerCssTools(server, figmaClient);
   registerSvgVectorTool(server, figmaClient);
   registerImageTools(server, figmaClient);
+  registerTextStyleTools(server, figmaClient);
 }
 
 // Re-export for granular imports if needed
@@ -38,4 +40,5 @@ export {
   registerCssTools,
   registerSvgVectorTool,
   registerImageTools,
+  registerTextStyleTools,
 };

@@ -43,6 +43,7 @@
 - [create_text](#create_text): Create one or more text elements
 - [set_text_content](#set_text_content): Set text content of an existing node
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
+- [get_text_style](#get_text_style): Get text style properties for one or more nodes (single or batch)
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 - [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
 - [load_font_async](#load_font_async): Load a font asynchronously
@@ -448,16 +449,53 @@ Scan all text nodes in the selected Figma node.
 
 ---
 
-## get_css_async
-Get CSS properties from a node.
+## get_text_style
+Get text style properties for one or more nodes (single or batch).
 
 **Parameters:**
-- nodeId (string, optional)
-- format (string, optional): "object", "string", or "inline"
+- nodeId (string, optional): Single node to extract text style from.
+- nodeIds (array of string, optional): Array of node IDs for batch.
+- At least one of nodeId or nodeIds is required.
+
+**Returns:**
+- For each node: `{ nodeId, textStyle, [error] }`
+  - textStyle: Object with text style properties (fontName, fontSize, fontWeight, letterSpacing, lineHeight, paragraphSpacing, textCase, textDecoration, textStyleId, etc.)
+  - error: (optional) Error message if extraction failed.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "get_text_style", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "get_text_style", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+**Example Response:**
+```json
+[
+  { "nodeId": "123:456", "textStyle": { "fontName": "Inter", "fontSize": 16, "fontWeight": 400, ... } },
+  { "nodeId": "789:101", "error": "Node is not a text node" }
+]
+```
+
+**Limitations & Notes:**
+- Only text nodes will return textStyle; other node types return an error.
+- The set of returned properties matches Figma's text node API.
+
+---
+
+## get_styled_text_segments
+Get text segments with specific styling in a text node.
+
+**Parameters:**
+- nodeId (string)
+- property (string): e.g. "fontWeight", "fontSize", etc.
 
 **Example:**
 ```json
-{ "command": "get_css_async", "params": { "nodeId": "123:456", "format": "inline" } }
+{ "command": "get_styled_text_segments", "params": { "nodeId": "123:456", "property": "fontWeight" } }
 ```
 
 ---

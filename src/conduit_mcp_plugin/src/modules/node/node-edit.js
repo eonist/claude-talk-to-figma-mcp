@@ -236,13 +236,175 @@ export async function getImage(params) {
   } else {
     throw new Error("getImage: Provide either nodeId or nodeIds.");
   }
-  // TODO: Implement logic to extract image fills or export as PNG/JPG.
-  // For each node:
-  // - If node has image fill, extract image data and mimeType.
-  // - If not, optionally export as PNG/JPG.
-  // - Return { nodeId, imageData, mimeType, fillIndex, error }
-  return ids.map(nodeId => ({
-    nodeId,
-    error: "Not yet implemented"
-  }));
+
+  const results = [];
+  for (const nodeId of ids) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node) {
+        results.push({ nodeId, error: "Node not found" });
+        continue;
+      }
+
+      // Check for image fill
+      if ("fills" in node && Array.isArray(node.fills) && node.fills.length > 0) {
+        const fills = node.fills;
+        const fill = fills[fillIndex] || fills[0];
+        if (fill && fill.type === "IMAGE" && fill.imageHash) {
+          try {
+            const imageBytes = await figma.getImageByHash(fill.imageHash).getBytesAsync();
+            // Encode as base64 data URI
+            const mimeType = fill.scaleMode === "CROP" ? "image/png" : "image/png"; // Figma always returns PNG for getBytesAsync
+            const base64 = base64ArrayBuffer(imageBytes);
+            results.push({
+              nodeId,
+              imageData: `data:${mimeType};base64,${base64}`,
+              mimeType,
+              fillIndex
+            });
+            continue;
+          } catch (err) {
+            results.push({ nodeId, fillIndex, error: "Failed to extract image fill: " + (err && err.message ? err.message : String(err)) });
+            continue;
+          }
+        }
+      }
+
+      // If node is an IMAGE node (rare, but possible)
+      if (node.type === "IMAGE" && node.imageHash) {
+        try {
+          const imageBytes = await figma.getImageByHash(node.imageHash).getBytesAsync();
+          const mimeType = "image/png";
+          const base64 = base64ArrayBuffer(imageBytes);
+          results.push({
+            nodeId,
+            imageData: `data:${mimeType};base64,${base64}`,
+            mimeType
+          });
+          continue;
+        } catch (err) {
+          results.push({ nodeId, error: "Failed to extract IMAGE node: " + (err && err.message ? err.message : String(err)) });
+          continue;
+        }
+      }
+
+      // Fallback: export node as PNG
+      try {
+        const pngBytes = await node.exportAsync({ format: "PNG" });
+        const mimeType = "image/png";
+        const base64 = base64ArrayBuffer(pngBytes);
+        results.push({
+          nodeId,
+          imageData: `data:${mimeType};base64,${base64}`,
+          mimeType,
+          error: "No image fill found, node rasterized"
+        });
+      } catch (err) {
+        results.push({ nodeId, error: "Failed to export node as PNG: " + (err && err.message ? err.message : String(err)) });
+      }
+    } catch (err) {
+      results.push({ nodeId, error: "Unexpected error: " + (err && err.message ? err.message : String(err)) });
+    }
+  }
+  return results;
+
+  // Helper: ArrayBuffer to base64
+  function base64ArrayBuffer(arrayBuffer) {
+    let base64 = '';
+    const encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+    const bytes = new Uint8Array(arrayBuffer);
+    const byteLength = bytes.byteLength;
+    const byteRemainder = byteLength % 3;
+    const mainLength = byteLength - byteRemainder;
+
+    let a, b, c, d;
+    let chunk;
+
+    // Main loop deals with bytes in chunks of 3
+    for (let i = 0; i < mainLength; i += 3) {
+      // Combine the three bytes into a single integer
+      chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+
+      // Use bitmasks to extract 6-bit segments from the triplet
+      a = (chunk & 16515072) >> 18;
+      b = (chunk & 258048) >> 12;
+      c = (chunk & 4032) >> 6;
+      d = chunk & 63;
+
+      // Convert the raw binary segments to the appropriate ASCII encoding
+      base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
+    }
+
+    // Deal with the remaining bytes and padding
+    if (byteRemainder === 1) {
+      chunk = bytes[mainLength];
+
+      a = (chunk & 252) >> 2;
+      b = (chunk & 3) << 4;
+
+      base64 += encodings[a] + encodings[b] + '==';
+    } else if (byteRemainder === 2) {
+      chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
+
+      a = (chunk & 64512) >> 10;
+      b = (chunk & 1008) >> 4;
+      c = (chunk & 15) << 2;
+
+      base64 += encodings[a] + encodings[b] + encodings[c] + '=';
+    }
+
+    return base64;
+  }
+}
+
+/**
+ * Unified handler for get_text_style (single or batch).
+ * Returns text style properties for one or more nodes.
+ *
+ * @async
+ * @function
+ * @param {Object} params - { nodeId } or { nodeIds }
+ * @returns {Promise<Array<{ nodeId: string, textStyle?: Object, error?: string }>>}
+ */
+export async function getTextStyle(params) {
+  let ids = [];
+  if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    ids = params.nodeIds;
+  } else if (params.nodeId) {
+    ids = [params.nodeId];
+  } else {
+    throw new Error("getTextStyle: Provide either nodeId or nodeIds.");
+  }
+  const results = [];
+  for (const nodeId of ids) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node) {
+        results.push({ nodeId, error: "Node not found" });
+        continue;
+      }
+      if (node.type !== "TEXT") {
+        results.push({ nodeId, error: "Node is not a text node" });
+        continue;
+      }
+      // Extract text style properties
+      const textStyle = {};
+      if ("fontName" in node) textStyle.fontName = node.fontName;
+      if ("fontSize" in node) textStyle.fontSize = node.fontSize;
+      if ("fontWeight" in node) textStyle.fontWeight = node.fontWeight;
+      if ("letterSpacing" in node) textStyle.letterSpacing = node.letterSpacing;
+      if ("lineHeight" in node) textStyle.lineHeight = node.lineHeight;
+      if ("paragraphSpacing" in node) textStyle.paragraphSpacing = node.paragraphSpacing;
+      if ("textCase" in node) textStyle.textCase = node.textCase;
+      if ("textDecoration" in node) textStyle.textDecoration = node.textDecoration;
+      if ("textStyleId" in node) textStyle.textStyleId = node.textStyleId;
+      // Add more as needed
+
+      results.push({ nodeId, textStyle });
+    } catch (err) {
+      results.push({ nodeId, error: "Unexpected error: " + (err && err.message ? err.message : String(err)) });
+    }
+  }
+  return results;
 }

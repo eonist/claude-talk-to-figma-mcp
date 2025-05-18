@@ -65,10 +65,22 @@ export interface GetImageParams {
   fillIndex?: number;
 }
 
+/**
+ * Parameters for get_text_style (single or batch).
+ * - nodeId: (string, optional) Single node to extract text style from.
+ * - nodeIds: (array of string, optional) Array of node IDs for batch.
+ * At least one of nodeId or nodeIds is required.
+ */
+export interface GetTextStyleParams {
+  nodeId?: string;
+  nodeIds?: string[];
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
   get_svg_vector: GetSvgVectorParams;
   get_image: GetImageParams;
+  get_text_style: GetTextStyleParams;
   // ...other command mappings
 }

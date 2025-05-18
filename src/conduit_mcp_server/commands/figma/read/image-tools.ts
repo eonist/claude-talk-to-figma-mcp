@@ -29,22 +29,88 @@ export async function get_image(
     };
   }
 
-  // TODO: Implement logic to extract image fills or export as PNG/JPG.
+  // Implement logic to extract image fills or export as PNG/JPG.
   // For each node:
   // - If node has image fill, extract image data and mimeType.
   // - If not, optionally export as PNG/JPG.
   // - Return { nodeId, imageData, mimeType, [fillIndex], [error] }
 
+  const results: any[] = [];
+  for (const nodeId of ids) {
+    try {
+      // Get node info from Figma
+      const nodeInfo = await client.getNodeInfo(nodeId);
+      if (!nodeInfo || !nodeInfo.node) {
+        results.push({ nodeId, error: "Node not found" });
+        continue;
+      }
+      const node = nodeInfo.node;
+
+      // Check for image fill
+      if (node.fills && Array.isArray(node.fills) && node.fills.length > 0) {
+        const fills = node.fills;
+        const fill = fills[fillIndex] || fills[0];
+        if (fill && fill.type === "IMAGE" && fill.imageHash) {
+          try {
+            const imageBytes = await client.getImageByHash(fill.imageHash);
+            const mimeType = "image/png";
+            const base64 = Buffer.from(imageBytes).toString("base64");
+            results.push({
+              nodeId,
+              imageData: `data:${mimeType};base64,${base64}`,
+              mimeType,
+              fillIndex
+            });
+            continue;
+          } catch (err: any) {
+            results.push({ nodeId, fillIndex, error: "Failed to extract image fill: " + (err && err.message ? err.message : String(err)) });
+            continue;
+          }
+        }
+      }
+
+      // If node is an IMAGE node (rare, but possible)
+      if (node.type === "IMAGE" && node.imageHash) {
+        try {
+          const imageBytes = await client.getImageByHash(node.imageHash);
+          const mimeType = "image/png";
+          const base64 = Buffer.from(imageBytes).toString("base64");
+          results.push({
+            nodeId,
+            imageData: `data:${mimeType};base64,${base64}`,
+            mimeType
+          });
+          continue;
+        } catch (err: any) {
+          results.push({ nodeId, error: "Failed to extract IMAGE node: " + (err && err.message ? err.message : String(err)) });
+          continue;
+        }
+      }
+
+      // Fallback: export node as PNG
+      try {
+        const pngBytes = await client.exportNodeAsImage(nodeId, "PNG");
+        const mimeType = "image/png";
+        const base64 = Buffer.from(pngBytes).toString("base64");
+        results.push({
+          nodeId,
+          imageData: `data:${mimeType};base64,${base64}`,
+          mimeType,
+          error: "No image fill found, node rasterized"
+        });
+      } catch (err: any) {
+        results.push({ nodeId, error: "Failed to export node as PNG: " + (err && err.message ? err.message : String(err)) });
+      }
+    } catch (err: any) {
+      results.push({ nodeId, error: "Unexpected error: " + (err && err.message ? err.message : String(err)) });
+    }
+  }
+
   return {
     content: [
       {
         type: "text",
-        text: JSON.stringify(
-          ids.map(id => ({
-            nodeId: id,
-            error: "Not yet implemented"
-          }))
-        )
+        text: JSON.stringify(results)
       }
     ]
   };
