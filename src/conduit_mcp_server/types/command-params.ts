@@ -135,6 +135,38 @@ export interface SetParagraphSpacingParams {
   }>;
 }
 
+/**
+ * Parameters for set_line_height (single or batch).
+ * - operation: (object, optional) Single line height config.
+ * - operations: (array of objects, optional) Batch of configs.
+ * - options: (object, optional) { skipErrors?: boolean, loadMissingFonts?: boolean }
+ * At least one of operation or operations is required.
+ */
+export interface SetLineHeightParams {
+  operation?: {
+    nodeId: string;
+    ranges: Array<{
+      start: number;
+      end: number;
+      value?: number;
+      unit: "PIXELS" | "PERCENT" | "AUTO";
+    }>;
+  };
+  operations?: Array<{
+    nodeId: string;
+    ranges: Array<{
+      start: number;
+      end: number;
+      value?: number;
+      unit: "PIXELS" | "PERCENT" | "AUTO";
+    }>;
+  }>;
+  options?: {
+    skipErrors?: boolean;
+    loadMissingFonts?: boolean;
+  };
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
@@ -142,5 +174,6 @@ export interface CommandParamsMap {
   get_image: GetImageParams;
   get_text_style: GetTextStyleParams;
   set_paragraph_spacing: SetParagraphSpacingParams;
+  set_line_height: SetLineHeightParams;
   // ...other command mappings
 }

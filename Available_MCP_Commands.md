@@ -47,6 +47,7 @@
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 - [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
 - [set_paragraph_spacing](#set_paragraph_spacing): Set the paragraph spacing of one or more text nodes (single or batch)
+- [set_line_height](#set_line_height): Set the line height of one or more text nodes (single or batch, range-based)
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**
@@ -249,6 +250,53 @@ _Batch:_
   { "name": "Blur", "type": "LAYER_BLUR", "radius": 12 }
 ] } }
 ```
+
+---
+
+## set_line_height
+Set the line height of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, ranges: [{ start, end, value, unit }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, ranges: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_line_height", "params": { "operation": {
+  "nodeId": "1:23",
+  "ranges": [
+    { "start": 0, "end": 5, "value": 150, "unit": "PERCENT" },
+    { "start": 6, "end": 12, "value": 24, "unit": "PIXELS" },
+    { "start": 13, "end": 20, "unit": "AUTO" }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_line_height", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "ranges": [{ "start": 0, "end": 10, "value": 120, "unit": "PERCENT" }]
+  },
+  {
+    "nodeId": "4:56",
+    "ranges": [{ "start": 0, "end": 5, "value": 20, "unit": "PIXELS" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Supports 'PIXELS', 'PERCENT', and 'AUTO' units.
+- Applies line height to specific text ranges.
+- Optionally loads all required fonts before applying.
 
 ---
 

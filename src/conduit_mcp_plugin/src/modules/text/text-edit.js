@@ -154,6 +154,68 @@ export async function setParagraphSpacingUnified(params) {
   return results;
 }
 
+/**
+ * Unified handler for set_line_height (single or batch).
+ * Sets the line height for one or more text nodes, supporting range-based updates and all Figma units.
+ *
+ * @async
+ * @function
+ * @param {Object} params - { operation: { nodeId, ranges }, operations: [...], options }
+ * @returns {Promise<Array<{ nodeId: string, success?: boolean, error?: string }>>}
+ */
+export async function setLineHeightUnified(params) {
+  let ops = [];
+  if (Array.isArray(params.operations) && params.operations.length > 0) {
+    ops = params.operations;
+  } else if (params.operation && params.operation.nodeId && Array.isArray(params.operation.ranges)) {
+    ops = [params.operation];
+  } else {
+    throw new Error("setLineHeightUnified: Provide either operation or operations array.");
+  }
+
+  const results = [];
+  for (const { nodeId, ranges } of ops) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node || node.type !== "TEXT") {
+        results.push({ nodeId, error: "Node not found or not a text node" });
+        continue;
+      }
+      // Optionally load all fonts for the node
+      if (params.options && params.options.loadMissingFonts) {
+        const fontNames = node.getRangeAllFontNames(0, node.characters.length);
+        for (const font of fontNames) {
+          await figma.loadFontAsync(font);
+        }
+      } else {
+        await figma.loadFontAsync(node.fontName);
+      }
+      // Apply line height to each range
+      for (const range of ranges) {
+        if (range.start < 0 || range.end > node.characters.length) {
+          throw new Error(`Invalid range [${range.start}-${range.end}] for text length ${node.characters.length}`);
+        }
+        let lineHeight;
+        if (range.unit === "AUTO") {
+          lineHeight = { unit: "AUTO" };
+        } else {
+          lineHeight = { unit: range.unit, value: range.value };
+        }
+        node.setRangeLineHeight(range.start, range.end, lineHeight);
+      }
+      results.push({ nodeId, success: true });
+    } catch (err) {
+      if (params.options && params.options.skipErrors) {
+        results.push({ nodeId, success: false, error: err && err.message ? err.message : String(err) });
+        continue;
+      } else {
+        throw err;
+      }
+    }
+  }
+  return results;
+}
+
 export async function setTextCase(params) {
   const { nodeId, textCase } = params || {};
   if (!nodeId || textCase === undefined) throw new Error("Missing nodeId or textCase");
