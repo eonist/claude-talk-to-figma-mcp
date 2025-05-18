@@ -27,6 +27,7 @@ import { registerUnifiedGridCommands } from "./figma/modify/grid-unified-tools.j
 import { registerGuideCommands } from "./figma/modify/guide-tools.js";
 import { registerConstraintCommands } from "./figma/modify/constraint-tools.js";
 import { registerPageCommands } from "./figma/modify/page-tools.js";
+import { registerEventCommands } from "./figma/modify/event-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.
@@ -72,6 +73,9 @@ export function registerAllCommands(server: McpServer): void {
 
     // Register page commands (set_page, get_page)
     registerPageCommands(server, figmaClient);
+
+    // Register event commands (subscribe_event, unsubscribe_event)
+    registerEventCommands(server, figmaClient);
 
     // Register annotation commands
     registerAnnotationCommands(server, figmaClient);

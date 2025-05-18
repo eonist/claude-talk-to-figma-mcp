@@ -69,6 +69,17 @@ export interface GetConstraintsParams {
   includeChildren?: boolean;
 }
 
+/**
+ * Unified event subscription command parameter types
+ */
+export interface SubscribeEventParams {
+  eventType: string;
+  filter?: any;
+}
+export interface UnsubscribeEventParams {
+  subscriptionId: string;
+}
+
 export type FigmaCommand =
   // Get detailed information about the current Figma document (see commands/figma/read/document-tools.ts)
   | "get_document_info"
@@ -221,7 +232,10 @@ export type FigmaCommand =
   | "get_guide"
   // Constraint commands (set/get constraints)
   | "set_constraints"
-  | "get_constraints";
+  | "get_constraints"
+  // Event subscription commands
+  | "subscribe_event"
+  | "unsubscribe_event";
 
 /**
  * Map each command to its specific params

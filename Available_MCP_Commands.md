@@ -1,5 +1,57 @@
 # MCP Commands for Conduit Integration
 
+---
+
+## Event Subscription & Notification
+
+### subscribe_event
+Subscribe to a Figma event (e.g., selection_change, document_change).
+
+**Parameters:**
+- eventType (string): Event type to subscribe to (e.g., "selection_change", "document_change")
+- filter (object, optional): Optional filter for event payloads
+
+**Returns:** `{ subscriptionId }`
+
+**Example:**
+```json
+{ "command": "subscribe_event", "params": { "eventType": "selection_change" } }
+```
+
+---
+
+### unsubscribe_event
+Unsubscribe from a previously subscribed event.
+
+**Parameters:**
+- subscriptionId (string): The subscription ID to remove
+
+**Returns:** `{ success: true }`
+
+**Example:**
+```json
+{ "command": "unsubscribe_event", "params": { "subscriptionId": "sub-abc123" } }
+```
+
+---
+
+### Event Notification
+When an event occurs, the server pushes a message to all matching subscribers:
+
+**Example:**
+```json
+{
+  "event": "selection_change",
+  "payload": {
+    "selectedNodeIds": ["123:456", "789:101"],
+    "timestamp": 1716000000000
+  },
+  "subscriptionId": "sub-abc123"
+}
+```
+
+---
+
 This document lists all available Model Context Protocol (MCP) commands for the Conduit integration, enabling AI-assisted design in Figma via natural language instructions.
 
 ---

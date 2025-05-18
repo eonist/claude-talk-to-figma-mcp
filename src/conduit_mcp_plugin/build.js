@@ -133,6 +133,7 @@ async function buildPlugin() {
     
     // List of other module files to be added in the defined order.
     const moduleOrder = [
+      'events/event-emitter.js',
       'document/document-info.js',
       'document/document-selection.js',
       'document/document-node.js',
