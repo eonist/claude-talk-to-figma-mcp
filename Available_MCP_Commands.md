@@ -25,9 +25,6 @@
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [get_styles](#get_styles): Get all styles from the document
 - [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
-- [get_local_components](#get_local_components) **[DEPRECATED]**
-- [get_team_components](#get_team_components) **[DEPRECATED]**
-- [get_remote_components](#get_remote_components) **[DEPRECATED]**
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 - [get_css_async](#get_css_async): Get CSS properties from a node
@@ -387,16 +384,6 @@ _Remote components:_
 
 ---
 
-## get_local_components **[DEPRECATED]**
-Use `get_components` with `{ "source": "local" }` instead.
-
-## get_team_components **[DEPRECATED]**
-Use `get_components` with `{ "source": "team", "team_id": "..." }` instead.
-
-## get_remote_components **[DEPRECATED]**
-Use `get_components` with `{ "source": "remote" }` instead.
-
----
 
 ## get_styled_text_segments
 Get text segments with specific styling in a text node.

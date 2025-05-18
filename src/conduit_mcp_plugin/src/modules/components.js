@@ -26,52 +26,7 @@
  * const result = await getLocalComponents();
  * console.log(`Found ${result.count} components`, result.components);
  */
-export async function getLocalComponents() {
-  await figma.loadAllPagesAsync();
-  const comps = figma.root.findAllWithCriteria({ types: ["COMPONENT"] });
-  return {
-    count: comps.length,
-    components: comps.map(c => ({
-      id: c.id,
-      name: c.name,
-      key: "key" in c ? c.key : null
-    }))
-  };
-}
 
-/**
- * Retrieves remote components from team libraries.
- * @async
- * @function getRemoteComponents
- * @returns {Promise<{ success: boolean, count?: number, components?: Array<{ key: string, name: string, description: string, libraryName: string }>, error?: boolean, message?: string }>}
- * @example
- * const remote = await getRemoteComponents();
- * if (remote.success) {
- *   console.log(`Loaded ${remote.count} remote components`);
- * } else {
- *   console.error('Failed to load remote components:', remote.message);
- * }
- */
-export async function getRemoteComponents() {
-  try {
-    if (!figma.teamLibrary || !figma.teamLibrary.getAvailableComponentsAsync) {
-      return { error: true, message: "Team library API unavailable", apiAvailable: !!figma.teamLibrary };
-    }
-    let timeoutId;
-    const timeout = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => reject(new Error("Timeout")), 15000);
-    });
-    const comps = await Promise.race([
-      figma.teamLibrary.getAvailableComponentsAsync(),
-      timeout
-    ]).finally(() => clearTimeout(timeoutId));
-    return { success: true, count: comps.length, components: comps.map(c => ({
-      key: c.key, name: c.name, description: c.description || "", libraryName: c.libraryName
-    })) };
-  } catch (err) {
-    return { error: true, message: err.message || String(err), stack: err.stack };
-  }
-}
 
 /**
  * Converts one or more existing nodes into components.
@@ -209,54 +164,6 @@ export async function exportNodeAsImage(params) {
   return { nodeId, format, scale, mimeType: mime, imageData: base64 };
 }
 
-/**
- * Retrieves components from a Figma team library with pagination.
- * @async
- * @function getTeamComponents
- * @param {{ teamId: string, pageSize?: number, after?: number }} params
- * @returns {Promise<{ components: Array, pagination: { next_cursor: number, has_next: boolean } }>}
- */
-export async function getTeamComponents(params) {
-  const { teamId, pageSize = 30, after = 0 } = params || {};
-  if (!teamId) throw new Error("Missing teamId");
-  if (!figma.teamLibrary || !figma.teamLibrary.getAvailableLibraryAssetsAsync) {
-    throw new Error("Team library API unavailable");
-  }
-  let timeoutId;
-  const timeout = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error("Timeout")), 15000);
-  });
-  const result = await Promise.race([
-    figma.teamLibrary.getAvailableLibraryAssetsAsync({
-      teamId,
-      pageSize,
-      after,
-      types: ["COMPONENT"]
-    }),
-    timeout
-  ]).finally(() => clearTimeout(timeoutId));
-  return {
-    components: (result.libraryAssets || []).map(asset => ({
-      key: asset.key,
-      name: asset.name,
-      description: asset.description,
-      created_at: asset.created_at,
-      modified_at: asset.modified_at,
-      containing_frame: asset.containing_frame
-        ? {
-            x: asset.containing_frame.x,
-            y: asset.containing_frame.y,
-            width: asset.containing_frame.width,
-            height: asset.containing_frame.height
-          }
-        : null
-    })),
-    pagination: {
-      next_cursor: result.pagination ? result.pagination.after : undefined,
-      has_next: result.pagination ? result.pagination.has_next : undefined
-    }
-  };
-}
 
 /**
  * Collection of component operation functions for Figma nodes.
@@ -291,9 +198,6 @@ export async function getComponents(params) {
 }
 
 export const componentOperations = {
-  getLocalComponents,
-  getRemoteComponents,
-  getTeamComponents,
   getComponents,
   createComponentsFromNodes,
   createComponentInstance,
