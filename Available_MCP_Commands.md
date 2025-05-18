@@ -106,8 +106,7 @@
 - [set_node_visible](#set_node_visible): Show or hide nodes
 
 **Component/Instance Management:**
-- [detach_instance](#detach_instance): Detach a single component instance from its master
-- [detach_instances](#detach_instances): Detach one or more component instances
+- [detach_instances](#detach_instances): Detach one or more component instances from their masters (single or batch)
 
 **Naming:**
 - [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
@@ -1636,14 +1635,25 @@ Show or hide one or more nodes.
 ---
 
 ## detach_instances
-Detach one or more component instances from their masters.
+Detach one or more component instances from their masters (single or batch).
 
 **Parameters:**
-- instanceIds (array of string): Array of instance node IDs.
+- instanceId (string, optional): A single instance node ID to detach.
+- instanceIds (array of string, optional): Array of instance node IDs to detach.
+- options (object, optional): { maintain_position (boolean, optional), skip_errors (boolean, optional) }
+- At least one of `instanceId` or `instanceIds` is required.
 
-**Example:**
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the detach result as JSON.
+
+**Examples:**
+_Single:_
 ```json
-{ "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"] } }
+{ "command": "detach_instances", "params": { "instanceId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"], "options": { "skip_errors": true } } }
 ```
 
 ---
