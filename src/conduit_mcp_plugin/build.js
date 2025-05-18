@@ -101,14 +101,25 @@ async function buildPlugin() {
     // Initialize the output string with a header comment.
     let output = '// Figma Plugin - Auto-generated code from build.js\n\n';
     
-    // List of other module files to be added in the defined order.
+    // ==========================================================================================
+    // WARNING: Every file to be included in the build MUST be listed in moduleOrder below.
+    // - Do NOT re-export or include files elsewhere if they are already listed here.
+    // - Double-inclusion (listing a file here and also re-exporting it elsewhere) will cause
+    //   duplicate declarations and build errors (e.g., "invalid redefinition of lexical identifier").
+    // - Always update moduleOrder when adding, removing, or renaming modules.
+    // - This applies to ALL modules, not just utils.
+    // ==========================================================================================
     const moduleOrder = [
       // Utilities and helpers
+      // WARNING: All utility files (plugin.js, encoding.js, helpers.js, utils.js) must be listed here at the top.
+      // Do NOT re-export or include these files elsewhere in the build (e.g., via export * in another file or in another part of moduleOrder),
+      // or you will get duplicate declarations and build errors (e.g., "invalid redefinition of lexical identifier").
+      // Always update this section if you add/remove utility modules.
+      'utils/plugin.js',
       'utils/encoding.js',
       'utils/helpers.js',
-      'utils/plugin.js',
       'utils.js',
-        // Events
+      // Events
       'events/event-emitter.js',
             // Document and related
       'document/document-info.js',
