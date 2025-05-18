@@ -407,26 +407,7 @@ Development accounts for potential differences between Figma Desktop and Web env
 
 -   **Figma Desktop vs Web**: Variations in file system access, security policies, and performance are considered during development.
 -   **Multi-Instance Handling**: The plugin architecture supports multiple instances running concurrently, using unique channel IDs for WebSocket pairing and managing resource cleanup.
-
-## Commands
-
-The plugin supports various commands organized into categories:
-
-- **Document**: `get_document_info`, `get_selection`, `get_node_info`, `get_nodes_info`
-- **Styles**: `get_styles`, `get_local_components`, `get_remote_components`
-- **Images**:
-  - Single from URL: `insert_image`
-  - Batch from URLs: `insert_images`
-  - Single local data: `insert_local_image`
-  - Batch local data/files: `insert_local_images`
-- **Shapes**: Create and manipulate shapes (`create_rectangle`, `create_ellipse`, etc.)
-- **Text**: Create and modify text elements (`create_text`, `set_text_content`, etc.)
-- **Style**: Apply styles, fills, strokes, effects (`set_fill_color`, `set_style`, etc.)
-- **Components**: Work with components, groups, and assets (`create_components_from_nodes`, etc.)
-- **Layout**: Manipulate layout properties (`set_auto_layout`, etc.)
-- **Vectors**: Create and manipulate vectors (`create_vector`, `insert_svg_vector`, etc.)
-- **HTML Generation**: Generate HTML from Figma nodes (`generate_html`)
-
+ 
 ## MCP Integration
 
 This plugin works with Claude's Model Context Protocol to provide a bridge between an AI Agent and Figma, allowing the AI Agent to create and manipulate design elements programmatically.

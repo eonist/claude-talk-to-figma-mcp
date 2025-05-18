@@ -1,7 +1,59 @@
 /**
  * Node editing operations for Figma nodes.
- * Exports: deleteNode, deleteNodes, convertRectangleToFrame
+ * Exports: deleteNode, deleteNodes, convertRectangleToFrame, getNodeStyles
  */
+
+/**
+ * Unified handler for get_node_styles (single or batch).
+ * Returns all style properties for one or more nodes.
+ *
+ * @async
+ * @function
+ * @param {Object} params - { nodeId } or { nodeIds }
+ * @returns {Promise<Array<{ nodeId: string, styles: Object }>>}
+ */
+export async function getNodeStyles(params) {
+  let ids = [];
+  if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    ids = params.nodeIds;
+  } else if (params.nodeId) {
+    ids = [params.nodeId];
+  } else {
+    throw new Error("getNodeStyles: Provide either nodeId or nodeIds.");
+  }
+  const results = [];
+  for (const nodeId of ids) {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      results.push({ nodeId, error: "Node not found" });
+      continue;
+    }
+    // Extract style properties
+    const styles = {};
+    // Paint styles
+    if ("fills" in node) styles.fills = node.fills;
+    if ("strokes" in node) styles.strokes = node.strokes;
+    if ("fillStyleId" in node) styles.fillStyleId = node.fillStyleId;
+    if ("strokeStyleId" in node) styles.strokeStyleId = node.strokeStyleId;
+    // Effect styles
+    if ("effects" in node) styles.effects = node.effects;
+    if ("effectStyleId" in node) styles.effectStyleId = node.effectStyleId;
+    // Text styles
+    if ("fontName" in node) styles.fontName = node.fontName;
+    if ("fontSize" in node) styles.fontSize = node.fontSize;
+    if ("fontWeight" in node) styles.fontWeight = node.fontWeight;
+    if ("letterSpacing" in node) styles.letterSpacing = node.letterSpacing;
+    if ("lineHeight" in node) styles.lineHeight = node.lineHeight;
+    if ("paragraphSpacing" in node) styles.paragraphSpacing = node.paragraphSpacing;
+    if ("textCase" in node) styles.textCase = node.textCase;
+    if ("textDecoration" in node) styles.textDecoration = node.textDecoration;
+    if ("textStyleId" in node) styles.textStyleId = node.textStyleId;
+    // Add more as needed
+
+    results.push({ nodeId, styles });
+  }
+  return results;
+}
 
 /**
  * Deletes a node from the document.

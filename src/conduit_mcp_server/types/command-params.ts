@@ -30,7 +30,19 @@ export interface SetTextStyleParams {
  * CommandParamsMap: Maps FigmaCommand strings to their parameter interfaces.
  * Only set_text_style is included here for now.
  */
+/**
+ * Parameters for get_node_styles (single or batch).
+ * - nodeId: (string, optional) Single node to inspect.
+ * - nodeIds: (array of string, optional) Array of node IDs for batch.
+ * At least one of nodeId or nodeIds is required.
+ */
+export interface GetNodeStylesParams {
+  nodeId?: string;
+  nodeIds?: string[];
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
+  get_node_styles: GetNodeStylesParams;
   // ...other command mappings
 }

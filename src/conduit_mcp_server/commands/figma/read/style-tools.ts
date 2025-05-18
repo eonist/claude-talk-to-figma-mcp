@@ -65,3 +65,95 @@ Returns:
     }
   );
 }
+
+/**
+ * Registers get_node_styles (single or batch) on the MCP server.
+ */
+export function registerNodeStylesTool(server: McpServer, figmaClient: FigmaClient) {
+  server.tool(
+    "get_node_styles",
+    `Get all style properties (fills, strokes, effects, text styles, style IDs, etc.) for one or more nodes.
+
+Input:
+  - nodeId: (optional) The unique Figma node ID to inspect (for single).
+  - nodeIds: (optional) Array of node IDs to inspect (for batch).
+
+At least one of nodeId or nodeIds is required.
+
+Returns:
+  - Array of { nodeId, styles } objects, one per node.
+
+Examples:
+  // Single
+  { nodeId: "123:456" }
+  // Batch
+  { nodeIds: ["123:456", "789:101"] }
+`,
+    {
+      nodeId: require("zod").z.string().optional(),
+      nodeIds: require("zod").z.array(require("zod").z.string()).optional()
+    },
+    {
+      title: "Get Node Styles (Unified)",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456" },
+        { nodeIds: ["123:456", "789:101"] }
+      ]),
+      edgeCaseWarnings: [
+        "Returns an error if any nodeId is invalid or not found.",
+        "Result is an array of { nodeId, styles } objects (even for single)."
+      ],
+      extraInfo: "Use this command to inspect all style properties of one or more nodes."
+    },
+    async ({ nodeId, nodeIds }) => {
+      let ids: string[] = [];
+      if (Array.isArray(nodeIds) && nodeIds.length > 0) {
+        ids = nodeIds;
+      } else if (nodeId) {
+        ids = [nodeId];
+      } else {
+        return { content: [{ type: "text", text: "You must provide either nodeId or nodeIds." }] };
+      }
+      const results = [];
+      for (const id of ids) {
+        try {
+          const node = await figmaClient.executeCommand("get_node_info", { nodeId: id });
+          if (!node) {
+            results.push({ nodeId: id, error: "Node not found" });
+            continue;
+          }
+          // Extract style properties
+          const styles: any = {};
+          // Paint styles
+          if (node.fills) styles.fills = node.fills;
+          if (node.strokes) styles.strokes = node.strokes;
+          if (node.fillStyleId) styles.fillStyleId = node.fillStyleId;
+          if (node.strokeStyleId) styles.strokeStyleId = node.strokeStyleId;
+          // Effect styles
+          if (node.effects) styles.effects = node.effects;
+          if (node.effectStyleId) styles.effectStyleId = node.effectStyleId;
+          // Text styles
+          if (node.fontName) styles.fontName = node.fontName;
+          if (node.fontSize) styles.fontSize = node.fontSize;
+          if (node.fontWeight) styles.fontWeight = node.fontWeight;
+          if (node.letterSpacing) styles.letterSpacing = node.letterSpacing;
+          if (node.lineHeight) styles.lineHeight = node.lineHeight;
+          if (node.paragraphSpacing) styles.paragraphSpacing = node.paragraphSpacing;
+          if (node.textCase) styles.textCase = node.textCase;
+          if (node.textDecoration) styles.textDecoration = node.textDecoration;
+          if (node.textStyleId) styles.textStyleId = node.textStyleId;
+          // Add more as needed
+
+          results.push({ nodeId: id, styles });
+        } catch (error) {
+          results.push({ nodeId: id, error: error instanceof Error ? error.message : String(error) });
+        }
+      }
+      return { content: [{ type: "text", text: JSON.stringify(results) }] };
+    }
+  );
+}
