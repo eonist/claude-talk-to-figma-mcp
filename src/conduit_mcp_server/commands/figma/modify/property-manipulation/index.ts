@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { registerTextContentTools, registerTextStyleTool, registerParagraphSpacingTool, registerLetterSpacingTool } from "./text-content-tools.js";
+import { registerTextContentTools, registerTextStyleTool, registerParagraphSpacingTool, registerLetterSpacingTool, registerTextCaseTool } from "./text-content-tools.js";
 import { registerCornerRadiusTools } from "./corner-radius-tools.js";
 import { registerExportTools } from "./export-tools.js";
 import { registerFontTools } from "./font-tools.js";
@@ -17,6 +17,7 @@ export function registerPropertyManipulationCommands(server: McpServer, figmaCli
   registerTextStyleTool(server, figmaClient);
   registerParagraphSpacingTool(server, figmaClient);
   registerLetterSpacingTool(server, figmaClient);
+  registerTextCaseTool(server, figmaClient);
   registerCornerRadiusTools(server, figmaClient);
   registerExportTools(server, figmaClient);
   registerFontTools(server, figmaClient);
@@ -32,6 +33,7 @@ export {
   registerTextStyleTool,
   registerParagraphSpacingTool,
   registerLetterSpacingTool,
+  registerTextCaseTool,
   registerCornerRadiusTools,
   registerExportTools,
   registerFontTools,

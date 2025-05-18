@@ -48,6 +48,7 @@
 - [set_paragraph_spacing](#set_paragraph_spacing): Set the paragraph spacing of one or more text nodes (single or batch)
 - [set_line_height](#set_line_height): Set the line height of one or more text nodes (single or batch, range-based)
 - [set_letter_spacing](#set_letter_spacing): Set the letter spacing of one or more text nodes (single or batch, range-based)
+- [set_text_case](#set_text_case): Set the text case of one or more text nodes (single or batch, range-based)
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**
@@ -252,6 +253,53 @@ _Batch:_
   { "name": "Blur", "type": "LAYER_BLUR", "radius": 12 }
 ] } }
 ```
+
+---
+
+## set_text_case
+Set the text case of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, ranges: [{ start, end, value }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, ranges: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_text_case", "params": { "operation": {
+  "nodeId": "1:23",
+  "ranges": [
+    { "start": 0, "end": 5, "value": "UPPER" },
+    { "start": 6, "end": 12, "value": "LOWER" },
+    { "start": 13, "end": 20, "value": "TITLE" }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_text_case", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "ranges": [{ "start": 0, "end": 10, "value": "UPPER" }]
+  },
+  {
+    "nodeId": "4:56",
+    "ranges": [{ "start": 0, "end": 5, "value": "TITLE" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Supports all Figma text case types: ORIGINAL, UPPER, LOWER, TITLE, SMALL_CAPS, SMALL_CAPS_FORCED.
+- Applies text case to specific text ranges.
+- Optionally loads all required fonts before applying.
 
 ---
 

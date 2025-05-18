@@ -199,6 +199,36 @@ export interface SetLetterSpacingParams {
   };
 }
 
+/**
+ * Parameters for set_text_case (single or batch).
+ * - operation: (object, optional) Single text case config.
+ * - operations: (array of objects, optional) Batch of configs.
+ * - options: (object, optional) { skipErrors?: boolean, loadMissingFonts?: boolean }
+ * At least one of operation or operations is required.
+ */
+export interface SetTextCaseParams {
+  operation?: {
+    nodeId: string;
+    ranges: Array<{
+      start: number;
+      end: number;
+      value: "ORIGINAL" | "UPPER" | "LOWER" | "TITLE" | "SMALL_CAPS" | "SMALL_CAPS_FORCED";
+    }>;
+  };
+  operations?: Array<{
+    nodeId: string;
+    ranges: Array<{
+      start: number;
+      end: number;
+      value: "ORIGINAL" | "UPPER" | "LOWER" | "TITLE" | "SMALL_CAPS" | "SMALL_CAPS_FORCED";
+    }>;
+  }>;
+  options?: {
+    skipErrors?: boolean;
+    loadMissingFonts?: boolean;
+  };
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
@@ -208,5 +238,6 @@ export interface CommandParamsMap {
   set_paragraph_spacing: SetParagraphSpacingParams;
   set_line_height: SetLineHeightParams;
   set_letter_spacing: SetLetterSpacingParams;
+  set_text_case: SetTextCaseParams;
   // ...other command mappings
 }
