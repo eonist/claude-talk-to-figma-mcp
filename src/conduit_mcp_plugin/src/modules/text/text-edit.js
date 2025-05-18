@@ -1,5 +1,10 @@
 import { setCharacters } from "../utils.js";
 
+// DEBUG: Confirm text-edit.js module is loaded
+if (typeof console !== "undefined" && console.log) {
+  console.log("text-edit.js module loaded");
+}
+
 /**
  * Unified handler for set_text_style (single or batch).
  * Applies one or more style properties to one or more text nodes.
@@ -334,29 +339,86 @@ export async function setTextCaseUnified(params) {
 }
 
 /**
- * Updates the text decoration of a text node.
+ * Unified handler for set_text_decoration (single or batch).
+ * Sets the text decoration for one or more text nodes, supporting range-based updates and all Figma text decoration types.
  *
  * @async
  * @function
- * @param {Object} params - Configuration for text decoration.
- * @param {string} params.nodeId - The ID of the text node to update.
- * @param {"NONE"|"UNDERLINE"|"STRIKETHROUGH"} params.textDecoration - The text decoration to set.
- * @returns {Promise<{ id: string, name: string, textDecoration: string }>} Updated node information including text decoration.
- * @throws {Error} If nodeId or textDecoration is missing/invalid, node cannot be found, or node is not a text node.
+ * @param {Object} params - { operation: { nodeId, ranges }, operations: [...], options }
+ * @returns {Promise<Array<{ nodeId: string, success?: boolean, error?: string }>>}
  */
-export async function setTextDecoration(params) {
-  const { nodeId, textDecoration } = params || {};
-  if (!nodeId || textDecoration === undefined) throw new Error("Missing nodeId or textDecoration");
-  const validDecorations = ["NONE", "UNDERLINE", "STRIKETHROUGH"];
-  if (!validDecorations.includes(textDecoration)) throw new Error(`Invalid textDecoration: must be one of ${validDecorations.join(", ")}`);
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) throw new Error(`Node not found with ID: ${nodeId}`);
-  if (node.type !== "TEXT") throw new Error(`Node is not a text node: ${nodeId}`);
-  try {
-    await figma.loadFontAsync(node.fontName);
-    node.textDecoration = textDecoration;
-    return { id: node.id, name: node.name, textDecoration: node.textDecoration };
-  } catch (error) {
-    throw new Error(`Error setting text decoration: ${error.message}`);
+export async function setTextDecorationUnified(params) {
+  if (!params) {
+    throw new Error("setTextDecorationUnified: params is undefined/null");
   }
+  // Debug log for troubleshooting
+  if (typeof console !== "undefined" && console.log) {
+    console.log("setTextDecorationUnified called with params:", JSON.stringify(params));
+  }
+  let ops = [];
+  if (Array.isArray(params.operations) && params.operations.length > 0) {
+    ops = params.operations;
+  } else if (params.operation && params.operation.nodeId && Array.isArray(params.operation.ranges)) {
+    ops = [params.operation];
+  } else {
+    throw new Error("setTextDecorationUnified: Provide either operation or operations array.");
+  }
+
+  const validDecorations = ["NONE", "UNDERLINE", "STRIKETHROUGH"];
+  const results = [];
+  for (const { nodeId, ranges } of ops) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node || node.type !== "TEXT") {
+        results.push({ nodeId, error: "Node not found or not a text node" });
+        continue;
+      }
+      // Optionally load all fonts for the node
+      if (params.options && params.options.loadMissingFonts) {
+        const fontNames = node.getRangeAllFontNames(0, node.characters.length);
+        for (const font of fontNames) {
+          await figma.loadFontAsync(font);
+        }
+      } else {
+        await figma.loadFontAsync(node.fontName);
+      }
+      // Apply text decoration to each range
+      for (const range of ranges) {
+        if (range.start < 0 || range.end > node.characters.length) {
+          throw new Error(`Invalid range [${range.start}-${range.end}] for text length ${node.characters.length}`);
+        }
+        if (!validDecorations.includes(range.type)) {
+          throw new Error(`Invalid text decoration: ${range.type}`);
+        }
+        node.setRangeTextDecoration(range.start, range.end, range.type);
+        // Optionally apply additional style properties if specified
+        if (range.style) {
+          if (range.style.color) {
+            node.setRangeTextDecorationColor(range.start, range.end, range.style.color);
+          }
+          if (typeof range.style.thickness === "number") {
+            node.setRangeTextDecorationThickness(range.start, range.end, range.style.thickness);
+          }
+          if (typeof range.style.offset === "number") {
+            node.setRangeTextDecorationOffset(range.start, range.end, range.style.offset);
+          }
+          if (range.style.style) {
+            node.setRangeTextDecorationStyle(range.start, range.end, range.style.style);
+          }
+          if (typeof range.style.skipInk === "boolean") {
+            node.setRangeTextDecorationSkipInk(range.start, range.end, range.style.skipInk);
+          }
+        }
+      }
+      results.push({ nodeId, success: true });
+    } catch (err) {
+      if (params.options && params.options.skipErrors) {
+        results.push({ nodeId, success: false, error: err && err.message ? err.message : String(err) });
+        continue;
+      } else {
+        throw err;
+      }
+    }
+  }
+  return results;
 }

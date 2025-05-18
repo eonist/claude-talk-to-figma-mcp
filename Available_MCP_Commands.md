@@ -49,6 +49,7 @@
 - [set_line_height](#set_line_height): Set the line height of one or more text nodes (single or batch, range-based)
 - [set_letter_spacing](#set_letter_spacing): Set the letter spacing of one or more text nodes (single or batch, range-based)
 - [set_text_case](#set_text_case): Set the text case of one or more text nodes (single or batch, range-based)
+- [set_text_decoration](#set_text_decoration): Set the text decoration of one or more text nodes (single or batch, range-based)
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**
@@ -119,7 +120,9 @@
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
+---
 
+# Command Index
 
 ## set_selection
 Set the current selection in Figma to the specified node(s) by ID.
@@ -225,7 +228,7 @@ _Batch:_
 
 ---
 
-# Command Index
+
 
 ## create_effect_style_variable
 Create one or more effect style variables in Figma.
@@ -253,6 +256,53 @@ _Batch:_
   { "name": "Blur", "type": "LAYER_BLUR", "radius": 12 }
 ] } }
 ```
+
+---
+
+## set_text_decoration
+Set the text decoration of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, ranges: [{ start, end, type, style }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, ranges: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_text_decoration", "params": { "operation": {
+  "nodeId": "1:23",
+  "ranges": [
+    { "start": 0, "end": 5, "type": "UNDERLINE" },
+    { "start": 6, "end": 12, "type": "STRIKETHROUGH", "style": { "color": { "r": 1, "g": 0, "b": 0 }, "thickness": 2 } }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_text_decoration", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "ranges": [{ "start": 0, "end": 10, "type": "UNDERLINE" }]
+  },
+  {
+    "nodeId": "4:56",
+    "ranges": [{ "start": 0, "end": 5, "type": "STRIKETHROUGH" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Supports all Figma text decoration types: NONE, UNDERLINE, STRIKETHROUGH.
+- Applies decoration to specific text ranges.
+- Optionally loads all required fonts before applying.
+- Additional style properties (color, thickness, offset, style, skipInk) are supported if available in the Figma API.
 
 ---
 

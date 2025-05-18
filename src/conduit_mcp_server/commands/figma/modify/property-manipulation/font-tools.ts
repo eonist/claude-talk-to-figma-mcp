@@ -280,28 +280,6 @@ Returns:
     }
   );
 
-  // Set Text Decoration
-  server.tool(
-    "set_text_decoration",
-    `Set the text decoration of a text node in Figma.
-
-Returns:
-  - content: Array containing a text message with the updated node's ID.
-    Example: { "content": [{ "type": "text", "text": "Text decoration set for 123:456" }] }
-`,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456'."),
-      textDecoration: z.enum(["NONE", "UNDERLINE", "STRIKETHROUGH"])
-        .describe('The text decoration to set: "NONE", "UNDERLINE", or "STRIKETHROUGH".'),
-    },
-    async ({ nodeId, textDecoration }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_text_decoration", { nodeId: id, textDecoration });
-      return { content: [{ type: "text", text: `Text decoration set for ${id}` }] };
-    }
-  );
 
   // Load Font Async
   server.tool(

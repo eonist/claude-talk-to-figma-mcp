@@ -440,6 +440,101 @@ Examples:
 }
 
 /**
+ * Registers the unified "set_text_decoration" tool on the MCP server.
+ */
+export function registerTextDecorationTool(server: McpServer, figmaClient: FigmaClient) {
+  server.tool(
+    "set_text_decoration",
+    `Sets the text decoration for one or more text nodes in Figma, supporting all Figma text decoration types and range-based updates.
+
+Input:
+  - operation: (optional) Single config { nodeId, ranges: [{ start, end, type, style }] }
+  - operations: (optional) Array of configs [{ nodeId, ranges: [...] }]
+  - options: (optional) { skipErrors?: boolean, loadMissingFonts?: boolean }
+
+At least one of operation or operations is required.
+
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the update result.
+
+Examples:
+  // Single
+  { operation: { nodeId: "123:456", ranges: [{ start: 0, end: 5, type: "UNDERLINE" }] } }
+  // Batch
+  { operations: [
+      { nodeId: "123:456", ranges: [{ start: 0, end: 5, type: "UNDERLINE" }] },
+      { nodeId: "789:101", ranges: [{ start: 0, end: 10, type: "STRIKETHROUGH" }] }
+    ]
+  }
+`,
+    {
+      operation: z.object({
+        nodeId: z.string().refine(isValidNodeId),
+        ranges: z.array(z.object({
+          start: z.number(),
+          end: z.number(),
+          type: z.enum(["NONE", "UNDERLINE", "STRIKETHROUGH"]),
+          style: z.record(z.any()).optional()
+        }))
+      }).optional(),
+      operations: z.array(
+        z.object({
+          nodeId: z.string().refine(isValidNodeId),
+          ranges: z.array(z.object({
+            start: z.number(),
+            end: z.number(),
+            type: z.enum(["NONE", "UNDERLINE", "STRIKETHROUGH"]),
+            style: z.record(z.any()).optional()
+          }))
+        })
+      ).optional(),
+      options: z.object({
+        skipErrors: z.boolean().optional(),
+        loadMissingFonts: z.boolean().optional()
+      }).optional()
+    },
+    {
+      title: "Set Text Decoration (Unified)",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: false,
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { operation: { nodeId: "123:456", ranges: [{ start: 0, end: 5, type: "UNDERLINE" }] } },
+        { operations: [
+            { nodeId: "123:456", ranges: [{ start: 0, end: 5, type: "UNDERLINE" }] },
+            { nodeId: "789:101", ranges: [{ start: 0, end: 10, type: "STRIKETHROUGH" }] }
+          ]
+        }
+      ]),
+      edgeCaseWarnings: [
+        "nodeId must be a valid Figma text node ID.",
+        "Ranges must be within the text length.",
+        "Type must be a valid Figma TextDecoration.",
+        "You must provide either operation or operations."
+      ],
+      extraInfo: "Use this command to update the text decoration for one or more text nodes, supporting both single and batch operations."
+    },
+    async ({ operation, operations, options }) => {
+      let ops = [];
+      if (Array.isArray(operations) && operations.length > 0) {
+        ops = operations;
+      } else if (operation && operation.nodeId && Array.isArray(operation.ranges)) {
+        ops = [operation];
+      } else {
+        return { content: [{ type: "text", text: "Error: Provide either operation or operations array." }] };
+      }
+      // Forward to plugin/Figma client for actual text decoration application
+      await figmaClient.executeCommand("set_text_decoration", ops.length === 1
+        ? { operation: ops[0], options }
+        : { operations: ops, options }
+      );
+      return { content: [{ type: "text", text: `Updated text decoration for ${ops.length} node(s)` }] };
+    }
+  );
+}
+
+/**
  * Registers the unified "set_text_style" tool on the MCP server.
  */
 export function registerTextStyleTool(server: McpServer, figmaClient: FigmaClient) {

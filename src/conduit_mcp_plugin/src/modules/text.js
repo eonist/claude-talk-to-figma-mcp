@@ -21,7 +21,7 @@
  */
 
 import { createText, createBoundedText, createTexts } from './text/text-create.js';
-import { setTextContent, setMultipleTextContents, setTextCase, setTextDecoration } from './text/text-edit.js';
+import { setTextContent, setMultipleTextContents } from './text/text-edit.js';
 import { scanTextNodes, getStyledTextSegments } from './text/text-scan.js';
 
 /**
@@ -47,7 +47,5 @@ export const textOperations = {
   setTextContent,
   scanTextNodes,
   setMultipleTextContents,
-  setTextCase,
-  setTextDecoration,
   getStyledTextSegments
 };
