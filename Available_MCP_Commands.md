@@ -1,6 +1,5 @@
 # MCP Commands for Conduit Integration
 
-
 ## Unified Command Pattern
 
 **Most commands support both single and batch operations via a unified API:**
@@ -48,6 +47,7 @@
 - [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
 - [set_paragraph_spacing](#set_paragraph_spacing): Set the paragraph spacing of one or more text nodes (single or batch)
 - [set_line_height](#set_line_height): Set the line height of one or more text nodes (single or batch, range-based)
+- [set_letter_spacing](#set_letter_spacing): Set the letter spacing of one or more text nodes (single or batch, range-based)
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**
@@ -117,6 +117,8 @@
 - [unsubscribe_event](#unsubscribe_event): Unsubscribe from a previously subscribed event
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
+
+
 
 ## set_selection
 Set the current selection in Figma to the specified node(s) by ID.
@@ -250,6 +252,52 @@ _Batch:_
   { "name": "Blur", "type": "LAYER_BLUR", "radius": 12 }
 ] } }
 ```
+
+---
+
+## set_letter_spacing
+Set the letter spacing of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, spacings: [{ start, end, value, unit }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, spacings: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_letter_spacing", "params": { "operation": {
+  "nodeId": "1:23",
+  "spacings": [
+    { "start": 0, "end": 5, "value": 2, "unit": "PIXELS" },
+    { "start": 6, "end": 12, "value": 150, "unit": "PERCENT" }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_letter_spacing", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "spacings": [{ "start": 0, "end": 10, "value": 120, "unit": "PERCENT" }]
+  },
+  {
+    "nodeId": "4:56",
+    "spacings": [{ "start": 0, "end": 5, "value": 2, "unit": "PIXELS" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Supports 'PIXELS' and 'PERCENT' units.
+- Applies letter spacing to specific text ranges.
+- Optionally loads all required fonts before applying.
 
 ---
 

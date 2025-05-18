@@ -216,6 +216,63 @@ export async function setLineHeightUnified(params) {
   return results;
 }
 
+/**
+ * Unified handler for set_letter_spacing (single or batch).
+ * Sets the letter spacing for one or more text nodes, supporting range-based updates and both units.
+ *
+ * @async
+ * @function
+ * @param {Object} params - { operation: { nodeId, spacings }, operations: [...], options }
+ * @returns {Promise<Array<{ nodeId: string, success?: boolean, error?: string }>>}
+ */
+export async function setLetterSpacingUnified(params) {
+  let ops = [];
+  if (Array.isArray(params.operations) && params.operations.length > 0) {
+    ops = params.operations;
+  } else if (params.operation && params.operation.nodeId && Array.isArray(params.operation.spacings)) {
+    ops = [params.operation];
+  } else {
+    throw new Error("setLetterSpacingUnified: Provide either operation or operations array.");
+  }
+
+  const results = [];
+  for (const { nodeId, spacings } of ops) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node || node.type !== "TEXT") {
+        results.push({ nodeId, error: "Node not found or not a text node" });
+        continue;
+      }
+      // Optionally load all fonts for the node
+      if (params.options && params.options.loadMissingFonts) {
+        const fontNames = node.getRangeAllFontNames(0, node.characters.length);
+        for (const font of fontNames) {
+          await figma.loadFontAsync(font);
+        }
+      } else {
+        await figma.loadFontAsync(node.fontName);
+      }
+      // Apply letter spacing to each range
+      for (const spacing of spacings) {
+        if (spacing.start < 0 || spacing.end > node.characters.length) {
+          throw new Error(`Invalid range [${spacing.start}-${spacing.end}] for text length ${node.characters.length}`);
+        }
+        const letterSpacing = { value: spacing.value, unit: spacing.unit };
+        node.setRangeLetterSpacing(spacing.start, spacing.end, letterSpacing);
+      }
+      results.push({ nodeId, success: true });
+    } catch (err) {
+      if (params.options && params.options.skipErrors) {
+        results.push({ nodeId, success: false, error: err && err.message ? err.message : String(err) });
+        continue;
+      } else {
+        throw err;
+      }
+    }
+  }
+  return results;
+}
+
 export async function setTextCase(params) {
   const { nodeId, textCase } = params || {};
   if (!nodeId || textCase === undefined) throw new Error("Missing nodeId or textCase");

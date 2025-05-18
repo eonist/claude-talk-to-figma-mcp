@@ -167,6 +167,38 @@ export interface SetLineHeightParams {
   };
 }
 
+/**
+ * Parameters for set_letter_spacing (single or batch).
+ * - operation: (object, optional) Single letter spacing config.
+ * - operations: (array of objects, optional) Batch of configs.
+ * - options: (object, optional) { skipErrors?: boolean, loadMissingFonts?: boolean }
+ * At least one of operation or operations is required.
+ */
+export interface SetLetterSpacingParams {
+  operation?: {
+    nodeId: string;
+    spacings: Array<{
+      start: number;
+      end: number;
+      value: number;
+      unit: "PIXELS" | "PERCENT";
+    }>;
+  };
+  operations?: Array<{
+    nodeId: string;
+    spacings: Array<{
+      start: number;
+      end: number;
+      value: number;
+      unit: "PIXELS" | "PERCENT";
+    }>;
+  }>;
+  options?: {
+    skipErrors?: boolean;
+    loadMissingFonts?: boolean;
+  };
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
@@ -175,5 +207,6 @@ export interface CommandParamsMap {
   get_text_style: GetTextStyleParams;
   set_paragraph_spacing: SetParagraphSpacingParams;
   set_line_height: SetLineHeightParams;
+  set_letter_spacing: SetLetterSpacingParams;
   // ...other command mappings
 }
