@@ -79,13 +79,3 @@ export async function applyDirectGradient(params) {
     success: true
   };
 }
-
-// Use a default export instead of named export
-/**
- * Collection of direct gradient utilities.
- * @namespace directGradient
- * @property {function} applyDirectGradient - Directly apply a gradient to a node.
- */
-export default {
-  applyDirectGradient
-};

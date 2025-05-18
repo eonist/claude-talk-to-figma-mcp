@@ -133,14 +133,16 @@ async function buildPlugin() {
     
     // List of other module files to be added in the defined order.
     const moduleOrder = [
+        // Events
       'events/event-emitter.js',
+            // Document and related
       'document/document-info.js',
       'document/document-selection.js',
       'document/document-node.js',
       'document/document-css.js',
       'document/document-page.js',
       'document.js',
-      'shapes.js',
+      // Shapes and geometry
       'shape/shapes-helpers.js',
       'shape/shapes-rectangle.js',
       'shape/shapes-frame.js',
@@ -149,19 +151,20 @@ async function buildPlugin() {
       'shape/shapes-star.js',
       'shape/shapes-vector.js',
       'shape/shapes-line.js',
-      'image.js',
+      'shapes.js',
+      // Text
       'text/text-create.js',
       'text/text-edit.js',
       'text/text-scan.js',
       'text/text-helpers.js',
       'text.js',
+      //Styles
       'styles/styles-color.js',
       'styles/styles-effects.js',
       'styles/styles-gradient.js',
       'styles/styles-get.js',
       'styles.js',
-      'components/component-variant.js',
-      'components.js',
+       // Layout
       'layout/layout-auto.js',
       'layout/layout-group.js',
       'layout/layout-insert.js',
@@ -172,20 +175,35 @@ async function buildPlugin() {
       'layout/layout-guide.js',
       'layout/layout-constraint.js',
       'layout.js',
+      // Node
       'node/node-modify.js',
       'node/node-edit.js',
       'node/node-misc.js',
+      // Components
+      'components/component-variant.js',
+      'components.js',
+      // Font
       'font/font-set.js',
       'font/font-load.js',
       'font/font-bulk.js',
-      'rename.js',
-      'svg.js',
-      'html-generator.js',
-      'variables.js',
+      'font.js',
       // Include new split command modules before commands.js
       'commands/commands-register.js',
       'commands/commands-button.js',
       'commands.js', // Ensure commands.js is concatenated last as needed.
+      // Misc
+      'rename.js',
+      'svg.js',
+      'html-generator.js',
+      'variables.js',
+      'direct-gradient.js',
+      'image.js',
+      'ui.js',
+      // Utilities and helpers
+      'utils/encoding.js',
+      'utils/helpers.js',
+      'utils/plugin.js',
+      //'utils.js',
     ];
     
     // Process each module file.
