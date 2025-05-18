@@ -104,7 +104,7 @@ export async function setAutoLayoutUnified(params) {
     try {
       const node = await figma.getNodeByIdAsync(nodeId);
       if (!node) {
-        if (options?.skipErrors) {
+        if (options && options.skipErrors) {
           results.push({ nodeId, success: false, error: "Node not found" });
           continue;
         } else {
@@ -112,7 +112,7 @@ export async function setAutoLayoutUnified(params) {
         }
       }
       if (!("layoutMode" in node)) {
-        if (options?.skipErrors) {
+        if (options && options.skipErrors) {
           results.push({ nodeId, success: false, error: `Node type ${node.type} doesn't support auto-layout` });
           continue;
         } else {
@@ -143,14 +143,14 @@ export async function setAutoLayoutUnified(params) {
       if (alignItems) node.primaryAxisAlignItems = alignItems;
 
       // Maintain original position if requested
-      if (options?.maintainPosition) {
+      if (options && options.maintainPosition) {
         node.x = originalPosition.x;
         node.y = originalPosition.y;
       }
 
       results.push({ nodeId, success: true });
     } catch (error) {
-      if (options?.skipErrors) {
+      if (options && options.skipErrors) {
         results.push({ nodeId: config.nodeId, success: false, error: error && error.message ? error.message : String(error) });
         continue;
       } else {
