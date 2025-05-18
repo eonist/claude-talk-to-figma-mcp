@@ -36,15 +36,26 @@ Model Context Protocol (MCP) is the framework that allows an AI agent to communi
 
 ### Features: 
 
-- **Text manipulation** - Enables AI-powered control to add, edit, and style text elements within your Figma designs.
-- **Gradient support** - Allows the AI to create and apply vibrant gradient fills to various design elements.
-- **Font support** - Provides the capability for the AI to access and apply a diverse range of fonts and typographic styles.
-- **AutoLayout** - Facilitates the automatic creation of responsive and adaptive layouts by leveraging Figma's AutoLayout feature.
-- **Batch operations** - Allows the AI to perform actions on multiple Figma elements simultaneously, enhancing workflow efficiency.
-- **Geometric shapes** - Enables the AI to generate common geometric shapes like rectangles, circles, and polygons as needed.
-- **SVG / Image support** - Supports the import and management of Scalable Vector Graphics (SVG) and raster images within Figma designs.
-- **Frame, Group, Component** - Allows the AI to structure designs effectively through the creation and management of frames, groups, and reusable components.
-- **Rename layers** - Provides the ability for the AI to programmatically rename layers, aiding in the organization of Figma files.
+- **Text manipulation** – Add, edit, and style text elements, including advanced controls for font, size, weight, case, decoration, spacing, and paragraph/line height.
+- **Gradient & color support** – Create and apply solid colors, gradients, and color variables (design tokens) to any element.
+- **Font support** – Access and apply a diverse range of fonts, including bulk font operations.
+- **AutoLayout** – Automatically create responsive and adaptive layouts, including hug/fill sizing and all Figma auto-layout properties.
+- **Batch operations** – Perform actions on multiple Figma elements simultaneously for efficient workflows.
+- **Geometric shapes** – Generate rectangles, circles, ellipses, polygons, lines, and star shapes.
+- **Vector & SVG support** – Create, insert, and manipulate vector shapes and SVG graphics.
+- **Image support** – Import, export, and manage raster images within Figma designs.
+- **Frame, Group, Component** – Structure designs with frames, groups, reusable components, and component instances.
+- **Component variants & properties** – Create, manage, and organize component variants and their properties.
+- **Rename layers** – Programmatically rename layers, including AI-powered renaming.
+- **Page management** – Create, duplicate, and set the current page in your Figma document.
+- **Node management** – Clone, delete, lock/unlock, show/hide, insert, flatten, reorder, move, and resize nodes.
+- **Boolean operations** – Union, subtract, intersect, and exclude shapes for complex vector editing.
+- **Grids, guides, and constraints** – Create and manage layout grids, guides, and responsive constraints.
+- **Effect styles** – Create, set, and apply effect styles (drop shadow, blur, etc.).
+- **Figma Variables (Design Tokens)** – Create, update, delete, and apply variables for color, number, string, and boolean; switch between variable modes (e.g., light/dark theme).
+- **Export & code generation** – Export nodes as images (PNG, JPG, SVG, PDF), generate HTML structure, and extract CSS from Figma nodes.
+- **Annotation support** – Get, set, update, and delete annotations on nodes.
+- **Event subscription** – Subscribe and unsubscribe to Figma events (e.g., selection change, document change).
 
 ### Compatibility
 
