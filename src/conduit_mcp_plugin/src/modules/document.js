@@ -24,7 +24,7 @@
  */
 import { getDocumentInfo, getPages, setCurrentPage, createPage } from './document/document-info.js';
 import { getSelection, setSelection } from './document/document-selection.js';
-import { getNodeInfo, getNodesInfo, ensureNodeIdIsString } from './document/document-node.js';
+import { getNodeInfo, ensureNodeIdIsString } from './document/document-node.js';
 import { getCssAsync } from './document/document-css.js';
 
 export const documentOperations = {
@@ -32,7 +32,6 @@ export const documentOperations = {
   getSelection,
   setSelection,
   getNodeInfo,
-  getNodesInfo,
   ensureNodeIdIsString,
   getCssAsync,
   getPages,

@@ -21,8 +21,7 @@
 ### Document and Information
 - [get_document_info](#get_document_info): Get detailed information about the current Figma document
 - [get_selection](#get_selection): Get information about the current selection in Figma
-- [get_node_info](#get_node_info): Get detailed information about a specific node
-- [get_nodes_info](#get_nodes_info): Get detailed information about multiple nodes
+- [get_node_info](#get_node_info): Get detailed information about one or more nodes (single or batch)
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [get_styles](#get_styles): Get all styles from the document
 - [get_local_components](#get_local_components): Get all local components
@@ -269,27 +268,25 @@ Get information about the current selection in Figma.
 ---
 
 ## get_node_info
-Get detailed information about a specific node.
+Get detailed information about one or more nodes (single or batch).
 
 **Parameters:**
-- nodeId (string): Node ID
+- nodeId (string, optional): Node ID for a single node.
+- nodeIds (array of string, optional): Array of node IDs for batch.
+- At least one of `nodeId` or `nodeIds` is required.
 
-**Example:**
+**Returns:**
+- For single: `{ nodeId, document }`
+- For batch: `Array<{ nodeId, document }>` (one object per node)
+
+**Examples:**
+_Single:_
 ```json
 { "command": "get_node_info", "params": { "nodeId": "123:456" } }
 ```
-
----
-
-## get_nodes_info
-Get detailed information about multiple nodes.
-
-**Parameters:**
-- nodeIds (array of string): Array of node IDs
-
-**Example:**
+_Batch:_
 ```json
-{ "command": "get_nodes_info", "params": { "nodeIds": ["123:456", "123:789"] } }
+{ "command": "get_node_info", "params": { "nodeIds": ["123:456", "123:789"] } }
 ```
 
 ---

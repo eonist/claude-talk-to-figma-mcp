@@ -1,6 +1,6 @@
 /**
  * Node info operations for Figma documents.
- * Exports: getNodeInfo, getNodesInfo, ensureNodeIdIsString
+ * Exports: getNodeInfo, ensureNodeIdIsString
  */
 
 /**
@@ -29,31 +29,41 @@ export function ensureNodeIdIsString(nodeId) {
  * @returns {Promise<Object>} The node's document info, or a fallback with id, name, and type.
  * @throws {Error} If the node is not found or the parameter is invalid.
  */
-export async function getNodeInfo(nodeIdOrParams) {
-  let id;
-  if (typeof nodeIdOrParams === 'object' && nodeIdOrParams !== null) {
-    if (nodeIdOrParams.nodeId !== undefined) {
-      id = ensureNodeIdIsString(nodeIdOrParams.nodeId);
-    } else if (nodeIdOrParams.id !== undefined) {
-      id = ensureNodeIdIsString(nodeIdOrParams.id);
-    } else {
-      throw new Error("Invalid node ID: Received an object without nodeId or id property");
-    }
+export async function getNodeInfo(params) {
+  // Accepts: nodeId (string), nodeIds (array), or params object
+  let nodeIds = [];
+  if (typeof params === "string") {
+    nodeIds = [ensureNodeIdIsString(params)];
+  } else if (params && typeof params.nodeId === "string") {
+    nodeIds = [ensureNodeIdIsString(params.nodeId)];
+  } else if (params && Array.isArray(params.nodeIds)) {
+    nodeIds = params.nodeIds.map(ensureNodeIdIsString);
   } else {
-    id = ensureNodeIdIsString(nodeIdOrParams);
+    throw new Error("Must provide 'nodeId' or 'nodeIds'");
   }
-  const node = await figma.getNodeByIdAsync(id);
-  if (!node) throw new Error(`Node not found with ID: ${id}`);
-  try {
-    const response = await node.exportAsync({ format: "JSON_REST_V1" });
-    return response.document;
-  } catch (error) {
-    return {
-      id: node.id,
-      name: node.name,
-      type: node.type || "UNKNOWN"
-    };
+  const results = [];
+  for (const nodeId of nodeIds) {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      results.push({ nodeId, error: "Node not found" });
+      continue;
+    }
+    try {
+      const response = await node.exportAsync({ format: "JSON_REST_V1" });
+      results.push({ nodeId, document: response.document });
+    } catch (error) {
+      results.push({
+        nodeId: node.id,
+        document: {
+          id: node.id,
+          name: node.name,
+          type: node.type || "UNKNOWN"
+        }
+      });
+    }
   }
+  // Return single object if only one node, else array
+  return results.length === 1 ? results[0] : results;
 }
 
 /**
@@ -65,45 +75,3 @@ export async function getNodeInfo(nodeIdOrParams) {
  * @returns {Promise<Array<{nodeId: string, document: Object}>>} Array of node info objects.
  * @throws {Error} If parameters are invalid or nodes cannot be found.
  */
-export async function getNodesInfo(nodeIdsOrParams) {
-  try {
-    let idsToProcess;
-    if (typeof nodeIdsOrParams === 'object' && nodeIdsOrParams !== null && !Array.isArray(nodeIdsOrParams)) {
-      if (nodeIdsOrParams.nodeIds !== undefined) {
-        idsToProcess = nodeIdsOrParams.nodeIds;
-      } else {
-        throw new Error("Invalid parameter: Expected an array of node IDs or an object with a nodeIds property");
-      }
-    } else {
-      idsToProcess = nodeIdsOrParams;
-    }
-    if (!Array.isArray(idsToProcess)) {
-      throw new Error(`Expected an array of node IDs, but got: ${typeof idsToProcess}`);
-    }
-    const processedIds = idsToProcess.map(id => ensureNodeIdIsString(id));
-    const nodes = await Promise.all(
-      processedIds.map((id) => figma.getNodeByIdAsync(id))
-    );
-    const validNodes = nodes.filter((node) => node !== null);
-    const responses = await Promise.all(
-      validNodes.map(async (node) => {
-        try {
-          const response = await node.exportAsync({ format: "JSON_REST_V1" });
-          return { nodeId: node.id, document: response.document };
-        } catch (error) {
-          return {
-            nodeId: node.id,
-            document: {
-              id: node.id,
-              name: node.name,
-              type: node.type || "UNKNOWN"
-            }
-          };
-        }
-      })
-    );
-    return responses;
-  } catch (error) {
-    throw new Error(`Error getting nodes info: ${error.message}`);
-  }
-}

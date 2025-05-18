@@ -48,7 +48,6 @@ export function initializeCommands() {
   registerCommand('get_selection', documentOperations.getSelection);
   registerCommand('set_selection', documentOperations.setSelection);
   registerCommand('get_node_info', documentOperations.getNodeInfo);
-  registerCommand('get_nodes_info', documentOperations.getNodesInfo);
   registerCommand('get_css_async', documentOperations.getCssAsync);
 
   // Image Operations (Unified)
