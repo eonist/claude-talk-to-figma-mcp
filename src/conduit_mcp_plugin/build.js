@@ -202,7 +202,7 @@ async function buildPlugin() {
       // Utilities and helpers
       'utils/encoding.js',
       'utils/helpers.js',
-      'utils/plugin.js',
+      //'utils/plugin.js',
       //'utils.js',
     ];
     

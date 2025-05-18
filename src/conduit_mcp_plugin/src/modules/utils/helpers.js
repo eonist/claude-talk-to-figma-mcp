@@ -156,3 +156,37 @@ export function canAcceptChildren(node) {
   return containerNodeTypes.includes(node.type) || 
     ('appendChild' in node && typeof node.appendChild === 'function');
 }
+
+/**
+ * Filters an array to contain only unique values based on a property or predicate function.
+ * 
+ * This function removes duplicate items from an array, where uniqueness is determined
+ * by a property value or a function that derives a value from each item.
+ * 
+ * @param {Array} arr - The array to filter.
+ * @param {string|Function} predicate - Either a property name or a function that returns a value to check for uniqueness.
+ * @returns {Array} A new array containing only unique items.
+ * 
+ * @example
+ * // Filter by object property
+ * const uniqueUsers = uniqBy(users, 'id');
+ * 
+ * @example
+ * // Filter by function result
+ * const uniqueByName = uniqBy(items, item => item.firstName + item.lastName);
+ */
+export function uniqBy(arr, predicate) {
+  const cb = typeof predicate === "function" 
+    ? predicate 
+    : (o) => o[predicate];
+    
+  return [
+    ...arr
+      .reduce((map, item) => {
+        const key = item === null || item === undefined ? item : cb(item);
+        map.has(key) || map.set(key, item);
+        return map;
+      }, new Map())
+      .values(),
+  ];
+}
