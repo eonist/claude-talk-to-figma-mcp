@@ -23,13 +23,19 @@ if (typeof figma !== "undefined" && typeof figma.on === "function") {
   });
 
   // Listen for document changes (node add/remove/modify, page change)
-  figma.on("documentchange", function (event) {
-    // event contains { documentChanges, nodeChanges, ... }
-    emitMcpEvent("document_change", {
-      changes: event,
-      timestamp: Date.now()
+  // Only register after loadAllPagesAsync to avoid incremental mode error
+  if (typeof figma.loadAllPagesAsync === "function") {
+    figma.loadAllPagesAsync().then(function () {
+      figma.on("documentchange", function (event) {
+        emitMcpEvent("document_change", {
+          changes: event,
+          timestamp: Date.now()
+        });
+      });
+    }).catch(function (e) {
+      // Ignore if not supported
     });
-  });
+  }
 
   // Listen for page change
   figma.on("currentpagechange", function () {
