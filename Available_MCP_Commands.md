@@ -54,6 +54,7 @@
 - [detach_instances](#detach_instances): Detach one or more component instances from their masters (single or batch)
 
 **Images and SVG:**
+- [get_image](#get_image): Extract image fills or export nodes as images (single or batch)
 - [insert_image](#insert_image): Insert images from URLs, local files, or base64 data (single or batch)
 - [insert_svg_vector](#insert_svg_vector): Insert SVG vectors
 - [get_svg_vector](#get_svg_vector): Get SVG markup for one or more vector nodes
@@ -134,6 +135,56 @@ _Batch:_
 ```json
 { "command": "set_selection", "params": { "nodeIds": ["123:456", "789:101"] } }
 ```
+
+---
+
+## get_image
+Extract image fills or export nodes as images (single or batch).
+
+**Parameters:**
+- nodeId (string, optional): Single node to extract image from.
+- nodeIds (array of string, optional): Array of node IDs for batch.
+- fillIndex (number, optional): For nodes with multiple fills, which fill to extract (default: 0).
+- At least one of nodeId or nodeIds is required.
+
+**Returns:**
+- For each node: `{ nodeId, imageData, mimeType, [fillIndex], [error] }`
+  - imageData: Base64 or binary image data (PNG/JPG).
+  - mimeType: "image/png", "image/jpeg", etc.
+  - fillIndex: (optional) The fill index used.
+  - error: (optional) Error message if extraction failed.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "get_image", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "get_image", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+_With fill index:_
+```json
+{ "command": "get_image", "params": { "nodeId": "123:456", "fillIndex": 1 } }
+```
+
+**Example Response:**
+```json
+[
+  { "nodeId": "123:456", "imageData": "data:image/png;base64,...", "mimeType": "image/png" },
+  { "nodeId": "789:101", "error": "No image fill found" }
+]
+```
+
+**Supported Node Types:**
+- Nodes with image fills (RECTANGLE, FRAME, VECTOR, etc.)
+- IMAGE nodes (rare, but possible)
+- Optionally, fallback to exporting the node as PNG/JPG if no image fill is present.
+
+**Limitations & Notes:**
+- Only image fills can be extracted as original assets; other nodes can only be rasterized.
+- For nodes with multiple fills, fillIndex specifies which fill to extract.
+- If no image is found, returns an error for that node.
 
 ---
 

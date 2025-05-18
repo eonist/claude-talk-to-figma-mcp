@@ -216,3 +216,33 @@ export async function convertRectangleToFrame(params) {
     height: frame.height 
   };
 }
+
+/**
+ * Unified handler for get_image (single or batch).
+ * Returns image data for one or more nodes.
+ *
+ * @async
+ * @function
+ * @param {Object} params - { nodeId }, { nodeIds }, or both, plus optional fillIndex.
+ * @returns {Promise<Array<{ nodeId: string, imageData?: string, mimeType?: string, fillIndex?: number, error?: string }>>}
+ */
+export async function getImage(params) {
+  let ids = [];
+  const fillIndex = typeof params.fillIndex === "number" ? params.fillIndex : 0;
+  if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    ids = params.nodeIds;
+  } else if (params.nodeId) {
+    ids = [params.nodeId];
+  } else {
+    throw new Error("getImage: Provide either nodeId or nodeIds.");
+  }
+  // TODO: Implement logic to extract image fills or export as PNG/JPG.
+  // For each node:
+  // - If node has image fill, extract image data and mimeType.
+  // - If not, optionally export as PNG/JPG.
+  // - Return { nodeId, imageData, mimeType, fillIndex, error }
+  return ids.map(nodeId => ({
+    nodeId,
+    error: "Not yet implemented"
+  }));
+}

@@ -17,7 +17,7 @@ import HTMLGenerator from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePage } from '../document/document-duplicate.js';
-import { getNodeStyles } from '../node/node-edit.js';
+import { getNodeStyles, getImage } from '../node/node-edit.js';
 
 /**
  * Internal registry to store command handler functions by name.
@@ -310,6 +310,7 @@ export function initializeCommands() {
   // Node style inspection
   registerCommand('get_node_styles', getNodeStyles);
   registerCommand('get_svg_vector', getSvgVector);
+  registerCommand('get_image', getImage);
 
   // Batch flatten nodes operation
   registerCommand('flatten_nodes', layoutOperations.flatten_nodes);

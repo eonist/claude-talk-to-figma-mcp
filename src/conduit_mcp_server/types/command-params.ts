@@ -52,9 +52,23 @@ export interface GetSvgVectorParams {
   nodeIds?: string[];
 }
 
+/**
+ * Parameters for get_image (single or batch).
+ * - nodeId: (string, optional) Single node to extract image from.
+ * - nodeIds: (array of string, optional) Array of node IDs for batch.
+ * - fillIndex: (number, optional) For nodes with multiple fills, which fill to extract (default: 0).
+ * At least one of nodeId or nodeIds is required.
+ */
+export interface GetImageParams {
+  nodeId?: string;
+  nodeIds?: string[];
+  fillIndex?: number;
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
   get_svg_vector: GetSvgVectorParams;
+  get_image: GetImageParams;
   // ...other command mappings
 }
