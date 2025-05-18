@@ -52,24 +52,50 @@ export const writeCommands = {
 
   async createFrame(
     this: FigmaClient,
-    params: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-      name?: string;
-      parentId?: string;
-      fillColor?: RGBAColor;
-      strokeColor?: RGBAColor;
-      strokeWeight?: number;
+    params:
+      | {
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          name?: string;
+          parentId?: string;
+          fillColor?: RGBAColor;
+          strokeColor?: RGBAColor;
+          strokeWeight?: number;
+        }
+      | Array<{
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          name?: string;
+          parentId?: string;
+          fillColor?: RGBAColor;
+          strokeColor?: RGBAColor;
+          strokeWeight?: number;
+        }>
+  ): Promise<BaseFigmaNode | BaseFigmaNode[]> {
+    if (Array.isArray(params)) {
+      // Batch mode
+      return this.executeCommand("create_frame", {
+        frames: params.map(cfg => ({
+          ...cfg,
+          name: cfg.name || "Frame",
+          parentId: cfg.parentId ? ensureNodeIdIsString(cfg.parentId) : undefined,
+        })),
+      });
+    } else {
+      // Single mode
+      const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+      return this.executeCommand("create_frame", {
+        frame: {
+          ...params,
+          name: params.name || "Frame",
+          parentId: parent,
+        },
+      });
     }
-  ): Promise<BaseFigmaNode> {
-    const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_frame", {
-      ...params,
-      name: params.name || "Frame",
-      parentId: parent,
-    });
   },
 
   async createText(
