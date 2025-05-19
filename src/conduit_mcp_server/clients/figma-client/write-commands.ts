@@ -15,6 +15,7 @@ export const writeCommands = {
       fillColor?: RGBAColor;
       strokeColor?: RGBAColor;
       strokeWeight?: number;
+      cornerRadius?: number;
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
