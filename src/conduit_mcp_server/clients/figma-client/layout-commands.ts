@@ -1,5 +1,6 @@
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaCommand } from "./types.js";
+import { MCP_COMMANDS } from "../types/commands.js";
 import type { FigmaClient } from "./index.js";
 
 /**
@@ -40,7 +41,7 @@ export const layoutCommands = {
     }
   ): Promise<any> {
     const nodeId = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand("set_auto_layout", {
+    return this.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT, {
       ...params,
       nodeId
     });
@@ -64,7 +65,7 @@ export const layoutCommands = {
     }
   ): Promise<any> {
     const nodeId = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand("set_auto_layout_resizing", {
+    return this.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING, {
       ...params,
       nodeId
     });

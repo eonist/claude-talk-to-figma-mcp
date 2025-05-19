@@ -1,6 +1,6 @@
 import { SetAutoLayoutParams } from "../../../types/command-params";
 import { FigmaClient } from "../../../clients/figma-client";
-import { CommandResult } from "../../../types/commands";
+import { CommandResult, MCP_COMMANDS } from "../../../types/commands";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
@@ -105,7 +105,7 @@ export async function set_auto_layout(
  * Registers the set_auto_layout tool with the MCP server.
  */
 export function registerLayoutAutoTools(server: McpServer, figmaClient: FigmaClient) {
-  server.tool("set_auto_layout", async (params: SetAutoLayoutParams) =>
+  server.tool(MCP_COMMANDS.SET_AUTO_LAYOUT, async (params: SetAutoLayoutParams) =>
     set_auto_layout(figmaClient, params)
   );
 }

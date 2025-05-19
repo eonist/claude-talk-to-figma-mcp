@@ -1,6 +1,7 @@
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaCommand, BaseFigmaNode, RGBAColor } from "./types.js";
 import type { FigmaClient } from "./index.js";
+import { MCP_COMMANDS } from "../types/commands";
 
 export const writeCommands = {
   async createRectangle(
@@ -19,7 +20,7 @@ export const writeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_rectangle", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_RECTANGLE, {
       ...params,
       name: params.name || "Rectangle",
       parentId: parent,
@@ -79,7 +80,7 @@ export const writeCommands = {
   ): Promise<BaseFigmaNode | BaseFigmaNode[]> {
     if (Array.isArray(params)) {
       // Batch mode
-      return this.executeCommand("create_frame", {
+      return this.executeCommand(MCP_COMMANDS.CREATE_FRAME, {
         frames: params.map(cfg => ({
           ...cfg,
           name: cfg.name || "Frame",
@@ -89,7 +90,7 @@ export const writeCommands = {
     } else {
       // Single mode
       const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-      return this.executeCommand("create_frame", {
+      return this.executeCommand(MCP_COMMANDS.CREATE_FRAME, {
         frame: {
           ...params,
           name: params.name || "Frame",
@@ -113,7 +114,7 @@ export const writeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_text", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_TEXT, {
       ...params,
       fontSize: params.fontSize || 14,
       fontWeight: params.fontWeight || 400,
@@ -138,7 +139,7 @@ export const writeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_ellipse", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_ELLIPSE, {
       ...params,
       name: params.name || "Ellipse",
       parentId: parent,
@@ -158,7 +159,7 @@ export const writeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_line", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_LINE, {
       x: params.x1,
       y: params.y1,
       x2: params.x2,
@@ -185,7 +186,7 @@ export const writeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_vector", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_VECTOR, {
       ...params,
       name: params.name || "Vector",
       parentId: parent,
@@ -203,7 +204,7 @@ export const writeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("insert_svg_vector", {
+    return this.executeCommand(MCP_COMMANDS.INSERT_SVG_VECTOR, {
       svg: params.svg,
       x: params.x || 0,
       y: params.y || 0,
@@ -218,7 +219,7 @@ export const writeCommands = {
     params: { nodeId: string; x: number; y: number }
   ): Promise<any> {
     const id = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand("move_node", { nodeId: id, x: params.x, y: params.y });
+    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, { nodeId: id, x: params.x, y: params.y });
   },
 
   async moveNodes(
@@ -226,7 +227,7 @@ export const writeCommands = {
     params: { nodeIds: string[]; x: number; y: number }
   ): Promise<any> {
     const ids = params.nodeIds.map(ensureNodeIdIsString);
-    return this.executeCommand("move_node", { nodeIds: ids, x: params.x, y: params.y });
+    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, { nodeIds: ids, x: params.x, y: params.y });
   },
 
   async cloneNode(
@@ -234,7 +235,7 @@ export const writeCommands = {
     params: { nodeId: string; x?: number; y?: number }
   ): Promise<BaseFigmaNode> {
     const id = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand("clone_node", { nodeId: id, x: params.x, y: params.y });
+    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, { nodeId: id, x: params.x, y: params.y });
   },
 
   async cloneNodes(
@@ -247,7 +248,7 @@ export const writeCommands = {
       parentId?: string;
     }
   ): Promise<any> {
-    return this.executeCommand("clone_nodes", params);
+    return this.executeCommand(MCP_COMMANDS.CLONE_NODES, params);
   },
 
   async resizeNode(
@@ -255,17 +256,17 @@ export const writeCommands = {
     params: { nodeId: string; width: number; height: number }
   ): Promise<any> {
     const id = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand("resize_node", { nodeId: id, width: params.width, height: params.height });
+    return this.executeCommand(MCP_COMMANDS.RESIZE_NODE, { nodeId: id, width: params.width, height: params.height });
   },
 
   async deleteNode(this: FigmaClient, nodeId: string): Promise<any> {
     const id = ensureNodeIdIsString(nodeId);
-    return this.executeCommand("delete_node", { nodeId: id });
+    return this.executeCommand(MCP_COMMANDS.DELETE_NODE, { nodeId: id });
   },
 
   async deleteNodes(this: FigmaClient, nodeIds: string[]): Promise<any> {
     const ids = nodeIds.map(ensureNodeIdIsString);
-    return this.executeCommand("delete_nodes", { nodeIds: ids });
+    return this.executeCommand(MCP_COMMANDS.DELETE_NODES, { nodeIds: ids });
   },
 
   /**
@@ -287,7 +288,7 @@ export const writeCommands = {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_fill_color", {
+    return this.executeCommand(MCP_COMMANDS.SET_FILL_COLOR, {
       nodeId: nodeIdString,
       color: {
         r: params.r,
@@ -318,7 +319,7 @@ export const writeCommands = {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_stroke_color", {
+    return this.executeCommand(MCP_COMMANDS.SET_STROKE_COLOR, {
       nodeId: nodeIdString,
       color: {
         r: params.r,
@@ -356,7 +357,7 @@ export const writeCommands = {
     }
   ): Promise<{frameId: string, backgroundId: string, textId: string}> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_button", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_BUTTON, {
       ...params,
       name: params.name || "Button",
       parentId: parent,
@@ -372,6 +373,6 @@ export const writeCommands = {
     this: FigmaClient,
     params: { name?: string }
   ): Promise<{ id: string; name: string; childCount: number }> {
-    return this.executeCommand("create_page", { name: params?.name });
+    return this.executeCommand(MCP_COMMANDS.CREATE_PAGE, { name: params?.name });
   },
 };

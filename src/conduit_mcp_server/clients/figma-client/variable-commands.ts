@@ -2,6 +2,7 @@
  * Figma Variable (Design Token) command group for FigmaClient.
  * Provides methods for create, update, delete, query, apply, and mode switching.
  */
+import { MCP_COMMANDS } from "../types/commands.js";
 
 export const variableCommands = {
   /**
@@ -10,7 +11,7 @@ export const variableCommands = {
    */
   async createVariable(params) {
     // params: { variables: [...] }
-    return this.executeCommand("create_variable", params);
+    return this.executeCommand(MCP_COMMANDS.CREATE_VARIABLE, params);
   },
 
   /**
@@ -19,7 +20,7 @@ export const variableCommands = {
    */
   async updateVariable(params) {
     // params: { variables: [...] }
-    return this.executeCommand("update_variable", params);
+    return this.executeCommand(MCP_COMMANDS.UPDATE_VARIABLE, params);
   },
 
   /**
@@ -28,7 +29,7 @@ export const variableCommands = {
    */
   async deleteVariable(params) {
     // params: { ids: [...] }
-    return this.executeCommand("delete_variable", params);
+    return this.executeCommand(MCP_COMMANDS.DELETE_VARIABLE, params);
   },
 
   /**
@@ -36,7 +37,7 @@ export const variableCommands = {
    * @param {Object} params - { type?, collection?, mode?, ids? }
    */
   async getVariables(params) {
-    return this.executeCommand("get_variables", params);
+    return this.executeCommand(MCP_COMMANDS.GET_VARIABLES, params);
   },
 
   /**
@@ -44,7 +45,7 @@ export const variableCommands = {
    * @param {Object} params - { nodeId, variableId, property }
    */
   async applyVariableToNode(params) {
-    return this.executeCommand("apply_variable_to_node", params);
+    return this.executeCommand(MCP_COMMANDS.APPLY_VARIABLE_TO_NODE, params);
   },
 
   /**
@@ -52,6 +53,6 @@ export const variableCommands = {
    * @param {Object} params - { collection, mode }
    */
   async switchVariableMode(params) {
-    return this.executeCommand("switch_variable_mode", params);
+    return this.executeCommand(MCP_COMMANDS.SWITCH_VARIABLE_MODE, params);
   }
 };

@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
+import { MCP_COMMANDS } from "../../../../types/commands";
 import { z } from "../utils.js";
 import { RectangleSchema, SingleRectangleSchema, BatchRectanglesSchema } from "./rectangle-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
@@ -54,7 +55,7 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
    * }
    */
   server.tool(
-    "create_rectangle",
+    MCP_COMMANDS.CREATE_RECTANGLE,
     `Creates one or more rectangle shape nodes in the specified Figma document. Accepts either a single rectangle config (via 'rectangle') or an array of configs (via 'rectangles'). Optionally, you can provide a name, a parent node ID to attach the rectangle(s) to, and a corner radius for rounded corners.
 
 Input:

@@ -1,6 +1,6 @@
 import { GetImageParams } from "../../../types/command-params";
 import { FigmaClient } from "../../../clients/figma-client";
-import { CommandResult } from "../../../types/commands";
+import { CommandResult, MCP_COMMANDS } from "../../../types/commands";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
@@ -120,7 +120,7 @@ export async function get_image(
  * Registers the get_image tool with the MCP server.
  */
 export function registerImageTools(server: McpServer, figmaClient: FigmaClient) {
-  server.tool("get_image", async (params: GetImageParams) =>
+  server.tool(MCP_COMMANDS.GET_IMAGE, async (params: GetImageParams) =>
     get_image(figmaClient, params)
   );
 }

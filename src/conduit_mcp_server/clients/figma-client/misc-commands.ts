@@ -1,6 +1,7 @@
 /**
  * Miscellaneous Figma commands for FigmaClient.
  */
+import { MCP_COMMANDS } from "../types/commands.js";
 
 export const miscCommands = {
   /**
@@ -11,6 +12,6 @@ export const miscCommands = {
    */
   async duplicatePage(this: any, pageId: string, newPageName?: string) {
     if (!pageId) throw new Error("Missing pageId parameter");
-    return await this.executeCommand("duplicate_page", { pageId, newPageName });
+    return await this.executeCommand(MCP_COMMANDS.DUPLICATE_PAGE, { pageId, newPageName });
   }
 };

@@ -1,6 +1,6 @@
 import { GetTextStyleParams } from "../../../types/command-params";
 import { FigmaClient } from "../../../clients/figma-client";
-import { CommandResult } from "../../../types/commands";
+import { CommandResult, MCP_COMMANDS } from "../../../types/commands";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
@@ -75,7 +75,7 @@ export async function get_text_style(
  * Registers the get_text_style tool with the MCP server.
  */
 export function registerTextStyleTools(server: McpServer, figmaClient: FigmaClient) {
-  server.tool("get_text_style", async (params: GetTextStyleParams) =>
+  server.tool(MCP_COMMANDS.GET_TEXT_STYLE, async (params: GetTextStyleParams) =>
     get_text_style(figmaClient, params)
   );
 }

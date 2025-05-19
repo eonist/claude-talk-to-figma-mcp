@@ -18,7 +18,7 @@
 import { filterFigmaNode } from "../utils/figma/filter-node.js";
 import { logger } from "../utils/logger.js";
 import { ensureNodeIdIsString } from "../utils/node-utils.js";
-import { FigmaCommand } from "../types/commands.js";
+import { FigmaCommand, MCP_COMMANDS } from "../types/commands.js";
 import { sendCommandToFigma, getCurrentChannel, isConnectedToFigma } from "../server/websocket.js";
 import { BaseFigmaNode, DocumentInfo, RGBAColor, SelectionInfo } from "../types/figma.js";
 
@@ -77,7 +77,7 @@ export class FigmaClient {
    * @returns {Promise<DocumentInfo>} The document information
    */
   async getDocumentInfo(): Promise<DocumentInfo> {
-    return this.executeCommand("get_document_info");
+    return this.executeCommand(MCP_COMMANDS.GET_DOCUMENT_INFO);
   }
   
   /**
@@ -86,7 +86,7 @@ export class FigmaClient {
    * @returns {Promise<SelectionInfo>} The selection information
    */
   async getSelection(): Promise<SelectionInfo> {
-    return this.executeCommand("get_selection");
+    return this.executeCommand(MCP_COMMANDS.GET_SELECTION);
   }
   
   /**
@@ -100,7 +100,7 @@ export class FigmaClient {
     const nodeIdString = ensureNodeIdIsString(nodeId);
     logger.debug(`Getting node info for ID: ${nodeIdString}`);
     
-    const result = await this.executeCommand("get_node_info", { nodeId: nodeIdString });
+    const result = await this.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId: nodeIdString });
     return filterFigmaNode(result);
   }
   
@@ -115,7 +115,7 @@ export class FigmaClient {
     const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
     logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
     
-    const result = await this.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings });
+    const result = await this.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings }); // Not in MCP_COMMANDS, leave as is for now
     return result.map(filterFigmaNode);
   }
   
@@ -142,7 +142,7 @@ export class FigmaClient {
     // Ensure parentId is treated as a string if provided
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
     
-    return this.executeCommand("create_rectangle", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_RECTANGLE, {
       x: params.x,
       y: params.y,
       width: params.width,
@@ -176,7 +176,7 @@ export class FigmaClient {
     // Ensure parentId is treated as a string if provided
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
     
-    return this.executeCommand("create_frame", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_FRAME, {
       x: params.x,
       y: params.y,
       width: params.width,
@@ -208,7 +208,7 @@ export class FigmaClient {
     // Ensure parentId is treated as a string if provided
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
     
-    return this.executeCommand("create_text", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_TEXT, {
       x: params.x,
       y: params.y,
       text: params.text,
@@ -240,7 +240,7 @@ export class FigmaClient {
     // Ensure parentId is treated as a string if provided
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
     
-    return this.executeCommand("create_ellipse", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_ELLIPSE, {
       x: params.x,
       y: params.y,
       width: params.width,
@@ -271,7 +271,7 @@ export class FigmaClient {
     strokeWeight?: number;
   }): Promise<BaseFigmaNode> {
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_line", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_LINE, {
       x1: params.x1,
       y1: params.y1,
       x2: params.x2,
@@ -301,7 +301,7 @@ export class FigmaClient {
     strokeWeight?: number;
   }): Promise<BaseFigmaNode> {
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_vector", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_VECTOR, {
       x: params.x,
       y: params.y,
       width: params.width,
@@ -331,7 +331,7 @@ export class FigmaClient {
     // Ensure parentId is treated as a string if provided
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
     
-    return this.executeCommand("insert_svg_vector", {
+    return this.executeCommand(MCP_COMMANDS.INSERT_SVG_VECTOR, {
       svg: params.svg,
       x: params.x || 0,
       y: params.y || 0,
@@ -368,7 +368,7 @@ export class FigmaClient {
     strokeWeight?: number;
   }): Promise<BaseFigmaNode> {
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("create_polygon", {
+    return this.executeCommand(MCP_COMMANDS.CREATE_POLYGON, {
       x: params.x,
       y: params.y,
       width: params.width,
@@ -391,7 +391,7 @@ export class FigmaClient {
    */
   async createComponentFromNode(params: { nodeId: string }): Promise<{ componentId: string }> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand("create_component_from_node", { nodeId: nodeIdString });
+    return this.executeCommand("create_component_from_node", { nodeId: nodeIdString }); // Not in MCP_COMMANDS, leave as is for now
   }
   
 
@@ -412,7 +412,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_fill_color", {
+    return this.executeCommand(MCP_COMMANDS.SET_FILL_COLOR, {
       nodeId: nodeIdString,
       color: {
         r: params.r,
@@ -440,7 +440,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-      return this.executeCommand("set_stroke_color", {
+      return this.executeCommand(MCP_COMMANDS.SET_STROKE_COLOR, {
         nodeId: nodeIdString,
         color: {
           r: params.r,
@@ -475,7 +475,7 @@ export class FigmaClient {
         visible?: boolean;
       };
     }): Promise<any> {
-      return this.executeCommand("set_style", params);
+      return this.executeCommand(MCP_COMMANDS.SET_STYLE, params);
     }
 
   
@@ -495,7 +495,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("move_node", {
+    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, {
       nodeId: nodeIdString,
       x: params.x,
       y: params.y
@@ -515,7 +515,7 @@ export class FigmaClient {
   }): Promise<any> {
     // Ensure all nodeIds are treated as strings and validate they're not objects
     const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
-    return this.executeCommand("move_node", {
+    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, {
       nodeIds: nodeIdStrings,
       x: params.x,
       y: params.y
@@ -536,7 +536,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("clone_node", {
+    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, {
       nodeId: nodeIdString,
       x: params.x,
       y: params.y
@@ -556,7 +556,7 @@ export class FigmaClient {
     parentId?: string;
   }): Promise<any> {
     // Forward to the server-side clone_nodes tool
-    return this.executeCommand("clone_nodes", params);
+    return this.executeCommand(MCP_COMMANDS.CLONE_NODES, params);
   }
   
   /**
@@ -573,7 +573,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("resize_node", {
+    return this.executeCommand(MCP_COMMANDS.RESIZE_NODE, {
       nodeId: nodeIdString,
       width: params.width,
       height: params.height
@@ -591,7 +591,7 @@ export class FigmaClient {
     const nodeIdString = ensureNodeIdIsString(nodeId);
     logger.debug(`Deleting node with ID: ${nodeIdString}`);
     
-    return this.executeCommand("delete_node", { nodeId: nodeIdString });
+    return this.executeCommand(MCP_COMMANDS.DELETE_NODE, { nodeId: nodeIdString });
   }
 
   /**
@@ -604,7 +604,7 @@ export class FigmaClient {
     const idStrings = nodeIds.map(id => ensureNodeIdIsString(id));
     logger.debug(`Deleting multiple nodes: ${idStrings.join(", ")}`);
     
-    const result = await this.executeCommand("delete_nodes", { nodeIds: idStrings });
+    const result = await this.executeCommand(MCP_COMMANDS.DELETE_NODES, { nodeIds: idStrings });
     return result as { success: string[]; failed: string[] };
   }
   
@@ -621,7 +621,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_text_content", {
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_CONTENT, {
       nodeId: nodeIdString,
       text: params.text
     });
@@ -647,7 +647,7 @@ export class FigmaClient {
     }));
     
     // Unified set_text_content now handles both single and batch updates.
-    return this.executeCommand("set_text_content", {
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_CONTENT, {
       texts: validatedTextNodes
     });
   }
@@ -666,7 +666,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("export_node_as_image", {
+    return this.executeCommand(MCP_COMMANDS.EXPORT_NODE_AS_IMAGE, {
       nodeId: nodeIdString,
       format: params.format || "PNG",
       scale: params.scale || 1
@@ -748,7 +748,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_letter_spacing", {
+    return this.executeCommand(MCP_COMMANDS.SET_LETTER_SPACING, {
       nodeId: nodeIdString,
       letterSpacing: params.letterSpacing,
       unit: params.unit || "PIXELS"
@@ -769,7 +769,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_line_height", {
+    return this.executeCommand(MCP_COMMANDS.SET_LINE_HEIGHT, {
       nodeId: nodeIdString,
       lineHeight: params.lineHeight,
       unit: params.unit || "PIXELS"
@@ -789,7 +789,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_paragraph_spacing", {
+    return this.executeCommand(MCP_COMMANDS.SET_PARAGRAPH_SPACING, {
       nodeId: nodeIdString,
       paragraphSpacing: params.paragraphSpacing
     });
@@ -808,7 +808,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_text_case", {
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_CASE, {
       nodeId: nodeIdString,
       textCase: params.textCase
     });
@@ -827,7 +827,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_text_decoration", {
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_DECORATION, {
       nodeId: nodeIdString,
       textDecoration: params.textDecoration
     });
@@ -843,7 +843,7 @@ export class FigmaClient {
     family: string;
     style?: string;
   }): Promise<any> {
-    return this.executeCommand("load_font_async", {
+    return this.executeCommand(MCP_COMMANDS.LOAD_FONT_ASYNC, {
       family: params.family,
       style: params.style || "Regular"
     });
@@ -870,7 +870,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_effect", {
+    return this.executeCommand(MCP_COMMANDS.SET_EFFECT, {
       nodeId: nodeIdString,
       effects: params.effects
     });
@@ -889,7 +889,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_effect_style_id", {
+    return this.executeCommand(MCP_COMMANDS.SET_EFFECT_STYLE_ID, {
       nodeId: nodeIdString,
       effectStyleId: params.effectStyleId
     });
@@ -917,7 +917,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_auto_layout", {
+    return this.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT, {
       nodeId: nodeIdString,
       layoutMode: params.layoutMode,
       paddingTop: params.paddingTop,
@@ -946,7 +946,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_auto_layout_resizing", {
+    return this.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING, {
       nodeId: nodeIdString,
       axis: params.axis,
       mode: params.mode
@@ -998,9 +998,9 @@ export class FigmaClient {
   ): Promise<any> {
     // If gradients property exists, pass as is; else, wrap single in gradients array
     if ("gradients" in params) {
-      return this.executeCommand("create_gradient_variable", { gradients: params.gradients });
+      return this.executeCommand("create_gradient_variable", { gradients: params.gradients }); // Not in MCP_COMMANDS, leave as is for now
     } else {
-      return this.executeCommand("create_gradient_variable", { gradients: params });
+      return this.executeCommand("create_gradient_variable", { gradients: params }); // Not in MCP_COMMANDS, leave as is for now
     }
   }
 
@@ -1023,9 +1023,9 @@ export class FigmaClient {
   ): Promise<any> {
     // If entries property exists, pass as is; else, wrap single in entries array
     if ("entries" in params) {
-      return this.executeCommand("apply_gradient_style", { entries: params.entries });
+      return this.executeCommand("apply_gradient_style", { entries: params.entries }); // Not in MCP_COMMANDS, leave as is for now
     } else {
-      return this.executeCommand("apply_gradient_style", { entries: params });
+      return this.executeCommand("apply_gradient_style", { entries: params }); // Not in MCP_COMMANDS, leave as is for now
     }
   }
 
@@ -1038,7 +1038,7 @@ export class FigmaClient {
      */
     async flattenSelection(params: { nodeIds: string[]; }): Promise<any> {
       const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
-      return this.executeCommand("flatten_selection", { nodeIds: nodeIdStrings });
+      return this.executeCommand("flatten_selection", { nodeIds: nodeIdStrings }); // Not in MCP_COMMANDS, leave as is for now
     }
 
     /**
@@ -1048,7 +1048,7 @@ export class FigmaClient {
      * @returns {Promise<any>} Operation result.
      */
     async unionSelection(params: { nodeIds: string[] }): Promise<any> {
-      return this.executeCommand("union_selection", params);
+      return this.executeCommand("union_selection", params); // Not in MCP_COMMANDS, leave as is for now
     }
 
     /**
@@ -1058,7 +1058,7 @@ export class FigmaClient {
      * @returns {Promise<any>} Operation result.
      */
     async subtractSelection(params: { nodeIds: string[] }): Promise<any> {
-      return this.executeCommand("subtract_selection", params);
+      return this.executeCommand("subtract_selection", params); // Not in MCP_COMMANDS, leave as is for now
     }
 
     /**
@@ -1068,7 +1068,7 @@ export class FigmaClient {
      * @returns {Promise<any>} Operation result.
      */
     async intersectSelection(params: { nodeIds: string[] }): Promise<any> {
-      return this.executeCommand("intersect_selection", params);
+      return this.executeCommand("intersect_selection", params); // Not in MCP_COMMANDS, leave as is for now
     }
 
     /**
@@ -1078,6 +1078,6 @@ export class FigmaClient {
      * @returns {Promise<any>} Operation result.
      */
     async excludeSelection(params: { nodeIds: string[] }): Promise<any> {
-      return this.executeCommand("exclude_selection", params);
+      return this.executeCommand("exclude_selection", params); // Not in MCP_COMMANDS, leave as is for now
     }
 }
