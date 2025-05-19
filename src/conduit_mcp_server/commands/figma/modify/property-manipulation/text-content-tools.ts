@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 import { BatchTextUpdateArraySchema } from "./batch-text-schema.js";
 
 /**
@@ -9,7 +10,7 @@ import { BatchTextUpdateArraySchema } from "./batch-text-schema.js";
  */
 export function registerTextContentTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_text_content",
+    MCP_COMMANDS.SET_TEXT_CONTENT,
     `Sets the text content of one or more text nodes in Figma.
 
 Input:
@@ -81,7 +82,7 @@ Examples:
  */
 export function registerParagraphSpacingTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_paragraph_spacing",
+    MCP_COMMANDS.SET_PARAGRAPH_SPACING,
     `Sets the paragraph spacing of one or more text nodes in Figma.
 
 Input:
@@ -161,7 +162,7 @@ Examples:
  */
 export function registerLineHeightTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_line_height",
+    MCP_COMMANDS.SET_LINE_HEIGHT,
     `Sets the line height for one or more text nodes in Figma, supporting both pixel and percent units, and range-based updates.
 
 Input:
@@ -256,7 +257,7 @@ Examples:
  */
 export function registerLetterSpacingTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_letter_spacing",
+    MCP_COMMANDS.SET_LETTER_SPACING,
     `Sets the letter spacing for one or more text nodes in Figma, supporting both pixel and percent units, and range-based updates.
 
 Input:
@@ -351,7 +352,7 @@ Examples:
  */
 export function registerTextCaseTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_text_case",
+    MCP_COMMANDS.SET_TEXT_CASE,
     `Sets the text case for one or more text nodes in Figma, supporting all Figma text case types and range-based updates.
 
 Input:
@@ -444,7 +445,7 @@ Examples:
  */
 export function registerTextDecorationTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_text_decoration",
+    MCP_COMMANDS.SET_TEXT_DECORATION,
     `Sets the text decoration for one or more text nodes in Figma, supporting all Figma text decoration types and range-based updates.
 
 Input:
@@ -539,7 +540,7 @@ Examples:
  */
 export function registerTextStyleTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_text_style",
+    MCP_COMMANDS.SET_TEXT_STYLE,
     `Sets one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes in Figma.
 
 Input:

@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import type { FigmaClient as FigmaClientType } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers Figma Variables (Design Tokens) commands:
@@ -37,7 +38,7 @@ export function registerVariableTools(server: McpServer, figmaClient: FigmaClien
   });
 
   server.tool(
-    "create_variable",
+    MCP_COMMANDS.CREATE_VARIABLE,
     `Creates one or more Figma Variables (design tokens).
 
 Params:
@@ -94,7 +95,7 @@ Returns:
   });
 
   server.tool(
-    "update_variable",
+    MCP_COMMANDS.UPDATE_VARIABLE,
     `Updates one or more Figma Variables.
 
 Params:
@@ -149,7 +150,7 @@ Returns:
   });
 
   server.tool(
-    "delete_variable",
+    MCP_COMMANDS.DELETE_VARIABLE,
     `Deletes one or more Figma Variables.
 
 Params:
@@ -200,7 +201,7 @@ Returns:
   });
 
   server.tool(
-    "get_variables",
+    MCP_COMMANDS.GET_VARIABLES,
     `Queries Figma Variables.
 
 Params:
@@ -249,7 +250,7 @@ Returns:
   });
 
   server.tool(
-    "apply_variable_to_node",
+    MCP_COMMANDS.APPLY_VARIABLE_TO_NODE,
     `Applies a Figma Variable to a node property.
 
 Params:
@@ -296,7 +297,7 @@ Returns:
   });
 
   server.tool(
-    "switch_variable_mode",
+    MCP_COMMANDS.SWITCH_VARIABLE_MODE,
     `Switches the mode for a Figma Variable collection (e.g., light/dark theme).
 
 Params:

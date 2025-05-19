@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 import { z } from "zod";
 
 /**
@@ -8,7 +9,7 @@ import { z } from "zod";
 export function registerComponentTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified Get Components
   server.tool(
-    "get_components",
+    MCP_COMMANDS.GET_COMPONENTS,
     `Get components from the current document, a team library, or remote team libraries.
 
 Parameters:

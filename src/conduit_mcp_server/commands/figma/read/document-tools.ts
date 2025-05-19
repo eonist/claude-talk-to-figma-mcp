@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers document info read command:
@@ -8,7 +9,7 @@ import { FigmaClient } from "../../../clients/figma-client/index.js";
 export function registerDocumentTools(server: McpServer, figmaClient: FigmaClient) {
   // Existing get_document_info tool
   server.tool(
-    "get_document_info",
+    MCP_COMMANDS.GET_DOCUMENT_INFO,
     `Get detailed information about the current Figma document.
 
 Returns:
@@ -57,7 +58,7 @@ Returns:
 
   // New: get_pages tool
   server.tool(
-    "get_pages",
+    MCP_COMMANDS.GET_PAGES,
     `Get information about all pages in the current Figma document.
 
 Returns:
@@ -106,7 +107,7 @@ Returns:
 
   // New: set_current_page tool
   server.tool(
-    "set_current_page",
+    MCP_COMMANDS.SET_CURRENT_PAGE,
     `Set the current active page in Figma.
 
 Parameters:

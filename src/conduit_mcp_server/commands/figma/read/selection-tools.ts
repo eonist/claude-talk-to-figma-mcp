@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers selection info read command:
@@ -7,7 +8,7 @@ import { FigmaClient } from "../../../clients/figma-client/index.js";
  */
 export function registerSelectionTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "get_selection",
+    MCP_COMMANDS.GET_SELECTION,
     `Get information about the current selection in Figma.
 
 Returns:
