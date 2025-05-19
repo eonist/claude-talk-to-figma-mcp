@@ -342,16 +342,24 @@ export function initializeCommands() {
     throw new Error("Must provide entry or entries");
   });
 
-  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, (params) => {
-    // Batch support
+  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, async (params) => {
+    // Batch support (including batch bounded text)
     if (params && Array.isArray(params.texts)) {
-      return textOperations.createTexts(params);
+      const results = [];
+      for (const textConfig of params.texts) {
+        if (textConfig.width && textConfig.height) {
+          results.push(await createBoundedText(textConfig));
+        } else {
+          results.push(await textOperations.createText(textConfig));
+        }
+      }
+      return results;
     }
-    // Bounded text support
+    // Bounded text support (single)
     if (params && (params.width && params.height)) {
       return createBoundedText(params);
     }
-    // Regular text
+    // Regular text (single)
     return textOperations.createText(params);
   });
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
