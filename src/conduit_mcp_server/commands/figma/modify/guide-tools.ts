@@ -1,7 +1,7 @@
-import { McpServer } from "../../../../server.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import type { McpServer } from "../../../server.js";
+import type { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
-import { MCP_COMMANDS } from "../../../../types/commands.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 // Guide schema
 const GuideEntry = z.object({

@@ -34,7 +34,7 @@ Returns:
     },
     async () => {
       try {
-        const result = await figmaClient.executeCommand("get_document_info");
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_DOCUMENT_INFO);
         return {
           content: [
             {

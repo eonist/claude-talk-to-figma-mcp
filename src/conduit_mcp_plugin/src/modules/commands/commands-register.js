@@ -19,6 +19,8 @@ export const PLUGIN_COMMANDS = {
   GET_PAGE: "getPage",
   SET_PAGE: "setPage",
   DUPLICATE_PAGE: "duplicate_page",
+  SET_CURRENT_PAGE: "set_current_page",
+  GET_PAGES: "get_pages",
 
   // --- Shapes ---
   CREATE_RECTANGLE: "create_rectangle",
@@ -86,6 +88,8 @@ export const PLUGIN_COMMANDS = {
   SUBTRACT_SELECTION: "subtract_selection",
   INTERSECT_SELECTION: "intersect_selection",
   EXCLUDE_SELECTION: "exclude_selection",
+  RESIZE_NODES: "resize_nodes",
+  BOOLEAN: "boolean",
 
   // --- Node Management ---
   GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes",
@@ -93,16 +97,17 @@ export const PLUGIN_COMMANDS = {
   DELETE_NODE: "delete_node",
   CLONE_NODE: "clone_node",
   INSERT_CHILD: "insert_child",
+  INSERT_CHILDREN: "insert_children",
   SET_NODE_LOCKED: "set_node_locked",
   SET_NODE_VISIBLE: "set_node_visible",
 
   // --- Grids, Guides, and Constraints ---
-  SET_GRID: "setGrid",
-  GET_GRID: "getGrid",
-  SET_GUIDE: "setGuide",
-  GET_GUIDE: "getGuide",
-  SET_CONSTRAINTS: "setConstraints",
-  GET_CONSTRAINTS: "getConstraints",
+  SET_GRID: "set_grid",
+  GET_GRID: "get_grid",
+  SET_GUIDE: "set_guide",
+  GET_GUIDE: "get_guide",
+  SET_CONSTRAINTS: "set_constraints",
+  GET_CONSTRAINTS: "get_constraints",
 
   // --- Figma Variables (Design Tokens) ---
   CREATE_VARIABLE: "create_variable",
@@ -119,8 +124,8 @@ export const PLUGIN_COMMANDS = {
   // --- Misc ---
   RENAME_LAYER: "rename_layer",
   AI_RENAME_LAYERS: "ai_rename_layers",
-  SET_VARIANT: "setVariant",
-  GET_VARIANT: "getVariant",
+  SET_VARIANT: "set_variant",
+  GET_VARIANT: "get_variant",
   GET_ANNOTATION: "get_annotation",
   SET_ANNOTATION: "set_annotation",
   SUBSCRIBE_EVENT: "subscribe_event",
@@ -367,11 +372,11 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.LOAD_FONT_ASYNC, textOperations.loadFontAsyncWrapper);
   // registerCommand(PLUGIN_COMMANDS.SET_BULK_FONT, textOperations.setBulkFont);
 
-/*
-// variableOperations is now defined globally by variables.js in the build output.
-*/
+  /*
+  // variableOperations is now defined globally by variables.js in the build output.
+  */
 
-// Style Operations
+  // Style Operations
   registerCommand(PLUGIN_COMMANDS.SET_FILL_COLOR, styleOperations.setFillColor);
   registerCommand(PLUGIN_COMMANDS.SET_STROKE_COLOR, styleOperations.setStrokeColor);
   registerCommand(PLUGIN_COMMANDS.GET_STYLES, styleOperations.getStyles);

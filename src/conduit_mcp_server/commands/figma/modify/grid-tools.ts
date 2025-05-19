@@ -1,7 +1,7 @@
-import { McpServer } from "../../../../server.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import type { McpServer } from "../../../server.js";
+import type { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
-import { MCP_COMMANDS } from "../../../../types/commands.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 // Zod schemas for grid commands
 const GridTypeEnum = z.enum(["GRID", "COLUMNS", "ROWS"]);
