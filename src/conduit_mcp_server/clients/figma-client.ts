@@ -137,6 +137,7 @@ export class FigmaClient {
     fillColor?: RGBAColor;
     strokeColor?: RGBAColor;
     strokeWeight?: number;
+    cornerRadius?: number;
   }): Promise<BaseFigmaNode> {
     // Ensure parentId is treated as a string if provided
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
@@ -150,7 +151,8 @@ export class FigmaClient {
       parentId: parentIdString,
       fillColor: params.fillColor,
       strokeColor: params.strokeColor,
-      strokeWeight: params.strokeWeight
+      strokeWeight: params.strokeWeight,
+      cornerRadius: params.cornerRadius
     });
   }
   
