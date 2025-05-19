@@ -226,9 +226,9 @@ export function initializeCommands() {
   registerCommand('set_text_content', textOperations.setTextContent);
   registerCommand('set_text_style', textOperations.setTextStyle);
   registerCommand('scan_text_nodes', textOperations.scanTextNodes);
-  registerCommand('set_font_name', textOperations.setFontName);
-  registerCommand('set_font_size', textOperations.setFontSize);
-  registerCommand('set_font_weight', textOperations.setFontWeight);
+  // registerCommand('set_font_name', textOperations.setFontName);
+  // registerCommand('set_font_size', textOperations.setFontSize);
+  // registerCommand('set_font_weight', textOperations.setFontWeight);
   registerCommand('set_letter_spacing', textOperations.setLetterSpacing);
   registerCommand('set_line_height', textOperations.setLineHeight);
   registerCommand('set_paragraph_spacing', setParagraphSpacingUnified);
@@ -238,7 +238,7 @@ export function initializeCommands() {
   registerCommand('set_text_decoration', setTextDecorationUnified);
   registerCommand('get_styled_text_segments', textOperations.getStyledTextSegments);
   registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
-  registerCommand('set_bulk_font', textOperations.setBulkFont);
+  // registerCommand('set_bulk_font', textOperations.setBulkFont);
 
 /*
 // variableOperations is now defined globally by variables.js in the build output.

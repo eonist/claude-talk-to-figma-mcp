@@ -956,20 +956,20 @@ export class FigmaClient {
    * @param params.targets - Array of target configurations
    * @returns {Promise<any>} Operation result
    */
-  async setBulkFont(params: {
-    targets: Array<{
-      nodeIds?: string[];
-      parentId?: string;
-      font: {
-        family?: string;
-        style?: string;
-        size?: number;
-        weight?: number;
-      };
-    }>;
-  }): Promise<any> {
-    return this.executeCommand("set_bulk_font", params);
-  }
+//  async setBulkFont(params: {
+//    targets: Array<{
+//      nodeIds?: string[];
+//      parentId?: string;
+//      font: {
+//        family?: string;
+//        style?: string;
+//        size?: number;
+//        weight?: number;
+//      };
+//    }>;
+//  }): Promise<any> {
+//    return this.executeCommand("set_bulk_font", params);
+//  }
 
   /**
    * Creates a gradient paint style in Figma (single or batch)

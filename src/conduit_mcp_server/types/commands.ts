@@ -148,6 +148,8 @@ export type FigmaCommand =
   | "set_text_content"
   // Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
   | "set_text_style"
+  // get_text_style
+  | "get_text_style"
   // Get all styles from the document (see commands/figma/read/style-tools.ts)
   | "get_styles"
   // Get all local components (see commands/figma/read/component-tools.ts)
@@ -230,6 +232,14 @@ export type FigmaCommand =
   | "unsubscribe_event"
   // set sleection 
    | "set_selection"
+     // get page
+  | "getPage"
+  // set page
+  | "setPage"
+    // set_node_locked"
+  | "set_node_locked"
+  //  set_node_visible
+  | "set_node_visible"
   // Variant commands (component variants)
   | "set_variant"
   // get variant
