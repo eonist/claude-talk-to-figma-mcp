@@ -183,18 +183,16 @@ export async function exportNodeAsImage(params) {
  * @param {string|number} [params.after]
  * @returns {Promise<any>}
  */
+/**
+ * Sends a "get_components" command to the MCP server, passing the parameters as-is.
+ * The server will handle the logic for local, team, or remote components.
+ */
 export async function getComponents(params) {
-  const { source, team_id, page_size, after } = params || {};
-  if (source === "local") {
-    return await getLocalComponents();
-  } else if (source === "team") {
-    if (!team_id) throw new Error("team_id is required when source is 'team'");
-    return await getTeamComponents({ teamId: team_id, pageSize: page_size, after });
-  } else if (source === "remote") {
-    return await getRemoteComponents();
-  } else {
-    throw new Error("Invalid source parameter. Must be 'local', 'team', or 'remote'.");
+  // Assumes sendCommand is available in the plugin context
+  if (typeof sendCommand !== "function") {
+    throw new Error("sendCommand is not defined in this context.");
   }
+  return await sendCommand("get_components", params);
 }
 
 export const componentOperations = {
