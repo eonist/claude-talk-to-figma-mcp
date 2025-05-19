@@ -51,7 +51,7 @@ Returns:
     },
     async ({ nodeId, format, cssMode }) => {
       try {
-        const result = await figmaClient.executeCommand("generate_html", {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GENERATE_HTML, {
           nodeId,
           format,
           cssMode,

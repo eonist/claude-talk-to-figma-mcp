@@ -121,7 +121,7 @@ Returns:
           name: args.name,
           parentId: args.parentId
         };
-        const result = await figmaClient.executeCommand("create_button", params);
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_BUTTON, params);
         return { 
           content: [{ 
             type: "text", 

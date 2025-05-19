@@ -84,11 +84,9 @@ Returns:
           const id = ensureNodeIdIsString(node.nodeId);
           // Directly call the Figma client logic for component creation, or update to use the new batch command if available.
           // If the Figma client only supports single-node creation, keep this as a local helper.
-          const result = await figmaClient.createComponentFromNode
-            ? await figmaClient.createComponentFromNode({ nodeId: id })
-            : await figmaClient.executeCommand("create_components_from_nodes", {
-                entry: { nodeId: id, maintain_position: node.maintain_position }
-              });
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODES, {
+            entry: { nodeId: id, maintain_position: node.maintain_position }
+          });
           results.push({ nodeId: id, componentId: result.componentId || (Array.isArray(result) && result[0]?.componentId) });
         } catch (err: any) {
           if (skip_errors) {

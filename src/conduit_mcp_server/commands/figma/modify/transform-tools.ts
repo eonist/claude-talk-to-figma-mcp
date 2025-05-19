@@ -89,7 +89,7 @@ Returns:
     },
     async ({ nodeIds, targetSize }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
-      await figmaClient.executeCommand("resize_nodes", { nodeIds: ids, targetSize });
+      await figmaClient.executeCommand(MCP_COMMANDS.RESIZE_NODES, { nodeIds: ids, targetSize });
       return { content: [{ type: "text", text: `Resized ${ids.length} nodes` }] };
     }
   );

@@ -84,7 +84,7 @@ Examples:
         // Create all instances in parallel
         const results = await Promise.all(
           instancesArr.map(
-            cfg => figmaClient.executeCommand("create_component_instance", cfg).then(res => res.id)
+            cfg => figmaClient.executeCommand(MCP_COMMANDS.CREATE_COMPONENT_INSTANCE, cfg).then(res => res.id)
           )
         );
         return {
