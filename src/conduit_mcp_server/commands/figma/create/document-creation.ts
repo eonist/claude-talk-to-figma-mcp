@@ -6,7 +6,7 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  * Registers page creation commands:
  * - create_page
  */
-// export function registerDocumentCreationCommands(server: McpServer, figmaClient: FigmaClient) {
+export function registerDocumentCreationCommands(server: McpServer, figmaClient: FigmaClient) {
 //   server.tool(
 //     MCP_COMMANDS.CREATE_PAGE,
 //     `Create a new page in the Figma document.
