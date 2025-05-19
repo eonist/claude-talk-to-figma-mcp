@@ -354,7 +354,13 @@ export function initializeCommands() {
     throw new Error("Must provide entry or entries");
   });
 
-  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, textOperations.createText);
+  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, (params) => {
+    if (params && Array.isArray(params.texts)) {
+      return textOperations.createTexts(params);
+    } else {
+      return textOperations.createText(params);
+    }
+  });
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_STYLE, textOperations.setTextStyle);
   registerCommand(PLUGIN_COMMANDS.SCAN_TEXT_NODES, textOperations.scanTextNodes);
