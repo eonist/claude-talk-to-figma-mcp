@@ -230,25 +230,42 @@ export const writeCommands = {
     return this.executeCommand(MCP_COMMANDS.MOVE_NODE, { nodeIds: ids, x: params.x, y: params.y });
   },
 
+  /**
+   * Clones one or more nodes.
+   * Accepts either { nodeId } for single or { nodeIds } for batch, plus optional params.
+   */
   async cloneNode(
     this: FigmaClient,
-    params: { nodeId: string; x?: number; y?: number }
-  ): Promise<BaseFigmaNode> {
-    const id = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, { nodeId: id, x: params.x, y: params.y });
-  },
-
-  async cloneNodes(
-    this: FigmaClient,
     params: {
-      nodeIds: string[];
+      nodeId?: string;
+      nodeIds?: string[];
+      x?: number;
+      y?: number;
       positions?: { x: number; y: number }[];
       offsetX?: number;
       offsetY?: number;
       parentId?: string;
     }
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.CLONE_NODES, params);
+    let nodeIds: string[] = [];
+    if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+      nodeIds = params.nodeIds.map(ensureNodeIdIsString);
+    } else if (params.nodeId) {
+      nodeIds = [ensureNodeIdIsString(params.nodeId)];
+    } else {
+      throw new Error("cloneNode: Provide either nodeId or nodeIds.");
+    }
+    // Pass through other params as needed (positions, offsetX, etc.)
+    const { x, y, positions, offsetX, offsetY, parentId } = params;
+    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, {
+      nodeIds,
+      x,
+      y,
+      positions,
+      offsetX,
+      offsetY,
+      parentId: parentId ? ensureNodeIdIsString(parentId) : undefined
+    });
   },
 
   async resizeNode(
