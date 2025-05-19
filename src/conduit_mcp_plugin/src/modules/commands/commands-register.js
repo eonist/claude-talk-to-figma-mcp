@@ -281,11 +281,8 @@ export function initializeCommands() {
   // Layer reorder operations
   registerCommand(PLUGIN_COMMANDS.REORDER_NODES, reorderNodes);
 
-  // Boolean operation commands
-  registerCommand(PLUGIN_COMMANDS.UNION_SELECTION, shapeOperations.union_selection);
-  registerCommand(PLUGIN_COMMANDS.SUBTRACT_SELECTION, shapeOperations.subtract_selection);
-  registerCommand(PLUGIN_COMMANDS.INTERSECT_SELECTION, shapeOperations.intersect_selection);
-  registerCommand(PLUGIN_COMMANDS.EXCLUDE_SELECTION, shapeOperations.exclude_selection);
+  // Unified boolean operation command
+  registerCommand(PLUGIN_COMMANDS.BOOLEAN, shapeOperations.boolean);
 
   // Rectangle to Frame conversion command
   registerCommand(PLUGIN_COMMANDS.CONVERT_RECTANGLE_TO_FRAME, shapeOperations.convertRectangleToFrame);

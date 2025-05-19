@@ -17,7 +17,8 @@ import {
   union_selection,
   subtract_selection,
   intersect_selection,
-  exclude_selection
+  exclude_selection,
+  boolean_operation
 } from './node/node-misc.js';
 
 /**
@@ -65,5 +66,6 @@ export const nodeOperations = {
   subtract_selection,
   intersect_selection,
   exclude_selection,
-  clone_node
+  clone_node,
+  boolean: boolean_operation
 };
