@@ -80,16 +80,16 @@ export function initializeCommands() {
   registerCommand('set_corner_radius', (params) => {
     // Accept both { radii }, { options }, or flat { nodeId, ... }
     if (params && (params.radii || params.options)) {
-      return shapeOperations.setNodesCornerRadii(params);
-    } else {
       return shapeOperations.setNodeCornerRadii(params);
+    } else {
+      return shapeOperations.setNodesCornerRadii(params);
     }
   });
   // Vector creation (merged, create_rectangle style)
   registerCommand('create_vector', (params) => {
     // Accept both { vector }, { vectors }, or flat { x, y, ... }
     if (params && (params.vector || params.vectors)) {
-      return shapeOperations.createVectors(params);
+      return shapeOperations.createVector(params);
     } else {
       return shapeOperations.createVectors({ vectors: [params] });
     }
@@ -125,7 +125,7 @@ export function initializeCommands() {
   registerCommand('resize_node', (params) => {
     // Accept both { resize }, { resizes }, or flat { nodeId, width, height }
     if (params && (params.resize || params.resizes)) {
-      return shapeOperations.resizeNodes(params);
+      return shapeOperations.resizeNode(params);
     } else {
       return shapeOperations.resizeNodes({ resizes: [params] });
     }
