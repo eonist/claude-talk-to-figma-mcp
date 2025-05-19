@@ -13,14 +13,13 @@ export const PLUGIN_COMMANDS = {
   GET_SELECTION: "get_selection",
   SET_SELECTION: "set_selection",
   GET_NODE_INFO: "get_node_info",
-  GET_CSS_ASYNC: "get_css_async",
 
   // --- Pages ---
   GET_PAGE: "get_page",
-  SET_PAGE: "set_page",
-  DUPLICATE_PAGE: "duplicate_page",
-  SET_CURRENT_PAGE: "set_current_page",
   GET_PAGES: "get_pages",
+  SET_PAGE: "set_page",
+  SET_CURRENT_PAGE: "set_current_page",
+  DUPLICATE_PAGE: "duplicate_page",
 
   // --- Shapes ---
   CREATE_RECTANGLE: "create_rectangle",
@@ -84,15 +83,16 @@ export const PLUGIN_COMMANDS = {
   REORDER_NODES: "reorder_nodes",
   RESIZE_NODE: "resize_node",
   FLATTEN_NODE: "flatten_node",
+  // we call these from boolean in server, we will fix that later
   UNION_SELECTION: "union_selection",
   SUBTRACT_SELECTION: "subtract_selection",
   INTERSECT_SELECTION: "intersect_selection",
   EXCLUDE_SELECTION: "exclude_selection",
-  RESIZE_NODES: "resize_nodes",
-  BOOLEAN: "boolean",
+  // RESIZE_NODES: "resize_nodes",
+  BOOLEAN: "boolean", // not in use yet
 
   // --- Node Management ---
-  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes",
+  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes", // not in use yet
   CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame",
   DELETE_NODE: "delete_node",
   CLONE_NODE: "clone_node",
@@ -120,6 +120,7 @@ export const PLUGIN_COMMANDS = {
   // --- Export ---
   EXPORT_NODE_AS_IMAGE: "export_node_as_image",
   GENERATE_HTML: "generate_html",
+  GET_CSS_ASYNC: "get_css_async",
 
   // --- Misc ---
   RENAME_LAYER: "rename_layer",
