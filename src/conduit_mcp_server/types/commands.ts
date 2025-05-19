@@ -153,9 +153,10 @@ export type FigmaCommand =
   // Get all styles from the document (see commands/figma/read/style-tools.ts)
   | "get_styles"
   // Get all local components (see commands/figma/read/component-tools.ts)
-  | "get_local_components"
+  //| "get_local_components"
   // Get all team components (see commands/figma/read/component-tools.ts)
-  | "get_team_components"
+  // | "get_team_components"
+  | "get_components"
   // Create an instance of a component (see commands/figma/create/component-creation/instance-tools.ts)
   | "create_component_instance"
   // Set the corner radius of a node (see commands/figma/modify/property-manipulation/corner-radius-tools.ts)

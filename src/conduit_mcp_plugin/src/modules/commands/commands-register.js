@@ -322,12 +322,28 @@ registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
 
   registerCommand('rename_layer', renameOperations.rename_layer);
 
+  // AI-powered rename of specified layers
+  registerCommand('ai_rename_layers', async (params) => {
+    if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
+    return await sendCommand("ai_rename_layers", params);
+  });
+
   // Group/Ungroup operations
   registerCommand('group_or_ungroup_nodes', layoutOperations.groupOrUngroupNodes);
 
   // Auto Layout operations
   registerCommand('set_auto_layout', setAutoLayoutUnified);
   registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
+
+  // Event subscription commands
+  registerCommand('subscribe_event', async (params) => {
+    if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
+    return await sendCommand("subscribe_event", params);
+  });
+  registerCommand('unsubscribe_event', async (params) => {
+    if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
+    return await sendCommand("unsubscribe_event", params);
+  });
 
   // Insert child node operation
   registerCommand('insert_child', layoutOperations.insertChild);
