@@ -18,7 +18,6 @@ export const PLUGIN_COMMANDS = {
   GET_PAGE: "get_page",
   GET_PAGES: "get_pages",
   SET_PAGE: "set_page",
-  SET_CURRENT_PAGE: "set_current_page",
   DUPLICATE_PAGE: "duplicate_page",
 
   // --- Shapes ---
@@ -210,9 +209,10 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_CONSTRAINTS, setConstraints);
   registerCommand(PLUGIN_COMMANDS.GET_CONSTRAINTS, getConstraints);
 
-  // Unified page commands (setPage, getPage)
+  // Unified page commands (setPage, getPage, getPages)
   registerCommand(PLUGIN_COMMANDS.SET_PAGE, setPage);
   registerCommand(PLUGIN_COMMANDS.GET_PAGE, getPage);
+  registerCommand(PLUGIN_COMMANDS.GET_PAGES, documentOperations.getPages);
 
   // Unified variant commands (setVariant, getVariant)
   registerCommand(PLUGIN_COMMANDS.SET_VARIANT, setVariant);
