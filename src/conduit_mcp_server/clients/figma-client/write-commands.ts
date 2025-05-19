@@ -262,6 +262,11 @@ export const writeCommands = {
     return this.executeCommand("delete_node", { nodeId: id });
   },
 
+  async deleteNodes(this: FigmaClient, nodeIds: string[]): Promise<any> {
+    const ids = nodeIds.map(ensureNodeIdIsString);
+    return this.executeCommand("delete_nodes", { nodeIds: ids });
+  },
+
   /**
    * Sets the fill color of a node
    * 

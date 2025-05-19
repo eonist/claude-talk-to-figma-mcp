@@ -112,8 +112,6 @@ export type FigmaCommand =
   | "get_selection"
   // Get detailed information about a specific node (see commands/figma/read/node-tools.ts)
   | "get_node_info"
-  // Get information about multiple nodes (see commands/figma/read/node-tools.ts)
-  // | "get_nodes_info"
   // Create components from node(s) (see commands/figma/create/component-creation/node-tools.ts)
   | "create_components_from_nodes"
   // Create a new rectangle shape node (see commands/figma/create/shape-creation/rectangles.ts)
@@ -153,11 +151,6 @@ export type FigmaCommand =
   // Get all styles from the document (see commands/figma/read/style-tools.ts)
   | "get_styles"
   // Get all local components (see commands/figma/read/component-tools.ts)
-  //| "get_local_components"
-  // Get all team components (see commands/figma/read/component-tools.ts)
-  // | "get_team_components"
-  // Get remote components from team libraries (see commands/figma/read/component-tools.ts)
-  // | "get_remote_components"
   | "get_components"
   // Create an instance of a component (see commands/figma/create/component-creation/instance-tools.ts)
   | "create_component_instance"
@@ -183,13 +176,10 @@ export type FigmaCommand =
   | "group_or_ungroup_nodes"
   // Flatten a node (see commands/figma/modify/layer-management/boolean-tools.ts)
   | "flatten_node"
-  // Flatten multiple nodes (see commands/figma/modify/layer-management/flatten-nodes-tools.ts)
-  //| "flatten_nodes"
   // Insert a child node (see commands/figma/modify/layer-management/index.ts)
   | "insert_child"
   // Rename a single node (see commands/figma/modify/rename.ts)
   | "rename_layer"
-  // Rename multiple layers with distinct names (see commands/figma/modify/rename.ts)
   // AI-powered rename of specified layers (see commands/figma/modify/rename.ts)
   | "ai_rename_layers"
   // Insert an SVG as a vector (see commands/figma/create/svg-creation-tools.ts)
@@ -204,7 +194,6 @@ export type FigmaCommand =
   | "set_effect"
   // Create an effect style variable (see commands/figma/modify/styling/effect-tools.ts)
   | "create_effect_style_variable"
-  // Detach a component instance from its master (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
   // Detach multiple component instances from their masters (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
   | "detach_instances"
   // Boolean operations: union, subtract, intersect, exclude (see commands/figma/modify/layer-management/boolean-tools.ts)
@@ -219,23 +208,29 @@ export type FigmaCommand =
   | "generate_html"
   // Annotation commands (see commands/figma/annotation-tools.ts)
   | "get_annotation"
+  // set annotation
   | "set_annotation"
   // Join a specific channel (see commands/channel.ts)
   | "join"
   // Grid commands (layoutGrids on frames)
   | "set_grid"
+  // set grid
   | "get_grid"
   // Guide commands (canvas guides)
   | "set_guide"
+  // get guide
   | "get_guide"
   // Constraint commands (set/get constraints)
   | "set_constraints"
+  // get constraints
   | "get_constraints"
   // Event subscription commands
   | "subscribe_event"
+  // unsubscribe event
   | "unsubscribe_event"
   // Variant commands (component variants)
   | "set_variant"
+  // get variant
   | "get_variant";
 
 /**

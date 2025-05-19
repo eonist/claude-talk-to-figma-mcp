@@ -76,8 +76,15 @@ export function initializeCommands() {
   registerCommand('create_ellipse', shapeOperations.createEllipse);
   registerCommand('create_polygon', shapeOperations.createPolygon);
   registerCommand('create_star', shapeOperations.createStar);
-  registerCommand('create_vector', shapeOperations.createVector);
-  registerCommand('create_vectors', shapeOperations.createVectors);
+  // Vector creation (merged, create_rectangle style)
+  registerCommand('create_vector', (params) => {
+    // Accept both { vector }, { vectors }, or flat { x, y, ... }
+    if (params && (params.vector || params.vectors)) {
+      return shapeOperations.createVectors(params);
+    } else {
+      return shapeOperations.createVectors({ vectors: [params] });
+    }
+  });
   registerCommand('create_line', shapeOperations.createLine);
 
   // Grid commands (layoutGrids on frames)
@@ -354,13 +361,25 @@ registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
     return await sendCommand("unsubscribe_event", params);
   });
 
-  // Insert child node operation
-  registerCommand('insert_child', layoutOperations.insertChild);
-  registerCommand('insert_children', layoutOperations.insertChildren);
+  // Insert child node operation (merged, create_rectangle style)
+  registerCommand('insert_child', (params) => {
+    // Accept both { child }, { children }, or flat object
+    if (params && (params.child || params.children)) {
+      return layoutOperations.insertChildren(params);
+    } else {
+      return layoutOperations.insertChildren({ children: [params] });
+    }
+  });
 
-  // Clone node operations
-  registerCommand('clone_node', layoutOperations.clone_node);
-  registerCommand('clone_nodes', layoutOperations.clone_nodes);
+  // Clone node operation (merged, create_rectangle style)
+  registerCommand('clone_node', (params) => {
+    // Accept both { node }, { nodes }, or flat object
+    if (params && (params.node || params.nodes)) {
+      return layoutOperations.clone_nodes(params);
+    } else {
+      return layoutOperations.clone_nodes({ nodes: [params] });
+    }
+  });
 
   // Node style inspection
   registerCommand('get_node_styles', getNodeStyles);
