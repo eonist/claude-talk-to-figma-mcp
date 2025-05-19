@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
+import { MCP_COMMANDS } from "../../../../types/commands";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { CreateTextParams, CreateBoundedTextParams } from "../../../../types/command-params.js";
 import { SingleTextSchema, BatchTextsSchema, TextSchema } from "./text-schema.js";
@@ -19,7 +20,7 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 export function registerTextTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch text creation (regular and bounded)
   server.tool(
-    "create_text",
+    MCP_COMMANDS.CREATE_TEXT,
     `Creates one or more text elements in Figma. Accepts either a single text config (via 'text') or an array of configs (via 'texts').
 If 'width' and 'height' are provided, creates a bounded text box; otherwise, creates a regular text node.
 

@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
+import { MCP_COMMANDS } from "../../../../types/commands";
 import { FrameSchema, SingleFrameSchema, BatchFramesSchema } from "./frame-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
@@ -51,7 +52,7 @@ export function registerFramesTools(server: McpServer, figmaClient: FigmaClient)
    * }
    */
   server.tool(
-    "create_frame",
+    MCP_COMMANDS.CREATE_FRAME,
     `Creates one or more frame nodes in the specified Figma document. Accepts either a single frame config (via 'frame') or an array of configs (via 'frames'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
 
 Input:

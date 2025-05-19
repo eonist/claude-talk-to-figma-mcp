@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { MCP_COMMANDS } from "../../../types/commands";
 
 /**
  * Registers style info read command on the MCP server.
@@ -18,7 +19,7 @@ import { FigmaClient } from "../../../clients/figma-client/index.js";
  */
 export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "get_styles",
+    MCP_COMMANDS.GET_STYLES,
     `Get all styles from the current Figma document.
 
 Returns:
