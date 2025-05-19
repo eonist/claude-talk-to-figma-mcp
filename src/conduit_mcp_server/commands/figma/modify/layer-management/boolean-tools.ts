@@ -71,13 +71,7 @@ Returns:
         if (nodeId) ids.push(ensureNodeIdIsString(nodeId));
       }
       if (ids.length < 2) throw new Error("At least two node IDs are required for boolean operations.");
-      const opMap = {
-        union: "union_selection",
-        subtract: "subtract_selection",
-        intersect: "intersect_selection",
-        exclude: "exclude_selection"
-      };
-      await figmaClient.executeCommand(opMap[operation], { nodeIds: ids });
+      await figmaClient.executeCommand(MCP_COMMANDS.BOOLEAN, { operation, nodeIds: ids });
       return { content: [{ type: "text", text: `${operation[0].toUpperCase() + operation.slice(1)}d ${ids.length} nodes` }] };
     }
   );
