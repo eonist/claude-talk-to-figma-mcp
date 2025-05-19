@@ -156,6 +156,8 @@ export type FigmaCommand =
   //| "get_local_components"
   // Get all team components (see commands/figma/read/component-tools.ts)
   // | "get_team_components"
+  // Get remote components from team libraries (see commands/figma/read/component-tools.ts)
+  // | "get_remote_components"
   | "get_components"
   // Create an instance of a component (see commands/figma/create/component-creation/instance-tools.ts)
   | "create_component_instance"
@@ -175,8 +177,6 @@ export type FigmaCommand =
   | "get_styled_text_segments"
   // Load a font asynchronously (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
   | "load_font_async"
-  // Get remote components from team libraries (see commands/figma/read/component-tools.ts)
-  | "get_remote_components"
   // Apply an effect style to a node (see commands/figma/modify/property-manipulation/effects-tools.ts)
   | "set_effect_style_id"
   // Group or ungroup nodes (see commands/figma/modify/layer-management/group-tools.ts)

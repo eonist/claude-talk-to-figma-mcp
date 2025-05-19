@@ -23,7 +23,6 @@
 - [get_selection](#get_selection): Get information about the current selection in Figma
 - [set_selection](#set_selection): Set the current selection in Figma to one or more node IDs
 - [get_node_info](#get_node_info): Get detailed information about one or more nodes (single or batch)
-- [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
 
 **Pages:**
 - [get_pages](#get_pages): Get all pages in the current Figma document
@@ -55,6 +54,7 @@
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**
+- [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
 - [create_components_from_nodes](#create_components_from_nodes): Convert nodes to components
 - [create_component_instance](#create_component_instance): Create component instances
 - [create_button](#create_button): Create a complete button
@@ -1252,29 +1252,7 @@ _Batch:_
   { "x": 200, "y": 100, "width": 40, "height": 40, "points": 6, "name": "Star2" }
 ] } }
 ```
-
----
-
-## set_bulk_font
-Set the font for multiple nodes in bulk.
-
-**Parameters:**
-- fonts (array): Array of font configuration objects, each with:
-  - nodeId (string): Node to update.
-  - family (string): Font family.
-  - style (string, optional): Font style.
-
-**Example:**
-```json
-{ "command": "set_bulk_font", "params": { "fonts": [
-  { "nodeId": "123:456", "family": "Inter", "style": "Bold" },
-  { "nodeId": "789:101", "family": "Roboto" }
-] } }
-```
-
----
-
-
+ 
 ## convert_rectangle_to_frame
 Convert a rectangle node to a frame node.
 

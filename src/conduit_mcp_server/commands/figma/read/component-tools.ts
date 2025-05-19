@@ -4,8 +4,6 @@ import { z } from "zod";
 
 /**
  * Registers component info read commands:
- * - get_local_components
- * - get_remote_components
  */
 export function registerComponentTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified Get Components
