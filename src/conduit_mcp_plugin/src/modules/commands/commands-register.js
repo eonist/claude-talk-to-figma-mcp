@@ -151,7 +151,7 @@ import HTMLGenerator from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePage } from '../document/document-duplicate.js';
-import { getNodeStyles, getImage, getTextStyle } from '../node/node-edit.js';
+import { getNodeStyles, getImage, getTextStyle, deleteNode, deleteNodes } from '../node/node-edit.js';
 
 /**
  * Internal registry to store command handler functions by name.
@@ -260,25 +260,18 @@ export function initializeCommands() {
 
   // Delete operation (supports single or array)
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, (params) => {
-    let nodeIds = [];
-    if (params && (Array.isArray(params.nodeIds) && params.nodeIds.length > 0)) {
-      nodeIds = params.nodeIds;
+    if (params && Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+      // Batch delete
+      return deleteNodes({ nodeIds: params.nodeIds });
     } else if (params && typeof params.nodeId === "string") {
-      nodeIds = [params.nodeId];
+      // Single delete
+      return deleteNode({ nodeId: params.nodeId });
     } else if (params && typeof params === "string") {
-      nodeIds = [params];
+      // Single delete (param is nodeId)
+      return deleteNode({ nodeId: params });
     } else {
-      nodeIds = [params];
+      throw new Error("Invalid parameters for DELETE_NODE");
     }
-    const deleted = [];
-    for (const nodeId of nodeIds) {
-      const node = figma.getNodeById(nodeId);
-      if (node) {
-        node.remove();
-        deleted.push(nodeId);
-      }
-    }
-    return { success: true, deleted };
   });
   // Move operations
   registerCommand(PLUGIN_COMMANDS.MOVE_NODE, shapeOperations.moveNode);

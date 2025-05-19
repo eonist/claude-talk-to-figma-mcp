@@ -264,10 +264,10 @@ export const writeCommands = {
     return this.executeCommand(MCP_COMMANDS.DELETE_NODE, { nodeId: id });
   },
 
-  async deleteNodes(this: FigmaClient, nodeIds: string[]): Promise<any> {
-    const ids = nodeIds.map(ensureNodeIdIsString);
-    return this.executeCommand(MCP_COMMANDS.DELETE_NODES, { nodeIds: ids });
-  },
+//  async deleteNodes(this: FigmaClient, nodeIds: string[]): Promise<any> {
+//    const ids = nodeIds.map(ensureNodeIdIsString);
+//    return this.executeCommand(MCP_COMMANDS.DELETE_NODES, { nodeIds: ids });
+//  },
 
   /**
    * Sets the fill color of a node
