@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers button creation command on the MCP server.
@@ -21,7 +22,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  */
 export function registerButtonTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "create_button",
+    MCP_COMMANDS.CREATE_BUTTON,
     `Creates a complete button with background and text in Figma at the specified coordinates. You can customize size, text, colors, font, corner radius, name, and parent node.
 
 Returns:

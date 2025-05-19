@@ -5,6 +5,7 @@ import { processBatch } from "../../../utils/batch-processor.js";
 import { handleToolError } from "../../../utils/error-handling.js";
 import { logger } from "../../../utils/logger.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers SVG insertion commands on the MCP server.
@@ -25,7 +26,7 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
   logger.info("🔧 Loading SVG creation tools");
   // Unified single/batch SVG vector insertion
   server.tool(
-    "insert_svg_vector",
+    MCP_COMMANDS.INSERT_SVG_VECTOR,
     `Inserts one or more SVG vectors in Figma. Accepts either a single SVG config (via 'svg') or an array of configs (via 'svgs').
 
 Input:

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers reorder layer commands on the MCP server.
@@ -17,7 +18,7 @@ import { z } from "../utils.js";
 export function registerReorderLayerTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified reorder_nodes tool (single or batch)
   server.tool(
-    "reorder_nodes",
+    MCP_COMMANDS.REORDER_NODES,
     `Reorders one or more nodes in their parents' children arrays. Accepts either a single reorder config (via 'reorder') or an array of configs (via 'reorders'). Optionally, you can provide options such as skip_errors.
 
 Input:

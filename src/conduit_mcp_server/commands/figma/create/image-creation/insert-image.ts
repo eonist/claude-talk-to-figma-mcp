@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 import { SingleUnifiedImageSchema, BatchUnifiedImagesSchema } from "./image-schema.js";
 
 /**
@@ -22,7 +23,7 @@ import { SingleUnifiedImageSchema, BatchUnifiedImagesSchema } from "./image-sche
  */
 export function registerUnifiedImageTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "insert_image",
+    MCP_COMMANDS.INSERT_IMAGE,
     `Inserts one or more images into Figma. Each image can be specified by a remote URL, a local file path, or a base64 data URI. Accepts either a single image config (via 'image') or an array of configs (via 'images'). You can customize size, name, and parent node.
 
 Input:

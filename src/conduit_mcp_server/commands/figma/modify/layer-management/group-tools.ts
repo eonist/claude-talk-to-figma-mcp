@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers group and ungroup commands on the MCP server.
@@ -22,7 +23,7 @@ import { NodeIdsArraySchema } from "./node-ids-schema.js";
 export function registerGroupTools(server: McpServer, figmaClient: FigmaClient) {
   // Group or Ungroup Nodes (merged command)
   server.tool(
-    "group_or_ungroup_nodes",
+    MCP_COMMANDS.GROUP_OR_UNGROUP_NODES,
     `Groups or ungroups nodes in Figma, depending on the 'group' flag.
 
 Parameters:

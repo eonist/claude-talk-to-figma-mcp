@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { PolygonSchema, SinglePolygonSchema, BatchPolygonsSchema } from "./polygon-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
 /**
@@ -50,7 +51,7 @@ export function registerPolygonsTools(server: McpServer, figmaClient: FigmaClien
    * }
    */
   server.tool(
-    "create_polygon",
+    MCP_COMMANDS.CREATE_POLYGON,
     `Creates one or more polygons in Figma. Accepts either a single polygon config (via 'polygon') or an array of configs (via 'polygons'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
 
 Input:

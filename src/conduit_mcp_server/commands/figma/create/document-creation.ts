@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers page creation commands:
@@ -7,7 +8,7 @@ import { FigmaClient } from "../../../clients/figma-client/index.js";
  */
 export function registerDocumentCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "create_page",
+    MCP_COMMANDS.CREATE_PAGE,
     `Create a new page in the Figma document.
 
 Parameters:
@@ -68,7 +69,7 @@ async (params) => {
 
 // Duplicate Page tool
 server.tool(
-  "duplicate_page",
+  MCP_COMMANDS.DUPLICATE_PAGE,
   `Duplicate a Figma page and all its children as a new page.
 
 Parameters:

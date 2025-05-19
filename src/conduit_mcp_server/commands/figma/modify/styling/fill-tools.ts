@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
+import { MCP_COMMANDS } from "../../../../types/commands";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 
 /**
@@ -9,7 +10,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  */
 export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_fill_color",
+    MCP_COMMANDS.SET_FILL_COLOR,
     `Sets the fill color of a node in Figma.
 
 Returns:

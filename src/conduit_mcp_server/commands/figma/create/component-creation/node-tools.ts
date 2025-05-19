@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers the unified batch/single component creation tool on the MCP server.
@@ -21,7 +22,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  */
 export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "create_components_from_nodes",
+    MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODES,
     `Converts one or more existing nodes into components in Figma.
 
 Parameters:

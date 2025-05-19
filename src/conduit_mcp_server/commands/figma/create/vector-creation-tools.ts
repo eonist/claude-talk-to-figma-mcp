@@ -4,6 +4,7 @@ import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 import { handleToolError } from "../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers vector-creation-related commands:
@@ -13,7 +14,7 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 export function registerVectorCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch vector creation
   server.tool(
-    "create_vector",
+    MCP_COMMANDS.CREATE_VECTOR,
     `Creates one or more vector nodes in Figma. Accepts either a single vector config (via 'vector') or an array of configs (via 'vectors').
 
 Input:

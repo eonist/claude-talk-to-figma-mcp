@@ -13,6 +13,7 @@ import { z } from "zod";
 import { FigmaClient } from "../clients/figma-client.js";
 import { logger } from "../utils/logger.js";
 import { joinChannel, connectToFigma, isConnectedToFigma } from "../server/websocket.js";
+import { MCP_COMMANDS } from "../types/commands.js";
 
 /**
  * Registers channel-related commands for the MCP server.
@@ -35,7 +36,7 @@ import { joinChannel, connectToFigma, isConnectedToFigma } from "../server/webso
  */
 export function registerChannelCommand(server: McpServer, figmaClient: FigmaClient): void {
   server.tool(
-    "join_channel",
+    MCP_COMMANDS.JOIN,
     `Join a specific channel to communicate with Figma.
 
 Returns:

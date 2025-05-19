@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers clone node commands on the MCP server.
@@ -21,7 +22,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 export function registerCloneNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch node clone
   server.tool(
-    "clone_node",
+    MCP_COMMANDS.CLONE_NODE,
     `Clones one or more nodes in Figma. Accepts either a single node config (via 'node') or an array of configs (via 'nodes'). Optionally, you can specify positions, offsets, and parent.
 
 Input:

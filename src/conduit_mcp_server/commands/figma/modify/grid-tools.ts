@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 // Zod schemas for grid commands
 const GridTypeEnum = z.enum(["GRID", "COLUMNS", "ROWS"]);
@@ -37,7 +38,7 @@ const RemoveGridSchema = z.object({
 export function registerGridCommands(server: McpServer, figmaClient: FigmaClient) {
   // Create grid
   server.tool(
-    "create_grid",
+    MCP_COMMANDS.SET_GRID,
     `Create a layout grid (GRID, COLUMNS, or ROWS) on a Figma frame.
 
 Parameters:
@@ -54,7 +55,7 @@ Returns: { status: "success"|"error", message: string, gridId?: string }`,
 
   // Update grid
   server.tool(
-    "update_grid",
+    MCP_COMMANDS.SET_GRID,
     `Update an existing layout grid on a Figma frame.
 
 Parameters:
@@ -71,7 +72,7 @@ Returns: { status: "success"|"error", message: string, gridId?: string }`,
 
   // Remove grid
   server.tool(
-    "remove_grid",
+    MCP_COMMANDS.SET_GRID,
     `Remove a layout grid from a Figma frame.
 
 Parameters:

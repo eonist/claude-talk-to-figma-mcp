@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 // Grid properties schema (for create/update)
 const GridProperties = z.object({
@@ -40,7 +41,7 @@ const GetGridSchema = z.object({
 export function registerUnifiedGridCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_grid: create, update, delete (single or batch)
   server.tool(
-    "set_grid",
+    MCP_COMMANDS.SET_GRID,
     `Create, update, or delete one or more layout grids on Figma nodes (FRAME, COMPONENT, INSTANCE).
 
 Parameters:
@@ -70,7 +71,7 @@ Returns: Array of result objects for each operation.`,
 
   // get_grid: get all grids for one or more nodes
   server.tool(
-    "get_grid",
+    MCP_COMMANDS.GET_GRID,
     `Get all layout grids for one or more Figma nodes (FRAME, COMPONENT, INSTANCE).
 
 Parameters:

@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
+import { MCP_COMMANDS } from "../../../../types/commands";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { StrokeColorSchema } from "./stroke-schema.js";
@@ -10,7 +11,7 @@ import { StrokeColorSchema } from "./stroke-schema.js";
  */
 export function registerStrokeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_stroke_color",
+    MCP_COMMANDS.SET_STROKE_COLOR,
     `Sets the stroke color of a node in Figma.
 
 Returns:

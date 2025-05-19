@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers flatten node commands on the MCP server.
@@ -20,7 +21,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  */
 export function registerFlattenNodeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "flatten_node",
+    MCP_COMMANDS.FLATTEN_NODE,
     `Flatten one or more nodes in Figma, or the current selection, merging all child vector layers and shapes into a single vector layer.
 
 Input:

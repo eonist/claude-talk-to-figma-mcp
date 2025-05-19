@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 // Constraint schema
 const ConstraintEntry = z.object({
@@ -23,7 +24,7 @@ const GetConstraintsSchema = z.object({
 export function registerConstraintCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_constraints: set constraints (single or batch)
   server.tool(
-    "set_constraints",
+    MCP_COMMANDS.SET_CONSTRAINTS,
     `Set constraints (left/right/top/bottom/center/scale/stretch) for one or more Figma nodes.
 
 Parameters:
@@ -58,7 +59,7 @@ Returns: Array of result objects for each operation.`,
 
   // get_constraints: get constraints for one or more nodes (with children)
   server.tool(
-    "get_constraints",
+    MCP_COMMANDS.GET_CONSTRAINTS,
     `Get constraints for one or more Figma nodes (optionally including children).
 
 Parameters:

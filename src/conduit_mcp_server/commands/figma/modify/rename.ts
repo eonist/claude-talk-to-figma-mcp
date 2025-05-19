@@ -5,6 +5,7 @@ import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./layer-management/node-ids-schema.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers rename commands for the MCP server
@@ -22,7 +23,7 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
 
   // Unified single/batch rename
   server.tool(
-    "rename_layer",
+    MCP_COMMANDS.RENAME_LAYER,
     `Renames one or more nodes in Figma. Accepts either a single rename config (via 'rename') or an array of configs (via 'renames').
 
 Input:

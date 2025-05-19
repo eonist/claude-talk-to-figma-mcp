@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { LineSchema, SingleLineSchema, BatchLinesSchema } from "./line-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers line creation commands with the MCP server.
@@ -54,7 +55,7 @@ export function registerLinesTools(server: McpServer, figmaClient: FigmaClient) 
    * }
    */
   server.tool(
-    "create_line",
+    MCP_COMMANDS.CREATE_LINE,
     `Creates one or more line nodes in the specified Figma document. Accepts either a single line config (via 'line') or an array of configs (via 'lines'). Optionally, you can provide a parent node ID, stroke color, and stroke weight.
 
 Input:

@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client.js";
 import { GetAnnotationParams, SetAnnotationParams, SetAnnotationEntry, AnnotationInput } from "../../types/command-params.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../types/commands.js";
 
 /**
  * Registers annotation commands with the MCP server.
@@ -9,7 +10,7 @@ import { z } from "zod";
 export function registerAnnotationCommands(server: McpServer, figmaClient: FigmaClient) {
   // get_annotation
   server.tool(
-    "get_annotation",
+    MCP_COMMANDS.GET_ANNOTATION,
     `Get annotation(s) for one or more Figma nodes.
 
 Parameters:
@@ -64,7 +65,7 @@ Returns:
 
   // set_annotation
   server.tool(
-    "set_annotation",
+    MCP_COMMANDS.SET_ANNOTATION,
     `Set, update, or delete annotation(s) for one or more Figma nodes.
 
 Parameters:

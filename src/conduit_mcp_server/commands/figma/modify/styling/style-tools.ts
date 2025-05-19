@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands";
 
 // Type definitions for style operations
 const StyleTypeEnum = z.enum(["PAINT", "EFFECT", "TEXT", "GRID"]);
@@ -19,7 +20,7 @@ export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) 
 
   // set_style: create, update, or delete styles (single or batch)
   server.tool(
-    "set_style",
+    MCP_COMMANDS.SET_STYLE,
     `Create, update, or delete one or more Figma styles (PAINT, EFFECT, TEXT, GRID) in a unified call.
 
 Parameters:

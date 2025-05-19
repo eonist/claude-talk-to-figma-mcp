@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers component-creation-related commands on the MCP server.
@@ -21,7 +22,7 @@ import { handleToolError } from "../../../../utils/error-handling.js";
  */
 export function registerCreateInstancesFromComponentsTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "create_instances_from_components",
+    MCP_COMMANDS.CREATE_COMPONENT_INSTANCE,
     `Creates one or more component instances in Figma. Accepts either a single entry (via 'entry') or an array of entries (via 'entries').
 
 Input:

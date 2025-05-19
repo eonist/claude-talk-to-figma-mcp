@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { handleToolError } from "../../../utils/error-handling.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers positioning-related modify commands:
@@ -11,7 +12,7 @@ import { handleToolError } from "../../../utils/error-handling.js";
 export function registerPositioningCommands(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch node move
   server.tool(
-    "move_node",
+    MCP_COMMANDS.MOVE_NODE,
     `Moves one or more nodes to a new position in Figma. Accepts either a single move config (via 'move') or an array of configs (via 'moves').
 
 Input:
