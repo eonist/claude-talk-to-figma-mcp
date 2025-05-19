@@ -187,12 +187,70 @@ export async function exportNodeAsImage(params) {
  * Sends a "get_components" command to the MCP server, passing the parameters as-is.
  * The server will handle the logic for local, team, or remote components.
  */
+/**
+ * Unified getComponents: retrieves local, team, or remote components based on source param.
+ * @param {object} params
+ * @param {"local"|"team"|"remote"} params.source
+ * @param {string} [params.team_id] - Required if source is "team"
+ * @param {number} [params.page_size]
+ * @param {string|number} [params.after]
+ * @returns {Promise<any>}
+ */
 export async function getComponents(params) {
-  // Assumes sendCommand is available in the plugin context
-  if (typeof sendCommand !== "function") {
-    throw new Error("sendCommand is not defined in this context.");
+  const { source, team_id, page_size, after } = params || {};
+  if (source === "local") {
+    // Get all local components in the document
+    const components = [];
+    function findComponents(node) {
+      if (node.type === "COMPONENT") {
+        components.push({
+          id: node.id,
+          name: node.name,
+          key: node.key || null
+        });
+      }
+      if (node.children && node.children.length) {
+        for (const child of node.children) {
+          findComponents(child);
+        }
+      }
+    }
+    for (const page of figma.root.children) {
+      findComponents(page);
+    }
+    return {
+      count: components.length,
+      components
+    };
+  } else if (source === "team") {
+    if (!team_id) {
+      return { error: true, message: "team_id is required when source is 'team'" };
+    }
+    if (!params.token) {
+      return { error: true, message: "Figma API token required for team component queries." };
+    }
+    const url = `https://api.figma.com/v1/teams/${team_id}/components${page_size ? `?page_size=${page_size}` : ""}${after ? `&after=${after}` : ""}`;
+    const response = await fetch(url, {
+      headers: { "X-Figma-Token": params.token }
+    });
+    if (!response.ok) {
+      return { error: true, message: `Figma API error: ${response.statusText}` };
+    }
+    const data = await response.json();
+    return data;
+  } else if (source === "remote") {
+    if (!params.token) {
+      return { error: true, message: "Figma API token required for remote component queries." };
+    }
+    // Figma does not have a direct "remote components" endpoint; this is a placeholder.
+    // You may need to use the "files" or "libraries" endpoints depending on your use case.
+    return { error: true, message: "Remote component queries are not implemented. Please specify the correct Figma API endpoint for your use case." };
+  } else {
+    return {
+      error: true,
+      message: "Invalid source parameter. Must be 'local', 'team', or 'remote'."
+    };
   }
-  return await sendCommand("get_components", params);
 }
 
 export const componentOperations = {
