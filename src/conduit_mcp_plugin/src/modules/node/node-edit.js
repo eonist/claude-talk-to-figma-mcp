@@ -399,3 +399,72 @@ export async function getTextStyle(params) {
   }
   return results;
 }
+
+/**
+ * Unified handler for GET_ANNOTATION plugin command.
+ * Handles single and batch annotation retrieval.
+ * @async
+ * @function getAnnotationUnified
+ * @param {object} params
+ * @returns {Promise<any>}
+ */
+export async function getAnnotationUnified(params) {
+  // Single node
+  if (params.nodeId) {
+    const node = figma.getNodeById(params.nodeId);
+    return {
+      nodeId: params.nodeId,
+      annotations: node && node.annotations ? node.annotations : []
+    };
+  }
+  // Batch
+  if (Array.isArray(params.nodeIds)) {
+    return params.nodeIds.map(nodeId => {
+      const node = figma.getNodeById(nodeId);
+      return {
+        nodeId,
+        annotations: node && node.annotations ? node.annotations : []
+      };
+    });
+  }
+  throw new Error("Must provide nodeId or nodeIds");
+}
+
+/**
+ * Unified handler for SET_ANNOTATION plugin command.
+ * Handles single and batch annotation setting/deletion.
+ * @async
+ * @function setAnnotationUnified
+ * @param {object} params
+ * @returns {Promise<any>}
+ */
+export async function setAnnotationUnified(params) {
+  // Helper to set or delete annotation for a node
+  async function setOrDelete(entry) {
+    const node = figma.getNodeById(entry.nodeId);
+    if (!node) return { nodeId: entry.nodeId, success: false, error: "Node not found" };
+    if (entry.delete) {
+      node.annotations = [];
+      return { nodeId: entry.nodeId, deleted: true };
+    }
+    if (entry.annotation) {
+      node.annotations = [entry.annotation];
+      return { nodeId: entry.nodeId, updated: true, annotation: entry.annotation };
+    }
+    return { nodeId: entry.nodeId, success: false, error: "No annotation or delete flag provided" };
+  }
+
+  // Single
+  if (params.entry) {
+    return await setOrDelete(params.entry);
+  }
+  // Batch
+  if (Array.isArray(params.entries)) {
+    const results = [];
+    for (const entry of params.entries) {
+      results.push(await setOrDelete(entry));
+    }
+    return results;
+  }
+  throw new Error("Must provide entry or entries");
+}
