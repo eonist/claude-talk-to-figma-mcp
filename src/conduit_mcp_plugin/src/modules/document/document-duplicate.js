@@ -26,3 +26,14 @@ export async function duplicatePage({ pageId, newPageName }) {
   }
   return { newPageId: newPageNode.id, newPageName: newPageNode.name, clonedIds };
 }
+
+/**
+ * Unified handler for DUPLICATE_PAGE plugin command.
+ * @async
+ * @function duplicatePageUnified
+ * @param {object} params - { pageId, newPageName }
+ * @returns {Promise<any>}
+ */
+export async function duplicatePageUnified(params) {
+  return await duplicatePage(params);
+}

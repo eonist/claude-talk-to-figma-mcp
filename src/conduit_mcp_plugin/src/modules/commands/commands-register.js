@@ -43,11 +43,7 @@ export const PLUGIN_COMMANDS = {
   SET_TEXT_CASE: "set_text_case",
   SET_TEXT_DECORATION: "set_text_decoration",
   LOAD_FONT_ASYNC: "load_font_async",
-  // SET_FONT_NAME: "set_font_name", // commented out
-  // SET_FONT_SIZE: "set_font_size", // commented out
-  // SET_FONT_WEIGHT: "set_font_weight", // commented out
-  // SET_BULK_FONT: "set_bulk_font", // commented out
-
+  
   // --- Components ---
   GET_COMPONENTS: "get_components",
   CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes",
@@ -151,7 +147,7 @@ import { setNodeLocked, setNodeVisible, reorderNode, reorderNodes } from '../nod
 import HTMLGenerator, { generateHtmlUnified } from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
-import { duplicatePage } from '../document/document-duplicate.js';
+import { duplicatePageUnified } from '../document/document-duplicate.js';
 import { getNodeStyles, getImage, getTextStyle, deleteNode, deleteNodeUnified } from '../node/node-edit.js';
 import { utilsOperations } from '../utils.js';
 
@@ -253,9 +249,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_STYLE, textOperations.setTextStyle);
   registerCommand(PLUGIN_COMMANDS.SCAN_TEXT_NODES, textOperations.scanTextNodes);
-  // registerCommand(PLUGIN_COMMANDS.SET_FONT_NAME, textOperations.setFontName);
-  // registerCommand(PLUGIN_COMMANDS.SET_FONT_SIZE, textOperations.setFontSize);
-  // registerCommand(PLUGIN_COMMANDS.SET_FONT_WEIGHT, textOperations.setFontWeight);
+
   registerCommand(PLUGIN_COMMANDS.SET_LETTER_SPACING, textOperations.setLetterSpacing);
   registerCommand(PLUGIN_COMMANDS.SET_LINE_HEIGHT, textOperations.setLineHeight);
   registerCommand(PLUGIN_COMMANDS.SET_PARAGRAPH_SPACING, setParagraphSpacingUnified);
@@ -265,7 +259,6 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_DECORATION, setTextDecorationUnified);
   registerCommand(PLUGIN_COMMANDS.GET_STYLED_TEXT_SEGMENTS, textOperations.getStyledTextSegments);
   registerCommand(PLUGIN_COMMANDS.LOAD_FONT_ASYNC, textOperations.loadFontAsyncWrapper);
-  // registerCommand(PLUGIN_COMMANDS.SET_BULK_FONT, textOperations.setBulkFont);
 
   /*
   // variableOperations is now defined globally by variables.js in the build output.
@@ -338,9 +331,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.CREATE_BUTTON, createButton);
 
   // Duplicate Page (MCP-only, no UI)
-  registerCommand(PLUGIN_COMMANDS.DUPLICATE_PAGE, async ({ pageId, newPageName }) => {
-    return await duplicatePage({ pageId, newPageName });
-  });
+  registerCommand(PLUGIN_COMMANDS.DUPLICATE_PAGE, duplicatePageUnified);
 }
 
 /**
