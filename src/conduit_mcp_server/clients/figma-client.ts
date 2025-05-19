@@ -104,21 +104,7 @@ export class FigmaClient {
     return filterFigmaNode(result);
   }
   
-  /**
-   * Gets information about multiple nodes
-   * 
-   * @param {string[]} nodeIds - The IDs of the nodes to get information about
-   * @returns {Promise<BaseFigmaNode[]>} The node information
-   */
-//  async getNodesInfo(nodeIds: string[]): Promise<BaseFigmaNode[]> {
-//    // Ensure all nodeIds are treated as strings and validate they're not objects
-//    const nodeIdStrings = nodeIds.map(nodeId => ensureNodeIdIsString(nodeId));
-//    logger.debug(`Getting info for ${nodeIdStrings.length} nodes`);
-//    
-//    const result = await this.executeCommand("get_nodes_info", { nodeIds: nodeIdStrings }); // Not in MCP_COMMANDS, leave as is for now
-//    return result.map(filterFigmaNode);
-//  }
-  
+
   // Creation operations
   
   /**
@@ -382,18 +368,7 @@ export class FigmaClient {
     });
   }
   
-  /**
-   * Converts an existing node into a component
-   *
-   * @param {object} params - Conversion parameters
-   * @param {string} params.nodeId - The ID of the node to convert
-   * @returns {Promise<{componentId: string}>} The new component ID
-   */
-//  async createComponentFromNode(params: { nodeId: string }): Promise<{ componentId: string }> {
-//    const nodeIdString = ensureNodeIdIsString(params.nodeId);
-//    return this.executeCommand("create_component_from_node", { nodeId: nodeIdString }); // Not in MCP_COMMANDS, leave as is for now
-//  }
-  
+
 
   // Batch SVG insertion
   /**
@@ -696,43 +671,6 @@ export class FigmaClient {
     });
   }
   
-  /**
-   * Sets the font size of a text node
-   * 
-   * @param {object} params - Font size parameters
-   * @returns {Promise<any>} Operation result
-   */
-//  async setFontSize(params: {
-//    nodeId: string;
-//    fontSize: number;
-//  }): Promise<any> {
-//    // Ensure nodeId is treated as a string and validate it's not an object
-//    const nodeIdString = ensureNodeIdIsString(params.nodeId);
-//    
-//    return this.executeCommand("set_font_size", {
-//      nodeId: nodeIdString,
-//      fontSize: params.fontSize
-//    });
-//  }
-  
-  /**
-   * Sets the font weight of a text node
-   * 
-   * @param {object} params - Font weight parameters
-   * @returns {Promise<any>} Operation result
-   */
-//  async setFontWeight(params: {
-//    nodeId: string;
-//    weight: number;
-//  }): Promise<any> {
-//    // Ensure nodeId is treated as a string and validate it's not an object
-//    const nodeIdString = ensureNodeIdIsString(params.nodeId);
-//    
-//    return this.executeCommand("set_font_weight", {
-//      nodeId: nodeIdString,
-//      weight: params.weight
-//    });
-//  }
   
   /**
    * Sets the letter spacing of a text node
@@ -953,131 +891,4 @@ export class FigmaClient {
     });
   }
   
-  /**
-   * Apply font settings to multiple text nodes at once
-   * @param params.targets - Array of target configurations
-   * @returns {Promise<any>} Operation result
-   */
-//  async setBulkFont(params: {
-//    targets: Array<{
-//      nodeIds?: string[];
-//      parentId?: string;
-//      font: {
-//        family?: string;
-//        style?: string;
-//        size?: number;
-//        weight?: number;
-//      };
-//    }>;
-//  }): Promise<any> {
-//    return this.executeCommand("set_bulk_font", params);
-//  }
-
-  /**
-   * Creates a gradient paint style in Figma (single or batch)
-   */
-//  async createGradientVariable(params:
-//    | {
-//        name: string;
-//        gradientType: "LINEAR" | "RADIAL" | "ANGULAR" | "DIAMOND";
-//        stops: Array<{ position: number; color: [number, number, number, number] }>;
-//        mode?: string;
-//        opacity?: number;
-//        transformMatrix?: number[][];
-//      }
-//    | {
-//        gradients: Array<{
-//          name: string;
-//          gradientType: "LINEAR" | "RADIAL" | "ANGULAR" | "DIAMOND";
-//          stops: Array<{ position: number; color: [number, number, number, number] }>;
-//          mode?: string;
-//          opacity?: number;
-//          transformMatrix?: number[][];
-//        }>;
-//      }
-//  ): Promise<any> {
-//    // If gradients property exists, pass as is; else, wrap single in gradients array
-//    if ("gradients" in params) {
-//      return this.executeCommand("create_gradient_variable", { gradients: params.gradients }); // Not in MCP_COMMANDS, leave as is for now
-//    } else {
-//      return this.executeCommand("create_gradient_variable", { gradients: params }); // Not in MCP_COMMANDS, leave as is for now
-//    }
-//  }
-
-  /**
-   * Applies a gradient style to node(s) in Figma (single or batch)
-   */
-//  async applyGradientStyle(params:
-//    | {
-//        nodeId: string;
-//        gradientStyleId: string;
-//        applyTo: "FILL" | "STROKE" | "BOTH";
-//      }
-//    | {
-//        entries: Array<{
-//          nodeId: string;
-//          gradientStyleId: string;
-//          applyTo: "FILL" | "STROKE" | "BOTH";
-//        }>;
-//      }
-//  ): Promise<any> {
-//    // If entries property exists, pass as is; else, wrap single in entries array
-//    if ("entries" in params) {
-//      return this.executeCommand("apply_gradient_style", { entries: params.entries }); // Not in MCP_COMMANDS, leave as is for now
-//    } else {
-//      return this.executeCommand("apply_gradient_style", { entries: params }); // Not in MCP_COMMANDS, leave as is for now
-//    }
-//  }
-
-    /**
-     * Flattens a selection of nodes in Figma.
-     *
-     * @param params - Contains node IDs to flatten.
-     * @param nodeIds - Array of node IDs.
-     * @returns Operation result.
-     */
-//    async flattenSelection(params: { nodeIds: string[]; }): Promise<any> {
-//      const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
-//      return this.executeCommand("flatten_selection", { nodeIds: nodeIdStrings }); // Not in MCP_COMMANDS, leave as is for now
-//    }
-
-    /**
-     * Applies union boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to union.
-     * @returns {Promise<any>} Operation result.
-     */
-//    async unionSelection(params: { nodeIds: string[] }): Promise<any> {
-//      return this.executeCommand("union_selection", params); // Not in MCP_COMMANDS, leave as is for now
-//    }
-
-    /**
-     * Applies subtract boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to subtract.
-     * @returns {Promise<any>} Operation result.
-     */
-//    async subtractSelection(params: { nodeIds: string[] }): Promise<any> {
-//      return this.executeCommand("subtract_selection", params); // Not in MCP_COMMANDS, leave as is for now
-//    }
-
-    /**
-     * Applies intersect boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to intersect.
-     * @returns {Promise<any>} Operation result.
-     */
-//    async intersectSelection(params: { nodeIds: string[] }): Promise<any> {
-//      return this.executeCommand("intersect_selection", params); // Not in MCP_COMMANDS, leave as is for now
-//    }
-
-    /**
-     * Applies exclude boolean operation to selected nodes.
-     * @param {object} params - Parameters.
-     * @param {string[]} params.nodeIds - Array of node IDs to exclude.
-     * @returns {Promise<any>} Operation result.
-     */
-//    async excludeSelection(params: { nodeIds: string[] }): Promise<any> {
-//      return this.executeCommand("exclude_selection", params); // Not in MCP_COMMANDS, leave as is for now
-//    }
 }
