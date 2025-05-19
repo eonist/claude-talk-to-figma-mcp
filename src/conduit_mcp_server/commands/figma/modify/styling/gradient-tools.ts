@@ -170,7 +170,7 @@ Returns:
     },
     async ({ entries }) => {
       const entryList = Array.isArray(entries) ? entries : [entries];
-      const results = await figmaClient.executeCommand("set_gradient", { entries: entryList });
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_GRADIENT, { entries: entryList });
       return {
         content: [
           {

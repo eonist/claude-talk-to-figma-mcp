@@ -40,7 +40,7 @@ Returns: Array of result objects for each operation.`,
       const results = [];
       for (const op of ops) {
         try {
-          const result = await figmaClient.executeCommand("setPage", op);
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_PAGE, op);
           results.push({ ...result, pageId: op.pageId, success: true });
         } catch (err: any) {
           results.push({ pageId: op.pageId, success: false, error: err?.message || String(err) });
@@ -63,7 +63,7 @@ Parameters:
 Returns: For single: { pageId, name, isActive }, for batch: Array<{ pageId, name, isActive }>.`,
     GetPageSchema,
     async (params) => {
-      return await figmaClient.executeCommand("getPage", params);
+      return await figmaClient.executeCommand(MCP_COMMANDS.GET_PAGE, params);
     }
   );
 }

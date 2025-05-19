@@ -59,7 +59,7 @@ Examples:
       for (const id of ids) {
         try {
           // Fetch node info
-          const node = await figmaClient.executeCommand("get_node_info", { nodeId: id });
+          const node = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId: id });
           if (!node) {
             results.push({ nodeId: id, error: "Node not found" });
             continue;
@@ -71,7 +71,7 @@ Examples:
           }
           // Use Figma's export API or plugin helper to get SVG markup
           // Here we assume a backend helper or plugin command exists; otherwise, this is a stub
-          const svgResult = await figmaClient.executeCommand("export_node_as_image", { nodeId: id, format: "SVG" });
+          const svgResult = await figmaClient.executeCommand(MCP_COMMANDS.EXPORT_NODE_AS_IMAGE, { nodeId: id, format: "SVG" });
           if (svgResult && svgResult.imageData) {
             results.push({ nodeId: id, svg: svgResult.imageData });
           } else {

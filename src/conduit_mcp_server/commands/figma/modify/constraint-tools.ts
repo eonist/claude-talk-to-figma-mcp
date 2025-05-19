@@ -43,7 +43,7 @@ Returns: Array of result objects for each operation.`,
       const results = [];
       for (const op of ops) {
         try {
-          const result = await figmaClient.executeCommand("setConstraints", {
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_CONSTRAINTS, {
             ...op,
             applyToChildren: params.applyToChildren,
             maintainAspectRatio: params.maintainAspectRatio,
@@ -70,7 +70,7 @@ Parameters:
 Returns: Array of constraint info for each node, including children if requested.`,
     GetConstraintsSchema,
     async (params) => {
-      return await figmaClient.executeCommand("getConstraints", params);
+      return await figmaClient.executeCommand(MCP_COMMANDS.GET_CONSTRAINTS, params);
     }
   );
 }

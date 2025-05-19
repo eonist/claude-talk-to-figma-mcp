@@ -33,7 +33,7 @@ Returns:
     },
     async () => {
       try {
-        const result = await figmaClient.executeCommand("get_selection");
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_SELECTION);
         return {
           content: [
             {

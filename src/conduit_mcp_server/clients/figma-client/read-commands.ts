@@ -21,16 +21,16 @@ export const readCommands = {
 
 
   async getCssAsync(this: FigmaClient, params?: { nodeId?: string; format?: "object"|"string"|"inline" }): Promise<any> {
-    return this.executeCommand("get_css_async", params || {});
+    return this.executeCommand(MCP_COMMANDS.GET_CSS_ASYNC, params || {});
   },
 
   // --- Added for page management ---
   async getPages(this: FigmaClient): Promise<Array<{ id: string, name: string, childCount: number }>> {
-    return this.executeCommand("get_pages");
+    return this.executeCommand(MCP_COMMANDS.GET_PAGES);
   },
 
   async setCurrentPage(this: FigmaClient, pageId: string): Promise<{ id: string, name: string, childCount: number }> {
     const id = ensureNodeIdIsString(pageId);
-    return this.executeCommand("set_current_page", { pageId: id });
+    return this.executeCommand(MCP_COMMANDS.SET_CURRENT_PAGE, { pageId: id });
   }
 };

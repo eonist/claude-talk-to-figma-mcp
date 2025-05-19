@@ -59,7 +59,7 @@ Returns: Array of result objects for each operation.`,
       const results = [];
       for (const op of ops) {
         try {
-          const result = await figmaClient.executeCommand("setGrid", op);
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_GRID, op);
           results.push({ ...result, nodeId: op.nodeId, success: true });
         } catch (err: any) {
           results.push({ nodeId: op.nodeId, success: false, error: err?.message || String(err) });
@@ -85,7 +85,7 @@ Returns: For single: { nodeId, grids: [...] }, for batch: Array<{ nodeId, grids:
       const results = [];
       for (const id of ids) {
         try {
-          const result = await figmaClient.executeCommand("getGrid", { nodeId: id });
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_GRID, { nodeId: id });
           results.push({ nodeId: id, grids: result.grids || [] });
         } catch (err: any) {
           results.push({ nodeId: id, error: err?.message || String(err) });

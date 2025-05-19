@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
-import { MCP_COMMANDS } from "../../../types/commands";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers style info read command on the MCP server.
@@ -44,7 +44,7 @@ Returns:
     },
     async () => {
       try {
-        const result = await figmaClient.executeCommand("get_styles");
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_STYLES);
         return {
           content: [
             {
@@ -122,7 +122,7 @@ Examples:
       const results = [];
       for (const id of ids) {
         try {
-          const node = await figmaClient.executeCommand("get_node_info", { nodeId: id });
+          const node = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId: id });
           if (!node) {
             results.push({ nodeId: id, error: "Node not found" });
             continue;

@@ -34,7 +34,7 @@ Returns:
       extraInfo: "Node IDs must be valid and present on the current page. Returns which nodes were selected and which were not found."
     },
     async (params, { figmaClient }) => {
-      const result = await figmaClient.executeCommand("set_selection", params);
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_SELECTION, params);
       return {
         content: [
           {

@@ -67,7 +67,7 @@ Returns:
     },
     async ({ entries }) => {
       const entryList = Array.isArray(entries) ? entries : [entries];
-      const results = await figmaClient.executeCommand("set_effect", { entries: entryList });
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_EFFECT, { entries: entryList });
       return {
         content: [
           {
@@ -127,7 +127,7 @@ Returns:
     },
     async ({ effects }) => {
       const effectList = Array.isArray(effects) ? effects : [effects];
-      const results = await figmaClient.executeCommand("create_effect_style_variable", { effects: effectList });
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE, { effects: effectList });
       return {
         content: [
           {

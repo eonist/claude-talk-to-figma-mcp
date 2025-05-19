@@ -57,7 +57,7 @@ Returns:
       try {
         const nodeIdString = ensureNodeIdIsString(nodeId);
         logger.debug(`Getting styled text segments for node ID: ${nodeIdString}`);
-        const result = await figmaClient.executeCommand("get_styled_text_segments", {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_STYLED_TEXT_SEGMENTS, {
           nodeId: nodeIdString,
           property
         });
@@ -119,7 +119,7 @@ Returns:
         };
         const nodeIdString = ensureNodeIdIsString(nodeId);
         logger.debug(`Scanning text nodes for node ID: ${nodeIdString}`);
-        const result = await figmaClient.executeCommand("scan_text_nodes", {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.SCAN_TEXT_NODES, {
           nodeId: nodeIdString,
           useChunking: true,
           chunkSize: 10

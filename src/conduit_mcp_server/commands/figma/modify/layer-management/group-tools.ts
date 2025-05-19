@@ -74,7 +74,7 @@ Returns:
           throw new Error("When grouping, 'nodeIds' (min 2) is required.");
         }
         const ids = nodeIds.map(ensureNodeIdIsString);
-        const result = await figmaClient.executeCommand("group_nodes", { nodeIds: ids, name });
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, { nodeIds: ids, name });
         return {
           content: [{
             type: "text",
@@ -86,7 +86,7 @@ Returns:
           throw new Error("When ungrouping, 'nodeId' is required.");
         }
         const id = ensureNodeIdIsString(nodeId);
-        const result = await figmaClient.executeCommand("ungroup_nodes", { nodeId: id });
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, { nodeId: id });
         return {
           content: [{
             type: "text",

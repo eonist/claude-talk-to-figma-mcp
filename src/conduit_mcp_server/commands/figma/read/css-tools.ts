@@ -41,7 +41,7 @@ Returns:
         const params: any = {};
         if (nodeId !== undefined) params.nodeId = ensureNodeIdIsString(nodeId);
         if (format !== undefined) params.format = format;
-        const result = await figmaClient.executeCommand("get_css_async", params);
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_CSS_ASYNC, params);
         return {
           content: [
             {

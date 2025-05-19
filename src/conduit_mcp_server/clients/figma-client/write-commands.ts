@@ -1,7 +1,7 @@
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaCommand, BaseFigmaNode, RGBAColor } from "./types.js";
 import type { FigmaClient } from "./index.js";
-import { MCP_COMMANDS } from "../types/commands";
+import { MCP_COMMANDS } from "../types/commands.js";
 
 export const writeCommands = {
   async createRectangle(
@@ -41,7 +41,7 @@ export const writeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand("insert_image", {
+    return this.executeCommand(MCP_COMMANDS.INSERT_IMAGE, {
       url: params.url,
       x: params.x || 0,
       y: params.y || 0,
