@@ -134,6 +134,7 @@ export const PLUGIN_COMMANDS = {
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
+import { createBoundedText } from '../text/text-create.js';
 import { setParagraphSpacingUnified, setLineHeightUnified, setLetterSpacingUnified, setTextCaseUnified, setTextDecorationUnified } from '../text/text-edit.js';
 import * as styleOperations from '../styles.js';
 import * as componentOperations from '../components.js';
@@ -342,11 +343,16 @@ export function initializeCommands() {
   });
 
   registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, (params) => {
+    // Batch support
     if (params && Array.isArray(params.texts)) {
       return textOperations.createTexts(params);
-    } else {
-      return textOperations.createText(params);
     }
+    // Bounded text support
+    if (params && (params.width && params.height)) {
+      return createBoundedText(params);
+    }
+    // Regular text
+    return textOperations.createText(params);
   });
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_STYLE, textOperations.setTextStyle);
