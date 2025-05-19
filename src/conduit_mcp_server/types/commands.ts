@@ -179,6 +179,7 @@ export const MCP_COMMANDS = {
   MOVE_NODE: "move_node", // Move one or more nodes (single or batch)
   REORDER_NODES: "reorder_nodes", // Reorder one or more nodes in their parents' children arrays (single or batch)
   RESIZE_NODE: "resize_node", // Resize a node (single or batch)
+  RESIZE_NODES: "resize_nodes", // Resize multiple nodes (batch)
   FLATTEN_NODE: "flatten_node", // Flatten a single node (or batch) or selection
   BOOLEAN: "boolean", // Perform union, subtract, intersect, or exclude on nodes or selection
 

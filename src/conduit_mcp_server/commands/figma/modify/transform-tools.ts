@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z, logger, ensureNodeIdIsString } from "./utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers transformation-related modify commands:
@@ -12,7 +13,7 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 export function registerTransformCommands(server: McpServer, figmaClient: FigmaClient) {
   // Resize Node Tool
   server.tool(
-    "resize_node",
+    MCP_COMMANDS.RESIZE_NODE,
     `Resize a node in Figma.
 
 Returns:
@@ -50,7 +51,7 @@ Returns:
 
   // Resize Multiple Nodes Tool
   server.tool(
-    "resize_nodes",
+    MCP_COMMANDS.RESIZE_NODES,
     `Resize multiple nodes in Figma.
 
 Returns:

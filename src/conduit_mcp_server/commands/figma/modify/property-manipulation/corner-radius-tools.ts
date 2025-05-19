@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { CornerRadiusSchema } from "./corner-radius-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers corner radius command on the MCP server.
@@ -22,7 +23,7 @@ import { CornerRadiusSchema } from "./corner-radius-schema.js";
 export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Corner Radius
   server.tool(
-    "set_corner_radius",
+    MCP_COMMANDS.SET_CORNER_RADIUS,
     `Sets the corner radius of a node in Figma.
 
 Returns:

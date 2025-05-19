@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 const NodeIdSchema = z.string().refine(isValidNodeId, { message: "Invalid Figma node ID" });
 const NodeIdsSchema = z.array(NodeIdSchema).min(1).max(100);
@@ -26,7 +27,7 @@ const VisibleSchema = z.object({
 export function registerNodeLockVisibilityCommands(server, figmaClient) {
   // Unified lock/unlock
   server.tool(
-    "set_node_locked",
+    MCP_COMMANDS.SET_NODE_LOCKED,
     "Locks or unlocks one or more nodes.",
     LockSchema,
     async (params: { nodeId?: string; nodeIds?: string[]; locked: boolean }) => {
@@ -54,7 +55,7 @@ export function registerNodeLockVisibilityCommands(server, figmaClient) {
 
   // Unified hide/show
   server.tool(
-    "set_node_visible",
+    MCP_COMMANDS.SET_NODE_VISIBLE,
     "Shows or hides one or more nodes.",
     VisibleSchema,
     async (params: { nodeId?: string; nodeIds?: string[]; visible: boolean }) => {

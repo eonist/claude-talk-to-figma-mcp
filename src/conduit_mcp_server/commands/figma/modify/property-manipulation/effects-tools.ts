@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { EffectsArraySchema } from "./effect-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers effect-related commands on the MCP server.
@@ -22,7 +23,7 @@ import { EffectsArraySchema } from "./effect-schema.js";
 export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Effect Style ID
   server.tool(
-    "set_effect_style_id",
+    MCP_COMMANDS.SET_EFFECT_STYLE_ID,
     `Applies an effect style to a node in Figma.
 
 Returns:

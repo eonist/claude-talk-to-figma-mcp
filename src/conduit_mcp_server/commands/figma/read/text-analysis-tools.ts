@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
@@ -13,7 +14,7 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 export function registerTextAnalysisTools(server: McpServer, figmaClient: FigmaClient) {
   // Get Styled Text Segments
   server.tool(
-    "get_styled_text_segments",
+    MCP_COMMANDS.GET_STYLED_TEXT_SEGMENTS,
     `Get text segments with specific styling in a text node.
 
 Returns:
@@ -83,7 +84,7 @@ Returns:
 
   // Scan Text Nodes
   server.tool(
-    "scan_text_nodes",
+    MCP_COMMANDS.SCAN_TEXT_NODES,
     `Scan all text nodes in the selected Figma node.
 
 Returns:

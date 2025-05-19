@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 // Event subscription schema
 const SubscribeEventSchema = z.object({
@@ -17,7 +18,7 @@ export function registerEventCommands(server: McpServer, figmaClient: FigmaClien
 
   // subscribe_event: subscribe to an event type
   server.tool(
-    "subscribe_event",
+    MCP_COMMANDS.SUBSCRIBE_EVENT,
     `Subscribe to a Figma event (e.g., selection_change, document_change).
 
 Parameters:
@@ -39,7 +40,7 @@ Returns: { subscriptionId }`,
 
   // unsubscribe_event: unsubscribe from an event
   server.tool(
-    "unsubscribe_event",
+    MCP_COMMANDS.UNSUBSCRIBE_EVENT,
     `Unsubscribe from a previously subscribed event.
 
 Parameters:
