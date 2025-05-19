@@ -34,7 +34,7 @@ export async function createRectangle(params) {
   }
   const ids = [];
   for (const cfg of rectanglesArr) {
-    console.log("PLUGIN createRectangle cfg:", cfg);
+    console.log("💥 PLUGIN createRectangle cfg:", cfg);
     const {
       x = 0, y = 0, width = 100, height = 100,
       name = "Rectangle", parentId, fillColor, strokeColor, strokeWeight
@@ -46,7 +46,10 @@ export async function createRectangle(params) {
     rect.name = name;
 
     if (typeof cfg.cornerRadius === "number") {
+      console.log("💥 PLUGIN: Applying cornerRadius:", cfg.cornerRadius);
       rect.cornerRadius = cfg.cornerRadius;
+    } else {
+      console.log("💥 PLUGIN: No valid cornerRadius provided, value is:", cfg.cornerRadius);
     }
 
     if (fillColor) setFill(rect, fillColor);

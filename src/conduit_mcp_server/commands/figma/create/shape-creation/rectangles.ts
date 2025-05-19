@@ -117,7 +117,7 @@ Returns:
           rects,
           async cfg => {
             const params = { commandId: uuidv4(), ...cfg };
-            console.log("createRectangle params:", params);
+            console.log("💥 createRectangle params:", params);
             const node = await figmaClient.createRectangle(params);
             if (!node || !node.id) {
               throw new Error("Failed to create rectangle: missing node ID from figmaClient.createRectangle");
