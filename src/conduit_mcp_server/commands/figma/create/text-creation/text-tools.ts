@@ -15,7 +15,7 @@ import { handleToolError } from "../../../../utils/error-handling.js";
  * 
  * Adds:
  * - create_text: Create a new text element in Figma
- * - create_bounded_text: Create a bounded text box in Figma
+ * - createText: Create a text box in Figma (bounded text box support removed)
  */
 export function registerTextTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch text creation (regular and bounded)
@@ -94,8 +94,8 @@ Returns:
           const params: CreateTextParams = { commandId: uuidv4(), ...textConfig };
           let node;
           if (textConfig.width && textConfig.height) {
-            // Bounded text box
-            node = await figmaClient.executeCommand("create_bounded_text", params);
+            // Bounded text box (now uses createText)
+            node = await figmaClient.executeCommand("create_text", params);
           } else {
             // Regular text node
             node = await figmaClient.createText(params);

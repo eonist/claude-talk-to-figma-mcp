@@ -51,7 +51,7 @@ export {
  * @property {function} createVectors - Create multiple vector nodes.
  * @property {function} createLine - Create a line node.
  */
-import { nodeOperations } from './node.js';
+import { boolean_operation } from './node/node-misc.js';
 
 export const shapeOperations = {
   createRectangle,
@@ -62,6 +62,6 @@ export const shapeOperations = {
   createVector,
   createVectors,
   createLine,
-  boolean: nodeOperations.boolean
+  boolean: boolean_operation
   // Note: If any legacy batch/single functions remain, remove them.
 };
