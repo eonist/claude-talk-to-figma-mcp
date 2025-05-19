@@ -105,18 +105,27 @@ export function initializeCommands() {
   registerCommand('setVariant', setVariant);
   registerCommand('getVariant', getVariant);
 
-  // Resize operations
-  registerCommand('resize_node', shapeOperations.resizeNode);
-  registerCommand('resize_nodes', shapeOperations.resizeNodes);
-  // Delete operations
-  registerCommand('delete_nodes', async (params) => {
-    let nodeIds = [];
-    if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
-      nodeIds = params.nodeIds;
-    } else if (typeof params.nodeId === "string") {
-      nodeIds = [params.nodeId];
+  // Resize operation (merged, create_rectangle style)
+  registerCommand('resize_node', (params) => {
+    // Accept both { resize }, { resizes }, or flat { nodeId, width, height }
+    if (params && (params.resize || params.resizes)) {
+      return shapeOperations.resizeNodes(params);
     } else {
-      throw new Error("You must provide 'nodeId' or 'nodeIds'");
+      return shapeOperations.resizeNodes({ resizes: [params] });
+    }
+  });
+
+  // Delete operation (supports single or array)
+  registerCommand('delete_node', (params) => {
+    let nodeIds = [];
+    if (params && (Array.isArray(params.nodeIds) && params.nodeIds.length > 0)) {
+      nodeIds = params.nodeIds;
+    } else if (params && typeof params.nodeId === "string") {
+      nodeIds = [params.nodeId];
+    } else if (params && typeof params === "string") {
+      nodeIds = [params];
+    } else {
+      nodeIds = [params];
     }
     const deleted = [];
     for (const nodeId of nodeIds) {
