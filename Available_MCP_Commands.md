@@ -86,8 +86,7 @@
 - [move_nodes](#move_nodes): Move one or more nodes (single or batch)
 - [reorder_nodes](#reorder_nodes): Reorder one or more nodes in their parents' children arrays (single or batch)
 - [resize_node](#resize_node): Resize a node (single or batch)
-- [flatten_node](#flatten_node): Flatten a single node (or batch)
-- [flatten_selection](#flatten_selection): Flatten a selection of nodes
+- [flatten_node](#flatten_node): Flatten a single node (or batch) or selection
 - [boolean](#boolean): Perform union, subtract, intersect, or exclude on nodes or selection
 
 **Node Management:**

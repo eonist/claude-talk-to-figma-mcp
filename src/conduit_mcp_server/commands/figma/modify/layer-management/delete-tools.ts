@@ -22,7 +22,7 @@ import { NodeIdsArraySchema } from "./node-ids-schema.js";
 export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified delete_nodes tool (single or batch)
   server.tool(
-    "delete_nodes",
+    "delete_node",
     `Deletes one or more nodes in Figma.
 
 Input:
