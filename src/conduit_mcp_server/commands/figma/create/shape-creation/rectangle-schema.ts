@@ -19,9 +19,9 @@ export const SingleRectangleSchema = z.object({
   parentId: z.string()
     .describe("The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.")
     .optional(),
-  cornerRadius: z.number().min(0, "cornerRadius must be >= 0")
-    .describe("The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8")
-    .optional()
+cornerRadius: z.number().min(0, "cornerRadius must be >= 0")
+  .describe("The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8")
+  .optional()
 });
 
 export const BatchRectanglesSchema = z.array(SingleRectangleSchema);

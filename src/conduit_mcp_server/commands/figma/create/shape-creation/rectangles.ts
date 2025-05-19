@@ -118,18 +118,15 @@ Returns:
         const results = await processBatch(
           rects,
           async cfg => {
-            const params = { commandId: uuidv4(), ...cfg };
+            const params = { 
+              commandId: uuidv4(), 
+              ...cfg, 
+              cornerRadius: typeof cfg.cornerRadius === "number" ? cfg.cornerRadius : undefined 
+            };
             logger.info(`💥 createRectangle params: ${JSON.stringify(params)}`);
             const node = await figmaClient.createRectangle(params);
             if (!node || !node.id) {
               throw new Error("Failed to create rectangle: missing node ID from figmaClient.createRectangle");
-            }
-            if (cfg.cornerRadius != null) {
-              await figmaClient.executeCommand("set_corner_radius", {
-                commandId: uuidv4(),
-                nodeId: node.id,
-                radius: cfg.cornerRadius
-              });
             }
             return node.id;
           }
