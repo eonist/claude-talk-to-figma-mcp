@@ -72,7 +72,7 @@ Returns:
  */
 export function registerNodeStylesTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "get_node_styles",
+    MCP_COMMANDS.GET_NODE_STYLES,
     `Get all style properties (fills, strokes, effects, text styles, style IDs, etc.) for one or more nodes.
 
 Input:

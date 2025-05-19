@@ -4,6 +4,7 @@ import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { CssExportOptionsSchema } from "./css-schema.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers CSS read command:
@@ -11,7 +12,7 @@ import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
  */
 export function registerCssTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "get_css_async",
+    MCP_COMMANDS.GET_CSS_ASYNC,
     `Get CSS properties from a node.
 
 Returns:

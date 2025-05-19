@@ -1,13 +1,14 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers get_svg_vector (single or batch) on the MCP server.
  */
 export function registerSvgVectorTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "get_svg_vector",
+    MCP_COMMANDS.GET_SVG_VECTOR,
     `Get SVG markup for one or more vector nodes.
 
 Input:

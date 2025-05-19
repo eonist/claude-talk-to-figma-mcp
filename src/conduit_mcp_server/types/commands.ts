@@ -161,6 +161,7 @@ export const MCP_COMMANDS = {
 
   // --- Styling ---
   GET_STYLES: "get_styles", // Get all styles from the document
+  GET_NODE_STYLES: "get_node_styles", // Get all style properties for one or more nodes
   SET_FILL_COLOR: "set_fill_color", // Set fill color
   SET_STROKE_COLOR: "set_stroke_color", // Set stroke color
   SET_STYLE: "set_style", // Set both fill and stroke

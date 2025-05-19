@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers gradient-related styling commands:
@@ -46,7 +47,7 @@ export function registerGradientTools(server: McpServer, figmaClient: FigmaClien
 
   // Unified Create Gradient Style
   server.tool(
-    "create_gradient_style",
+    MCP_COMMANDS.CREATE_GRADIENT_STYLE,
     `Creates one or more gradient style variables in Figma.
 
 Params:
@@ -131,7 +132,7 @@ Returns:
   });
 
   server.tool(
-    "set_gradient",
+    MCP_COMMANDS.SET_GRADIENT,
     `Set a gradient on one or more nodes in Figma, either directly or by style variable.
 
 Params:
