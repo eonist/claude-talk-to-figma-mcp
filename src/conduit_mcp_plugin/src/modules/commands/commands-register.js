@@ -96,11 +96,6 @@ export function initializeCommands() {
   });
   registerCommand('create_line', shapeOperations.createLine);
 
-  // Grid commands (layoutGrids on frames)
-  registerCommand('createGrid', createGrid);
-  registerCommand('updateGrid', updateGrid);
-  registerCommand('removeGrid', removeGrid);
-
   // Unified grid commands (setGrid, getGrid)
   registerCommand('setGrid', setGrid);
   registerCommand('getGrid', getGrid);

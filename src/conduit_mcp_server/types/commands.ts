@@ -228,6 +228,8 @@ export type FigmaCommand =
   | "subscribe_event"
   // unsubscribe event
   | "unsubscribe_event"
+  // set sleection 
+   | "set_selection"
   // Variant commands (component variants)
   | "set_variant"
   // get variant
