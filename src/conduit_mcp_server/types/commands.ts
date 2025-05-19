@@ -152,6 +152,8 @@ export type FigmaCommand =
   | "get_text_style"
   // Get all styles from the document (see commands/figma/read/style-tools.ts)
   | "get_styles"
+  // get_node_styles
+  | "get_node_styles"
   // Get all local components (see commands/figma/read/component-tools.ts)
   | "get_components"
   // Create an instance of a component (see commands/figma/create/component-creation/instance-tools.ts)
@@ -186,6 +188,10 @@ export type FigmaCommand =
   | "ai_rename_layers"
   // Insert an SVG as a vector (see commands/figma/create/svg-creation-tools.ts)
   | "insert_svg_vector"
+  // get_svg_vector
+  | "get_svg_vector"
+  // get_image
+  | "get_image"
   // Set both fill and stroke properties (see commands/figma/modify/styling)
   | "set_style"
   // Create a gradient style variable (see commands/figma/modify/styling)
@@ -236,11 +242,35 @@ export type FigmaCommand =
   | "getPage"
   // set page
   | "setPage"
+  // duplicate_page
+  | "duplicate_page"
     // set_node_locked"
   | "set_node_locked"
   //  set_node_visible
   | "set_node_visible"
-  // Variant commands (component variants)
+  //  set_node_visible
+  | "create_variable"
+  //  set_node_visible
+  | "update_variable"
+  //  set_node_visible
+  | "delete_variable"
+  // get_variables
+  | "get_variables"
+  // apply_variable_to_node
+  | "apply_variable_to_node"
+  // switch_variable_mode
+  | "switch_variable_mode"
+  // set_letter_spacing
+    | "set_letter_spacing"
+  // set_line_height
+    | "set_line_height"
+  // set_paragraph_spacing
+    | "set_paragraph_spacing"
+  // set_text_case
+    | "set_text_case"
+  // set_text_decoration
+    | "set_text_decoration"
+    //
   | "set_variant"
   // get variant
   | "get_variant";
