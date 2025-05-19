@@ -60,6 +60,36 @@ export const layoutOperations = {
   insertChildren,
   flatten_nodes,
   boolean_operation,
-  clone_node
+  clone_node,
   // Note: clone_nodes has been unified into clone_node. Remove any plugin references to clone_nodes.
+
+  /**
+   * Unified handler for CLONE_NODE plugin command.
+   * Accepts both { node }, { nodes }, or flat object.
+   * @function cloneNodeUnified
+   * @param {object} params
+   * @returns {Promise<any>}
+   */
+  async cloneNodeUnified(params) {
+    if (params && (params.node || params.nodes)) {
+      return clone_node(params);
+    } else {
+      return clone_node({ nodes: [params] });
+    }
+  },
+
+  /**
+   * Unified handler for INSERT_CHILD plugin command.
+   * Accepts both { child }, { children }, or flat object.
+   * @function insertChildUnified
+   * @param {object} params
+   * @returns {Promise<any>}
+   */
+  async insertChildUnified(params) {
+    if (params && (params.child || params.children)) {
+      return insertChildren(params);
+    } else {
+      return insertChildren({ children: [params] });
+    }
+  }
 };

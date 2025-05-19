@@ -115,3 +115,21 @@ class HTMLGenerator {
     }
   }
 };
+
+/**
+ * Unified handler for GENERATE_HTML plugin command.
+ * @async
+ * @function generateHtmlUnified
+ * @param {object} params - { nodeId, format, cssMode }
+ * @returns {Promise<string>}
+ */
+export async function generateHtmlUnified({ nodeId, format, cssMode }) {
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found: ${nodeId}`);
+  const generator = new HTMLGenerator({
+    format,
+    cssMode,
+    cssExtractor: n => n.getCSSAsync()
+  });
+  return await generator.generate(node);
+}

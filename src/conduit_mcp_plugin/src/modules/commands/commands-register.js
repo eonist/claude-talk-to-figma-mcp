@@ -148,11 +148,12 @@ import { setPage, getPage } from '../document/document-page.js';
 import { setVariant, getVariant } from '../components/component-variant.js';
 import * as renameOperations from '../rename.js';
 import { setNodeLocked, setNodeVisible, reorderNode, reorderNodes } from '../node/node-modify.js';
-import HTMLGenerator from '../html-generator.js';
+import HTMLGenerator, { generateHtmlUnified } from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePage } from '../document/document-duplicate.js';
-import { getNodeStyles, getImage, getTextStyle, deleteNode } from '../node/node-edit.js';
+import { getNodeStyles, getImage, getTextStyle, deleteNode, deleteNodeUnified } from '../node/node-edit.js';
+import { utilsOperations } from '../utils.js';
 
 /**
  * Internal registry to store command handler functions by name.
@@ -190,43 +191,15 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.INSERT_IMAGE, imageOperations.insertImage);
   registerCommand(PLUGIN_COMMANDS.INSERT_SVG_VECTOR, insertSvgVector);
   // Shape Operations (Unified)
-  registerCommand(PLUGIN_COMMANDS.CREATE_RECTANGLE, (params) => {
-    // Accept both { rectangle }, { rectangles }, or flat { x, y, ... }
-    if (params && (params.rectangle || params.rectangles)) {
-      return shapeOperations.createRectangle(params);
-    } else {
-      return shapeOperations.createRectangle({ rectangle: params });
-    }
-  });
-  registerCommand(PLUGIN_COMMANDS.CREATE_FRAME, (params) => {
-    // Accept both { frame }, { frames }, or flat { x, y, ... }
-    if (params && (params.frame || params.frames)) {
-      return shapeOperations.createFrame(params);
-    } else {
-      return shapeOperations.createFrame({ frame: params });
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.CREATE_RECTANGLE, shapeOperations.createRectangleUnified);
+  registerCommand(PLUGIN_COMMANDS.CREATE_FRAME, shapeOperations.createFrameUnified);
   registerCommand(PLUGIN_COMMANDS.CREATE_ELLIPSE, shapeOperations.createEllipse);
   registerCommand(PLUGIN_COMMANDS.CREATE_POLYGON, shapeOperations.createPolygon);
   registerCommand(PLUGIN_COMMANDS.CREATE_STAR, shapeOperations.createStar);
   // Corner radius operation (merged, create_rectangle style)
-  registerCommand(PLUGIN_COMMANDS.SET_CORNER_RADIUS, (params) => {
-    // Accept both { radii }, { options }, or flat { nodeId, ... }
-    if (params && (params.radii || params.options)) {
-      return shapeOperations.setNodeCornerRadii(params);
-    } else {
-      return shapeOperations.setNodesCornerRadii(params);
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.SET_CORNER_RADIUS, shapeOperations.setCornerRadiusUnified);
   // Vector creation (merged, create_rectangle style)
-  registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, (params) => {
-    // Accept both { vector }, { vectors }, or flat { x, y, ... }
-    if (params && (params.vector || params.vectors)) {
-      return shapeOperations.createVector(params);
-    } else {
-      return shapeOperations.createVectors({ vectors: [params] });
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, shapeOperations.createVectorUnified);
   registerCommand(PLUGIN_COMMANDS.CREATE_LINE, shapeOperations.createLine);
 
   // Unified grid commands (setGrid, getGrid)
@@ -250,27 +223,10 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.GET_VARIANT, getVariant);
 
   // Resize operation (merged, create_rectangle style)
-  registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, (params) => {
-    // Accept both { resize }, { resizes }, or flat { nodeId, width, height }
-    if (params && (params.resize || params.resizes)) {
-      return shapeOperations.resizeNode(params);
-    } else {
-      return shapeOperations.resizeNodes({ resizes: [params] });
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, shapeOperations.resizeNodeUnified);
 
   // Delete operation (supports single or array)
-  registerCommand(PLUGIN_COMMANDS.DELETE_NODE, (params) => {
-    if (params && Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
-      return deleteNode({ nodeIds: params.nodeIds });
-    } else if (params && typeof params.nodeId === "string") {
-      return deleteNode({ nodeId: params.nodeId });
-    } else if (params && typeof params === "string") {
-      return deleteNode({ nodeId: params });
-    } else {
-      throw new Error("Invalid parameters for DELETE_NODE");
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.DELETE_NODE, deleteNodeUnified);
   // Move operations
   registerCommand(PLUGIN_COMMANDS.MOVE_NODE, shapeOperations.moveNode);
   // Flatten
@@ -319,14 +275,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_FILL_COLOR, styleOperations.setFillColor);
   registerCommand(PLUGIN_COMMANDS.SET_STROKE_COLOR, styleOperations.setStrokeColor);
   registerCommand(PLUGIN_COMMANDS.GET_STYLES, styleOperations.getStyles);
-  registerCommand(PLUGIN_COMMANDS.SET_EFFECT, (params) => {
-    // Accept both { entries } or flat single entry
-    if (params && params.entries) {
-      return styleOperations.setEffects(params);
-    } else {
-      return styleOperations.setEffects({ entries: [params] });
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.SET_EFFECT, styleOperations.setEffectUnified);
   registerCommand(PLUGIN_COMMANDS.SET_EFFECT_STYLE_ID, styleOperations.setEffectStyleId);
   registerCommand(PLUGIN_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE, styleOperations.createEffectStyleVariable);
   registerCommand(PLUGIN_COMMANDS.SET_STYLE, styleOperations.setStyle);
@@ -355,10 +304,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.RENAME_LAYER, renameOperations.rename_layer);
 
   // AI-powered rename of specified layers
-  registerCommand(PLUGIN_COMMANDS.AI_RENAME_LAYERS, async (params) => {
-    if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
-    return await sendCommand(PLUGIN_COMMANDS.AI_RENAME_LAYERS, params);
-  });
+  registerCommand(PLUGIN_COMMANDS.AI_RENAME_LAYERS, utilsOperations.aiRenameLayersUnified);
 
   // Group/Ungroup operations
   registerCommand(PLUGIN_COMMANDS.GROUP_OR_UNGROUP_NODES, layoutOperations.groupOrUngroupNodes);
@@ -368,31 +314,13 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT_RESIZING, layoutOperations.setAutoLayoutResizing);
 
   // Unified event subscription command
-  registerCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, async (params) => {
-    if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
-    // params: { eventType, filter, subscribe, subscriptionId? }
-    return await sendCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, params);
-  });
+  registerCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, utilsOperations.subscribeEventUnified);
 
   // Insert child node operation (merged, create_rectangle style)
-  registerCommand(PLUGIN_COMMANDS.INSERT_CHILD, (params) => {
-    // Accept both { child }, { children }, or flat object
-    if (params && (params.child || params.children)) {
-      return layoutOperations.insertChildren(params);
-    } else {
-      return layoutOperations.insertChildren({ children: [params] });
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.INSERT_CHILD, layoutOperations.insertChildUnified);
 
   // Clone node operation (merged, create_rectangle style)
-  registerCommand(PLUGIN_COMMANDS.CLONE_NODE, (params) => {
-    // Accept both { node }, { nodes }, or flat object
-    if (params && (params.node || params.nodes)) {
-      return layoutOperations.clone_nodes(params);
-    } else {
-      return layoutOperations.clone_nodes({ nodes: [params] });
-    }
-  });
+  registerCommand(PLUGIN_COMMANDS.CLONE_NODE, layoutOperations.cloneNodeUnified);
 
   // Node style inspection
   registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLES, getNodeStyles);
@@ -404,16 +332,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.FLATTEN_NODE, layoutOperations.flatten_nodes);
 
   // UI Component operations
-  registerCommand(PLUGIN_COMMANDS.GENERATE_HTML, async ({ nodeId, format, cssMode }) => {
-    const node = await figma.getNodeByIdAsync(nodeId);
-    if (!node) throw new Error(`Node not found: ${nodeId}`);
-    const generator = new HTMLGenerator({
-      format,
-      cssMode,
-      cssExtractor: n => n.getCSSAsync()
-    });
-    return await generator.generate(node);
-  });
+  registerCommand(PLUGIN_COMMANDS.GENERATE_HTML, generateHtmlUnified);
 
   // Button creation
   registerCommand(PLUGIN_COMMANDS.CREATE_BUTTON, createButton);

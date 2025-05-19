@@ -27,11 +27,27 @@ import { createGradientStyle, setGradient } from './styles/styles-gradient.js';
 import { getStyles } from './styles/styles-get.js';
 import { setStyle } from './styles/styles-set.js';
 
+/**
+ * Unified handler for SET_EFFECT plugin command.
+ * Accepts both { entries } or flat single entry.
+ * @function setEffectUnified
+ * @param {object} params
+ * @returns {Promise<any>}
+ */
+async function setEffectUnified(params) {
+  if (params && params.entries) {
+    return setEffects(params);
+  } else {
+    return setEffects({ entries: [params] });
+  }
+}
+
 export const styleOperations = {
   setFillColor,
   setStrokeColor,
   getStyles,
   setEffects,
+  setEffectUnified,
   setEffectStyleId,
   createGradientStyle,
   setGradient,

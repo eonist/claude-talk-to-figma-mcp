@@ -140,6 +140,25 @@ export async function deleteNode(params) {
 }
 
 /**
+ * Unified handler for DELETE_NODE plugin command.
+ * Accepts { nodeIds }, { nodeId }, or string.
+ * @function deleteNodeUnified
+ * @param {object|string} params
+ * @returns {Promise<any>}
+ */
+export async function deleteNodeUnified(params) {
+  if (params && Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    return deleteNode({ nodeIds: params.nodeIds });
+  } else if (params && typeof params.nodeId === "string") {
+    return deleteNode({ nodeId: params.nodeId });
+  } else if (params && typeof params === "string") {
+    return deleteNode({ nodeId: params });
+  } else {
+    throw new Error("Invalid parameters for DELETE_NODE");
+  }
+}
+
+/**
  * Converts a rectangle node to a frame, preserving all properties and optionally placing elements inside it.
  *
  * @async
