@@ -1,4 +1,111 @@
 import * as documentOperations from '../document.js';
+
+/**
+ * Centralized list of all plugin command names.
+ * Mirrors the MCP_COMMANDS pattern for consistency and maintainability.
+ */
+export const PLUGIN_COMMANDS = {
+  GET_DOCUMENT_INFO: "get_document_info",
+  GET_SELECTION: "get_selection",
+  SET_SELECTION: "set_selection",
+  GET_NODE_INFO: "get_node_info",
+  GET_CSS_ASYNC: "get_css_async",
+
+  INSERT_IMAGE: "insert_image",
+  INSERT_SVG_VECTOR: "insert_svg_vector",
+
+  CREATE_RECTANGLE: "create_rectangle",
+  CREATE_FRAME: "create_frame",
+  CREATE_ELLIPSE: "create_ellipse",
+  CREATE_POLYGON: "create_polygon",
+  CREATE_STAR: "create_star",
+  SET_CORNER_RADIUS: "set_corner_radius",
+  CREATE_VECTOR: "create_vector",
+  CREATE_LINE: "create_line",
+
+  SET_GRID: "setGrid",
+  GET_GRID: "getGrid",
+  SET_GUIDE: "setGuide",
+  GET_GUIDE: "getGuide",
+  SET_CONSTRAINTS: "setConstraints",
+  GET_CONSTRAINTS: "getConstraints",
+  SET_PAGE: "setPage",
+  GET_PAGE: "getPage",
+  SET_VARIANT: "setVariant",
+  GET_VARIANT: "getVariant",
+
+  RESIZE_NODE: "resize_node",
+  DELETE_NODE: "delete_node",
+  MOVE_NODE: "move_node",
+  SET_NODE_LOCKED: "set_node_locked",
+  SET_NODE_VISIBLE: "set_node_visible",
+  REORDER_NODES: "reorder_nodes",
+
+  UNION_SELECTION: "union_selection",
+  SUBTRACT_SELECTION: "subtract_selection",
+  INTERSECT_SELECTION: "intersect_selection",
+  EXCLUDE_SELECTION: "exclude_selection",
+  CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame",
+
+  GET_ANNOTATION: "get_annotation",
+  SET_ANNOTATION: "set_annotation",
+
+  CREATE_TEXT: "create_text",
+  SET_TEXT_CONTENT: "set_text_content",
+  SET_TEXT_STYLE: "set_text_style",
+  SCAN_TEXT_NODES: "scan_text_nodes",
+  // SET_FONT_NAME: "set_font_name", // commented out
+  // SET_FONT_SIZE: "set_font_size", // commented out
+  // SET_FONT_WEIGHT: "set_font_weight", // commented out
+  SET_LETTER_SPACING: "set_letter_spacing",
+  SET_LINE_HEIGHT: "set_line_height",
+  SET_PARAGRAPH_SPACING: "set_paragraph_spacing",
+  SET_TEXT_CASE: "set_text_case",
+  SET_TEXT_DECORATION: "set_text_decoration",
+  GET_STYLED_TEXT_SEGMENTS: "get_styled_text_segments",
+  LOAD_FONT_ASYNC: "load_font_async",
+  // SET_BULK_FONT: "set_bulk_font", // commented out
+
+  SET_FILL_COLOR: "set_fill_color",
+  SET_STROKE_COLOR: "set_stroke_color",
+  GET_STYLES: "get_styles",
+  SET_EFFECT: "set_effect",
+  SET_EFFECT_STYLE_ID: "set_effect_style_id",
+  CREATE_EFFECT_STYLE_VARIABLE: "create_effect_style_variable",
+  SET_STYLE: "set_style",
+  EXPORT_NODE_AS_IMAGE: "export_node_as_image",
+
+  CREATE_VARIABLE: "create_variable",
+  UPDATE_VARIABLE: "update_variable",
+  DELETE_VARIABLE: "delete_variable",
+  GET_VARIABLES: "get_variables",
+  APPLY_VARIABLE_TO_NODE: "apply_variable_to_node",
+  SWITCH_VARIABLE_MODE: "switch_variable_mode",
+
+  CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes",
+  CREATE_COMPONENT_INSTANCE: "create_component_instance",
+  GET_COMPONENTS: "get_components",
+  CREATE_GRADIENT_STYLE: "create_gradient_style",
+  SET_GRADIENT: "set_gradient",
+  DETACH_INSTANCES: "detach_instances",
+  RENAME_LAYER: "rename_layer",
+  AI_RENAME_LAYERS: "ai_rename_layers",
+  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes",
+  SET_AUTO_LAYOUT: "set_auto_layout",
+  SET_AUTO_LAYOUT_RESIZING: "set_auto_layout_resizing",
+  SUBSCRIBE_EVENT: "subscribe_event",
+  UNSUBSCRIBE_EVENT: "unsubscribe_event",
+  INSERT_CHILD: "insert_child",
+  CLONE_NODE: "clone_node",
+  GET_NODE_STYLES: "get_node_styles",
+  GET_SVG_VECTOR: "get_svg_vector",
+  GET_IMAGE: "get_image",
+  GET_TEXT_STYLE: "get_text_style",
+  FLATTEN_NODE: "flatten_node",
+  GENERATE_HTML: "generate_html",
+  CREATE_BUTTON: "create_button",
+  DUPLICATE_PAGE: "duplicate_page"
+};
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
@@ -47,17 +154,17 @@ export function registerCommand(name, fn) {
  */
 export function initializeCommands() {
   // Document Operations
-  registerCommand('get_document_info', documentOperations.getDocumentInfo);
-  registerCommand('get_selection', documentOperations.getSelection);
-  registerCommand('set_selection', documentOperations.setSelection);
-  registerCommand('get_node_info', documentOperations.getNodeInfo);
-  registerCommand('get_css_async', documentOperations.getCssAsync);
+  registerCommand(PLUGIN_COMMANDS.GET_DOCUMENT_INFO, documentOperations.getDocumentInfo);
+  registerCommand(PLUGIN_COMMANDS.GET_SELECTION, documentOperations.getSelection);
+  registerCommand(PLUGIN_COMMANDS.SET_SELECTION, documentOperations.setSelection);
+  registerCommand(PLUGIN_COMMANDS.GET_NODE_INFO, documentOperations.getNodeInfo);
+  registerCommand(PLUGIN_COMMANDS.GET_CSS_ASYNC, documentOperations.getCssAsync);
 
   // Image Operations (Unified)
-  registerCommand('insert_image', imageOperations.insertImage);
-  registerCommand('insert_svg_vector', insertSvgVector);
+  registerCommand(PLUGIN_COMMANDS.INSERT_IMAGE, imageOperations.insertImage);
+  registerCommand(PLUGIN_COMMANDS.INSERT_SVG_VECTOR, insertSvgVector);
   // Shape Operations (Unified)
-  registerCommand('create_rectangle', (params) => {
+  registerCommand(PLUGIN_COMMANDS.CREATE_RECTANGLE, (params) => {
     // Accept both { rectangle }, { rectangles }, or flat { x, y, ... }
     if (params && (params.rectangle || params.rectangles)) {
       return shapeOperations.createRectangle(params);
@@ -65,7 +172,7 @@ export function initializeCommands() {
       return shapeOperations.createRectangle({ rectangle: params });
     }
   });
-  registerCommand('create_frame', (params) => {
+  registerCommand(PLUGIN_COMMANDS.CREATE_FRAME, (params) => {
     // Accept both { frame }, { frames }, or flat { x, y, ... }
     if (params && (params.frame || params.frames)) {
       return shapeOperations.createFrame(params);
@@ -73,11 +180,11 @@ export function initializeCommands() {
       return shapeOperations.createFrame({ frame: params });
     }
   });
-  registerCommand('create_ellipse', shapeOperations.createEllipse);
-  registerCommand('create_polygon', shapeOperations.createPolygon);
-  registerCommand('create_star', shapeOperations.createStar);
+  registerCommand(PLUGIN_COMMANDS.CREATE_ELLIPSE, shapeOperations.createEllipse);
+  registerCommand(PLUGIN_COMMANDS.CREATE_POLYGON, shapeOperations.createPolygon);
+  registerCommand(PLUGIN_COMMANDS.CREATE_STAR, shapeOperations.createStar);
   // Corner radius operation (merged, create_rectangle style)
-  registerCommand('set_corner_radius', (params) => {
+  registerCommand(PLUGIN_COMMANDS.SET_CORNER_RADIUS, (params) => {
     // Accept both { radii }, { options }, or flat { nodeId, ... }
     if (params && (params.radii || params.options)) {
       return shapeOperations.setNodeCornerRadii(params);
@@ -86,7 +193,7 @@ export function initializeCommands() {
     }
   });
   // Vector creation (merged, create_rectangle style)
-  registerCommand('create_vector', (params) => {
+  registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, (params) => {
     // Accept both { vector }, { vectors }, or flat { x, y, ... }
     if (params && (params.vector || params.vectors)) {
       return shapeOperations.createVector(params);
@@ -94,30 +201,30 @@ export function initializeCommands() {
       return shapeOperations.createVectors({ vectors: [params] });
     }
   });
-  registerCommand('create_line', shapeOperations.createLine);
+  registerCommand(PLUGIN_COMMANDS.CREATE_LINE, shapeOperations.createLine);
 
   // Unified grid commands (setGrid, getGrid)
-  registerCommand('setGrid', setGrid);
-  registerCommand('getGrid', getGrid);
+  registerCommand(PLUGIN_COMMANDS.SET_GRID, setGrid);
+  registerCommand(PLUGIN_COMMANDS.GET_GRID, getGrid);
 
   // Unified guide commands (setGuide, getGuide)
-  registerCommand('setGuide', setGuide);
-  registerCommand('getGuide', getGuide);
+  registerCommand(PLUGIN_COMMANDS.SET_GUIDE, setGuide);
+  registerCommand(PLUGIN_COMMANDS.GET_GUIDE, getGuide);
 
   // Unified constraint commands (setConstraints, getConstraints)
-  registerCommand('setConstraints', setConstraints);
-  registerCommand('getConstraints', getConstraints);
+  registerCommand(PLUGIN_COMMANDS.SET_CONSTRAINTS, setConstraints);
+  registerCommand(PLUGIN_COMMANDS.GET_CONSTRAINTS, getConstraints);
 
   // Unified page commands (setPage, getPage)
-  registerCommand('setPage', setPage);
-  registerCommand('getPage', getPage);
+  registerCommand(PLUGIN_COMMANDS.SET_PAGE, setPage);
+  registerCommand(PLUGIN_COMMANDS.GET_PAGE, getPage);
 
   // Unified variant commands (setVariant, getVariant)
-  registerCommand('setVariant', setVariant);
-  registerCommand('getVariant', getVariant);
+  registerCommand(PLUGIN_COMMANDS.SET_VARIANT, setVariant);
+  registerCommand(PLUGIN_COMMANDS.GET_VARIANT, getVariant);
 
   // Resize operation (merged, create_rectangle style)
-  registerCommand('resize_node', (params) => {
+  registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, (params) => {
     // Accept both { resize }, { resizes }, or flat { nodeId, width, height }
     if (params && (params.resize || params.resizes)) {
       return shapeOperations.resizeNode(params);
@@ -127,7 +234,7 @@ export function initializeCommands() {
   });
 
   // Delete operation (supports single or array)
-  registerCommand('delete_node', (params) => {
+  registerCommand(PLUGIN_COMMANDS.DELETE_NODE, (params) => {
     let nodeIds = [];
     if (params && (Array.isArray(params.nodeIds) && params.nodeIds.length > 0)) {
       nodeIds = params.nodeIds;
@@ -149,27 +256,27 @@ export function initializeCommands() {
     return { success: true, deleted };
   });
   // Move operations
-  registerCommand('move_node', shapeOperations.moveNode);
+  registerCommand(PLUGIN_COMMANDS.MOVE_NODE, shapeOperations.moveNode);
   // Flatten
 
   // Node lock/visibility operations
-  registerCommand('set_node_locked', setNodeLocked);
-  registerCommand('set_node_visible', setNodeVisible);
+  registerCommand(PLUGIN_COMMANDS.SET_NODE_LOCKED, setNodeLocked);
+  registerCommand(PLUGIN_COMMANDS.SET_NODE_VISIBLE, setNodeVisible);
 
   // Layer reorder operations
-  registerCommand('reorder_nodes', reorderNodes);
+  registerCommand(PLUGIN_COMMANDS.REORDER_NODES, reorderNodes);
 
   // Boolean operation commands
-  registerCommand('union_selection', shapeOperations.union_selection);
-  registerCommand('subtract_selection', shapeOperations.subtract_selection);
-  registerCommand('intersect_selection', shapeOperations.intersect_selection);
-  registerCommand('exclude_selection', shapeOperations.exclude_selection);
+  registerCommand(PLUGIN_COMMANDS.UNION_SELECTION, shapeOperations.union_selection);
+  registerCommand(PLUGIN_COMMANDS.SUBTRACT_SELECTION, shapeOperations.subtract_selection);
+  registerCommand(PLUGIN_COMMANDS.INTERSECT_SELECTION, shapeOperations.intersect_selection);
+  registerCommand(PLUGIN_COMMANDS.EXCLUDE_SELECTION, shapeOperations.exclude_selection);
 
   // Rectangle to Frame conversion command
-  registerCommand('convert_rectangle_to_frame', shapeOperations.convertRectangleToFrame);
+  registerCommand(PLUGIN_COMMANDS.CONVERT_RECTANGLE_TO_FRAME, shapeOperations.convertRectangleToFrame);
 
   // Annotation commands
-  registerCommand('get_annotation', async (params) => {
+  registerCommand(PLUGIN_COMMANDS.GET_ANNOTATION, async (params) => {
     // Single node
     if (params.nodeId) {
       const node = figma.getNodeById(params.nodeId);
@@ -191,7 +298,7 @@ export function initializeCommands() {
     throw new Error("Must provide nodeId or nodeIds");
   });
 
-  registerCommand('set_annotation', async (params) => {
+  registerCommand(PLUGIN_COMMANDS.SET_ANNOTATION, async (params) => {
     // Helper to set or delete annotation for a node
     async function setOrDelete(entry) {
       const node = figma.getNodeById(entry.nodeId);
@@ -222,33 +329,33 @@ export function initializeCommands() {
     throw new Error("Must provide entry or entries");
   });
 
-  registerCommand('create_text', textOperations.createText);
-  registerCommand('set_text_content', textOperations.setTextContent);
-  registerCommand('set_text_style', textOperations.setTextStyle);
-  registerCommand('scan_text_nodes', textOperations.scanTextNodes);
-  // registerCommand('set_font_name', textOperations.setFontName);
-  // registerCommand('set_font_size', textOperations.setFontSize);
-  // registerCommand('set_font_weight', textOperations.setFontWeight);
-  registerCommand('set_letter_spacing', textOperations.setLetterSpacing);
-  registerCommand('set_line_height', textOperations.setLineHeight);
-  registerCommand('set_paragraph_spacing', setParagraphSpacingUnified);
-  registerCommand('set_line_height', setLineHeightUnified);
-  registerCommand('set_letter_spacing', setLetterSpacingUnified);
-  registerCommand('set_text_case', setTextCaseUnified);
-  registerCommand('set_text_decoration', setTextDecorationUnified);
-  registerCommand('get_styled_text_segments', textOperations.getStyledTextSegments);
-  registerCommand('load_font_async', textOperations.loadFontAsyncWrapper);
-  // registerCommand('set_bulk_font', textOperations.setBulkFont);
+  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, textOperations.createText);
+  registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
+  registerCommand(PLUGIN_COMMANDS.SET_TEXT_STYLE, textOperations.setTextStyle);
+  registerCommand(PLUGIN_COMMANDS.SCAN_TEXT_NODES, textOperations.scanTextNodes);
+  // registerCommand(PLUGIN_COMMANDS.SET_FONT_NAME, textOperations.setFontName);
+  // registerCommand(PLUGIN_COMMANDS.SET_FONT_SIZE, textOperations.setFontSize);
+  // registerCommand(PLUGIN_COMMANDS.SET_FONT_WEIGHT, textOperations.setFontWeight);
+  registerCommand(PLUGIN_COMMANDS.SET_LETTER_SPACING, textOperations.setLetterSpacing);
+  registerCommand(PLUGIN_COMMANDS.SET_LINE_HEIGHT, textOperations.setLineHeight);
+  registerCommand(PLUGIN_COMMANDS.SET_PARAGRAPH_SPACING, setParagraphSpacingUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_LINE_HEIGHT, setLineHeightUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_LETTER_SPACING, setLetterSpacingUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_TEXT_CASE, setTextCaseUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_TEXT_DECORATION, setTextDecorationUnified);
+  registerCommand(PLUGIN_COMMANDS.GET_STYLED_TEXT_SEGMENTS, textOperations.getStyledTextSegments);
+  registerCommand(PLUGIN_COMMANDS.LOAD_FONT_ASYNC, textOperations.loadFontAsyncWrapper);
+  // registerCommand(PLUGIN_COMMANDS.SET_BULK_FONT, textOperations.setBulkFont);
 
 /*
 // variableOperations is now defined globally by variables.js in the build output.
 */
 
 // Style Operations
-registerCommand('set_fill_color', styleOperations.setFillColor);
-registerCommand('set_stroke_color', styleOperations.setStrokeColor);
-registerCommand('get_styles', styleOperations.getStyles);
-  registerCommand('set_effect', (params) => {
+  registerCommand(PLUGIN_COMMANDS.SET_FILL_COLOR, styleOperations.setFillColor);
+  registerCommand(PLUGIN_COMMANDS.SET_STROKE_COLOR, styleOperations.setStrokeColor);
+  registerCommand(PLUGIN_COMMANDS.GET_STYLES, styleOperations.getStyles);
+  registerCommand(PLUGIN_COMMANDS.SET_EFFECT, (params) => {
     // Accept both { entries } or flat single entry
     if (params && params.entries) {
       return styleOperations.setEffects(params);
@@ -256,30 +363,30 @@ registerCommand('get_styles', styleOperations.getStyles);
       return styleOperations.setEffects({ entries: [params] });
     }
   });
-  registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
-  registerCommand('create_effect_style_variable', styleOperations.createEffectStyleVariable);
-  registerCommand('set_style', styleOperations.setStyle);
-  registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);
+  registerCommand(PLUGIN_COMMANDS.SET_EFFECT_STYLE_ID, styleOperations.setEffectStyleId);
+  registerCommand(PLUGIN_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE, styleOperations.createEffectStyleVariable);
+  registerCommand(PLUGIN_COMMANDS.SET_STYLE, styleOperations.setStyle);
+  registerCommand(PLUGIN_COMMANDS.EXPORT_NODE_AS_IMAGE, componentOperations.exportNodeAsImage);
 
   // Figma Variable (Design Token) Operations
-registerCommand('create_variable', variableOperations.createVariable);
-registerCommand('update_variable', variableOperations.updateVariable);
-registerCommand('delete_variable', variableOperations.deleteVariable);
-registerCommand('get_variables', variableOperations.getVariables);
-registerCommand('apply_variable_to_node', variableOperations.applyVariableToNode);
-registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
+  registerCommand(PLUGIN_COMMANDS.CREATE_VARIABLE, variableOperations.createVariable);
+  registerCommand(PLUGIN_COMMANDS.UPDATE_VARIABLE, variableOperations.updateVariable);
+  registerCommand(PLUGIN_COMMANDS.DELETE_VARIABLE, variableOperations.deleteVariable);
+  registerCommand(PLUGIN_COMMANDS.GET_VARIABLES, variableOperations.getVariables);
+  registerCommand(PLUGIN_COMMANDS.APPLY_VARIABLE_TO_NODE, variableOperations.applyVariableToNode);
+  registerCommand(PLUGIN_COMMANDS.SWITCH_VARIABLE_MODE, variableOperations.switchVariableMode);
 
-// Component Conversion
-  registerCommand('create_components_from_nodes', componentOperations.createComponentsFromNodes);
-  registerCommand('create_component_instance', componentOperations.createComponentInstance);
-  registerCommand('get_components', componentOperations.getComponents);
+  // Component Conversion
+  registerCommand(PLUGIN_COMMANDS.CREATE_COMPONENTS_FROM_NODES, componentOperations.createComponentsFromNodes);
+  registerCommand(PLUGIN_COMMANDS.CREATE_COMPONENT_INSTANCE, componentOperations.createComponentInstance);
+  registerCommand(PLUGIN_COMMANDS.GET_COMPONENTS, componentOperations.getComponents);
   // Gradient Operations (Unified)
-  registerCommand('create_gradient_style', styleOperations.createGradientStyle);
-  registerCommand('set_gradient', styleOperations.setGradient);
+  registerCommand(PLUGIN_COMMANDS.CREATE_GRADIENT_STYLE, styleOperations.createGradientStyle);
+  registerCommand(PLUGIN_COMMANDS.SET_GRADIENT, styleOperations.setGradient);
 
   // Detach Instance Tool (calls batch logic for DRYness)
   // Detach Instances Tool (Batch)
-  registerCommand('detach_instances', async (params) => {
+  registerCommand(PLUGIN_COMMANDS.DETACH_INSTANCES, async (params) => {
     let instanceIds = [];
     const options = params && params.options ? params.options : {};
     if (Array.isArray(params.instanceIds) && params.instanceIds.length > 0) {
@@ -348,33 +455,33 @@ registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
     return results;
   });
 
-  registerCommand('rename_layer', renameOperations.rename_layer);
+  registerCommand(PLUGIN_COMMANDS.RENAME_LAYER, renameOperations.rename_layer);
 
   // AI-powered rename of specified layers
-  registerCommand('ai_rename_layers', async (params) => {
+  registerCommand(PLUGIN_COMMANDS.AI_RENAME_LAYERS, async (params) => {
     if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
-    return await sendCommand("ai_rename_layers", params);
+    return await sendCommand(PLUGIN_COMMANDS.AI_RENAME_LAYERS, params);
   });
 
   // Group/Ungroup operations
-  registerCommand('group_or_ungroup_nodes', layoutOperations.groupOrUngroupNodes);
+  registerCommand(PLUGIN_COMMANDS.GROUP_OR_UNGROUP_NODES, layoutOperations.groupOrUngroupNodes);
 
   // Auto Layout operations
-  registerCommand('set_auto_layout', setAutoLayoutUnified);
-  registerCommand('set_auto_layout_resizing', layoutOperations.setAutoLayoutResizing);
+  registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT, setAutoLayoutUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT_RESIZING, layoutOperations.setAutoLayoutResizing);
 
   // Event subscription commands
-  registerCommand('subscribe_event', async (params) => {
+  registerCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, async (params) => {
     if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
-    return await sendCommand("subscribe_event", params);
+    return await sendCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, params);
   });
-  registerCommand('unsubscribe_event', async (params) => {
+  registerCommand(PLUGIN_COMMANDS.UNSUBSCRIBE_EVENT, async (params) => {
     if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
-    return await sendCommand("unsubscribe_event", params);
+    return await sendCommand(PLUGIN_COMMANDS.UNSUBSCRIBE_EVENT, params);
   });
 
   // Insert child node operation (merged, create_rectangle style)
-  registerCommand('insert_child', (params) => {
+  registerCommand(PLUGIN_COMMANDS.INSERT_CHILD, (params) => {
     // Accept both { child }, { children }, or flat object
     if (params && (params.child || params.children)) {
       return layoutOperations.insertChildren(params);
@@ -384,7 +491,7 @@ registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
   });
 
   // Clone node operation (merged, create_rectangle style)
-  registerCommand('clone_node', (params) => {
+  registerCommand(PLUGIN_COMMANDS.CLONE_NODE, (params) => {
     // Accept both { node }, { nodes }, or flat object
     if (params && (params.node || params.nodes)) {
       return layoutOperations.clone_nodes(params);
@@ -394,16 +501,16 @@ registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
   });
 
   // Node style inspection
-  registerCommand('get_node_styles', getNodeStyles);
-  registerCommand('get_svg_vector', getSvgVector);
-  registerCommand('get_image', getImage);
-  registerCommand('get_text_style', getTextStyle);
+  registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLES, getNodeStyles);
+  registerCommand(PLUGIN_COMMANDS.GET_SVG_VECTOR, getSvgVector);
+  registerCommand(PLUGIN_COMMANDS.GET_IMAGE, getImage);
+  registerCommand(PLUGIN_COMMANDS.GET_TEXT_STYLE, getTextStyle);
 
   // Batch flatten nodes operation
-  registerCommand('flatten_node', layoutOperations.flatten_nodes);
+  registerCommand(PLUGIN_COMMANDS.FLATTEN_NODE, layoutOperations.flatten_nodes);
 
   // UI Component operations
-  registerCommand('generate_html', async ({ nodeId, format, cssMode }) => {
+  registerCommand(PLUGIN_COMMANDS.GENERATE_HTML, async ({ nodeId, format, cssMode }) => {
     const node = await figma.getNodeByIdAsync(nodeId);
     if (!node) throw new Error(`Node not found: ${nodeId}`);
     const generator = new HTMLGenerator({
@@ -415,10 +522,10 @@ registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
   });
 
   // Button creation
-  registerCommand('create_button', createButton);
+  registerCommand(PLUGIN_COMMANDS.CREATE_BUTTON, createButton);
 
   // Duplicate Page (MCP-only, no UI)
-  registerCommand('duplicate_page', async ({ pageId, newPageName }) => {
+  registerCommand(PLUGIN_COMMANDS.DUPLICATE_PAGE, async ({ pageId, newPageName }) => {
     return await duplicatePage({ pageId, newPageName });
   });
 }
