@@ -106,269 +106,98 @@ export interface GetVariantParams {
 }
 
 export const MCP_COMMANDS = {
-  GET_DOCUMENT_INFO: "get_document_info",
-  CLONE_NODES: "clone_nodes",
-  DELETE_NODES: "delete_nodes",
-  CREATE_PAGE: "create_page",
-  GET_SELECTION: "get_selection",
-  GET_NODE_INFO: "get_node_info",
-  CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes",
-  CREATE_RECTANGLE: "create_rectangle",
-  CREATE_FRAME: "create_frame",
-  CREATE_TEXT: "create_text",
-  CREATE_ELLIPSE: "create_ellipse",
-  CREATE_POLYGON: "create_polygon",
-  CREATE_STAR: "create_star",
-  CREATE_VECTOR: "create_vector",
-  CREATE_LINE: "create_line",
-  SET_FILL_COLOR: "set_fill_color",
-  SET_STROKE_COLOR: "set_stroke_color",
-  MOVE_NODE: "move_node",
-  REORDER_NODES: "reorder_nodes",
-  RESIZE_NODE: "resize_node",
-  DELETE_NODE: "delete_node",
-  EXPORT_NODE_AS_IMAGE: "export_node_as_image",
-  SET_TEXT_CONTENT: "set_text_content",
-  SET_TEXT_STYLE: "set_text_style",
-  GET_TEXT_STYLE: "get_text_style",
-  GET_STYLES: "get_styles",
-  GET_NODE_STYLES: "get_node_styles",
-  GET_COMPONENTS: "get_components",
-  CREATE_COMPONENT_INSTANCE: "create_component_instance",
-  SET_CORNER_RADIUS: "set_corner_radius",
-  CLONE_NODE: "clone_node",
-  GET_CSS_ASYNC: "get_css_async",
-  SCAN_TEXT_NODES: "scan_text_nodes",
-  SET_AUTO_LAYOUT: "set_auto_layout",
-  SET_AUTO_LAYOUT_RESIZING: "set_auto_layout_resizing",
-  GET_STYLED_TEXT_SEGMENTS: "get_styled_text_segments",
-  LOAD_FONT_ASYNC: "load_font_async",
-  SET_EFFECT_STYLE_ID: "set_effect_style_id",
-  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes",
-  FLATTEN_NODE: "flatten_node",
-  INSERT_CHILD: "insert_child",
-  RENAME_LAYER: "rename_layer",
-  AI_RENAME_LAYERS: "ai_rename_layers",
-  INSERT_SVG_VECTOR: "insert_svg_vector",
-  GET_SVG_VECTOR: "get_svg_vector",
-  GET_IMAGE: "get_image",
-  SET_STYLE: "set_style",
-  CREATE_GRADIENT_STYLE: "create_gradient_style",
-  SET_GRADIENT: "set_gradient",
-  SET_EFFECT: "set_effect",
-  CREATE_EFFECT_STYLE_VARIABLE: "create_effect_style_variable",
-  DETACH_INSTANCES: "detach_instances",
-  BOOLEAN: "boolean",
-  INSERT_IMAGE: "insert_image",
-  CREATE_BUTTON: "create_button",
-  CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame",
-  GENERATE_HTML: "generate_html",
-  GET_ANNOTATION: "get_annotation",
-  SET_ANNOTATION: "set_annotation",
-  JOIN: "join",
-  SET_GRID: "set_grid",
-  GET_GRID: "get_grid",
-  SET_GUIDE: "set_guide",
-  GET_GUIDE: "get_guide",
-  SET_CONSTRAINTS: "set_constraints",
-  GET_CONSTRAINTS: "get_constraints",
-  SUBSCRIBE_EVENT: "subscribe_event",
-  UNSUBSCRIBE_EVENT: "unsubscribe_event",
-  SET_SELECTION: "set_selection",
-  GET_PAGE: "getPage",
-  SET_PAGE: "setPage",
-  DUPLICATE_PAGE: "duplicate_page",
-  SET_NODE_LOCKED: "set_node_locked",
-  SET_NODE_VISIBLE: "set_node_visible",
-  CREATE_VARIABLE: "create_variable",
-  UPDATE_VARIABLE: "update_variable",
-  DELETE_VARIABLE: "delete_variable",
-  GET_VARIABLES: "get_variables",
-  APPLY_VARIABLE_TO_NODE: "apply_variable_to_node",
-  SWITCH_VARIABLE_MODE: "switch_variable_mode",
-  SET_LETTER_SPACING: "set_letter_spacing",
-  SET_LINE_HEIGHT: "set_line_height",
-  SET_PARAGRAPH_SPACING: "set_paragraph_spacing",
-  SET_TEXT_CASE: "set_text_case",
-  SET_TEXT_DECORATION: "set_text_decoration",
-  SET_VARIANT: "set_variant",
-  GET_VARIANT: "get_variant"
+  GET_DOCUMENT_INFO: "get_document_info", // Get detailed information about the current Figma document
+  CLONE_NODES: "clone_nodes", // Clone multiple nodes in Figma
+  DELETE_NODES: "delete_nodes", // Delete multiple nodes in Figma
+  CREATE_PAGE: "create_page", // Create a new page in the Figma document
+  GET_SELECTION: "get_selection", // Get information about the current selection
+  GET_NODE_INFO: "get_node_info", // Get detailed information about a specific node
+  CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes", // Create components from node(s)
+  CREATE_RECTANGLE: "create_rectangle", // Create a new rectangle shape node
+  CREATE_FRAME: "create_frame", // Create a new frame node
+  CREATE_TEXT: "create_text", // Create a new text element
+  CREATE_ELLIPSE: "create_ellipse", // Create a new ellipse shape node
+  CREATE_POLYGON: "create_polygon", // Create a new polygon shape node
+  CREATE_STAR: "create_star", // Create a new star shape node
+  CREATE_VECTOR: "create_vector", // Create a new vector node
+  CREATE_LINE: "create_line", // Create a new line node
+  SET_FILL_COLOR: "set_fill_color", // Set the fill color of a node
+  SET_STROKE_COLOR: "set_stroke_color", // Set the stroke color of a node
+  MOVE_NODE: "move_node", // Move a node to a new position
+  REORDER_NODES: "reorder_nodes", // Batch reorder multiple nodes
+  RESIZE_NODE: "resize_node", // Resize a node
+  DELETE_NODE: "delete_node", // Delete a node
+  EXPORT_NODE_AS_IMAGE: "export_node_as_image", // Export a node as an image
+  SET_TEXT_CONTENT: "set_text_content", // Set the text content of a text node
+  SET_TEXT_STYLE: "set_text_style", // Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.)
+  GET_TEXT_STYLE: "get_text_style", // Get text style properties from one or more nodes
+  GET_STYLES: "get_styles", // Get all styles from the document
+  GET_NODE_STYLES: "get_node_styles", // Get all styles applied to a node
+  GET_COMPONENTS: "get_components", // Get all local components
+  CREATE_COMPONENT_INSTANCE: "create_component_instance", // Create an instance of a component
+  SET_CORNER_RADIUS: "set_corner_radius", // Set the corner radius of a node
+  CLONE_NODE: "clone_node", // Clone a node
+  GET_CSS_ASYNC: "get_css_async", // Get CSS properties from a node
+  SCAN_TEXT_NODES: "scan_text_nodes", // Scan all text nodes in a node
+  SET_AUTO_LAYOUT: "set_auto_layout", // Configure auto layout properties
+  SET_AUTO_LAYOUT_RESIZING: "set_auto_layout_resizing", // Set hug/fill sizing mode on auto layout
+  GET_STYLED_TEXT_SEGMENTS: "get_styled_text_segments", // Get styled text segments in a text node
+  LOAD_FONT_ASYNC: "load_font_async", // Load a font asynchronously
+  SET_EFFECT_STYLE_ID: "set_effect_style_id", // Apply an effect style to a node
+  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes", // Group or ungroup nodes
+  FLATTEN_NODE: "flatten_node", // Flatten a node (merge vector layers/shapes)
+  INSERT_CHILD: "insert_child", // Insert a child node into a parent
+  RENAME_LAYER: "rename_layer", // Rename a single node
+  AI_RENAME_LAYERS: "ai_rename_layers", // AI-powered rename of specified layers
+  INSERT_SVG_VECTOR: "insert_svg_vector", // Insert an SVG as a vector
+  GET_SVG_VECTOR: "get_svg_vector", // Get an SVG vector from a node
+  GET_IMAGE: "get_image", // Get image fills or export nodes as images
+  SET_STYLE: "set_style", // Set both fill and stroke properties
+  CREATE_GRADIENT_STYLE: "create_gradient_style", // Create a gradient style variable
+  SET_GRADIENT: "set_gradient", // Set a gradient on a node
+  SET_EFFECT: "set_effect", // Set effect(s) directly or by style variable on a node
+  CREATE_EFFECT_STYLE_VARIABLE: "create_effect_style_variable", // Create an effect style variable
+  DETACH_INSTANCES: "detach_instances", // Detach multiple component instances from their masters
+  BOOLEAN: "boolean", // Boolean operations: union, subtract, intersect, exclude
+  INSERT_IMAGE: "insert_image", // Insert an image from a URL
+  CREATE_BUTTON: "create_button", // Create a complete button with background and text
+  CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame", // Convert a rectangle to a frame
+  GENERATE_HTML: "generate_html", // Generate HTML structure from Figma nodes
+  GET_ANNOTATION: "get_annotation", // Get annotation(s) for one or more nodes
+  SET_ANNOTATION: "set_annotation", // Set, update, or delete annotation(s) for one or more nodes
+  JOIN: "join", // Join a specific channel
+  SET_GRID: "set_grid", // Set a layout grid on a frame
+  GET_GRID: "get_grid", // Get all layout grids for one or more nodes
+  SET_GUIDE: "set_guide", // Set a guide on the current page
+  GET_GUIDE: "get_guide", // Get all guides on the current page
+  SET_CONSTRAINTS: "set_constraints", // Set constraints for one or more nodes
+  GET_CONSTRAINTS: "get_constraints", // Get constraints for one or more nodes
+  SUBSCRIBE_EVENT: "subscribe_event", // Subscribe to a Figma event
+  UNSUBSCRIBE_EVENT: "unsubscribe_event", // Unsubscribe from a Figma event
+  SET_SELECTION: "set_selection", // Set the current selection
+  GET_PAGE: "getPage", // Get info for a page
+  SET_PAGE: "setPage", // Set the current page
+  DUPLICATE_PAGE: "duplicate_page", // Duplicate a page and all its children
+  SET_NODE_LOCKED: "set_node_locked", // Lock or unlock a node
+  SET_NODE_VISIBLE: "set_node_visible", // Show or hide a node
+  CREATE_VARIABLE: "create_variable", // Create one or more Figma Variables (design tokens)
+  UPDATE_VARIABLE: "update_variable", // Update one or more Figma Variables
+  DELETE_VARIABLE: "delete_variable", // Delete one or more Figma Variables
+  GET_VARIABLES: "get_variables", // Query Figma Variables
+  APPLY_VARIABLE_TO_NODE: "apply_variable_to_node", // Apply a Figma Variable to a node property
+  SWITCH_VARIABLE_MODE: "switch_variable_mode", // Switch the mode for a Figma Variable collection
+  SET_LETTER_SPACING: "set_letter_spacing", // Set the letter spacing for one or more text nodes
+  SET_LINE_HEIGHT: "set_line_height", // Set the line height for one or more text nodes
+  SET_PARAGRAPH_SPACING: "set_paragraph_spacing", // Set the paragraph spacing for one or more text nodes
+  SET_TEXT_CASE: "set_text_case", // Set the text case for one or more text nodes
+  SET_TEXT_DECORATION: "set_text_decoration", // Set the text decoration for one or more text nodes
+  SET_VARIANT: "set_variant", // Set, update, or delete variants/properties in a component set
+  GET_VARIANT: "get_variant" // Get info about variants/properties for one or more component sets
 } as const;
 
 export type McpCommand = typeof MCP_COMMANDS[keyof typeof MCP_COMMANDS];
 
-export type FigmaCommand =
-  | "clone_nodes"
-  | "delete_nodes"
-  | "create_page"
-  // Get detailed information about the current Figma document (see commands/figma/read/document-tools.ts)
-  | "get_document_info"
-  // Get information about the current selection (see commands/figma/read/selection-tools.ts)
-  | "get_selection"
-  // Get detailed information about a specific node (see commands/figma/read/node-tools.ts)
-  | "get_node_info"
-  // Create components from node(s) (see commands/figma/create/component-creation/node-tools.ts)
-  | "create_components_from_nodes"
-  // Create a new rectangle shape node (see commands/figma/create/shape-creation/rectangles.ts)
-  | "create_rectangle"
-  // Create a new frame node (see commands/figma/create/shape-creation/frames.ts)
-  | "create_frame"
-  // Create a new text element (see commands/figma/create/text-creation/text-tools.ts)
-  | "create_text"
-  // Create a new ellipse shape node (see commands/figma/create/shape-creation/ellipses.ts)
-  | "create_ellipse"
-  // Create a new polygon shape node (see commands/figma/create/shape-creation/polygons.ts)
-  | "create_polygon"
-  // Create a new star shape node (see commands/figma/create/shape-creation/index.ts)
-  | "create_star"
-  // Create a new vector node (see commands/figma/create/vector-creation-tools.ts)
-  | "create_vector"
-  // Create a new line node (see commands/figma/create/shape-creation/lines.ts)
-  | "create_line"
-  // Set the fill color of a node (see commands/figma/modify/styling)
-  | "set_fill_color"
-  // Set the stroke color of a node (see commands/figma/modify/styling)
-  | "set_stroke_color"
-  // Move a node to a new position (see commands/figma/modify/positioning-tools.ts)
-  | "move_node"
-  // Batch reorder multiple nodes (see commands/figma/modify/layer-management/reorder-layer-tools.ts)
-  | "reorder_nodes"
-  // Resize a node (see commands/figma/modify/transform-tools.ts)
-  | "resize_node"
-  // Delete a node (see commands/figma/modify/layer-management/delete-tools.ts)
-  | "delete_node"
-  // Export a node as an image (see commands/figma/modify/property-manipulation/export-schema.ts)
-  | "export_node_as_image"
-  // Set the text content of a text node (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "set_text_content"
-  // Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
-  | "set_text_style"
-  // get_text_style
-  | "get_text_style"
-  // Get all styles from the document (see commands/figma/read/style-tools.ts)
-  | "get_styles"
-  // get_node_styles
-  | "get_node_styles"
-  // Get all local components (see commands/figma/read/component-tools.ts)
-  | "get_components"
-  // Create an instance of a component (see commands/figma/create/component-creation/instance-tools.ts)
-  | "create_component_instance"
-  // Set the corner radius of a node (see commands/figma/modify/property-manipulation/corner-radius-tools.ts)
-  | "set_corner_radius"
-  // Clone a node (see commands/figma/modify/layer-management/index.ts)
-  | "clone_node"
-  // Get CSS properties from a node (see commands/figma/read/css-tools.ts)
-  | "get_css_async"
-  // Scan all text nodes in a node (see commands/figma/read/text-analysis-tools.ts)
-  | "scan_text_nodes"
-  // Configure auto layout properties (see commands/figma/modify/property-manipulation/auto-layout-tools.ts)
-  | "set_auto_layout"
-  // Set hug/fill sizing mode on auto layout (see commands/figma/modify/property-manipulation/auto-layout-tools.ts)
-  | "set_auto_layout_resizing"
-  // Get styled text segments in a text node (see commands/figma/read/text-analysis-tools.ts)
-  | "get_styled_text_segments"
-  // Load a font asynchronously (see commands/figma/modify/property-manipulation/batch-text-schema.ts)
-  | "load_font_async"
-  // Apply an effect style to a node (see commands/figma/modify/property-manipulation/effects-tools.ts)
-  | "set_effect_style_id"
-  // Group or ungroup nodes (see commands/figma/modify/layer-management/group-tools.ts)
-  | "group_or_ungroup_nodes"
-  // Flatten a node (see commands/figma/modify/layer-management/boolean-tools.ts)
-  | "flatten_node"
-  // Insert a child node (see commands/figma/modify/layer-management/index.ts)
-  | "insert_child"
-  // Rename a single node (see commands/figma/modify/rename.ts)
-  | "rename_layer"
-  // AI-powered rename of specified layers (see commands/figma/modify/rename.ts)
-  | "ai_rename_layers"
-  // Insert an SVG as a vector (see commands/figma/create/svg-creation-tools.ts)
-  | "insert_svg_vector"
-  // get_svg_vector
-  | "get_svg_vector"
-  // get_image
-  | "get_image"
-  // Set both fill and stroke properties (see commands/figma/modify/styling)
-  | "set_style"
-  // Create a gradient style variable (see commands/figma/modify/styling)
-  | "create_gradient_style"
-  // Set a gradient on a node (see commands/figma/modify/styling)
-  | "set_gradient"
-  // Set effect(s) directly or by style variable on a node (see commands/figma/modify/styling/effect-tools.ts)
-  | "set_effect"
-  // Create an effect style variable (see commands/figma/modify/styling/effect-tools.ts)
-  | "create_effect_style_variable"
-  // Detach multiple component instances from their masters (see commands/figma/modify/property-manipulation/detach-instance-tools.ts)
-  | "detach_instances"
-  // Boolean operations: union, subtract, intersect, exclude (see commands/figma/modify/layer-management/boolean-tools.ts)
-  | "boolean"
-  // Insert an image from a URL (see commands/figma/create/image-creation/from-url.ts)
-  | "insert_image"
-  // Create a complete button with background and text (see commands/figma/create/component-creation/button-tools.ts)
-  | "create_button"
-  // Convert a rectangle to a frame (see commands/figma/modify/layer-management/index.ts)
-  | "convert_rectangle_to_frame"
-  // Generate HTML structure from Figma nodes (see commands/html-tools.ts)
-  | "generate_html"
-  // Annotation commands (see commands/figma/annotation-tools.ts)
-  | "get_annotation"
-  // set annotation
-  | "set_annotation"
-  // Join a specific channel (see commands/channel.ts)
-  | "join"
-  // Grid commands (layoutGrids on frames)
-  | "set_grid"
-  // set grid
-  | "get_grid"
-  // Guide commands (canvas guides)
-  | "set_guide"
-  // get guide
-  | "get_guide"
-  // Constraint commands (set/get constraints)
-  | "set_constraints"
-  // get constraints
-  | "get_constraints"
-  // Event subscription commands
-  | "subscribe_event"
-  // unsubscribe event
-  | "unsubscribe_event"
-  // set sleection 
-   | "set_selection"
-     // get page
-  | "getPage"
-  // set page
-  | "setPage"
-  // duplicate_page
-  | "duplicate_page"
-    // set_node_locked"
-  | "set_node_locked"
-  //  set_node_visible
-  | "set_node_visible"
-  //  set_node_visible
-  | "create_variable"
-  //  set_node_visible
-  | "update_variable"
-  //  set_node_visible
-  | "delete_variable"
-  // get_variables
-  | "get_variables"
-  // apply_variable_to_node
-  | "apply_variable_to_node"
-  // switch_variable_mode
-  | "switch_variable_mode"
-  // set_letter_spacing
-    | "set_letter_spacing"
-  // set_line_height
-    | "set_line_height"
-  // set_paragraph_spacing
-    | "set_paragraph_spacing"
-  // set_text_case
-    | "set_text_case"
-  // set_text_decoration
-    | "set_text_decoration"
-    //
-  | "set_variant"
-  // get variant
-  | "get_variant";
+export type FigmaCommand = typeof MCP_COMMANDS[keyof typeof MCP_COMMANDS];
 
 /**
  * Map each command to its specific params
