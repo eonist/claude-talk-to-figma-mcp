@@ -40,6 +40,35 @@ import { scanTextNodes, getStyledTextSegments } from './text/text-scan.js';
  * const { setTextContent } = textOperations;
  * const updateResult = await setTextContent({ nodeId: '123', text: 'Goodbye' });
  */
+/**
+ * Unified handler for CREATE_TEXT plugin command.
+ * Handles batch, bounded, and single text creation.
+ * @async
+ * @function createTextUnified
+ * @param {object} params
+ * @returns {Promise<any>}
+ */
+export async function createTextUnified(params) {
+  // Batch support (including batch bounded text)
+  if (params && Array.isArray(params.texts)) {
+    const results = [];
+    for (const textConfig of params.texts) {
+      if (textConfig.width && textConfig.height) {
+        results.push(await createBoundedText(textConfig));
+      } else {
+        results.push(await createText(textConfig));
+      }
+    }
+    return results;
+  }
+  // Bounded text support (single)
+  if (params && (params.width && params.height)) {
+    return createBoundedText(params);
+  }
+  // Regular text (single)
+  return createText(params);
+}
+
 export const textOperations = {
   createText,
   createBoundedText,
@@ -47,5 +76,6 @@ export const textOperations = {
   setTextContent,
   scanTextNodes,
   setMultipleTextContents,
-  getStyledTextSegments
+  getStyledTextSegments,
+  createTextUnified
 };

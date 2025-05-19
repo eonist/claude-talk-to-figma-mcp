@@ -342,26 +342,7 @@ export function initializeCommands() {
     throw new Error("Must provide entry or entries");
   });
 
-  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, async (params) => {
-    // Batch support (including batch bounded text)
-    if (params && Array.isArray(params.texts)) {
-      const results = [];
-      for (const textConfig of params.texts) {
-        if (textConfig.width && textConfig.height) {
-          results.push(await createBoundedText(textConfig));
-        } else {
-          results.push(await textOperations.createText(textConfig));
-        }
-      }
-      return results;
-    }
-    // Bounded text support (single)
-    if (params && (params.width && params.height)) {
-      return createBoundedText(params);
-    }
-    // Regular text (single)
-    return textOperations.createText(params);
-  });
+  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, textOperations.createTextUnified);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_STYLE, textOperations.setTextStyle);
   registerCommand(PLUGIN_COMMANDS.SCAN_TEXT_NODES, textOperations.scanTextNodes);
@@ -418,74 +399,7 @@ export function initializeCommands() {
 
   // Detach Instance Tool (calls batch logic for DRYness)
   // Detach Instances Tool (Batch)
-  registerCommand(PLUGIN_COMMANDS.DETACH_INSTANCES, async (params) => {
-    let instanceIds = [];
-    const options = params && params.options ? params.options : {};
-    if (Array.isArray(params.instanceIds) && params.instanceIds.length > 0) {
-      instanceIds = params.instanceIds;
-    } else if (typeof params.instanceId === "string") {
-      instanceIds = [params.instanceId];
-    } else {
-      throw new Error("You must provide 'instanceId' or 'instanceIds'");
-    }
-    const maintainPosition = options.maintain_position;
-    const skipErrors = options.skip_errors;
-    const results = [];
-
-    for (const instanceId of instanceIds) {
-      try {
-        const node = figma.getNodeById(instanceId);
-        if (!node) {
-          throw new Error(`No node found with ID: ${instanceId}`);
-        }
-        if (node.type !== 'INSTANCE') {
-          throw new Error('Node is not a component instance');
-        }
-        // Store original position and parent if needed
-        const originalX = node.x;
-        const originalY = node.y;
-        const originalParent = node.parent;
-
-        // Detach instance
-        const detached = node.detachInstance();
-
-        // Maintain position if requested
-        if (maintainPosition) {
-          detached.x = originalX;
-          detached.y = originalY;
-          if (originalParent && 'appendChild' in originalParent) {
-            try {
-              originalParent.appendChild(detached);
-            } catch (e) {
-              // If already parented, ignore
-            }
-          }
-        }
-
-        results.push({ id: detached.id, name: detached.name, instanceId });
-      } catch (error) {
-        if (skipErrors) {
-          results.push({
-            error: error && error.message ? error.message : String(error),
-            instanceId
-          });
-          continue;
-        } else {
-          // Stop on first error if not skipping errors
-          throw error;
-        }
-      }
-    }
-
-    // Optionally, select and zoom to detached nodes if any
-    const detachedNodes = results.filter(r => r.id).map(r => figma.getNodeById(r.id)).filter(Boolean);
-    if (detachedNodes.length > 0) {
-      figma.currentPage.selection = detachedNodes;
-      figma.viewport.scrollAndZoomIntoView(detachedNodes);
-    }
-
-    return results;
-  });
+  registerCommand(PLUGIN_COMMANDS.DETACH_INSTANCES, componentOperations.detachInstances);
 
   registerCommand(PLUGIN_COMMANDS.RENAME_LAYER, renameOperations.rename_layer);
 
