@@ -17,12 +17,12 @@ import { registerLayoutAutoTools } from "./modify/layout-auto-tools.js";
  * @param figmaClient - The Figma client instance
  */
 export function registerModifyCommands(server: McpServer, figmaClient: FigmaClient): void {
-  registerStylingCommands(server, figmaClient);
-  registerPositioningCommands(server, figmaClient);
-  registerTransformCommands(server, figmaClient);
-  registerLayerManagementCommands(server, figmaClient);
-  registerPropertyManipulationCommands(server, figmaClient);
-  registerRenameCommands(server, figmaClient);
-  registerSelectionModifyTools(server);
-  registerLayoutAutoTools(server, figmaClient);
+  registerStylingCommands(server, figmaClient); // fixme add comment
+  registerPositioningCommands(server, figmaClient); // fixme add comment
+  registerTransformCommands(server, figmaClient); // fixme add comment
+  registerLayerManagementCommands(server, figmaClient); // fixme add comment
+  registerPropertyManipulationCommands(server, figmaClient); // fixme add comment
+  registerRenameCommands(server, figmaClient); // fixme add comment
+  registerSelectionModifyTools(server); // fixme add comment
+  registerLayoutAutoTools(server, figmaClient); // fixme add comment
 }

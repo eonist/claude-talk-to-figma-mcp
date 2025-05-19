@@ -15,17 +15,17 @@ import { registerTextStyleTools } from "./text-style-tools.js";
  * Registers all read commands by delegating to submodules.
  */
 export function registerReadCommands(server: McpServer, figmaClient: FigmaClient) {
-  registerDocumentTools(server, figmaClient);
-  registerSelectionTools(server, figmaClient);
-  registerNodeTools(server, figmaClient);
-  registerStyleTools(server, figmaClient);
-  registerNodeStylesTool(server, figmaClient);
-  registerComponentTools(server, figmaClient);
-  registerTextAnalysisTools(server, figmaClient);
-  registerCssTools(server, figmaClient);
-  registerSvgVectorTool(server, figmaClient);
-  registerImageTools(server, figmaClient);
-  registerTextStyleTools(server, figmaClient);
+  registerDocumentTools(server, figmaClient); // fixme: add doc
+  registerSelectionTools(server, figmaClient); // fixme: add doc
+  registerNodeTools(server, figmaClient); // fixme: add doc
+  registerStyleTools(server, figmaClient); // fixme: add doc
+  registerNodeStylesTool(server, figmaClient); // fixme: add doc
+  registerComponentTools(server, figmaClient); // fixme: add doc
+  registerTextAnalysisTools(server, figmaClient); // fixme: add doc
+  registerCssTools(server, figmaClient); // fixme: add doc
+  registerSvgVectorTool(server, figmaClient); // fixme: add doc
+  registerImageTools(server, figmaClient); // fixme: add doc
+  registerTextStyleTools(server, figmaClient); // fixme: add doc
 }
 
 // Re-export for granular imports if needed

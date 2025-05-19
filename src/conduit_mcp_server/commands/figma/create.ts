@@ -29,11 +29,11 @@ import { registerDocumentCreationCommands } from "./create/document-creation.js"
  * @param figmaClient - The Figma client instance
  */
 export function registerCreateCommands(server: McpServer, figmaClient: FigmaClient): void {
-  registerShapeCreationCommands(server, figmaClient);
-  registerTextCreationCommands(server, figmaClient);
-  registerVectorCreationCommands(server, figmaClient);
-  registerComponentCreationCommands(server, figmaClient);
-  registerImageCreationCommands(server, figmaClient);
-  registerSvgCreationCommands(server, figmaClient);
-  registerDocumentCreationCommands(server, figmaClient);
+  registerShapeCreationCommands(server, figmaClient); // fixme add comment
+  registerTextCreationCommands(server, figmaClient); // fixme add comment
+  registerVectorCreationCommands(server, figmaClient); // fixme add comment
+  registerComponentCreationCommands(server, figmaClient); // fixme add comment
+  registerImageCreationCommands(server, figmaClient); // fixme add comment
+  registerSvgCreationCommands(server, figmaClient); // fixme add comment
+  registerDocumentCreationCommands(server, figmaClient); // fixme add comment
 }

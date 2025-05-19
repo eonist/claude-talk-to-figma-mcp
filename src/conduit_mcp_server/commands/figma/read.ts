@@ -33,11 +33,11 @@ import { registerCssTools } from "./read/css-tools.js";
  * @param {FigmaClient} figmaClient - The Figma client instance
  */
 export function registerReadCommands(server: McpServer, figmaClient: FigmaClient) {
-  registerDocumentTools(server, figmaClient);
-  registerNodeTools(server, figmaClient);
-  registerSelectionTools(server, figmaClient);
-  registerStyleTools(server, figmaClient);
-  registerComponentTools(server, figmaClient);
-  registerTextAnalysisTools(server, figmaClient);
-  registerCssTools(server, figmaClient);
-}
+  registerDocumentTools(server, figmaClient); // fixme add comment
+  registerNodeTools(server, figmaClient); // fixme add comment
+  registerSelectionTools(server, figmaClient); // fixme add comment
+  registerStyleTools(server, figmaClient); // fixme add comment
+  registerComponentTools(server, figmaClient); // fixme add comment
+  registerTextAnalysisTools(server, figmaClient); // fixme add comment
+  registerCssTools(server, figmaClient); // fixme add comment
+}  
