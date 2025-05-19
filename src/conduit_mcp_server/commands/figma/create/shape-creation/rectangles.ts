@@ -3,7 +3,6 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "../utils.js";
 import { RectangleSchema, SingleRectangleSchema, BatchRectanglesSchema } from "./rectangle-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
-import { CreateRectangleParams } from "../../../../types/command-params.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
 
@@ -117,8 +116,11 @@ Returns:
         const results = await processBatch(
           rects,
           async cfg => {
-            const params: CreateRectangleParams = { commandId: uuidv4(), ...cfg };
+            const params = { commandId: uuidv4(), ...cfg };
             const node = await figmaClient.createRectangle(params);
+            if (!node || !node.id) {
+              throw new Error("Failed to create rectangle: missing node ID from figmaClient.createRectangle");
+            }
             if (cfg.cornerRadius != null) {
               await figmaClient.executeCommand("set_corner_radius", {
                 commandId: uuidv4(),
