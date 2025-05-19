@@ -498,40 +498,37 @@ export class FigmaClient {
   }
   
   /**
-   * Clones a node
-   * 
-   * @param {object} params - Clone parameters
-   * @returns {Promise<BaseFigmaNode>} The cloned node
+   * Clones one or more nodes.
+   * Accepts either { nodeId } for single or { nodeIds } for batch, plus optional params.
    */
   async cloneNode(params: {
-    nodeId: string;
+    nodeId?: string;
+    nodeIds?: string[];
     x?: number;
     y?: number;
-  }): Promise<BaseFigmaNode> {
-    // Ensure nodeId is treated as a string and validate it's not an object
-    const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    
-    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, {
-      nodeId: nodeIdString,
-      x: params.x,
-      y: params.y
-    });
-  }
-
-  /**
-   * Clone Nodes Tool
-   *
-   * Clones multiple nodes in Figma.
-   */
-  async cloneNodes(params: {
-    nodeIds: string[];
     positions?: { x: number; y: number }[];
     offsetX?: number;
     offsetY?: number;
     parentId?: string;
   }): Promise<any> {
-    // Forward to the server-side clone_nodes tool
-    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, params);
+    let nodeIds: string[] = [];
+    if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+      nodeIds = params.nodeIds.map(ensureNodeIdIsString);
+    } else if (params.nodeId) {
+      nodeIds = [ensureNodeIdIsString(params.nodeId)];
+    } else {
+      throw new Error("cloneNode: Provide either nodeId or nodeIds.");
+    }
+    const { x, y, positions, offsetX, offsetY, parentId } = params;
+    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, {
+      nodeIds,
+      x,
+      y,
+      positions,
+      offsetX,
+      offsetY,
+      parentId: parentId ? ensureNodeIdIsString(parentId) : undefined
+    });
   }
   
   /**
