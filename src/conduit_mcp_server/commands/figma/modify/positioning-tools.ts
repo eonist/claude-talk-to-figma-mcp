@@ -6,12 +6,12 @@ import { handleToolError } from "../../../utils/error-handling.js";
 
 /**
  * Registers positioning-related modify commands:
- * - move_nodes
+ * - move_node
  */
 export function registerPositioningCommands(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch node move
   server.tool(
-    "move_nodes",
+    "move_node",
     `Moves one or more nodes to a new position in Figma. Accepts either a single move config (via 'move') or an array of configs (via 'moves').
 
 Input:
@@ -92,7 +92,7 @@ Returns:
           return { content: [{ type: "text", text: `Moved ${results.length} nodes to new positions.` }] };
         }
       } catch (err) {
-        return handleToolError(err, "positioning-tools", "move_nodes") as any;
+        return handleToolError(err, "positioning-tools", "move_node") as any;
       }
     }
   );

@@ -83,7 +83,7 @@
 - [set_corner_radius](#set_corner_radius): Set corner radius
 
 **Positioning & Sizing & Boolean Operations:**
-- [move_nodes](#move_nodes): Move one or more nodes (single or batch)
+- [move_node](#move_node): Move one or more nodes (single or batch)
 - [reorder_nodes](#reorder_nodes): Reorder one or more nodes in their parents' children arrays (single or batch)
 - [resize_node](#resize_node): Resize a node (single or batch)
 - [flatten_node](#flatten_node): Flatten a single node (or batch) or selection
@@ -1200,7 +1200,7 @@ Create a new page in the Figma document.
 
 ---
 
-## move_nodes
+## move_node
 Move one or more nodes to a new position in Figma.
 
 **Parameters:**
@@ -1210,11 +1210,11 @@ Move one or more nodes to a new position in Figma.
 **Examples:**
 _Single:_
 ```json
-{ "command": "move_nodes", "params": { "move": { "nodeId": "123:456", "x": 100, "y": 200 } } }
+{ "command": "move_node", "params": { "move": { "nodeId": "123:456", "x": 100, "y": 200 } } }
 ```
 _Batch:_
 ```json
-{ "command": "move_nodes", "params": { "moves": [
+{ "command": "move_node", "params": { "moves": [
   { "nodeId": "123:456", "x": 100, "y": 200 },
   { "nodeId": "789:101", "x": 300, "y": 400 }
 ] } }

@@ -76,7 +76,15 @@ export function initializeCommands() {
   registerCommand('create_ellipse', shapeOperations.createEllipse);
   registerCommand('create_polygon', shapeOperations.createPolygon);
   registerCommand('create_star', shapeOperations.createStar);
-  registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
+  // Corner radius operation (merged, create_rectangle style)
+  registerCommand('set_corner_radius', (params) => {
+    // Accept both { radii }, { options }, or flat { nodeId, ... }
+    if (params && (params.radii || params.options)) {
+      return shapeOperations.setNodesCornerRadii(params);
+    } else {
+      return shapeOperations.setNodeCornerRadii(params);
+    }
+  });
   // Vector creation (merged, create_rectangle style)
   registerCommand('create_vector', (params) => {
     // Accept both { vector }, { vectors }, or flat { x, y, ... }

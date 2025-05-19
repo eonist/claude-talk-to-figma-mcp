@@ -513,7 +513,7 @@ export class FigmaClient {
   }): Promise<any> {
     // Ensure all nodeIds are treated as strings and validate they're not objects
     const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
-    return this.executeCommand("move_nodes", {
+    return this.executeCommand("move_node", {
       nodeIds: nodeIdStrings,
       x: params.x,
       y: params.y

@@ -225,7 +225,7 @@ export const writeCommands = {
     params: { nodeIds: string[]; x: number; y: number }
   ): Promise<any> {
     const ids = params.nodeIds.map(ensureNodeIdIsString);
-    return this.executeCommand("move_nodes", { nodeIds: ids, x: params.x, y: params.y });
+    return this.executeCommand("move_node", { nodeIds: ids, x: params.x, y: params.y });
   },
 
   async cloneNode(
