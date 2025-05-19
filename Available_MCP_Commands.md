@@ -124,8 +124,7 @@
 - [ai_rename_layers](#ai_rename_layers): AI-powered renaming 
 - [set_variant](#set_variant): Create, add, rename, delete, organize, or batch create variants/properties in a component set
 - [get_variant](#get_variant): Get info about variants/properties for one or more component sets
-- [subscribe_event](#subscribe_event): Subscribe to a Figma event (e.g., selection_change, document_change)
-- [unsubscribe_event](#unsubscribe_event): Unsubscribe from a previously subscribed event
+- [subscribe_event](#subscribe_event): Subscribe to or unsubscribe from a Figma event (e.g., selection_change, document_change)
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
