@@ -531,7 +531,7 @@ export class FigmaClient {
     parentId?: string;
   }): Promise<any> {
     // Forward to the server-side clone_nodes tool
-    return this.executeCommand(MCP_COMMANDS.CLONE_NODES, params);
+    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, params);
   }
   
   /**
