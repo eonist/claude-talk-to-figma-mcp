@@ -72,12 +72,11 @@ export interface GetConstraintsParams {
 /**
  * Unified event subscription command parameter types
  */
-export interface SubscribeEventParams {
+export interface EventSubscriptionParams {
   eventType: string;
   filter?: any;
-}
-export interface UnsubscribeEventParams {
-  subscriptionId: string;
+  subscribe: boolean;
+  subscriptionId?: string; // Required for unsubscribe
 }
 
 /**
@@ -220,8 +219,7 @@ export const MCP_COMMANDS = {
   AI_RENAME_LAYERS: "ai_rename_layers", // AI-powered renaming 
   SET_VARIANT: "set_variant", // Create, add, rename, delete, organize, or batch create variants/properties in a component set
   GET_VARIANT: "get_variant", // Get info about variants/properties for one or more component sets
-  SUBSCRIBE_EVENT: "subscribe_event", // Subscribe to a Figma event (e.g., selection_change, document_change)
-  UNSUBSCRIBE_EVENT: "unsubscribe_event", // Unsubscribe from a previously subscribed event
+  SUBSCRIBE_EVENT: "subscribe_event", // Subscribe or unsubscribe to a Figma event (e.g., selection_change, document_change) using a boolean param
   GET_ANNOTATION: "get_annotation", // Get annotation(s) for one or more nodes
   SET_ANNOTATION: "set_annotation" // Set, update, or delete annotation(s) for one or more nodes
 } as const;

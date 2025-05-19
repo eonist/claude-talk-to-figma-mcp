@@ -129,8 +129,7 @@ export const PLUGIN_COMMANDS = {
   GET_VARIANT: "get_variant",
   GET_ANNOTATION: "get_annotation",
   SET_ANNOTATION: "set_annotation",
-  SUBSCRIBE_EVENT: "subscribe_event",
-  UNSUBSCRIBE_EVENT: "unsubscribe_event"
+  SUBSCRIBE_EVENT: "subscribe_event"
 };
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
@@ -502,14 +501,11 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT, setAutoLayoutUnified);
   registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT_RESIZING, layoutOperations.setAutoLayoutResizing);
 
-  // Event subscription commands
+  // Unified event subscription command
   registerCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, async (params) => {
     if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
+    // params: { eventType, filter, subscribe, subscriptionId? }
     return await sendCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, params);
-  });
-  registerCommand(PLUGIN_COMMANDS.UNSUBSCRIBE_EVENT, async (params) => {
-    if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
-    return await sendCommand(PLUGIN_COMMANDS.UNSUBSCRIBE_EVENT, params);
   });
 
   // Insert child node operation (merged, create_rectangle style)
