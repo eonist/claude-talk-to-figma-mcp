@@ -457,41 +457,25 @@ export class FigmaClient {
   // Node operations
   
   /**
-   * Moves a node to a new position
-   * 
-   * @param {object} params - Move parameters
-   * @returns {Promise<any>} Operation result
+   * Moves one or more nodes to a new position.
+   * Accepts either { nodeId } for single or { nodeIds } for batch, plus x and y.
    */
   async moveNode(params: {
-    nodeId: string;
+    nodeId?: string;
+    nodeIds?: string[];
     x: number;
     y: number;
   }): Promise<any> {
-    // Ensure nodeId is treated as a string and validate it's not an object
-    const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    
+    let nodeIds: string[] = [];
+    if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+      nodeIds = params.nodeIds.map(ensureNodeIdIsString);
+    } else if (params.nodeId) {
+      nodeIds = [ensureNodeIdIsString(params.nodeId)];
+    } else {
+      throw new Error("moveNode: Provide either nodeId or nodeIds.");
+    }
     return this.executeCommand(MCP_COMMANDS.MOVE_NODE, {
-      nodeId: nodeIdString,
-      x: params.x,
-      y: params.y
-    });
-  }
-
-  /**
-   * Moves multiple nodes to a new position
-   *
-   * @param {object} params - Parameters including an array of node IDs and target coordinates
-   * @returns {Promise<any>} Operation result
-   */
-  async moveNodes(params: {
-    nodeIds: string[];
-    x: number;
-    y: number;
-  }): Promise<any> {
-    // Ensure all nodeIds are treated as strings and validate they're not objects
-    const nodeIdStrings = params.nodeIds.map(id => ensureNodeIdIsString(id));
-    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, {
-      nodeIds: nodeIdStrings,
+      nodeIds,
       x: params.x,
       y: params.y
     });

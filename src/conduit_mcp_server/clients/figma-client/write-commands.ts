@@ -214,20 +214,23 @@ export const writeCommands = {
   },
 
 
+  /**
+   * Moves one or more nodes to a new position.
+   * Accepts either { nodeId } for single or { nodeIds } for batch, plus x and y.
+   */
   async moveNode(
     this: FigmaClient,
-    params: { nodeId: string; x: number; y: number }
+    params: { nodeId?: string; nodeIds?: string[]; x: number; y: number }
   ): Promise<any> {
-    const id = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, { nodeId: id, x: params.x, y: params.y });
-  },
-
-  async moveNodes(
-    this: FigmaClient,
-    params: { nodeIds: string[]; x: number; y: number }
-  ): Promise<any> {
-    const ids = params.nodeIds.map(ensureNodeIdIsString);
-    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, { nodeIds: ids, x: params.x, y: params.y });
+    let nodeIds: string[] = [];
+    if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+      nodeIds = params.nodeIds.map(ensureNodeIdIsString);
+    } else if (params.nodeId) {
+      nodeIds = [ensureNodeIdIsString(params.nodeId)];
+    } else {
+      throw new Error("moveNode: Provide either nodeId or nodeIds.");
+    }
+    return this.executeCommand(MCP_COMMANDS.MOVE_NODE, { nodeIds, x: params.x, y: params.y });
   },
 
   /**
