@@ -55,71 +55,15 @@ Examples:
     },
     async (args: any) => {
       const { source, team_id, page_size, after } = args || {};
-      try {
-        if (source === "local") {
-          const result = await figmaClient.executeCommand("get_local_components");
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(result)
-              }
-            ]
-          };
-        } else if (source === "team") {
-          if (!team_id) {
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: "Error: team_id parameter is required when source is 'team'"
-                }
-              ]
-            };
+      // No implementation for get_components: legacy methods removed.
+      return {
+        content: [
+          {
+            type: "text",
+            text: "Error: get_components is not implemented. Legacy component queries have been removed. Please implement a unified component retrieval method."
           }
-          const result = await figmaClient.executeCommand("get_team_components", {
-            teamId: team_id,
-            pageSize: page_size,
-            after: after
-          });
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(result, null, 2)
-              }
-            ]
-          };
-        } else if (source === "remote") {
-          const result = await figmaClient.executeCommand("get_remote_components");
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(result, null, 2)
-              }
-            ]
-          };
-        } else {
-          return {
-            content: [
-              {
-                type: "text",
-                text: "Error: Invalid source parameter"
-              }
-            ]
-          };
-        }
-      } catch (error) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error getting components: ${error instanceof Error ? error.message : String(error)}`
-            }
-          ]
-        };
-      }
+        ]
+      };
     }
   );
 
