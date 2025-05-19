@@ -259,14 +259,24 @@ export const writeCommands = {
     return this.executeCommand(MCP_COMMANDS.RESIZE_NODE, { nodeId: id, width: params.width, height: params.height });
   },
 
-  async deleteNode(this: FigmaClient, nodeId: string): Promise<any> {
-    const id = ensureNodeIdIsString(nodeId);
-    return this.executeCommand(MCP_COMMANDS.DELETE_NODE, { nodeId: id });
-  },
-
-  async deleteNodes(this: FigmaClient, nodeIds: string[]): Promise<any> {
-    const ids = nodeIds.map(ensureNodeIdIsString);
-    return this.executeCommand(MCP_COMMANDS.DELETE_NODES, { nodeIds: ids });
+  /**
+   * Deletes one or more nodes.
+   * Accepts either { nodeId } for single or { nodeIds } for batch, like create_rectangle.
+   */
+  async deleteNode(
+    this: FigmaClient,
+    params: { nodeId?: string; nodeIds?: string[] }
+  ): Promise<any> {
+    let nodeIds: string[] = [];
+    if (params.nodeIds && Array.isArray(params.nodeIds)) {
+      nodeIds = params.nodeIds.map(ensureNodeIdIsString);
+    } else if (params.nodeId) {
+      nodeIds = [ensureNodeIdIsString(params.nodeId)];
+    } else {
+      throw new Error("deleteNode: Must provide nodeId or nodeIds");
+    }
+    // If backend supports batch in DELETE_NODE, always use nodeIds param
+    return this.executeCommand(MCP_COMMANDS.DELETE_NODE, { nodeIds });
   },
 
   /**

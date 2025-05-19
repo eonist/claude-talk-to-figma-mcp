@@ -151,7 +151,7 @@ import HTMLGenerator from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePage } from '../document/document-duplicate.js';
-import { getNodeStyles, getImage, getTextStyle, deleteNode, deleteNodes } from '../node/node-edit.js';
+import { getNodeStyles, getImage, getTextStyle, deleteNode } from '../node/node-edit.js';
 
 /**
  * Internal registry to store command handler functions by name.
@@ -261,13 +261,10 @@ export function initializeCommands() {
   // Delete operation (supports single or array)
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, (params) => {
     if (params && Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
-      // Batch delete
-      return deleteNodes({ nodeIds: params.nodeIds });
+      return deleteNode({ nodeIds: params.nodeIds });
     } else if (params && typeof params.nodeId === "string") {
-      // Single delete
       return deleteNode({ nodeId: params.nodeId });
     } else if (params && typeof params === "string") {
-      // Single delete (param is nodeId)
       return deleteNode({ nodeId: params });
     } else {
       throw new Error("Invalid parameters for DELETE_NODE");

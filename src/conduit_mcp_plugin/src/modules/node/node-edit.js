@@ -105,35 +105,26 @@ export async function getSvgVector(params) {
 }
 
 /**
- * Deletes a node from the document.
+ * Deletes one or more nodes from the document.
+ * Accepts either { nodeId } for single or { nodeIds } for batch.
  *
  * @async
  * @function
  * @param {Object} params - Parameters for node deletion.
- * @param {string} params.nodeId - The ID of the node to delete.
- * @returns {Promise<{success: boolean}>} Deletion result.
- * @throws {Error} If nodeId is missing or node cannot be found.
+ * @param {string} [params.nodeId] - The ID of the node to delete.
+ * @param {Array<string>} [params.nodeIds] - Array of node IDs to delete.
+ * @returns {Promise<{success: Array<string>, failed: Array<string>}>} Object with arrays of successfully deleted and failed node IDs.
+ * @throws {Error} If neither nodeId nor nodeIds is provided.
  */
 export async function deleteNode(params) {
-  const { nodeId } = params;
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) throw new Error(`Node not found: ${nodeId}`);
-  node.remove();
-  return { success: true };
-}
-
-/**
- * Deletes multiple nodes from the document.
- *
- * @async
- * @function
- * @param {Object} params - Parameters for batch node deletion.
- * @param {Array<string>} params.nodeIds - Array of node IDs to delete.
- * @returns {Promise<{success: Array<string>, failed: Array<string>}>} Object with arrays of successfully deleted and failed node IDs.
- * @throws {Error} If nodeIds is missing.
- */
-export async function deleteNodes(params) {
-  const { nodeIds } = params;
+  let nodeIds = [];
+  if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    nodeIds = params.nodeIds;
+  } else if (params.nodeId) {
+    nodeIds = [params.nodeId];
+  } else {
+    throw new Error("deleteNode: Provide either nodeId or nodeIds.");
+  }
   const success = [];
   const failed = [];
   for (const id of nodeIds) {
