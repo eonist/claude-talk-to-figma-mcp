@@ -113,7 +113,7 @@ export type FigmaCommand =
   // Get detailed information about a specific node (see commands/figma/read/node-tools.ts)
   | "get_node_info"
   // Get information about multiple nodes (see commands/figma/read/node-tools.ts)
-  | "get_nodes_info"
+  // | "get_nodes_info"
   // Create components from node(s) (see commands/figma/create/component-creation/node-tools.ts)
   | "create_components_from_nodes"
   // Create a new rectangle shape node (see commands/figma/create/shape-creation/rectangles.ts)
@@ -184,7 +184,7 @@ export type FigmaCommand =
   // Flatten a node (see commands/figma/modify/layer-management/boolean-tools.ts)
   | "flatten_node"
   // Flatten multiple nodes (see commands/figma/modify/layer-management/flatten-nodes-tools.ts)
-  | "flatten_nodes"
+  //| "flatten_nodes"
   // Insert a child node (see commands/figma/modify/layer-management/index.ts)
   | "insert_child"
   // Rename a single node (see commands/figma/modify/rename.ts)

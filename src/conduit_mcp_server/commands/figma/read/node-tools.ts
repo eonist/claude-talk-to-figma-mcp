@@ -78,8 +78,12 @@ Examples:
           return { content: [{ type: "text", text: "You must provide either 'nodeId' or 'nodeIds'." }] };
         }
         logger.debug(`Getting info for ${nodeIdList.length} node(s)`);
-        // Always use the batch command for consistency
-        const results = await figmaClient.executeCommand("get_nodes_info", { nodeIds: nodeIdList });
+        // Directly fetch node info for each nodeId
+        const results = [];
+        for (const nodeId of nodeIdList) {
+          const node = await figmaClient.getNodeInfo(nodeId);
+          results.push(node);
+        }
         return {
           content: [
             {

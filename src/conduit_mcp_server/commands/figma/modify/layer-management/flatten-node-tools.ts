@@ -20,7 +20,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  */
 export function registerFlattenNodeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "flatten_nodes",
+    "flatten_node",
     `Flatten one or more nodes in Figma, or the current selection, merging all child vector layers and shapes into a single vector layer.
 
 Input:
@@ -92,7 +92,7 @@ Examples:
         return { content: [{ type: "text", text: "You must provide 'nodeId', 'nodeIds', or 'selection: true'." }] };
       }
       // Flatten all nodes
-      const result = await figmaClient.executeCommand("flatten_nodes", { nodeIds: ids });
+      const result = await figmaClient.executeCommand("flatten_node", { nodeIds: ids });
       return {
         content: [{
           type: "text",

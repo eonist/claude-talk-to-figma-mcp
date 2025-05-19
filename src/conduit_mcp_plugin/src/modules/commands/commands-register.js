@@ -360,7 +360,7 @@ registerCommand('switch_variable_mode', variableOperations.switchVariableMode);
   registerCommand('get_text_style', getTextStyle);
 
   // Batch flatten nodes operation
-  registerCommand('flatten_nodes', layoutOperations.flatten_nodes);
+  registerCommand('flatten_node', layoutOperations.flatten_nodes);
 
   // UI Component operations
   registerCommand('generate_html', async ({ nodeId, format, cssMode }) => {

@@ -18,11 +18,6 @@ export const readCommands = {
     return filterFigmaNode(result);
   },
 
-  async getNodesInfo(this: FigmaClient, nodeIds: string[]): Promise<BaseFigmaNode[]> {
-    const ids = nodeIds.map(ensureNodeIdIsString);
-    const result = await this.executeCommand("get_nodes_info", { nodeIds: ids });
-    return result.map(filterFigmaNode);
-  },
 
   async getCssAsync(this: FigmaClient, params?: { nodeId?: string; format?: "object"|"string"|"inline" }): Promise<any> {
     return this.executeCommand("get_css_async", params || {});
