@@ -92,6 +92,7 @@ const moduleOrder = [
   'document/document-node.js',
   'document/document-css.js',
   'document/document-page.js',
+  'document/document-duplicate.js',
   'document.js',
   // Shapes and geometry
   'shape/shapes-helpers.js',
@@ -241,6 +242,7 @@ async function buildPlugin() {
     let indexContent = readFile(indexPath);
     indexContent = indexContent.replace(/import\s+.*from\s+['"].*['"];?\n?/g, '');
     indexContent = indexContent.replace(/import\s+{[^}]*}\s+from\s+['"].*['"];?\n?/g, '');
+    indexContent = indexContent.replace(/import\s+['"].*['"];?\n?/g, '');
     indexContent = indexContent.replace(/const\s+{[^}]*}\s*=\s*\w+Operations;?\n?/g, '');
     indexContent = indexContent.replace(/\/\/\s*Import\s+modules.*\n/gi, '');
     indexContent = indexContent.replace(/export\s+{[^}]*};?\n?/g, '');

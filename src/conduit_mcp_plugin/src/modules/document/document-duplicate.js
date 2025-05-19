@@ -10,12 +10,10 @@ export async function duplicatePage({ pageId, newPageName }) {
   const originalPage = await figma.getNodeByIdAsync(pageId);
   if (!originalPage || originalPage.type !== 'PAGE') throw new Error('Invalid page ID');
   // Create new page
-  const { createPage } = await import('./document-info.js');
   const newPageInfo = await createPage(newPageName || (originalPage.name + ' (Copy)'));
   const newPageNode = await figma.getNodeByIdAsync(newPageInfo.id);
   if (!newPageNode) throw new Error('Failed to create new page');
   // Clone all children into new page
-  const { clone_node } = await import('../layout/layout-clone.js');
   const clonedIds = [];
   for (const child of originalPage.children) {
     const { newNodeIds } = await clone_node({
