@@ -7,7 +7,7 @@ import { EffectsArraySchema } from "./effect-schema.js";
 /**
  * Registers effect-related commands on the MCP server.
  *
- * This function adds tools named "set_effects" and "set_effect_style_id" to the MCP server,
+ * This function adds tools named "set_effect" and "set_effect_style_id" to the MCP server,
  * enabling setting visual effects and applying effect styles to nodes in Figma.
  * It validates inputs, executes corresponding Figma commands, and returns informative results.
  *

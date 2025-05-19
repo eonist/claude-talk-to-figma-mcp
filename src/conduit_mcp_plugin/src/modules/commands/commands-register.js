@@ -253,7 +253,14 @@ export function initializeCommands() {
 registerCommand('set_fill_color', styleOperations.setFillColor);
 registerCommand('set_stroke_color', styleOperations.setStrokeColor);
 registerCommand('get_styles', styleOperations.getStyles);
-registerCommand('set_effects', styleOperations.setEffects);
+registerCommand('set_effect', (params) => {
+  // Accept both { entries } or flat single entry
+  if (params && params.entries) {
+    return styleOperations.setEffects(params);
+  } else {
+    return styleOperations.setEffects({ entries: [params] });
+  }
+});
 registerCommand('set_effect_style_id', styleOperations.setEffectStyleId);
 registerCommand('set_style', styleOperations.setStyle);
 registerCommand('export_node_as_image', componentOperations.exportNodeAsImage);

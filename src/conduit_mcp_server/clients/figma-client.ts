@@ -868,7 +868,7 @@ export class FigmaClient {
     // Ensure nodeId is treated as a string and validate it's not an object
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
     
-    return this.executeCommand("set_effects", {
+    return this.executeCommand("set_effect", {
       nodeId: nodeIdString,
       effects: params.effects
     });
