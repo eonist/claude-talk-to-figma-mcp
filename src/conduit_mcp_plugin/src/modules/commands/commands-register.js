@@ -76,6 +76,7 @@ export function initializeCommands() {
   registerCommand('create_ellipse', shapeOperations.createEllipse);
   registerCommand('create_polygon', shapeOperations.createPolygon);
   registerCommand('create_star', shapeOperations.createStar);
+  registerCommand('set_corner_radius', shapeOperations.setCornerRadius);
   // Vector creation (merged, create_rectangle style)
   registerCommand('create_vector', (params) => {
     // Accept both { vector }, { vectors }, or flat { x, y, ... }
