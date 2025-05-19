@@ -16,8 +16,8 @@ export const PLUGIN_COMMANDS = {
   GET_CSS_ASYNC: "get_css_async",
 
   // --- Pages ---
-  GET_PAGE: "getPage",
-  SET_PAGE: "setPage",
+  GET_PAGE: "get_page",
+  SET_PAGE: "set_page",
   DUPLICATE_PAGE: "duplicate_page",
   SET_CURRENT_PAGE: "set_current_page",
   GET_PAGES: "get_pages",
