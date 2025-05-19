@@ -5,6 +5,7 @@ import { RectangleSchema, SingleRectangleSchema, BatchRectanglesSchema } from ".
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
+import { logger } from "../../../../utils/logger.js";
 
 /**
  * Registers shape-creation-related commands with the MCP server.
@@ -105,6 +106,7 @@ Returns:
     // Tool handler: supports both single object and array input via 'rectangle' or 'rectangles'.
     async (args, extra): Promise<any> => {
       try {
+        logger.info(`💥 RAW create_rectangle args: ${JSON.stringify(args)}`);
         let rects;
         if (args.rectangles) {
           rects = args.rectangles;
@@ -117,7 +119,7 @@ Returns:
           rects,
           async cfg => {
             const params = { commandId: uuidv4(), ...cfg };
-            console.log("💥 createRectangle params:", params);
+            logger.info(`💥 createRectangle params: ${JSON.stringify(params)}`);
             const node = await figmaClient.createRectangle(params);
             if (!node || !node.id) {
               throw new Error("Failed to create rectangle: missing node ID from figmaClient.createRectangle");

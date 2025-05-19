@@ -221,14 +221,14 @@ const server = Bun.serve({
 
           // Create channel if it doesn't exist
           if (!channels.has(channelName)) {
-            logger.info(`🛰️ Creating new channel: ${channelName}`);
+            logger.info(`🛰️☘️ Creating new channel: ${channelName}`);
             channels.set(channelName, new Set());
           }
 
           // Add client to channel
           const channelClients = channels.get(channelName)!;
           channelClients.add(ws);
-          logger.info(`🛰️ Client ${clientId} joined channel: ${channelName}`);
+          logger.info(`🛰️⛓️‍💥 Client ${clientId} joined channel: ${channelName}`);
 
           // Notify client they joined successfully
           try {
