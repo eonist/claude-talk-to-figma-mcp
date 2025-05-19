@@ -44,6 +44,10 @@ export async function createRectangle(params) {
     rect.resize(width, height);
     rect.name = name;
 
+    if (typeof cfg.cornerRadius === "number") {
+      rect.cornerRadius = cfg.cornerRadius;
+    }
+
     if (fillColor) setFill(rect, fillColor);
     if (strokeColor) setStroke(rect, strokeColor, strokeWeight);
 
