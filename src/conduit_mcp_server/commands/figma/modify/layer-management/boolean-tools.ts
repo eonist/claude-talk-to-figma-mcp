@@ -21,41 +21,6 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
  * registerBooleanTools(server, figmaClient);
  */
 export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient) {
-  // Flatten Selection
-  server.tool(
-    MCP_COMMANDS.FLATTEN_NODE,
-    `Flatten a selection of nodes in Figma.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes flattened.
-`,
-    {
-      // Validate nodeIds as simple or complex Figma node IDs, preserving original description
-      nodeIds: NodeIdsArraySchema(1, 100),
-    },
-    {
-      title: "Flatten Selection",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "Flattening is destructive and cannot be undone.",
-        "All child layers are merged into a single vector.",
-        "Only nodes that support flattening (Frame, Group, etc.) are valid."
-      ],
-      extraInfo: "Flattening is useful for export and performance, but removes layer structure."
-    },
-    async ({ nodeIds }) => {
-      const ids = nodeIds.map(ensureNodeIdIsString);
-      await figmaClient.executeCommand(MCP_COMMANDS.FLATTEN_NODE, { nodeIds: ids });
-      return { content: [{ type: "text", text: `Flattened ${ids.length} nodes` }] };
-    }
-  );
-
   // Unified Boolean Operation Tool
   server.tool(
     MCP_COMMANDS.BOOLEAN,
