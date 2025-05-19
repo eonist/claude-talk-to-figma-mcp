@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { InstanceIdSchema } from "./instance-id-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers detach instance command on the MCP server.
@@ -21,7 +22,7 @@ import { InstanceIdSchema } from "./instance-id-schema.js";
 export function registerDetachInstanceTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified detach_instances tool (single or batch)
   server.tool(
-    "detach_instances",
+    MCP_COMMANDS.DETACH_INSTANCES,
     `Detaches one or more Figma component instances from their masters.
 
 Input:

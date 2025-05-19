@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { AutoLayoutConfigSchema, AutoLayoutResizingSchema } from "./auto-layout-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers auto layout commands on the MCP server.
@@ -21,7 +22,7 @@ import { AutoLayoutConfigSchema, AutoLayoutResizingSchema } from "./auto-layout-
  */
 export function registerAutoLayoutTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "set_auto_layout_resizing",
+    MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING,
     `Sets hug or fill sizing mode on an auto layout frame or child node in Figma.
 
 Returns:

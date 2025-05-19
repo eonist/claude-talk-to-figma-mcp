@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 // Variant operation schema
 const VariantOp = z.object({
@@ -28,7 +29,7 @@ const GetVariantSchema = z.object({
 export function registerVariantCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_variant: create, add, rename, delete, organize, batch_create (single or batch)
   server.tool(
-    "set_variant",
+    MCP_COMMANDS.SET_VARIANT,
     `Create, add, rename, delete, organize, or batch create variants/properties in a component set (single or batch).
 
 Parameters:
@@ -63,7 +64,7 @@ Returns: Array of result objects for each operation.`,
 
   // get_variant: get info for one, many, or all component sets
   server.tool(
-    "get_variant",
+    MCP_COMMANDS.GET_VARIANT,
     `Get info about variants/properties for one or more component sets.
 
 Parameters:

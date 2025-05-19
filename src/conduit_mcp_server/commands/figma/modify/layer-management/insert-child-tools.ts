@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers the insert_child command on the MCP server to enable inserting a child node into a parent node in Figma.
@@ -20,7 +21,7 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  */
 export function registerInsertChildTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    "insert_child",
+    MCP_COMMANDS.INSERT_CHILD,
     `Inserts a child node into a parent node at an optional index position in Figma.
 
 Returns:
@@ -81,7 +82,7 @@ Returns:
 
   // Batch insert_children tool
   server.tool(
-    "insert_children",
+    MCP_COMMANDS.INSERT_CHILDREN,
     `Batch-inserts multiple child nodes into parent nodes in Figma.
 
 Parameters:

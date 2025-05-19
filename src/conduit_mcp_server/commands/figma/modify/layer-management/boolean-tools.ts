@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers boolean operation commands on the MCP server.
@@ -22,7 +23,7 @@ import { NodeIdsArraySchema } from "./node-ids-schema.js";
 export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient) {
   // Flatten Selection
   server.tool(
-    "flatten_selection",
+    MCP_COMMANDS.FLATTEN_NODE,
     `Flatten a selection of nodes in Figma.
 
 Returns:
@@ -57,7 +58,7 @@ Returns:
 
   // Unified Boolean Operation Tool
   server.tool(
-    "boolean",
+    MCP_COMMANDS.BOOLEAN,
     `Perform boolean operations (union, subtract, intersect, exclude) on Figma nodes.
 
 Parameters:

@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { EffectSchema } from "../property-manipulation/effect-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers effect-related styling commands:
@@ -36,7 +37,7 @@ export function registerEffectTools(server: McpServer, figmaClient: FigmaClient)
   });
 
   server.tool(
-    "set_effect",
+    MCP_COMMANDS.SET_EFFECT,
     `Set effect(s) directly or by style variable on one or more nodes in Figma.
 
 Params:
@@ -95,7 +96,7 @@ Returns:
   });
 
   server.tool(
-    "create_effect_style_variable",
+    MCP_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE,
     `Creates one or more effect style variables in Figma.
 
 Params:

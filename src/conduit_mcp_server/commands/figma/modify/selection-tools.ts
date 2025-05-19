@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { FigmaMcpServer } from "../../../types/commands";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers selection modification tools for Figma.
@@ -8,7 +9,7 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id";
  */
 export function registerSelectionModifyTools(server: FigmaMcpServer) {
   server.tool(
-    "set_selection",
+    MCP_COMMANDS.SET_SELECTION,
     {
       description: `Set the current selection in Figma to the specified node(s) by ID.
 

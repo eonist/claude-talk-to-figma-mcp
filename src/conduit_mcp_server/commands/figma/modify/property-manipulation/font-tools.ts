@@ -3,6 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { FontFamilyStyleSchema, FontSizeSchema, FontWeightSchema } from "./font-schema.js";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
  * Registers property-manipulation-related modify commands on the MCP server.
@@ -199,7 +200,7 @@ export function registerFontTools(server: McpServer, figmaClient: FigmaClient) {
 
   // Load Font Async
   server.tool(
-    "load_font_async",
+    MCP_COMMANDS.LOAD_FONT_ASYNC,
     `Load a font asynchronously in Figma.
 
 Returns:

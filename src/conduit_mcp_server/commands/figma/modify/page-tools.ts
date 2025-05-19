@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 // Page operation schema
 const PageOp = z.object({
@@ -21,7 +22,7 @@ const GetPageSchema = z.object({
 export function registerPageCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_page: create, delete, rename, set current (single or batch)
   server.tool(
-    "set_page",
+    MCP_COMMANDS.SET_PAGE,
     `Create, delete, rename, or set current page (single or batch).
 
 Parameters:
@@ -51,7 +52,7 @@ Returns: Array of result objects for each operation.`,
 
   // get_page: get info for one, many, or all pages
   server.tool(
-    "get_page",
+    MCP_COMMANDS.GET_PAGE,
     `Get info for one, many, or all pages.
 
 Parameters:

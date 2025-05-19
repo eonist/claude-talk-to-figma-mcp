@@ -1,6 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 // Guide schema
 const GuideEntry = z.object({
@@ -17,7 +18,7 @@ const GetGuideSchema = z.object({}); // No params
 export function registerGuideCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_guide: add/delete guides (single or batch)
   server.tool(
-    "set_guide",
+    MCP_COMMANDS.SET_GUIDE,
     `Add or delete one or more guides on the current Figma page.
 
 Parameters:
@@ -46,7 +47,7 @@ Returns: Array of result objects for each operation.`,
 
   // get_guide: get all guides on the current page
   server.tool(
-    "get_guide",
+    MCP_COMMANDS.GET_GUIDE,
     `Get all guides on the current Figma page.
 
 Parameters: none
