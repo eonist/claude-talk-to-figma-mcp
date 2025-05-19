@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
+import { MCP_COMMANDS } from "../../../../types/commands";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
@@ -22,7 +23,7 @@ import { NodeIdsArraySchema } from "./node-ids-schema.js";
 export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified delete_nodes tool (single or batch)
   server.tool(
-    "delete_node",
+    MCP_COMMANDS.DELETE_NODE,
     `Deletes one or more nodes in Figma.
 
 Input:
