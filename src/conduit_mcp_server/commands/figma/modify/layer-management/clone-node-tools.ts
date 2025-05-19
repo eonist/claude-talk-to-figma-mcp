@@ -99,7 +99,7 @@ Returns:
           if (cfg.offsetX !== undefined) params.offsetX = cfg.offsetX;
           if (cfg.offsetY !== undefined) params.offsetY = cfg.offsetY;
           if (cfg.parentId) params.parentId = cfg.parentId;
-          const result = await figmaClient.executeCommand("clone_node", params);
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.CLONE_NODE, params);
           results.push(result.newNodeId ?? "(unknown)");
         }
         if (results.length === 1) {

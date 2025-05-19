@@ -76,7 +76,7 @@ Returns:
         return { content: [{ type: "text", text: "Error: You must provide either 'reorder' or 'reorders' as input." }] };
       }
       try {
-        const result = await figmaClient.executeCommand("reorder_nodes", {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.REORDER_NODES, {
           reorders: reordersArr,
           options: args.options
         });

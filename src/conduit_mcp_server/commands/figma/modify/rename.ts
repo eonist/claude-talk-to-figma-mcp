@@ -91,7 +91,7 @@ Returns:
         for (const cfg of renamesArr) {
           const nodeIdString = ensureNodeIdIsString(cfg.nodeId);
           logger.debug(`Renaming node with ID: ${nodeIdString} to "${cfg.newName}"`);
-          const result = await figmaClient.executeCommand("rename_layer", {
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.RENAME_LAYER, {
             nodeId: nodeIdString,
             newName: cfg.newName,
             setAutoRename: cfg.setAutoRename

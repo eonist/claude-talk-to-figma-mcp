@@ -75,7 +75,7 @@ Examples:
       let ids = [];
       if (args.selection) {
         // Get selected node IDs from Figma via the client
-        const selectionResult = await figmaClient.executeCommand("get_selection", {});
+        const selectionResult = await figmaClient.executeCommand(MCP_COMMANDS.GET_SELECTION, {});
         if (
           selectionResult &&
           Array.isArray(selectionResult.nodeIds) &&
@@ -93,7 +93,7 @@ Examples:
         return { content: [{ type: "text", text: "You must provide 'nodeId', 'nodeIds', or 'selection: true'." }] };
       }
       // Flatten all nodes
-      const result = await figmaClient.executeCommand("flatten_node", { nodeIds: ids });
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.FLATTEN_NODE, { nodeIds: ids });
       return {
         content: [{
           type: "text",

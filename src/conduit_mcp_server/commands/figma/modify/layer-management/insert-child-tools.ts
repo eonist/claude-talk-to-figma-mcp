@@ -70,7 +70,7 @@ Returns:
       const child = ensureNodeIdIsString(childId);
       const params: any = { parentId: parent, childId: child };
       if (index !== undefined) params.index = index;
-      const result = await figmaClient.executeCommand("insert_child", params);
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.INSERT_CHILD, params);
       return {
         content: [{
           type: "text",
@@ -152,7 +152,7 @@ Returns:
             if (op.index !== undefined) params.index = op.index;
             // Optionally, maintain position logic could be handled in the Figma plugin code
             if (op.maintainPosition !== undefined) params.maintainPosition = op.maintainPosition;
-            const result = await figmaClient.executeCommand("insert_child", params);
+            const result = await figmaClient.executeCommand(MCP_COMMANDS.INSERT_CHILD, params);
             return {
               type: "text",
               text: `Inserted child node ${child} into parent ${parent} at index ${result.index ?? "end"} (success: ${result.success ?? true})`

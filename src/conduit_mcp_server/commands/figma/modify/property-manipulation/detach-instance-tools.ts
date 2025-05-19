@@ -76,7 +76,7 @@ Examples:
         return { content: [{ type: "text", text: "You must provide 'instanceId' or 'instanceIds'." }] };
       }
       // Call the batch detach command on the Figma client
-      const resultArr = await figmaClient.executeCommand("detach_instances", { instanceIds: ids, options });
+      const resultArr = await figmaClient.executeCommand(MCP_COMMANDS.DETACH_INSTANCES, { instanceIds: ids, options });
       // Return all results (could be array of {id, error?})
       return {
         content: Array.isArray(resultArr)

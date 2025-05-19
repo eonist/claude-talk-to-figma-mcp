@@ -49,7 +49,7 @@ Parameters:
 Returns: { status: "success"|"error", message: string, gridId?: string }`,
     CreateGridSchema,
     async (params) => {
-      return await figmaClient.executeCommand("createGrid", params);
+      return await figmaClient.executeCommand(MCP_COMMANDS.SET_GRID, params);
     }
   );
 
@@ -66,7 +66,7 @@ Parameters:
 Returns: { status: "success"|"error", message: string, gridId?: string }`,
     UpdateGridSchema,
     async (params) => {
-      return await figmaClient.executeCommand("updateGrid", params);
+      return await figmaClient.executeCommand(MCP_COMMANDS.SET_GRID, params);
     }
   );
 
@@ -82,7 +82,7 @@ Parameters:
 Returns: { status: "success"|"error", message: string, gridId?: string }`,
     RemoveGridSchema,
     async (params) => {
-      return await figmaClient.executeCommand("removeGrid", params);
+      return await figmaClient.executeCommand(MCP_COMMANDS.SET_GRID, params);
     }
   );
 }

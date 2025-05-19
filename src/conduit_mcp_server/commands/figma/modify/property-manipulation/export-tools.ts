@@ -44,7 +44,7 @@ Returns:
     },
     async ({ nodeId, format, scale }) => {
       const id = ensureNodeIdIsString(nodeId);
-      const result = await figmaClient.executeCommand("export_node_as_image", { nodeId: id, format, scale });
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.EXPORT_NODE_AS_IMAGE, { nodeId: id, format, scale });
       return { content: [{ type: "image", data: result.imageData, mimeType: result.mimeType }] };
     }
   );

@@ -56,7 +56,7 @@ Returns:
     },
     async ({ nodeId, effectStyleId }) => {
       const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_effect_style_id", { nodeId: id, effectStyleId });
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_EFFECT_STYLE_ID, { nodeId: id, effectStyleId });
       return { content: [{ type: "text", text: `Effect style applied to ${id}` }] };
     }
   );

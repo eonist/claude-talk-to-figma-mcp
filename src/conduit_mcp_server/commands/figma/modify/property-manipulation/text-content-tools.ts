@@ -68,7 +68,7 @@ Examples:
       } else {
         return { content: [{ type: "text", text: "Error: Provide either (nodeId + text) or texts array." }] };
       }
-      await figmaClient.executeCommand("set_text_content", updates.length === 1
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_CONTENT, updates.length === 1
         ? { nodeId: updates[0].nodeId, text: updates[0].text }
         : { texts: updates }
       );
@@ -146,7 +146,7 @@ Examples:
       const results = [];
       for (const { nodeId, paragraphSpacing } of updates) {
         try {
-          await figmaClient.executeCommand("set_paragraph_spacing", { nodeId, paragraphSpacing });
+          await figmaClient.executeCommand(MCP_COMMANDS.SET_PARAGRAPH_SPACING, { nodeId, paragraphSpacing });
           results.push({ nodeId, success: true });
         } catch (err: any) {
           results.push({ nodeId, success: false, error: err && err.message ? err.message : String(err) });
@@ -243,7 +243,7 @@ Examples:
         return { content: [{ type: "text", text: "Error: Provide either operation or operations array." }] };
       }
       // Forward to plugin/Figma client for actual line height application
-      await figmaClient.executeCommand("set_line_height", ops.length === 1
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_LINE_HEIGHT, ops.length === 1
         ? { operation: ops[0], options }
         : { operations: ops, options }
       );
@@ -338,7 +338,7 @@ Examples:
         return { content: [{ type: "text", text: "Error: Provide either operation or operations array." }] };
       }
       // Forward to plugin/Figma client for actual letter spacing application
-      await figmaClient.executeCommand("set_letter_spacing", ops.length === 1
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_LETTER_SPACING, ops.length === 1
         ? { operation: ops[0], options }
         : { operations: ops, options }
       );
@@ -431,7 +431,7 @@ Examples:
         return { content: [{ type: "text", text: "Error: Provide either operation or operations array." }] };
       }
       // Forward to plugin/Figma client for actual text case application
-      await figmaClient.executeCommand("set_text_case", ops.length === 1
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_CASE, ops.length === 1
         ? { operation: ops[0], options }
         : { operations: ops, options }
       );
@@ -526,7 +526,7 @@ Examples:
         return { content: [{ type: "text", text: "Error: Provide either operation or operations array." }] };
       }
       // Forward to plugin/Figma client for actual text decoration application
-      await figmaClient.executeCommand("set_text_decoration", ops.length === 1
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_DECORATION, ops.length === 1
         ? { operation: ops[0], options }
         : { operations: ops, options }
       );
@@ -611,7 +611,7 @@ Examples:
         return { content: [{ type: "text", text: "Error: Provide either (nodeId + styles) or entries array." }] };
       }
       // Forward to plugin/Figma client for actual style application
-      await figmaClient.executeCommand("set_text_style", updates.length === 1
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, updates.length === 1
         ? { nodeId: updates[0].nodeId, styles: updates[0].styles }
         : { entries: updates }
       );

@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z, ensureNodeIdIsString } from "../utils.js";
-import { MCP_COMMANDS } from "../../../../types/commands";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./node-ids-schema.js";
 
@@ -72,7 +72,7 @@ Examples:
         return { content: [{ type: "text", text: "You must provide 'nodeId' or 'nodeIds'." }] };
       }
       for (const id of ids) {
-        await figmaClient.executeCommand("delete_node", { nodeId: id });
+        await figmaClient.executeCommand(MCP_COMMANDS.DELETE_NODE, { nodeId: id });
       }
       return { content: [{ type: "text", text: `Deleted ${ids.length} node(s): ${ids.join(", ")}` }] };
     }

@@ -52,7 +52,7 @@ Returns:
     },
     async ({ nodeId, axis, mode }) => {
       const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_auto_layout_resizing", { nodeId: id, axis, mode });
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING, { nodeId: id, axis, mode });
       return { content: [{ type: "text", text: `Auto layout resizing set for ${id}` }] };
     }
   );

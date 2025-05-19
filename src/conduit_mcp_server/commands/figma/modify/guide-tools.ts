@@ -35,7 +35,7 @@ Returns: Array of result objects for each operation.`,
       const results = [];
       for (const op of ops) {
         try {
-          const result = await figmaClient.executeCommand("setGuide", op);
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_GUIDE, op);
           results.push({ ...result, axis: op.axis, offset: op.offset, success: true });
         } catch (err: any) {
           results.push({ axis: op.axis, offset: op.offset, success: false, error: err?.message || String(err) });
@@ -55,7 +55,7 @@ Parameters: none
 Returns: Array of guides, each with { axis, offset }`,
     GetGuideSchema,
     async () => {
-      return await figmaClient.executeCommand("getGuide", {});
+      return await figmaClient.executeCommand(MCP_COMMANDS.GET_GUIDE, {});
     }
   );
 }

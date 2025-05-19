@@ -53,7 +53,7 @@ Returns:
     },
     async ({ nodeId, radius, corners }) => {
       const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand("set_corner_radius", { nodeId: id, radius, corners });
+      await figmaClient.executeCommand(MCP_COMMANDS.SET_CORNER_RADIUS, { nodeId: id, radius, corners });
       return { content: [{ type: "text", text: `Set corner radius for ${id}` }] };
     }
   );

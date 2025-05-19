@@ -211,7 +211,7 @@ Returns:
       ...FontFamilyStyleSchema.shape,
     },
     async ({ family, style }) => {
-      await figmaClient.executeCommand("load_font_async", { family, style });
+      await figmaClient.executeCommand(MCP_COMMANDS.LOAD_FONT_ASYNC, { family, style });
       return { content: [{ type: "text", text: `Font loaded: ${family}` }] };
     }
   );

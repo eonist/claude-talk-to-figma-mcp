@@ -52,7 +52,7 @@ Returns: Array of result objects for each operation.`,
       const results = [];
       for (const op of ops) {
         try {
-          const result = await figmaClient.executeCommand("setVariant", op);
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIANT, op);
           results.push({ ...result, componentSetId: op.componentSetId, success: true });
         } catch (err: any) {
           results.push({ componentSetId: op.componentSetId, success: false, error: err?.message || String(err) });
@@ -74,7 +74,7 @@ Parameters:
 Returns: For single: { componentSetId, variants: [...] }, for batch: Array<{ componentSetId, variants: [...] }>.`,
     GetVariantSchema,
     async (params) => {
-      return await figmaClient.executeCommand("getVariant", params);
+      return await figmaClient.executeCommand(MCP_COMMANDS.GET_VARIANT, params);
     }
   );
 }

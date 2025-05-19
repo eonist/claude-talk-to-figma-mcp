@@ -51,7 +51,7 @@ Returns:
     },
     async ({ nodeIds }) => {
       const ids = nodeIds.map(ensureNodeIdIsString);
-      await figmaClient.executeCommand("flatten_selection", { nodeIds: ids });
+      await figmaClient.executeCommand(MCP_COMMANDS.FLATTEN_NODE, { nodeIds: ids });
       return { content: [{ type: "text", text: `Flattened ${ids.length} nodes` }] };
     }
   );
@@ -99,7 +99,7 @@ Returns:
     async ({ operation, selection, nodeId, nodeIds }) => {
       let ids = [];
       if (selection) {
-        const sel = await figmaClient.executeCommand("get_selection", {});
+        const sel = await figmaClient.executeCommand(MCP_COMMANDS.GET_SELECTION, {});
         ids = sel.nodeIds || [];
       } else {
         if (nodeIds && nodeIds.length) ids = nodeIds.map(ensureNodeIdIsString);
