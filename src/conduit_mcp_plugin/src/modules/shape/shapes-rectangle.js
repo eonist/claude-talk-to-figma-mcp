@@ -34,6 +34,7 @@ export async function createRectangle(params) {
   }
   const ids = [];
   for (const cfg of rectanglesArr) {
+    console.log("PLUGIN createRectangle cfg:", cfg);
     const {
       x = 0, y = 0, width = 100, height = 100,
       name = "Rectangle", parentId, fillColor, strokeColor, strokeWeight
