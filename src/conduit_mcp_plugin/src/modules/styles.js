@@ -22,7 +22,7 @@
  * @property {function} setGradient - Set a gradient (direct or style, single or batch).
  */
 import { setFillColor, setStrokeColor } from './styles/styles-color.js';
-import { setEffects, setEffectStyleId } from './styles/styles-effects.js';
+import { setEffects, setEffectStyleId, createEffectStyleVariable } from './styles/styles-effects.js';
 import { createGradientStyle, setGradient } from './styles/styles-gradient.js';
 import { getStyles } from './styles/styles-get.js';
 import { setStyle } from './styles/styles-set.js';
@@ -35,5 +35,6 @@ export const styleOperations = {
   setEffectStyleId,
   createGradientStyle,
   setGradient,
-  setStyle
+  setStyle,
+  createEffectStyleVariable
 };

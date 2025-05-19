@@ -88,3 +88,34 @@ export async function setEffectStyleId(params) {
     appliedEffects: node.effects
   };
 }
+
+/**
+ * Creates a new local effect style variable in Figma.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for the effect style.
+ * @param {string} params.name - The name of the effect style.
+ * @param {Array<Object>} params.effects - Array of effect objects (see Figma Effect type).
+ * @param {string} [params.description] - Optional description for the style.
+ * @returns {Promise<{ id: string, name: string, effects: Array<Object>, description?: string }>} The created effect style info.
+ * @throws {Error} If parameters are missing or invalid.
+ */
+export async function createEffectStyleVariable(params) {
+  const { name, effects, description } = params || {};
+  if (!name || typeof name !== "string") throw new Error("Missing or invalid name parameter");
+  if (!effects || !Array.isArray(effects) || effects.length === 0) throw new Error("Missing or invalid effects parameter");
+
+  const style = figma.createEffectStyle();
+  style.name = name;
+  style.effects = effects;
+  if (description && typeof description === "string") {
+    style.description = description;
+  }
+  return {
+    id: style.id,
+    name: style.name,
+    effects: style.effects,
+    description: style.description
+  };
+}
