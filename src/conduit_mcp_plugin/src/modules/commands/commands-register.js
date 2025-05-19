@@ -5,76 +5,106 @@ import * as documentOperations from '../document.js';
  * Mirrors the MCP_COMMANDS pattern for consistency and maintainability.
  */
 export const PLUGIN_COMMANDS = {
+  // --- Communication ---
+  // (none for plugin)
+
+  // --- Document and Information ---
   GET_DOCUMENT_INFO: "get_document_info",
   GET_SELECTION: "get_selection",
   SET_SELECTION: "set_selection",
   GET_NODE_INFO: "get_node_info",
   GET_CSS_ASYNC: "get_css_async",
 
-  INSERT_IMAGE: "insert_image",
-  INSERT_SVG_VECTOR: "insert_svg_vector",
+  // --- Pages ---
+  GET_PAGE: "getPage",
+  SET_PAGE: "setPage",
+  DUPLICATE_PAGE: "duplicate_page",
 
+  // --- Shapes ---
   CREATE_RECTANGLE: "create_rectangle",
   CREATE_FRAME: "create_frame",
+  CREATE_LINE: "create_line",
   CREATE_ELLIPSE: "create_ellipse",
   CREATE_POLYGON: "create_polygon",
   CREATE_STAR: "create_star",
-  SET_CORNER_RADIUS: "set_corner_radius",
   CREATE_VECTOR: "create_vector",
-  CREATE_LINE: "create_line",
 
+  // --- Text ---
+  CREATE_TEXT: "create_text",
+  SET_TEXT_CONTENT: "set_text_content",
+  GET_STYLED_TEXT_SEGMENTS: "get_styled_text_segments",
+  GET_TEXT_STYLE: "get_text_style",
+  SCAN_TEXT_NODES: "scan_text_nodes",
+  SET_TEXT_STYLE: "set_text_style",
+  SET_PARAGRAPH_SPACING: "set_paragraph_spacing",
+  SET_LINE_HEIGHT: "set_line_height",
+  SET_LETTER_SPACING: "set_letter_spacing",
+  SET_TEXT_CASE: "set_text_case",
+  SET_TEXT_DECORATION: "set_text_decoration",
+  LOAD_FONT_ASYNC: "load_font_async",
+  // SET_FONT_NAME: "set_font_name", // commented out
+  // SET_FONT_SIZE: "set_font_size", // commented out
+  // SET_FONT_WEIGHT: "set_font_weight", // commented out
+  // SET_BULK_FONT: "set_bulk_font", // commented out
+
+  // --- Components ---
+  GET_COMPONENTS: "get_components",
+  CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes",
+  CREATE_COMPONENT_INSTANCE: "create_component_instance",
+  CREATE_BUTTON: "create_button",
+  DETACH_INSTANCES: "detach_instances",
+
+  // --- Images and SVG ---
+  GET_IMAGE: "get_image",
+  INSERT_IMAGE: "insert_image",
+  INSERT_SVG_VECTOR: "insert_svg_vector",
+  GET_SVG_VECTOR: "get_svg_vector",
+
+  // --- Styling ---
+  GET_STYLES: "get_styles",
+  GET_NODE_STYLES: "get_node_styles",
+  SET_FILL_COLOR: "set_fill_color",
+  SET_STROKE_COLOR: "set_stroke_color",
+  SET_STYLE: "set_style",
+  CREATE_GRADIENT_STYLE: "create_gradient_style",
+  SET_GRADIENT: "set_gradient",
+
+  // --- Effects and Layout ---
+  CREATE_EFFECT_STYLE_VARIABLE: "create_effect_style_variable",
+  SET_EFFECT: "set_effect",
+  SET_EFFECT_STYLE_ID: "set_effect_style_id",
+  SET_AUTO_LAYOUT: "set_auto_layout",
+  SET_AUTO_LAYOUT_RESIZING: "set_auto_layout_resizing",
+  SET_CORNER_RADIUS: "set_corner_radius",
+
+  // --- Positioning & Sizing & Boolean Operations ---
+  MOVE_NODE: "move_node",
+  REORDER_NODES: "reorder_nodes",
+  RESIZE_NODE: "resize_node",
+  FLATTEN_NODE: "flatten_node",
+  UNION_SELECTION: "union_selection",
+  SUBTRACT_SELECTION: "subtract_selection",
+  INTERSECT_SELECTION: "intersect_selection",
+  EXCLUDE_SELECTION: "exclude_selection",
+
+  // --- Node Management ---
+  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes",
+  CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame",
+  DELETE_NODE: "delete_node",
+  CLONE_NODE: "clone_node",
+  INSERT_CHILD: "insert_child",
+  SET_NODE_LOCKED: "set_node_locked",
+  SET_NODE_VISIBLE: "set_node_visible",
+
+  // --- Grids, Guides, and Constraints ---
   SET_GRID: "setGrid",
   GET_GRID: "getGrid",
   SET_GUIDE: "setGuide",
   GET_GUIDE: "getGuide",
   SET_CONSTRAINTS: "setConstraints",
   GET_CONSTRAINTS: "getConstraints",
-  SET_PAGE: "setPage",
-  GET_PAGE: "getPage",
-  SET_VARIANT: "setVariant",
-  GET_VARIANT: "getVariant",
 
-  RESIZE_NODE: "resize_node",
-  DELETE_NODE: "delete_node",
-  MOVE_NODE: "move_node",
-  SET_NODE_LOCKED: "set_node_locked",
-  SET_NODE_VISIBLE: "set_node_visible",
-  REORDER_NODES: "reorder_nodes",
-
-  UNION_SELECTION: "union_selection",
-  SUBTRACT_SELECTION: "subtract_selection",
-  INTERSECT_SELECTION: "intersect_selection",
-  EXCLUDE_SELECTION: "exclude_selection",
-  CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame",
-
-  GET_ANNOTATION: "get_annotation",
-  SET_ANNOTATION: "set_annotation",
-
-  CREATE_TEXT: "create_text",
-  SET_TEXT_CONTENT: "set_text_content",
-  SET_TEXT_STYLE: "set_text_style",
-  SCAN_TEXT_NODES: "scan_text_nodes",
-  // SET_FONT_NAME: "set_font_name", // commented out
-  // SET_FONT_SIZE: "set_font_size", // commented out
-  // SET_FONT_WEIGHT: "set_font_weight", // commented out
-  SET_LETTER_SPACING: "set_letter_spacing",
-  SET_LINE_HEIGHT: "set_line_height",
-  SET_PARAGRAPH_SPACING: "set_paragraph_spacing",
-  SET_TEXT_CASE: "set_text_case",
-  SET_TEXT_DECORATION: "set_text_decoration",
-  GET_STYLED_TEXT_SEGMENTS: "get_styled_text_segments",
-  LOAD_FONT_ASYNC: "load_font_async",
-  // SET_BULK_FONT: "set_bulk_font", // commented out
-
-  SET_FILL_COLOR: "set_fill_color",
-  SET_STROKE_COLOR: "set_stroke_color",
-  GET_STYLES: "get_styles",
-  SET_EFFECT: "set_effect",
-  SET_EFFECT_STYLE_ID: "set_effect_style_id",
-  CREATE_EFFECT_STYLE_VARIABLE: "create_effect_style_variable",
-  SET_STYLE: "set_style",
-  EXPORT_NODE_AS_IMAGE: "export_node_as_image",
-
+  // --- Figma Variables (Design Tokens) ---
   CREATE_VARIABLE: "create_variable",
   UPDATE_VARIABLE: "update_variable",
   DELETE_VARIABLE: "delete_variable",
@@ -82,29 +112,19 @@ export const PLUGIN_COMMANDS = {
   APPLY_VARIABLE_TO_NODE: "apply_variable_to_node",
   SWITCH_VARIABLE_MODE: "switch_variable_mode",
 
-  CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes",
-  CREATE_COMPONENT_INSTANCE: "create_component_instance",
-  GET_COMPONENTS: "get_components",
-  CREATE_GRADIENT_STYLE: "create_gradient_style",
-  SET_GRADIENT: "set_gradient",
-  DETACH_INSTANCES: "detach_instances",
+  // --- Export ---
+  EXPORT_NODE_AS_IMAGE: "export_node_as_image",
+  GENERATE_HTML: "generate_html",
+
+  // --- Misc ---
   RENAME_LAYER: "rename_layer",
   AI_RENAME_LAYERS: "ai_rename_layers",
-  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes",
-  SET_AUTO_LAYOUT: "set_auto_layout",
-  SET_AUTO_LAYOUT_RESIZING: "set_auto_layout_resizing",
+  SET_VARIANT: "setVariant",
+  GET_VARIANT: "getVariant",
+  GET_ANNOTATION: "get_annotation",
+  SET_ANNOTATION: "set_annotation",
   SUBSCRIBE_EVENT: "subscribe_event",
-  UNSUBSCRIBE_EVENT: "unsubscribe_event",
-  INSERT_CHILD: "insert_child",
-  CLONE_NODE: "clone_node",
-  GET_NODE_STYLES: "get_node_styles",
-  GET_SVG_VECTOR: "get_svg_vector",
-  GET_IMAGE: "get_image",
-  GET_TEXT_STYLE: "get_text_style",
-  FLATTEN_NODE: "flatten_node",
-  GENERATE_HTML: "generate_html",
-  CREATE_BUTTON: "create_button",
-  DUPLICATE_PAGE: "duplicate_page"
+  UNSUBSCRIBE_EVENT: "unsubscribe_event"
 };
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
