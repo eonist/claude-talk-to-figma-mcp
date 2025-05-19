@@ -92,7 +92,6 @@ export const PLUGIN_COMMANDS = {
   DELETE_NODE: "delete_node",
   CLONE_NODE: "clone_node",
   INSERT_CHILD: "insert_child",
-  INSERT_CHILDREN: "insert_children",
   SET_NODE_LOCKED: "set_node_locked",
   SET_NODE_VISIBLE: "set_node_visible",
 

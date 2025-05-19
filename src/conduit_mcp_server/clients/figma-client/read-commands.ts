@@ -29,8 +29,4 @@ export const readCommands = {
     return this.executeCommand(MCP_COMMANDS.GET_PAGES);
   },
 
-  async setCurrentPage(this: FigmaClient, pageId: string): Promise<{ id: string, name: string, childCount: number }> {
-    const id = ensureNodeIdIsString(pageId);
-    return this.executeCommand(MCP_COMMANDS.SET_CURRENT_PAGE, { pageId: id });
-  }
 };
