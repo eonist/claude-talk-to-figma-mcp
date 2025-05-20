@@ -1,7 +1,7 @@
 /**
  * Registers channel management commands on the MCP server to manage communication channels with Figma.
  *
- * This module provides the 'join_channel' tool to establish a dedicated communication
+ * This module provides the 'join' tool to establish a dedicated communication
  * channel between the MCP server and Figma plugin. Subsequent commands require
  * this channel to be joined first.
  *
@@ -10,7 +10,7 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { FigmaClient } from "../clients/figma-client.js";
+import { FigmaClient } from "../clients/figma-client/index.js";
 import { logger } from "../utils/logger.js";
 import { joinChannel, connectToFigma, isConnectedToFigma } from "../server/websocket.js";
 import { MCP_COMMANDS } from "../types/commands.js";
@@ -18,7 +18,7 @@ import { MCP_COMMANDS } from "../types/commands.js";
 /**
  * Registers channel-related commands for the MCP server.
  *
- * This function adds a tool named "join_channel" to the MCP server, which allows joining a specific
+ * This function adds a tool named "join" to the MCP server, which allows joining a specific
  * communication channel to interact with Figma. It handles connection management and channel joining logic.
  *
  * @param {McpServer} server - The MCP server instance to register the tool on.
@@ -66,7 +66,7 @@ Returns:
               },
             ],
             followUp: {
-              tool: "join_channel",
+              tool: MCP_COMMANDS.JOIN,
               description: "Join the specified channel",
             },
           };

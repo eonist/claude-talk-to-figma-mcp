@@ -2,9 +2,9 @@
  * Figma Variable (Design Token) command group for FigmaClient.
  * Provides methods for create, update, delete, query, apply, and mode switching.
  */
-import { MCP_COMMANDS } from "../types/commands.js";
-import type { FigmaClient } from "./figma-client.ts";
-import type { SetVariableParams } from "../types/command-params.ts";
+import { MCP_COMMANDS } from "../../types/commands.js";
+import type { FigmaClient } from "./index.js";
+import type { SetVariableParams } from "../../types/command-params.js";
 
 /**
  * Set (create, update, or delete) one or more Figma Variables.
@@ -42,3 +42,10 @@ export async function applyVariableToNode(client: FigmaClient, params: any) {
 export async function switchVariableMode(client: FigmaClient, params: any) {
   return client.executeCommand(MCP_COMMANDS.SWITCH_VARIABLE_MODE, params);
 }
+
+export const variableCommands = {
+  setVariable,
+  getVariables,
+  applyVariableToNode,
+  switchVariableMode
+};

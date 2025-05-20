@@ -1,23 +1,12 @@
 /**
  * Miscellaneous Figma commands for FigmaClient.
  */
-import { MCP_COMMANDS } from "../types/commands.js";
+import { MCP_COMMANDS } from "../../types/commands.js";
 
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaClient } from "./index.js";
 
 export const miscCommands = {
-  /**
-   * Gets the current channel.
-   * @returns {string | null}
-   */
-  getCurrentChannel(this: FigmaClient): string | null {
-    // getCurrentChannelWs is imported from websocket.js in read-commands.ts
-    // We'll need to import it here as well.
-    // @ts-ignore
-    return (typeof getCurrentChannelWs === "function" ? getCurrentChannelWs() : null);
-  },
-
   /**
    * Gets document info.
    * @returns {Promise<DocumentInfo>}

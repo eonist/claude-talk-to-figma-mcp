@@ -1,6 +1,5 @@
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
-import type { FigmaCommand } from "./types.js";
-import { MCP_COMMANDS } from "../types/commands.js";
+import { MCP_COMMANDS } from "../../types/commands.js";
 import type { FigmaClient } from "./index.js";
 
 /**
