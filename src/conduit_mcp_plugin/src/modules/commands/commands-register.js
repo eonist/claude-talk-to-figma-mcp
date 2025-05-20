@@ -99,9 +99,7 @@ export const PLUGIN_COMMANDS = {
   GET_CONSTRAINTS: "get_constraints",
 
   // --- Figma Variables (Design Tokens) ---
-  CREATE_VARIABLE: "create_variable",
-  UPDATE_VARIABLE: "update_variable",
-  DELETE_VARIABLE: "delete_variable",
+  SET_VARIABLE: "set_variable",
   GET_VARIABLES: "get_variables",
   APPLY_VARIABLE_TO_NODE: "apply_variable_to_node",
   SWITCH_VARIABLE_MODE: "switch_variable_mode",
@@ -259,9 +257,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.GET_CONSTRAINTS, getConstraints);
 
   // --- Figma Variables (Design Tokens) ---
-  registerCommand(PLUGIN_COMMANDS.CREATE_VARIABLE, variableOperations.createVariable);
-  registerCommand(PLUGIN_COMMANDS.UPDATE_VARIABLE, variableOperations.updateVariable);
-  registerCommand(PLUGIN_COMMANDS.DELETE_VARIABLE, variableOperations.deleteVariable);
+  registerCommand(PLUGIN_COMMANDS.SET_VARIABLE, variableOperations.setVariable);
   registerCommand(PLUGIN_COMMANDS.GET_VARIABLES, variableOperations.getVariables);
   registerCommand(PLUGIN_COMMANDS.APPLY_VARIABLE_TO_NODE, variableOperations.applyVariableToNode);
   registerCommand(PLUGIN_COMMANDS.SWITCH_VARIABLE_MODE, variableOperations.switchVariableMode);

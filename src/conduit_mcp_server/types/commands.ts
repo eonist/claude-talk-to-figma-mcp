@@ -198,9 +198,7 @@ export const MCP_COMMANDS = {
   GET_CONSTRAINTS: "get_constraints", // Get constraints for one or more nodes
 
   // --- Figma Variables (Design Tokens) ---
-  CREATE_VARIABLE: "create_variable", // Create one or more Figma Variables (design tokens)
-  UPDATE_VARIABLE: "update_variable", // Update one or more Figma Variables
-  DELETE_VARIABLE: "delete_variable", // Delete one or more Figma Variables
+  SET_VARIABLE: "set_variable", // Create, update, or delete one or more Figma Variables (design tokens)
   GET_VARIABLES: "get_variables", // Query Figma Variables by type, collection, mode, or IDs
   APPLY_VARIABLE_TO_NODE: "apply_variable_to_node", // Apply a Figma Variable to a node property
   SWITCH_VARIABLE_MODE: "switch_variable_mode", // Switch the mode for a Figma Variable collection

@@ -229,6 +229,27 @@ export interface SetTextCaseParams {
   };
 }
 
+/**
+ * Parameters for set_variable (create, update, delete Figma Variables).
+ * - entry: (object, optional) Single variable operation.
+ * - entries: (array, optional) Batch of variable operations.
+ * Each entry can be create (no id), update (id present), or delete (id + delete: true).
+ */
+export interface VariableEntry {
+  id?: string; // If present, update or delete; if absent, create
+  name?: string; // Required for create/update
+  type?: string; // e.g., "FLOAT", "COLOR", etc.
+  value?: any;   // The value to set (type depends on variable type)
+  collection?: string; // Collection ID or name
+  mode?: string; // Optional: for multi-mode variables
+  delete?: boolean; // If true, delete the variable with this id
+  // ...other fields as needed
+}
+export interface SetVariableParams {
+  entry?: VariableEntry;
+  entries?: VariableEntry[];
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
@@ -239,5 +260,6 @@ export interface CommandParamsMap {
   set_line_height: SetLineHeightParams;
   set_letter_spacing: SetLetterSpacingParams;
   set_text_case: SetTextCaseParams;
+  set_variable: SetVariableParams;
   // ...other command mappings
 }

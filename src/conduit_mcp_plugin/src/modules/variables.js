@@ -3,38 +3,48 @@
  * Implements create, update, delete, query, apply, and mode switching.
  */
 
-async function createVariable({ variables }) {
-  // Support both single and batch
-  const variableList = Array.isArray(variables) ? variables : [variables];
+/**
+ * Unified setVariable: create, update, or delete Figma Variables.
+ * Accepts { entry } or { entries } (array of VariableEntry).
+ * - Create: no id, no delete
+ * - Update: id present, no delete
+ * - Delete: id present, delete: true
+ */
+async function setVariable({ entry, entries }) {
+  const ops = entries || (entry ? [entry] : []);
   const created = [];
-  for (const v of variableList) {
-    // Find or create collection
-    let collection = figma.variables.getLocalVariableCollections().find(c => c.name === v.collection);
-    if (!collection && v.collection) {
-      collection = figma.variables.createVariableCollection(v.collection);
-    }
-    if (!collection) {
-      throw new Error("Collection must be specified or exist");
-    }
-    // Create variable
-    const variable = figma.variables.createVariable(v.name, collection, v.type);
-    // Set value for default mode
-    const modeId = collection.modes[0].modeId;
-    variable.setValueForMode(modeId, v.value);
-    created.push({ id: variable.id, name: variable.name });
-  }
-  return created;
-}
-
-async function updateVariable({ variables }) {
-  const variableList = Array.isArray(variables) ? variables : [variables];
   const updated = [];
-  for (const v of variableList) {
+  const deleted = [];
+
+  for (const v of ops) {
+    if (v.delete && v.id) {
+      // Delete variable
+      const variable = figma.variables.getVariableById(v.id);
+      if (variable) {
+        variable.remove();
+        deleted.push(v.id);
+      }
+      continue;
+    }
+    if (!v.id) {
+      // Create variable
+      let collection = figma.variables.getLocalVariableCollections().find(c => c.name === v.collection);
+      if (!collection && v.collection) {
+        collection = figma.variables.createVariableCollection(v.collection);
+      }
+      if (!collection) {
+        throw new Error("Collection must be specified or exist");
+      }
+      const variable = figma.variables.createVariable(v.name, collection, v.type);
+      const modeId = collection.modes[0].modeId;
+      variable.setValueForMode(modeId, v.value);
+      created.push({ id: variable.id, name: variable.name });
+      continue;
+    }
+    // Update variable
     const variable = figma.variables.getVariableById(v.id);
     if (!variable) continue;
-    // Update name
     if (v.name) variable.name = v.name;
-    // Update value for all modes (or specific mode if provided)
     if (v.value !== undefined) {
       if (v.mode) {
         const collection = figma.variables.getVariableCollectionById(variable.variableCollectionId);
@@ -50,20 +60,8 @@ async function updateVariable({ variables }) {
     }
     updated.push({ id: variable.id, name: variable.name });
   }
-  return { updated };
-}
 
-async function deleteVariable({ ids }) {
-  const idList = Array.isArray(ids) ? ids : [ids];
-  const deleted = [];
-  for (const id of idList) {
-    const variable = figma.variables.getVariableById(id);
-    if (variable) {
-      variable.remove();
-      deleted.push(id);
-    }
-  }
-  return { deleted };
+  return { created, updated, deleted };
 }
 
 async function getVariables({ type, collection, mode, ids }) {
@@ -106,9 +104,7 @@ async function switchVariableMode({ collection, mode }) {
 }
 
 const variableOperations = {
-  createVariable,
-  updateVariable,
-  deleteVariable,
+  setVariable,
   getVariables,
   applyVariableToNode,
   switchVariableMode
