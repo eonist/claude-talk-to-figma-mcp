@@ -115,16 +115,25 @@ Returns:
       const results = await processBatch(
         linesArr,
         async cfg => {
-          const node = await figmaClient.createLine(cfg);
-          return node.id;
+          const result = await figmaClient.createLine(cfg);
+          // Support both { id } and { ids: [...] } return shapes
+          if (result && typeof result.id === "string") {
+            return result.id;
+          } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+            return result.ids[0];
+          } else {
+            throw new Error("Failed to create line: missing node ID from figmaClient.createLine");
+          }
         }
       );
       const nodeIds = results.map(r => r.result).filter(Boolean);
-      if (nodeIds.length === 1) {
-        return { content: [{ type: "text", text: `Created line ${nodeIds[0]}` }] };
-      } else {
-        return { content: [{ type: "text", text: `Created lines: ${nodeIds.join(", ")}` }] };
-      }
+      return {
+        success: true,
+        message: nodeIds.length === 1
+          ? `Line created successfully.`
+          : `Lines created successfully.`,
+        nodeIds
+      };
     }
   );
 }

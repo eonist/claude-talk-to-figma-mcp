@@ -115,19 +115,34 @@ Returns:
           framesArr,
           async cfg => {
             const params = { ...cfg, commandId: uuidv4() };
-            const node = await figmaClient.createFrame(params);
-            return node.id;
+            const result = await figmaClient.createFrame(params);
+            // Support both { id } and { ids: [...] } return shapes
+            if (result && typeof result.id === "string") {
+              return result.id;
+            } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+              return result.ids[0];
+            } else {
+              throw new Error("Failed to create frame: missing node ID from figmaClient.createFrame");
+            }
           }
         );
         const nodeIds = results.map(r => r.result).filter(Boolean);
-        if (nodeIds.length === 1) {
-          return { content: [{ type: "text", text: `Created frame ${nodeIds[0]}` }] };
-        } else {
-          return { content: [{ type: "text", text: `Created frames: ${nodeIds.join(", ")}` }] };
-        }
+        return {
+          success: true,
+          message: nodeIds.length === 1
+            ? `Frame created successfully.`
+            : `Frames created successfully.`,
+          nodeIds
+        };
       } catch (err) {
-        // Handle errors and return a formatted error response.
-        return handleToolError(err, "shape-creation-tools", "create_frame") as any;
+        // Return a structured error response.
+        return {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+          }
+        };
       }
     }
   );

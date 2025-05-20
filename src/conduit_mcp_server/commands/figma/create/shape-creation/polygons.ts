@@ -113,16 +113,25 @@ Returns:
       const results = await processBatch(
         polygonsArr,
         async cfg => {
-          const node = await figmaClient.createPolygon(cfg);
-          return node.id;
+          const result = await figmaClient.createPolygon(cfg);
+          // Support both { id } and { ids: [...] } return shapes
+          if (result && typeof result.id === "string") {
+            return result.id;
+          } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+            return result.ids[0];
+          } else {
+            throw new Error("Failed to create polygon: missing node ID from figmaClient.createPolygon");
+          }
         }
       );
       const nodeIds = results.map(r => r.result).filter(Boolean);
-      if (nodeIds.length === 1) {
-        return { content: [{ type: "text", text: `Created polygon ${nodeIds[0]}` }] };
-      } else {
-        return { content: [{ type: "text", text: `Created polygons: ${nodeIds.join(", ")}` }] };
-      }
+      return {
+        success: true,
+        message: nodeIds.length === 1
+          ? `Polygon created successfully.`
+          : `Polygons created successfully.`,
+        nodeIds
+      };
     }
   );
 }
