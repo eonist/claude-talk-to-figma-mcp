@@ -5,9 +5,9 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
- * Registers the insert_child command on the MCP server to enable inserting a child node into a parent node in Figma.
+ * Registers the set_node command on the MCP server to enable setting or inserting a child node into a parent node in Figma.
  *
- * This function integrates the MCP server with the Figma client by adding a tool named "insert_child".
+ * This function integrates the MCP server with the Figma client by adding a tool named "set_node".
  * The tool accepts parameters for the parent node ID, child node ID, and an optional insertion index.
  * It executes the corresponding Figma command to insert the child node at the specified position within the parent.
  *
@@ -21,8 +21,8 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
  */
 export function registerInsertChildTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    MCP_COMMANDS.INSERT_CHILD,
-    `Inserts one or more child nodes into parent nodes at optional index positions in Figma.
+    MCP_COMMANDS.SET_NODE,
+    `Sets or inserts one or more child nodes into parent nodes at optional index positions in Figma.
 
 Parameters:
   - For single insert: { parentId, childId, index? }
@@ -113,7 +113,7 @@ Returns:
               const cmdParams: any = { parentId: parent, childId: child };
               if (op.index !== undefined) cmdParams.index = op.index;
               if (op.maintainPosition !== undefined) cmdParams.maintainPosition = op.maintainPosition;
-              const result = await figmaClient.executeCommand(MCP_COMMANDS.INSERT_CHILD, cmdParams);
+              const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, cmdParams);
               return {
                 type: "text",
                 text: `Inserted child node ${child} into parent ${parent} at index ${result.index ?? "end"} (success: ${result.success ?? true})`
@@ -140,7 +140,7 @@ Returns:
       const child = ensureNodeIdIsString(params.childId);
       const cmdParams: any = { parentId: parent, childId: child };
       if (params.index !== undefined) cmdParams.index = params.index;
-      const result = await figmaClient.executeCommand(MCP_COMMANDS.INSERT_CHILD, cmdParams);
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, cmdParams);
       return {
         content: [{
           type: "text",

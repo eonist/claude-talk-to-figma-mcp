@@ -185,7 +185,7 @@ export const MCP_COMMANDS = {
   CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame", // Convert a rectangle to a frame
   DELETE_NODE: "delete_node", // Delete one or more nodes
   CLONE_NODE: "clone_node", // Clone a node (single or batch)
-  INSERT_CHILD: "insert_child", // Insert a child node into a parent (single)
+  SET_NODE: "set_node", // Set or insert a child node into a parent (single)
   SET_NODE_LOCKED: "set_node_locked", // Lock or unlock nodes
   SET_NODE_VISIBLE: "set_node_visible", // Show or hide nodes
 

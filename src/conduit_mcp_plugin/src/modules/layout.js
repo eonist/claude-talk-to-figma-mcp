@@ -79,13 +79,13 @@ export const layoutOperations = {
   },
 
   /**
-   * Unified handler for INSERT_CHILD plugin command.
+   * Unified handler for SET_NODE plugin command.
    * Accepts both { child }, { children }, or flat object.
-   * @function insertChildUnified
+   * @function setNodeUnified
    * @param {object} params
    * @returns {Promise<any>}
    */
-  async insertChildUnified(params) {
+  async setNodeUnified(params) {
     if (params && (params.child || params.children)) {
       return insertChildren(params);
     } else {
