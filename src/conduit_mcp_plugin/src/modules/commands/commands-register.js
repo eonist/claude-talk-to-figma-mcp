@@ -69,7 +69,7 @@ export const PLUGIN_COMMANDS = {
 
   // --- Positioning & Sizing & Boolean Operations ---
   MOVE_NODE: "move_node",
-  REORDER_NODES: "reorder_nodes",
+  REORDER_NODE: "reorder_node",
   RESIZE_NODE: "resize_node",
   FLATTEN_NODE: "flatten_node",
   // we call these from boolean in server, we will fix that later
@@ -219,7 +219,7 @@ export function initializeCommands() {
 
   // --- Positioning & Sizing & Boolean Operations ---
   registerCommand(PLUGIN_COMMANDS.MOVE_NODE, shapeOperations.moveNode);
-  registerCommand(PLUGIN_COMMANDS.REORDER_NODES, reorderNodes);
+  registerCommand(PLUGIN_COMMANDS.REORDER_NODE, reorderNodes);
   registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, shapeOperations.resizeNodeUnified);
   registerCommand(PLUGIN_COMMANDS.FLATTEN_NODE, layoutOperations.flatten_nodes);
   registerCommand(PLUGIN_COMMANDS.BOOLEAN, shapeOperations.boolean);

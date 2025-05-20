@@ -6,7 +6,7 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
 /**
  * Registers reorder layer commands on the MCP server.
  *
- * This function adds the unified "reorder_nodes" tool to the MCP server,
+ * This function adds the unified "reorder_node" tool to the MCP server,
  * enabling reordering of single or multiple nodes in Figma. It validates inputs,
  * executes corresponding Figma commands, and returns informative results.
  *
@@ -16,9 +16,9 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
  * @returns {void} This function does not return a value but registers the tools asynchronously.
  */
 export function registerReorderLayerTools(server: McpServer, figmaClient: FigmaClient) {
-  // Unified reorder_nodes tool (single or batch)
+  // Unified reorder_node tool (single or batch)
   server.tool(
-    MCP_COMMANDS.REORDER_NODES,
+    MCP_COMMANDS.REORDER_NODE,
     `Reorders one or more nodes in their parents' children arrays. Accepts either a single reorder config (via 'reorder') or an array of configs (via 'reorders'). Optionally, you can provide options such as skip_errors.
 
 Input:
@@ -76,7 +76,7 @@ Returns:
         return { content: [{ type: "text", text: "Error: You must provide either 'reorder' or 'reorders' as input." }] };
       }
       try {
-        const result = await figmaClient.executeCommand(MCP_COMMANDS.REORDER_NODES, {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.REORDER_NODE, {
           reorders: reordersArr,
           options: args.options
         });
