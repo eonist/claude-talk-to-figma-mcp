@@ -30,7 +30,7 @@ export const PLUGIN_COMMANDS = {
   CREATE_VECTOR: "create_vector",
 
   // --- Text ---
-  CREATE_TEXT: "create_text",
+  SET_TEXT: "set_text",
   SET_TEXT_CONTENT: "set_text_content",
   GET_STYLED_TEXT_SEGMENTS: "get_styled_text_segments",
   GET_TEXT_STYLE: "get_text_style",
@@ -185,7 +185,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, shapeOperations.createVectorUnified);
 
   // --- Text ---
-  registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, textOperations.createTextUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_TEXT, textOperations.createTextUnified);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
   registerCommand(PLUGIN_COMMANDS.GET_STYLED_TEXT_SEGMENTS, textOperations.getStyledTextSegments);
   registerCommand(PLUGIN_COMMANDS.GET_TEXT_STYLE, getTextStyle);

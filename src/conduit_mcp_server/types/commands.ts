@@ -130,7 +130,7 @@ export const MCP_COMMANDS = {
   CREATE_VECTOR: "create_vector", // Create one or more vectors
 
   // --- Text ---
-  CREATE_TEXT: "create_text", // Create one or more text elements
+  SET_TEXT: "set_text", // Set or create one or more text elements
   SET_TEXT_CONTENT: "set_text_content", // Set text content of an existing node
   GET_STYLED_TEXT_SEGMENTS: "get_styled_text_segments", // Get text segments with specific styling
   GET_TEXT_STYLE: "get_text_style", // Get text style properties for one or more nodes (single or batch)

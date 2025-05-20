@@ -41,7 +41,7 @@ import { scanTextNodes, getStyledTextSegments } from './text/text-scan.js';
  * const updateResult = await setTextContent({ nodeId: '123', text: 'Goodbye' });
  */
 /**
- * Unified handler for CREATE_TEXT plugin command.
+ * Unified handler for SET_TEXT plugin command.
  * Handles batch, bounded, and single text creation.
  * @async
  * @function createTextUnified
