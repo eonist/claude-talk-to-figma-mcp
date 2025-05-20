@@ -98,7 +98,8 @@ export const textCommands = {
     }
   ): Promise<any> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_LETTER_SPACING, {
+    // SET_LETTER_SPACING is deprecated; use SET_TEXT_STYLE
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, {
       nodeId: nodeIdString,
       letterSpacing: params.letterSpacing,
       unit: params.unit || "PIXELS"
@@ -120,7 +121,8 @@ export const textCommands = {
     }
   ): Promise<any> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_LINE_HEIGHT, {
+    // SET_LINE_HEIGHT is deprecated; use SET_TEXT_STYLE
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, {
       nodeId: nodeIdString,
       lineHeight: params.lineHeight,
       unit: params.unit || "PIXELS"
@@ -141,7 +143,8 @@ export const textCommands = {
     }
   ): Promise<any> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_PARAGRAPH_SPACING, {
+    // SET_PARAGRAPH_SPACING is deprecated; use SET_TEXT_STYLE
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, {
       nodeId: nodeIdString,
       paragraphSpacing: params.paragraphSpacing
     });
@@ -161,7 +164,8 @@ export const textCommands = {
     }
   ): Promise<any> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_TEXT_CASE, {
+    // SET_TEXT_CASE is deprecated; use SET_TEXT_STYLE
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, {
       nodeId: nodeIdString,
       textCase: params.textCase
     });
@@ -181,7 +185,8 @@ export const textCommands = {
     }
   ): Promise<any> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_TEXT_DECORATION, {
+    // SET_TEXT_DECORATION is deprecated; use SET_TEXT_STYLE
+    return this.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, {
       nodeId: nodeIdString,
       textDecoration: params.textDecoration
     });

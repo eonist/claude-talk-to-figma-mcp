@@ -38,7 +38,7 @@ export function registerVariableTools(server: McpServer, figmaClient: FigmaClien
   });
 
   server.tool(
-    MCP_COMMANDS.CREATE_VARIABLE,
+    MCP_COMMANDS.SET_VARIABLE,
     `Creates one or more Figma Variables (design tokens).
 
 Params:
@@ -71,7 +71,7 @@ Returns:
     async ({ variables }) => {
       const variableList = Array.isArray(variables) ? variables : [variables];
       // Type validation for value can be added here
-      const results = await figmaClient.createVariable({ variables: variableList });
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { variables: variableList });
       return {
         content: [
           {
@@ -95,7 +95,7 @@ Returns:
   });
 
   server.tool(
-    MCP_COMMANDS.UPDATE_VARIABLE,
+    MCP_COMMANDS.SET_VARIABLE,
     `Updates one or more Figma Variables.
 
 Params:
@@ -126,7 +126,7 @@ Returns:
     },
     async ({ variables }) => {
       const variableList = Array.isArray(variables) ? variables : [variables];
-      const results = await figmaClient.updateVariable({ variables: variableList });
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { variables: variableList });
       return {
         content: [
           {
@@ -150,7 +150,7 @@ Returns:
   });
 
   server.tool(
-    MCP_COMMANDS.DELETE_VARIABLE,
+    MCP_COMMANDS.SET_VARIABLE,
     `Deletes one or more Figma Variables.
 
 Params:
@@ -177,7 +177,7 @@ Returns:
     },
     async ({ ids }) => {
       const idList = Array.isArray(ids) ? ids : [ids];
-      const results = await figmaClient.deleteVariable({ ids: idList });
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { ids: idList });
       return {
         content: [
           {
@@ -229,7 +229,7 @@ Returns:
       extraInfo: "Queries Figma Variables by type, collection, mode, or ids."
     },
     async (params) => {
-      const results = await figmaClient.getVariables(params);
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.GET_VARIABLES, params);
       return {
         content: [
           {
@@ -277,7 +277,7 @@ Returns:
       extraInfo: "Applies a Figma Variable to a node property."
     },
     async ({ nodeId, variableId, property }) => {
-      const result = await figmaClient.applyVariableToNode({ nodeId, variableId, property });
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.APPLY_VARIABLE_TO_NODE, { nodeId, variableId, property });
       return {
         content: [
           {
@@ -323,7 +323,7 @@ Returns:
       extraInfo: "Switches the mode for a Figma Variable collection."
     },
     async ({ collection, mode }) => {
-      const result = await figmaClient.switchVariableMode({ collection, mode });
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.SWITCH_VARIABLE_MODE, { collection, mode });
       return {
         content: [
           {

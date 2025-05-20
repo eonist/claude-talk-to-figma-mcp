@@ -7,7 +7,15 @@ import type { FigmaCommand } from "./types.js";
 /**
  * Core FigmaClient class with basic connectivity and command dispatch.
  */
-export class FigmaClient {
+export interface IFigmaClientCommands {
+  groupOrUngroupNodes(params: { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }): Promise<any>;
+  // Add other mixed-in methods here as needed for type safety
+}
+
+export class FigmaClient implements IFigmaClientCommands {
+  // Mixed-in method signature for type safety
+  groupOrUngroupNodes: (params: { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }) => Promise<any>;
+
   isConnected(): boolean {
     return isConnectedToFigma();
   }

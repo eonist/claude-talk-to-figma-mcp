@@ -20,7 +20,7 @@ import { MCP_COMMANDS } from "../types/commands.js";
  */
 export function registerHtmlCommands(server: McpServer, figmaClient: FigmaClient): void {
   server.tool(
-    MCP_COMMANDS.GENERATE_HTML,
+    MCP_COMMANDS.GET_HTML,
     `Generates HTML structure from Figma nodes.
 
 Returns:
@@ -51,7 +51,7 @@ Returns:
     },
     async ({ nodeId, format, cssMode }) => {
       try {
-        const result = await figmaClient.executeCommand(MCP_COMMANDS.GENERATE_HTML, {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_HTML, {
           nodeId,
           format,
           cssMode,

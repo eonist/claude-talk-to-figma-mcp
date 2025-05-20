@@ -23,7 +23,7 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
 export function registerGroupTools(server: McpServer, figmaClient: FigmaClient) {
   // Group or Ungroup Nodes (merged command)
   server.tool(
-    MCP_COMMANDS.GROUP_OR_UNGROUP_NODES,
+    MCP_COMMANDS.GROUP_NODE,
     `Groups or ungroups nodes in Figma, depending on the 'group' flag.
 
 Parameters:

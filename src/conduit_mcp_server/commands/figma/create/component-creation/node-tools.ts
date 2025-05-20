@@ -22,7 +22,7 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
  */
 export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODES,
+    MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODE,
     `Converts one or more existing nodes into components in Figma.
 
 Parameters:
@@ -84,7 +84,7 @@ Returns:
           const id = ensureNodeIdIsString(node.nodeId);
           // Directly call the Figma client logic for component creation, or update to use the new batch command if available.
           // If the Figma client only supports single-node creation, keep this as a local helper.
-          const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODES, {
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODE, {
             entry: { nodeId: id, maintain_position: node.maintain_position }
           });
           results.push({ nodeId: id, componentId: result.componentId || (Array.isArray(result) && result[0]?.componentId) });

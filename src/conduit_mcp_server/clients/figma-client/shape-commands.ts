@@ -239,7 +239,7 @@ export const shapeCommands = {
     }
   ): Promise<BaseFigmaNode> {
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand(MCP_COMMANDS.INSERT_SVG_VECTOR, {
+    return this.executeCommand(MCP_COMMANDS.SET_SVG_VECTOR, {
       svg: params.svg,
       x: params.x || 0,
       y: params.y || 0,

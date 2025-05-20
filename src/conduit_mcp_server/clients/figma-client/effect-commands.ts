@@ -49,7 +49,8 @@ export const effectCommands = {
     this: FigmaClient,
     params: { nodeId: string, effectStyleId: string }
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.SET_EFFECT_STYLE_ID, params);
+    // SET_EFFECT_STYLE_ID is deprecated; use CREATE_EFFECT_STYLE_VARIABLE
+    return this.executeCommand(MCP_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE, params);
   },
 
   /**
@@ -61,7 +62,7 @@ export const effectCommands = {
     this: FigmaClient,
     params: any = {}
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.GET_STYLES, params);
+    return this.executeCommand(MCP_COMMANDS.GET_STYLE, params);
   },
 
   /**

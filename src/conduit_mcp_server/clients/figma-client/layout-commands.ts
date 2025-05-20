@@ -87,7 +87,7 @@ export const layoutCommands = {
     }
   ): Promise<any> {
     const ids = params.nodeIds.map(ensureNodeIdIsString);
-    return this.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, {
+    return this.executeCommand(MCP_COMMANDS.GROUP_NODE, {
       ...params,
       nodeIds: ids
     });
@@ -107,7 +107,7 @@ export const layoutCommands = {
     }
   ): Promise<any> {
     const nodeId = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, {
+    return this.executeCommand(MCP_COMMANDS.GROUP_NODE, {
       nodeId
     });
   },

@@ -31,7 +31,8 @@ export const nodeCommands = {
     this: FigmaClient,
     params: { nodeId: string, visible: boolean }
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.SET_NODE_VISIBLE, params);
+    // SET_NODE_VISIBLE is deprecated; use SET_NODE_PROP with { visible }
+    return this.executeCommand(MCP_COMMANDS.SET_NODE_PROP, params);
   },
 
   /**
@@ -43,7 +44,8 @@ export const nodeCommands = {
     this: FigmaClient,
     params: { nodeId: string, locked: boolean }
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.SET_NODE_LOCKED, params);
+    // SET_NODE_LOCKED is deprecated; use SET_NODE_PROP with { locked }
+    return this.executeCommand(MCP_COMMANDS.SET_NODE_PROP, params);
   },
 
   /**
@@ -55,7 +57,7 @@ export const nodeCommands = {
     this: FigmaClient,
     params: { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, params);
+    return this.executeCommand(MCP_COMMANDS.GROUP_NODE, params);
   },
 
   /**
@@ -142,7 +144,8 @@ export const nodeCommands = {
     }
     // Pass through other params as needed (positions, offsetX, etc.)
     const { x, y, positions, offsetX, offsetY, parentId } = params;
-    return this.executeCommand(MCP_COMMANDS.CLONE_NODE, {
+    // CLONE_NODE is deprecated; use DUPLICATE_NODE
+    return this.executeCommand(MCP_COMMANDS.DUPLICATE_NODE, {
       nodeIds,
       x,
       y,
