@@ -79,10 +79,6 @@ export const styleCommands = {
     return this.executeCommand(MCP_COMMANDS.SET_STYLE, params);
   },
 
-
-
-
-
   /**
    * Gets all styles in Figma.
    * @param params - (optional) parameters
