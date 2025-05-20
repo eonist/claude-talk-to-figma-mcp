@@ -4,6 +4,11 @@ import type { FigmaClient } from "./index.js";
 import { MCP_COMMANDS } from "../types/commands.js";
 
 export const writeCommands = {
+  /**
+   * Creates a rectangle node in Figma.
+   * @param params - Rectangle properties (position, size, color, etc.)
+   * @returns The created rectangle node.
+   */
   async createRectangle(
     this: FigmaClient,
     params: {
@@ -27,7 +32,11 @@ export const writeCommands = {
     });
   },
 
-  // Insert Image Tool
+  /**
+   * Inserts an image node into Figma from a URL or data.
+   * @param params - Image properties (URL, position, size, etc.)
+   * @returns The created image node.
+   */
   async insertImage(
     this: FigmaClient,
     params: {
@@ -52,6 +61,12 @@ export const writeCommands = {
     });
   },
 
+  /**
+   * Creates one or more frame nodes in Figma.
+   * Accepts either a single frame config or an array for batch creation.
+   * @param params - Frame properties or array of frame configs.
+   * @returns The created frame node(s).
+   */
   async createFrame(
     this: FigmaClient,
     params:
@@ -101,6 +116,11 @@ export const writeCommands = {
   },
 
 
+  /**
+   * Creates an ellipse node in Figma.
+   * @param params - Ellipse properties (position, size, color, etc.)
+   * @returns The created ellipse node.
+   */
   async createEllipse(
     this: FigmaClient,
     params: {
@@ -123,6 +143,11 @@ export const writeCommands = {
     });
   },
 
+  /**
+   * Creates a line node in Figma.
+   * @param params - Line properties (start/end points, color, etc.)
+   * @returns The created line node.
+   */
   async createLine(
     this: FigmaClient,
     params: {
@@ -147,6 +172,11 @@ export const writeCommands = {
     });
   },
 
+  /**
+   * Creates a vector node in Figma.
+   * @param params - Vector properties (position, size, paths, etc.)
+   * @returns The created vector node.
+   */
   async createVector(
     this: FigmaClient,
     params: {
@@ -170,6 +200,11 @@ export const writeCommands = {
     });
   },
 
+  /**
+   * Inserts an SVG vector node into Figma.
+   * @param params - SVG markup and properties (position, name, etc.)
+   * @returns The created SVG vector node.
+   */
   async insertSvgVector(
     this: FigmaClient,
     params: {
@@ -194,6 +229,8 @@ export const writeCommands = {
   /**
    * Moves one or more nodes to a new position.
    * Accepts either { nodeId } for single or { nodeIds } for batch, plus x and y.
+   * @param params - Node IDs and new position.
+   * @returns The result of the move operation.
    */
   async moveNode(
     this: FigmaClient,
@@ -213,6 +250,8 @@ export const writeCommands = {
   /**
    * Clones one or more nodes.
    * Accepts either { nodeId } for single or { nodeIds } for batch, plus optional params.
+   * @param params - Node IDs and clone options.
+   * @returns The result of the clone operation.
    */
   async cloneNode(
     this: FigmaClient,
@@ -248,6 +287,11 @@ export const writeCommands = {
     });
   },
 
+  /**
+   * Resizes a node to the specified width and height.
+   * @param params - Node ID and new size.
+   * @returns The result of the resize operation.
+   */
   async resizeNode(
     this: FigmaClient,
     params: { nodeId: string; width: number; height: number }
@@ -259,6 +303,8 @@ export const writeCommands = {
   /**
    * Deletes one or more nodes.
    * Accepts either { nodeId } for single or { nodeIds } for batch, like create_rectangle.
+   * @param params - Node IDs to delete.
+   * @returns The result of the delete operation.
    */
   async deleteNode(
     this: FigmaClient,
@@ -277,10 +323,9 @@ export const writeCommands = {
   },
 
   /**
-   * Sets the fill color of a node
-   * 
-   * @param {object} params - Fill color parameters
-   * @returns {Promise<any>} Operation result
+   * Sets the fill color of a node.
+   * @param params - Node ID and color values.
+   * @returns The result of the fill color operation.
    */
   async setFillColor(
     this: FigmaClient,
@@ -307,10 +352,9 @@ export const writeCommands = {
   },
 
   /**
-   * Sets the stroke color of a node
-   * 
-   * @param {object} params - Stroke color parameters
-   * @returns {Promise<any>} Operation result
+   * Sets the stroke color of a node.
+   * @param params - Node ID and color values.
+   * @returns The result of the stroke color operation.
    */
   async setStrokeColor(
     this: FigmaClient,
@@ -339,10 +383,9 @@ export const writeCommands = {
   },
 
   /**
-   * Creates a complete button with background and text
-   * 
-   * @param {object} params - Button parameters
-   * @returns {Promise<{frameId: string, backgroundId: string, textId: string}>} Created button elements
+   * Creates a complete button with background and text.
+   * @param params - Button properties (position, size, style, etc.)
+   * @returns The IDs of the created button elements.
    */
   async createButton(
     this: FigmaClient,
