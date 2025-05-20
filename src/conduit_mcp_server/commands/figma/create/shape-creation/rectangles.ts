@@ -28,13 +28,25 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
    * This tool is useful for programmatically generating UI elements, backgrounds, or design primitives in Figma via MCP.
    *
    * @param {object} args - The input object. Must provide either:
-   *   - rectangle: A single rectangle config object (x, y, width, height, name?, parentId?, cornerRadius?)
+   *   - rectangle: A single rectangle config object (x, y, width, height, name?, parentId?, cornerRadius?, fillColor?, strokeColor?, strokeWeight?)
    *   - rectangles: An array of rectangle config objects (same shape as above)
+   *
+   * Supported properties for each rectangle:
+   *   - x: number (required)
+   *   - y: number (required)
+   *   - width: number (required)
+   *   - height: number (required)
+   *   - name: string (optional)
+   *   - parentId: string (optional)
+   *   - cornerRadius: number (optional)
+   *   - fillColor: object (optional) — RGBA, e.g. { r: 0.2235, g: 1, b: 0.0784, a: 1 }
+   *   - strokeColor: object (optional) — RGBA, e.g. { r: 0, g: 0, b: 0, a: 1 }
+   *   - strokeWeight: number (optional)
    *
    * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created rectangle node ID(s).
    *
    * @example
-   * // Single rectangle
+   * // Single rectangle with fill and stroke
    * {
    *   rectangle: {
    *     x: 100,
@@ -42,15 +54,18 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
    *     width: 300,
    *     height: 150,
    *     name: "Button Background",
-   *     cornerRadius: 8
+   *     cornerRadius: 8,
+   *     fillColor: { r: 0.2235, g: 1, b: 0.0784, a: 1 },
+   *     strokeColor: { r: 0, g: 0, b: 0, a: 1 },
+   *     strokeWeight: 2
    *   }
    * }
    *
    * // Multiple rectangles
    * {
    *   rectangles: [
-   *     { x: 10, y: 20, width: 100, height: 50, name: "Rect1" },
-   *     { x: 120, y: 20, width: 80, height: 40 }
+   *     { x: 10, y: 20, width: 100, height: 50, name: "Rect1", fillColor: { r: 1, g: 0, b: 0, a: 1 } },
+   *     { x: 120, y: 20, width: 80, height: 40, strokeColor: { r: 0, g: 0, b: 1, a: 1 }, strokeWeight: 1 }
    *   ]
    * }
    */
@@ -107,7 +122,7 @@ Returns:
     // Tool handler: supports both single object and array input via 'rectangle' or 'rectangles'.
     async (args, extra): Promise<any> => {
       try {
-        logger.info(`💥 RAW create_rectangle args: ${JSON.stringify(args)}`);
+        // logger.info(`💥 RAW create_rectangle args: ${JSON.stringify(args)}`);
         let rects;
         if (args.rectangles) {
           rects = args.rectangles;
@@ -124,7 +139,7 @@ Returns:
               ...cfg, 
               cornerRadius: typeof cfg.cornerRadius === "number" ? cfg.cornerRadius : undefined 
             };
-            logger.info(`💥 createRectangle params: ${JSON.stringify(params)}`);
+            // logger.info(`💥 createRectangle params: ${JSON.stringify(params)}`);
             const node = await figmaClient.createRectangle(params);
             if (!node || !node.id) {
               throw new Error("Failed to create rectangle: missing node ID from figmaClient.createRectangle");
