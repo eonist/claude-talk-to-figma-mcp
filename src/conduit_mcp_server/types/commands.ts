@@ -152,7 +152,7 @@ export const MCP_COMMANDS = {
 
   // --- Images and SVG ---
   GET_IMAGE: "get_image", // Extract image fills or export nodes as images (single or batch)
-  INSERT_IMAGE: "insert_image", // Insert images from URLs, local files, or base64 data (single or batch)
+  SET_IMAGE: "set_image", // Set or insert images from URLs, local files, or base64 data (single or batch)
   INSERT_SVG_VECTOR: "insert_svg_vector", // Insert SVG vectors
   GET_SVG_VECTOR: "get_svg_vector", // Get SVG markup for one or more vector nodes
 

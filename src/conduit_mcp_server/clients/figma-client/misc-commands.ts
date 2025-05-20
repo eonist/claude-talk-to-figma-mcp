@@ -68,7 +68,7 @@ export const miscCommands = {
     }
   ): Promise<any> {
     const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand(MCP_COMMANDS.INSERT_IMAGE, {
+    return this.executeCommand(MCP_COMMANDS.SET_IMAGE, {
       url: params.url,
       x: params.x || 0,
       y: params.y || 0,

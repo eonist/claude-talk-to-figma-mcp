@@ -9,8 +9,8 @@ import { SingleUnifiedImageSchema, BatchUnifiedImagesSchema } from "./image-sche
 /**
  * Registers the unified image insertion command on the MCP server.
  *
- * This function adds a tool named "insert_image" to the MCP server,
- * enabling insertion of single or multiple images from URLs, local file paths, or base64 data into Figma.
+ * This function adds a tool named "set_image" to the MCP server,
+ * enabling setting or insertion of single or multiple images from URLs, local file paths, or base64 data into Figma.
  * It validates inputs, executes corresponding Figma commands, and returns informative results.
  *
  * @param {McpServer} server - The MCP server instance to register the tool on.
@@ -23,8 +23,8 @@ import { SingleUnifiedImageSchema, BatchUnifiedImagesSchema } from "./image-sche
  */
 export function registerUnifiedImageTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    MCP_COMMANDS.INSERT_IMAGE,
-    `Inserts one or more images into Figma. Each image can be specified by a remote URL, a local file path, or a base64 data URI. Accepts either a single image config (via 'image') or an array of configs (via 'images'). You can customize size, name, and parent node.
+    MCP_COMMANDS.SET_IMAGE,
+    `Sets or inserts one or more images into Figma. Each image can be specified by a remote URL, a local file path, or a base64 data URI. Accepts either a single image config (via 'image') or an array of configs (via 'images'). You can customize size, name, and parent node.
 
 Input:
   - image: A single image configuration object.
@@ -149,7 +149,7 @@ Returns:
           return { content: [{ type: "text", text: `Inserted images: ${nodeIds.join(", ")}` }] };
         }
       } catch (err) {
-        return handleToolError(err, "image-creation-tools", "insert_image") as any;
+        return handleToolError(err, "image-creation-tools", "set_image") as any;
       }
     }
   );
