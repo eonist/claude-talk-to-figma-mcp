@@ -19,7 +19,7 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  */
 export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    MCP_COMMANDS.GET_STYLES,
+    MCP_COMMANDS.GET_STYLE,
     `Get all styles from the current Figma document.
 
 Returns:

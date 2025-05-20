@@ -24,7 +24,7 @@ const GetConstraintsSchema = z.object({
 export function registerConstraintCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_constraints: set constraints (single or batch)
   server.tool(
-    MCP_COMMANDS.SET_CONSTRAINTS,
+    MCP_COMMANDS.SET_CONSTRAINT,
     `Set constraints (left/right/top/bottom/center/scale/stretch) for one or more Figma nodes.
 
 Parameters:
@@ -59,7 +59,7 @@ Returns: Array of result objects for each operation.`,
 
   // get_constraints: get constraints for one or more nodes (with children)
   server.tool(
-    MCP_COMMANDS.GET_CONSTRAINTS,
+    MCP_COMMANDS.GET_CONSTRAINT,
     `Get constraints for one or more Figma nodes (optionally including children).
 
 Parameters:

@@ -22,7 +22,7 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
 export function registerCloneNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch node clone
   server.tool(
-    MCP_COMMANDS.CLONE_NODE,
+    MCP_COMMANDS.DUPLICATE_NODE,
     `Clones one or more nodes in Figma. Accepts either a single node config (via 'node') or an array of configs (via 'nodes'). Optionally, you can specify positions, offsets, and parent.
 
 Input:
