@@ -36,11 +36,6 @@ export const PLUGIN_COMMANDS = {
   GET_TEXT_STYLE: "get_text_style",
   SCAN_TEXT_NODES: "scan_text_nodes",
   SET_TEXT_STYLE: "set_text_style",
-  SET_PARAGRAPH_SPACING: "set_paragraph_spacing",
-  SET_LINE_HEIGHT: "set_line_height",
-  SET_LETTER_SPACING: "set_letter_spacing",
-  SET_TEXT_CASE: "set_text_case",
-  SET_TEXT_DECORATION: "set_text_decoration",
   LOAD_FONT_ASYNC: "load_font_async",
   
   // --- Components ---
@@ -191,13 +186,6 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.GET_TEXT_STYLE, getTextStyle);
   registerCommand(PLUGIN_COMMANDS.SCAN_TEXT_NODES, textOperations.scanTextNodes);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_STYLE, textOperations.setTextStyle);
-  registerCommand(PLUGIN_COMMANDS.SET_PARAGRAPH_SPACING, setParagraphSpacingUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_LINE_HEIGHT, textOperations.setLineHeight);
-  registerCommand(PLUGIN_COMMANDS.SET_LINE_HEIGHT, setLineHeightUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_LETTER_SPACING, textOperations.setLetterSpacing);
-  registerCommand(PLUGIN_COMMANDS.SET_LETTER_SPACING, setLetterSpacingUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_TEXT_CASE, setTextCaseUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_TEXT_DECORATION, setTextDecorationUnified);
   registerCommand(PLUGIN_COMMANDS.LOAD_FONT_ASYNC, textOperations.loadFontAsyncWrapper);
 
   // --- Components ---

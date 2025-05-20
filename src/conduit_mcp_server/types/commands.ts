@@ -136,11 +136,6 @@ export const MCP_COMMANDS = {
   GET_TEXT_STYLE: "get_text_style", // Get text style properties for one or more nodes (single or batch)
   SCAN_TEXT_NODES: "scan_text_nodes", // Scan all text nodes in the selected node
   SET_TEXT_STYLE: "set_text_style", // Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
-  SET_PARAGRAPH_SPACING: "set_paragraph_spacing", // Set the paragraph spacing of one or more text nodes (single or batch)
-  SET_LINE_HEIGHT: "set_line_height", // Set the line height of one or more text nodes (single or batch, range-based)
-  SET_LETTER_SPACING: "set_letter_spacing", // Set the letter spacing of one or more text nodes (single or batch, range-based)
-  SET_TEXT_CASE: "set_text_case", // Set the text case of one or more text nodes (single or batch, range-based)
-  SET_TEXT_DECORATION: "set_text_decoration", // Set the text decoration of one or more text nodes (single or batch, range-based)
   LOAD_FONT_ASYNC: "load_font_async", // Load a font asynchronously
 
   // --- Components ---
@@ -203,7 +198,7 @@ export const MCP_COMMANDS = {
 
   // --- Export ---
   EXPORT_NODE_AS_IMAGE: "export_node_as_image", // Export a node as an image
-  GENERATE_HTML: "generate_html", // Generate HTML structure from Figma nodes
+  GET_HTML: "get_html", // Get HTML structure from Figma nodes
   GET_CSS_ASYNC: "get_css_async", // Get CSS properties from a node
 
   // --- Misc ---
