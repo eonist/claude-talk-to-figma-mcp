@@ -427,31 +427,16 @@ export class FigmaClient {
       });
     }
 
-    /**
-     * Sets both fill and stroke properties on a node in a single call
-     *
-     * @param params.nodeId - The node ID to style
-     * @param params.fillProps - Optional fill properties
-     * @param params.strokeProps - Optional stroke properties
-     */
-    async setStyle(params: {
-      nodeId: string;
-      fillProps?: {
-        color?: [number, number, number, number];
-        visible?: boolean;
-        opacity?: number;
-        gradient?: any;
-      };
-      strokeProps?: {
-        color?: [number, number, number, number];
-        weight?: number;
-        align?: "INSIDE" | "CENTER" | "OUTSIDE";
-        dashes?: number[];
-        visible?: boolean;
-      };
-    }): Promise<any> {
-      return this.executeCommand(MCP_COMMANDS.SET_STYLE, params);
-    }
+  /**
+   * Sets both fill and stroke properties on a node in a single call
+   *
+   * @param params.nodeId - The node ID to style
+   * @param params.fillProps - Optional fill properties
+   * @param params.strokeProps - Optional stroke properties
+   */
+  async setStyle(this: FigmaClient, params: any) {
+    return this.executeCommand(MCP_COMMANDS.SET_STYLE, params);
+  }
 
   
   // Node operations
@@ -566,6 +551,69 @@ export class FigmaClient {
    */
   async groupOrUngroupNodes(this: FigmaClient, params: { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }) {
     return this.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, params);
+  }
+
+  /**
+   * Locks or unlocks a node in Figma.
+   * @param params - { nodeId: string, locked: boolean }
+   * @returns {Promise<any>}
+   */
+  async setNodeLocked(this: FigmaClient, params: { nodeId: string, locked: boolean }) {
+    return this.executeCommand(MCP_COMMANDS.SET_NODE_LOCKED, params);
+  }
+
+  /**
+   * Shows or hides a node in Figma.
+   * @param params - { nodeId: string, visible: boolean }
+   * @returns {Promise<any>}
+   */
+  async setNodeVisible(this: FigmaClient, params: { nodeId: string, visible: boolean }) {
+    return this.executeCommand(MCP_COMMANDS.SET_NODE_VISIBLE, params);
+  }
+
+  /**
+   * Sets a guide in Figma.
+   * @param params - guide operation parameters
+   * @returns {Promise<any>}
+   */
+  async setGuide(this: FigmaClient, params: any) {
+    return this.executeCommand(MCP_COMMANDS.SET_GUIDE, params);
+  }
+
+  /**
+   * Gets all guides in Figma.
+   * @param params - (optional) parameters
+   * @returns {Promise<any>}
+   */
+  async getGuide(this: FigmaClient, params: any = {}) {
+    return this.executeCommand(MCP_COMMANDS.GET_GUIDE, params);
+  }
+
+  /**
+   * Sets a grid in Figma.
+   * @param params - grid operation parameters
+   * @returns {Promise<any>}
+   */
+  async setGrid(this: FigmaClient, params: any) {
+    return this.executeCommand(MCP_COMMANDS.SET_GRID, params);
+  }
+
+  /**
+   * Sets constraints in Figma.
+   * @param params - constraint operation parameters
+   * @returns {Promise<any>}
+   */
+  async setConstraints(this: FigmaClient, params: any) {
+    return this.executeCommand(MCP_COMMANDS.SET_CONSTRAINTS, params);
+  }
+
+  /**
+   * Gets constraints in Figma.
+   * @param params - get constraints parameters
+   * @returns {Promise<any>}
+   */
+  async getConstraints(this: FigmaClient, params: any) {
+    return this.executeCommand(MCP_COMMANDS.GET_CONSTRAINTS, params);
   }
 
   /**

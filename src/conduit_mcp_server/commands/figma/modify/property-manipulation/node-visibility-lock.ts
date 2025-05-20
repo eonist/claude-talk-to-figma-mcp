@@ -33,12 +33,12 @@ export function registerNodeLockVisibilityCommands(server, figmaClient) {
     async (params: { nodeId?: string; nodeIds?: string[]; locked: boolean }) => {
       try {
         if (params.nodeId) {
-          await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE_LOCKED, { nodeId: params.nodeId, locked: params.locked });
+          await figmaClient.setNodeLocked({ nodeId: params.nodeId, locked: params.locked });
           return { content: [{ type: "text", text: `Node ${params.nodeId} ${params.locked ? "locked" : "unlocked"}.` }] };
         } else if (params.nodeIds) {
           const results = await Promise.all(
             params.nodeIds.map((nodeId: string) =>
-              figmaClient.executeCommand(MCP_COMMANDS.SET_NODE_LOCKED, { nodeId, locked: params.locked })
+              figmaClient.setNodeLocked({ nodeId, locked: params.locked })
                 .then(() => ({ nodeId, success: true }))
                 .catch((e: any) => ({ nodeId, success: false, error: e.message }))
             )
@@ -61,12 +61,12 @@ export function registerNodeLockVisibilityCommands(server, figmaClient) {
     async (params: { nodeId?: string; nodeIds?: string[]; visible: boolean }) => {
       try {
         if (params.nodeId) {
-          await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE_VISIBLE, { nodeId: params.nodeId, visible: params.visible });
+          await figmaClient.setNodeVisible({ nodeId: params.nodeId, visible: params.visible });
           return { content: [{ type: "text", text: `Node ${params.nodeId} ${params.visible ? "shown" : "hidden"}.` }] };
         } else if (params.nodeIds) {
           const results = await Promise.all(
             params.nodeIds.map((nodeId: string) =>
-              figmaClient.executeCommand(MCP_COMMANDS.SET_NODE_VISIBLE, { nodeId, visible: params.visible })
+              figmaClient.setNodeVisible({ nodeId, visible: params.visible })
                 .then(() => ({ nodeId, success: true }))
                 .catch((e: any) => ({ nodeId, success: false, error: e.message }))
             )

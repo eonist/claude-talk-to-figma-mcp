@@ -72,7 +72,7 @@ Examples:
         return { content: [{ type: "text", text: "You must provide 'nodeId' or 'nodeIds'." }] };
       }
       for (const id of ids) {
-        await figmaClient.executeCommand(MCP_COMMANDS.DELETE_NODE, { nodeId: id });
+        await figmaClient.deleteNode(id);
       }
       return { content: [{ type: "text", text: `Deleted ${ids.length} node(s): ${ids.join(", ")}` }] };
     }

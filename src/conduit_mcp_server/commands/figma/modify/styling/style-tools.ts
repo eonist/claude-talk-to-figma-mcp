@@ -43,7 +43,7 @@ Returns: Array of result objects: { styleId, styleType, action: "created" | "upd
       const results = [];
       for (const entry of entries) {
         try {
-          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_STYLE, entry);
+          const result = await figmaClient.setStyle(entry);
           results.push({ ...result, styleId: result.styleId || entry.styleId, styleType: entry.styleType, success: true });
         } catch (err: any) {
           results.push({ styleId: entry.styleId, styleType: entry.styleType, success: false, error: err?.message || String(err) });
