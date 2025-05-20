@@ -80,6 +80,9 @@ export const styleCommands = {
   },
 
 
+
+
+
   /**
    * Gets all styles in Figma.
    * @param params - (optional) parameters
@@ -90,29 +93,5 @@ export const styleCommands = {
     params: any = {}
   ): Promise<any> {
     return this.executeCommand(MCP_COMMANDS.GET_STYLES, params);
-  },
-
-  /**
-   * Sets the effect style ID for a node in Figma.
-   * @param params - { nodeId: string, effectStyleId: string }
-   * @returns {Promise<any>}
-   */
-  async setEffectStyleId(
-    this: FigmaClient,
-    params: { nodeId: string, effectStyleId: string }
-  ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.SET_EFFECT_STYLE_ID, params);
-  },
-
-  /**
-   * Sets auto layout resizing mode for a node in Figma.
-   * @param params - { nodeId: string, axis: "horizontal" | "vertical", mode: "FIXED" | "HUG" | "FILL" }
-   * @returns {Promise<any>}
-   */
-  async setAutoLayoutResizing(
-    this: FigmaClient,
-    params: { nodeId: string, axis: "horizontal" | "vertical", mode: "FIXED" | "HUG" | "FILL" }
-  ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING, params);
   }
 };

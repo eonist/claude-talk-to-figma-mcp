@@ -110,5 +110,65 @@ export const layoutCommands = {
     return this.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, {
       nodeId
     });
+  },
+
+  /**
+   * Sets constraints in Figma.
+   * @param params - constraint operation parameters
+   * @returns {Promise<any>}
+   */
+  async setConstraints(
+    this: FigmaClient,
+    params: any
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_CONSTRAINTS, params);
+  },
+
+  /**
+   * Gets constraints in Figma.
+   * @param params - get constraints parameters
+   * @returns {Promise<any>}
+   */
+  async getConstraints(
+    this: FigmaClient,
+    params: any
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.GET_CONSTRAINTS, params);
+  },
+
+  /**
+   * Sets a grid in Figma.
+   * @param params - grid operation parameters
+   * @returns {Promise<any>}
+   */
+  async setGrid(
+    this: FigmaClient,
+    params: any
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_GRID, params);
+  },
+
+  /**
+   * Sets a guide in Figma.
+   * @param params - guide operation parameters
+   * @returns {Promise<any>}
+   */
+  async setGuide(
+    this: FigmaClient,
+    params: any
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_GUIDE, params);
+  },
+
+  /**
+   * Gets all guides in Figma.
+   * @param params - (optional) parameters
+   * @returns {Promise<any>}
+   */
+  async getGuide(
+    this: FigmaClient,
+    params: any = {}
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.GET_GUIDE, params);
   }
 };

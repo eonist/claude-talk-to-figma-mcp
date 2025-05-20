@@ -93,13 +93,8 @@ Returns:
         for (const textConfig of textsArr) {
           const params: CreateTextParams = { commandId: uuidv4(), ...textConfig };
           let node;
-          if (textConfig.width && textConfig.height) {
-            // Bounded text box (now uses createText)
-            node = await figmaClient.executeCommand("create_text", params);
-          } else {
-            // Regular text node
-            node = await figmaClient.createText(params);
-          }
+          // Use modular createText for both regular and bounded text
+          node = await (figmaClient as any).createText(params);
           results.push({ type: "text", text: `Created text ${node.id}` });
         }
         return { content: results };

@@ -4,6 +4,7 @@
  */
 
 import { MCP_COMMANDS } from "../../types/commands.js";
+import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaClient } from "./index.js";
 
 /**
@@ -12,15 +13,55 @@ import type { FigmaClient } from "./index.js";
  */
 export const effectCommands = {
   /**
-   * Sets effects on a node in Figma.
-   * @param params - effect operation parameters
-   * @returns {Promise<any>}
+   * Sets visual effects (shadows, blurs) on a node
+   * 
+   * @param {object} params - Effect parameters
+   * @returns {Promise<any>} Operation result
    */
   async setEffects(
     this: FigmaClient,
-    params: any
+    params: {
+      nodeId: string;
+      effects: Array<{
+        type: "DROP_SHADOW" | "INNER_SHADOW" | "LAYER_BLUR" | "BACKGROUND_BLUR";
+        color?: { r: number; g: number; b: number; a: number };
+        offset?: { x: number; y: number };
+        radius?: number;
+        spread?: number;
+        visible?: boolean;
+        blendMode?: string;
+      }>;
+    }
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.SET_EFFECT, params);
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    return this.executeCommand(MCP_COMMANDS.SET_EFFECT, {
+      nodeId: nodeIdString,
+      effects: params.effects
+    });
+  },
+
+  /**
+   * Sets the effect style ID for a node in Figma.
+   * @param params - { nodeId: string, effectStyleId: string }
+   * @returns {Promise<any>}
+   */
+  async setEffectStyleId(
+    this: FigmaClient,
+    params: { nodeId: string, effectStyleId: string }
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_EFFECT_STYLE_ID, params);
+  },
+
+  /**
+   * Gets all styles in Figma.
+   * @param params - (optional) parameters
+   * @returns {Promise<any>}
+   */
+  async getStyles(
+    this: FigmaClient,
+    params: any = {}
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.GET_STYLES, params);
   },
 
   /**

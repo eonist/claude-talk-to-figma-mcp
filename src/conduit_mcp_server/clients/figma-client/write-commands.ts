@@ -100,29 +100,6 @@ export const writeCommands = {
     }
   },
 
-  async createText(
-    this: FigmaClient,
-    params: {
-      x: number;
-      y: number;
-      text: string;
-      fontSize?: number;
-      fontWeight?: number;
-      fontColor?: RGBAColor;
-      name?: string;
-      parentId?: string;
-    }
-  ): Promise<BaseFigmaNode> {
-    const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
-    return this.executeCommand(MCP_COMMANDS.CREATE_TEXT, {
-      ...params,
-      fontSize: params.fontSize || 14,
-      fontWeight: params.fontWeight || 400,
-      fontColor: params.fontColor,
-      name: params.name || "Text",
-      parentId: parent,
-    });
-  },
 
   async createEllipse(
     this: FigmaClient,

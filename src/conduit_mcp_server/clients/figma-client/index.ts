@@ -45,6 +45,7 @@ import { layoutCommands } from "./layout-commands.js";
 import { variableCommands } from "./variable-commands.js";
 import { shapeCommands } from "./shape-commands.js";
 import { styleCommands } from "./style-commands.js";
+import { nodeCommands } from "./node-commands.js";
 
 Object.assign(
   FigmaClient.prototype,
@@ -57,5 +58,6 @@ Object.assign(
   layoutCommands,
   variableCommands,
   shapeCommands,
-  styleCommands
+  styleCommands,
+  nodeCommands
 );
