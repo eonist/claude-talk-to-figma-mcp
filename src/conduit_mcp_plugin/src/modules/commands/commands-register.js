@@ -1,4 +1,5 @@
 import * as documentOperations from '../document.js';
+import { setNodePropUnified } from '../node/node-modify.js';
 
 /**
  * Centralized list of all plugin command names.
@@ -230,7 +231,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, deleteNodeUnified);
   registerCommand(PLUGIN_COMMANDS.DUPLICATE_NODE, layoutOperations.cloneNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE, layoutOperations.setNodeUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_NODE_PROP, nodeOperations.setNodePropUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_NODE_PROP, setNodePropUnified);
 
   // --- Grids, Guides, and Constraints ---
   registerCommand(PLUGIN_COMMANDS.SET_GRID, setGrid);

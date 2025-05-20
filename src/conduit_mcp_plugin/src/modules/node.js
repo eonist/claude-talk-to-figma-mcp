@@ -69,3 +69,5 @@ export const nodeOperations = {
   clone_node,
   boolean: boolean_operation
 };
+
+export default nodeOperations;

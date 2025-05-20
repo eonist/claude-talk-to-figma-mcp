@@ -64,11 +64,10 @@ export async function setNodePropUnified(params) {
     if (!node) throw new Error(`Node not found: ${id}`);
     if ("locked" in properties) node.locked = !!properties.locked;
     if ("visible" in properties) node.visible = !!properties.visible;
-    results.push({
-      id,
-      ...( "locked" in properties ? { locked: node.locked } : {} ),
-      ...( "visible" in properties ? { visible: node.visible } : {} )
-    });
+    const result = { id };
+    if ("locked" in properties) result.locked = node.locked;
+    if ("visible" in properties) result.visible = node.visible;
+    results.push(result);
   }
   return { results };
 }

@@ -125,8 +125,28 @@ export async function setMultipleTextContents(params) {
  * @async
  * @function
  * @param {Object} params - { entry: { nodeId, paragraphSpacing } } or { entries: [{ nodeId, paragraphSpacing }, ...] }
- * @returns {Promise<Array<{ nodeId: string, success?: boolean, error?: string }>>}
+ * @returns {Promise<Array<{ nodeId, success?: boolean, error?: string }>>}
  */
+export async function setParagraphSpacingUnified(params) {
+  let ops = [];
+  if (Array.isArray(params.entries) && params.entries.length > 0) {
+    ops = params.entries;
+  } else if (params.entry && params.entry.nodeId && params.entry.paragraphSpacing !== undefined) {
+    ops = [params.entry];
+  } else {
+    throw new Error("setParagraphSpacingUnified: Provide either entry or entries array.");
+  }
+
+  const results = [];
+  for (const { nodeId, paragraphSpacing } of ops) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node || node.type !== "TEXT") {
+        results.push({ nodeId, error: "Node not found or not a text node" });
+        continue;
+      }
+      await figma.loadFontAsync(node.fontName);
+      node.paragraphSpacing = paragraphSpacing;
       results.push({ nodeId, success: true });
     } catch (err) {
       if (params.options && params.options.skipErrors) {
