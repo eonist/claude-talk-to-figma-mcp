@@ -3,7 +3,26 @@
  * Each command should be an async function that receives params and returns a result.
  */
 
+import { MCP_COMMANDS } from "../../types/commands.js";
+import type { FigmaClient } from "./index.js";
+
+/**
+ * Figma effect-related commands.
+ * Each command should be an async function that receives params and returns a result.
+ */
 export const effectCommands = {
+  /**
+   * Sets effects on a node in Figma.
+   * @param params - effect operation parameters
+   * @returns {Promise<any>}
+   */
+  async setEffects(
+    this: FigmaClient,
+    params: any
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_EFFECT, params);
+  },
+
   /**
    * Set effect(s) directly or by style variable on one or more nodes.
    * @param {Object} params - { entries: [{ nodeId, effects?, effectStyleId? }] }
