@@ -560,6 +560,15 @@ export class FigmaClient {
   }
 
   /**
+   * Groups or ungroups nodes in Figma.
+   * @param params - { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }
+   * @returns {Promise<any>}
+   */
+  async groupOrUngroupNodes(this: FigmaClient, params: { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }) {
+    return this.executeCommand(MCP_COMMANDS.GROUP_OR_UNGROUP_NODES, params);
+  }
+
+  /**
    * Deletes multiple nodes
    *
    * @param {string[]} nodeIds - Array of node IDs to delete
