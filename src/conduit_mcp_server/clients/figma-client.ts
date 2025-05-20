@@ -551,6 +551,15 @@ export class FigmaClient {
   }
 
   /**
+   * Flattens one or more nodes in Figma.
+   * @param params - { nodeIds: string[] }
+   * @returns {Promise<any>}
+   */
+  async flattenNode(this: FigmaClient, params: { nodeIds: string[] }) {
+    return this.executeCommand(MCP_COMMANDS.FLATTEN_NODE, params);
+  }
+
+  /**
    * Deletes multiple nodes
    *
    * @param {string[]} nodeIds - Array of node IDs to delete

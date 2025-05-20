@@ -93,7 +93,7 @@ Examples:
         return { content: [{ type: "text", text: "You must provide 'nodeId', 'nodeIds', or 'selection: true'." }] };
       }
       // Flatten all nodes
-      const result = await figmaClient.executeCommand(MCP_COMMANDS.FLATTEN_NODE, { nodeIds: ids });
+      const result = await figmaClient.flattenNode({ nodeIds: ids });
       return {
         content: [{
           type: "text",

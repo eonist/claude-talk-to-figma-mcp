@@ -393,16 +393,4 @@ export const writeCommands = {
       parentId: parent,
     });
   },
-
-  /**
-   * Creates a new page in the document.
-   * @param {object} params - { name?: string }
-   * @returns {Promise<{ id: string, name: string, childCount: number }>} The new page info
-   */
-  async createPage(
-    this: FigmaClient,
-    params: { name?: string }
-  ): Promise<{ id: string; name: string; childCount: number }> {
-    return this.executeCommand(MCP_COMMANDS.CREATE_PAGE, { name: params?.name });
-  },
 };
