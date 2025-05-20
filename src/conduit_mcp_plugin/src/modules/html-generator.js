@@ -117,7 +117,7 @@ class HTMLGenerator {
 };
 
 /**
- * Unified handler for GENERATE_HTML plugin command.
+ * Unified handler for GET_HTML plugin command.
  * @async
  * @function generateHtmlUnified
  * @param {object} params - { nodeId, format, cssMode }

@@ -99,7 +99,7 @@ export const PLUGIN_COMMANDS = {
 
   // --- Export ---
   EXPORT_NODE_AS_IMAGE: "export_node_as_image",
-  GENERATE_HTML: "generate_html",
+  GET_HTML: "get_html",
   GET_CSS_ASYNC: "get_css_async",
 
   // --- Misc ---
@@ -248,7 +248,7 @@ export function initializeCommands() {
 
   // --- Export ---
   registerCommand(PLUGIN_COMMANDS.EXPORT_NODE_AS_IMAGE, componentOperations.exportNodeAsImage);
-  registerCommand(PLUGIN_COMMANDS.GENERATE_HTML, generateHtmlUnified);
+  registerCommand(PLUGIN_COMMANDS.GET_HTML, generateHtmlUnified);
   registerCommand(PLUGIN_COMMANDS.GET_CSS_ASYNC, documentOperations.getCssAsync);
 
   // --- Misc ---
