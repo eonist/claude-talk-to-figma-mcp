@@ -10,8 +10,8 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
 /**
  * Registers SVG insertion commands on the MCP server.
  *
- * This function adds tools named "insert_svg_vector" and "insert_svg_vectors" to the MCP server,
- * enabling insertion of single or multiple SVG vectors into Figma.
+ * This function adds tools named "set_svg_vector" and "set_svg_vectors" to the MCP server,
+ * enabling setting or insertion of single or multiple SVG vectors into Figma.
  * It validates inputs, executes corresponding Figma commands, and returns informative results.
  *
  * @param {McpServer} server - The MCP server instance to register the tools on.
@@ -26,8 +26,8 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
   logger.info("🔧 Loading SVG creation tools");
   // Unified single/batch SVG vector insertion
   server.tool(
-    MCP_COMMANDS.INSERT_SVG_VECTOR,
-    `Inserts one or more SVG vectors in Figma. Accepts either a single SVG config (via 'svg') or an array of configs (via 'svgs').
+    MCP_COMMANDS.SET_SVG_VECTOR,
+    `Sets or inserts one or more SVG vectors in Figma. Accepts either a single SVG config (via 'svg') or an array of configs (via 'svgs').
 
 Input:
   - svg: A single SVG configuration object.
@@ -158,7 +158,7 @@ Returns:
           return { content: [{ type: "text", text: `Inserted SVG vectors: ${nodeIds.join(", ")}` }] };
         }
       } catch (err) {
-        return handleToolError(err, "svg-creation-tools", "insert_svg_vector") as any;
+        return handleToolError(err, "svg-creation-tools", "set_svg_vector") as any;
       }
     }
   );

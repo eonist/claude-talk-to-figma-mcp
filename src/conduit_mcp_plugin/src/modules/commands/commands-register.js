@@ -53,7 +53,7 @@ export const PLUGIN_COMMANDS = {
   // --- Images and SVG ---
   GET_IMAGE: "get_image",
   SET_IMAGE: "set_image",
-  INSERT_SVG_VECTOR: "insert_svg_vector",
+  SET_SVG_VECTOR: "set_svg_vector",
   GET_SVG_VECTOR: "get_svg_vector",
 
   // --- Styling ---
@@ -210,7 +210,7 @@ export function initializeCommands() {
   // --- Images and SVG ---
   registerCommand(PLUGIN_COMMANDS.GET_IMAGE, getImage);
   registerCommand(PLUGIN_COMMANDS.SET_IMAGE, imageOperations.insertImage);
-  registerCommand(PLUGIN_COMMANDS.INSERT_SVG_VECTOR, insertSvgVector);
+  registerCommand(PLUGIN_COMMANDS.SET_SVG_VECTOR, insertSvgVector);
   registerCommand(PLUGIN_COMMANDS.GET_SVG_VECTOR, getSvgVector);
 
   // --- Styling ---

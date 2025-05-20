@@ -153,14 +153,14 @@ export const MCP_COMMANDS = {
   // --- Images and SVG ---
   GET_IMAGE: "get_image", // Extract image fills or export nodes as images (single or batch)
   SET_IMAGE: "set_image", // Set or insert images from URLs, local files, or base64 data (single or batch)
-  INSERT_SVG_VECTOR: "insert_svg_vector", // Insert SVG vectors
+  SET_SVG_VECTOR: "set_svg_vector", // Set or insert SVG vectors
   GET_SVG_VECTOR: "get_svg_vector", // Get SVG markup for one or more vector nodes
 
   // --- Styling ---
   GET_STYLES: "get_styles", // Get all styles from the document
   GET_NODE_STYLES: "get_node_styles", // Get all style properties for one or more nodes
   SET_FILL_AND_STROKE: "set_fill_and_stroke", // Set fill and/or stroke color(s) for one or more nodes
-  SET_STYLE: "set_style", // Set both fill and stroke
+  SET_STYLE: "set_style", // Set style or styles
   CREATE_GRADIENT_STYLE: "create_gradient_style", // Create one or more gradient styles
   SET_GRADIENT: "set_gradient", // Set gradient(s) directly or by style variable
 
