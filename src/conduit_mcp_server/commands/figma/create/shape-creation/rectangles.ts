@@ -152,14 +152,22 @@ Returns:
           }
         );
         const nodeIds = results.map(r => r.result).filter(Boolean);
-        if (nodeIds.length === 1) {
-          return { content: [{ type: "text", text: `Created rectangle ${nodeIds[0]}` }] };
-        } else {
-          return { content: [{ type: "text", text: `Created rectangles: ${nodeIds.join(", ")}` }] };
-        }
+        return {
+          success: true,
+          message: nodeIds.length === 1
+            ? `Rectangle created successfully.`
+            : `Rectangles created successfully.`,
+          nodeIds
+        };
       } catch (err) {
-        // Handle errors and return a formatted error response.
-        return handleToolError(err, "shape-creation-tools", "create_rectangle") as any;
+        // Return a structured error response.
+        return {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+          }
+        };
       }
     }
   );
