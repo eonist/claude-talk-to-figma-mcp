@@ -76,7 +76,7 @@ export const PLUGIN_COMMANDS = {
   BOOLEAN: "boolean", // not in use yet
 
   // --- Node Management ---
-  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes", // not in use yet
+  GROUP_NODE: "group_node",
   CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame",
   DELETE_NODE: "delete_node",
   CLONE_NODE: "clone_node",
@@ -225,7 +225,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.BOOLEAN, shapeOperations.boolean);
 
   // --- Node Management ---
-  registerCommand(PLUGIN_COMMANDS.GROUP_OR_UNGROUP_NODES, layoutOperations.groupOrUngroupNodes);
+  registerCommand(PLUGIN_COMMANDS.GROUP_NODE, layoutOperations.groupOrUngroupNodes);
   registerCommand(PLUGIN_COMMANDS.CONVERT_RECTANGLE_TO_FRAME, shapeOperations.convertRectangleToFrame);
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, deleteNodeUnified);
   registerCommand(PLUGIN_COMMANDS.CLONE_NODE, layoutOperations.cloneNodeUnified);

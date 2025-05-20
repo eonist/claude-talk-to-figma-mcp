@@ -175,7 +175,7 @@ export const MCP_COMMANDS = {
   BOOLEAN: "boolean", // Perform union, subtract, intersect, or exclude on nodes or selection
 
   // --- Node Management ---
-  GROUP_OR_UNGROUP_NODES: "group_or_ungroup_nodes", // Group or ungroup nodes
+  GROUP_NODE: "group_node", // Group nodes (unified)
   CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame", // Convert a rectangle to a frame
   DELETE_NODE: "delete_node", // Delete one or more nodes
   CLONE_NODE: "clone_node", // Clone a node (single or batch)
