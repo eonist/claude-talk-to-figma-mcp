@@ -67,7 +67,7 @@ Returns:
     },
     async ({ entries }) => {
       const entryList = Array.isArray(entries) ? entries : [entries];
-      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_EFFECT, { entries: entryList });
+      const results = await figmaClient.setEffects({ entries: entryList });
       return {
         content: [
           {

@@ -438,6 +438,24 @@ export class FigmaClient {
     return this.executeCommand(MCP_COMMANDS.SET_STYLE, params);
   }
 
+  /**
+   * Sets effects on a node in Figma.
+   * @param params - effect operation parameters
+   * @returns {Promise<any>}
+   */
+  async setEffects(this: FigmaClient, params: any) {
+    return this.executeCommand(MCP_COMMANDS.SET_EFFECT, params);
+  }
+
+  /**
+   * Sets the effect style ID for a node in Figma.
+   * @param params - { nodeId: string, effectStyleId: string }
+   * @returns {Promise<any>}
+   */
+  async setEffectStyleId(this: FigmaClient, params: { nodeId: string, effectStyleId: string }) {
+    return this.executeCommand(MCP_COMMANDS.SET_EFFECT_STYLE_ID, params);
+  }
+
   
   // Node operations
   
