@@ -167,7 +167,7 @@ export const MCP_COMMANDS = {
   // --- Effects and Layout ---
   CREATE_EFFECT_STYLE_VARIABLE: "create_effect_style_variable", // Create one or more effect style variables
   SET_EFFECT: "set_effect", // Set effect(s) directly or by style variable
-  SET_EFFECT_STYLE_ID: "set_effect_style_id", // Apply an effect style
+  APPLY_EFFECT_STYLE: "apply_effect_style", // Apply an effect style
   SET_AUTO_LAYOUT: "set_auto_layout", // Configure auto layout (single or batch)
   SET_AUTO_LAYOUT_RESIZING: "set_auto_layout_resizing", // Set hug or fill sizing mode
   SET_CORNER_RADIUS: "set_corner_radius", // Set corner radius

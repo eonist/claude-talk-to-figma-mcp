@@ -67,7 +67,7 @@ export const PLUGIN_COMMANDS = {
   // --- Effects and Layout ---
   CREATE_EFFECT_STYLE_VARIABLE: "create_effect_style_variable",
   SET_EFFECT: "set_effect",
-  SET_EFFECT_STYLE_ID: "set_effect_style_id",
+  APPLY_EFFECT_STYLE: "apply_effect_style",
   SET_AUTO_LAYOUT: "set_auto_layout",
   SET_AUTO_LAYOUT_RESIZING: "set_auto_layout_resizing",
   SET_CORNER_RADIUS: "set_corner_radius",
@@ -224,7 +224,7 @@ export function initializeCommands() {
   // --- Effects and Layout ---
   registerCommand(PLUGIN_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE, styleOperations.createEffectStyleVariable);
   registerCommand(PLUGIN_COMMANDS.SET_EFFECT, styleOperations.setEffectUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_EFFECT_STYLE_ID, styleOperations.setEffectStyleId);
+  registerCommand(PLUGIN_COMMANDS.APPLY_EFFECT_STYLE, styleOperations.setEffectStyleId);
   registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT, setAutoLayoutUnified);
   registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT_RESIZING, layoutOperations.setAutoLayoutResizing);
   registerCommand(PLUGIN_COMMANDS.SET_CORNER_RADIUS, shapeOperations.setCornerRadiusUnified);
