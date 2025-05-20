@@ -52,7 +52,7 @@ export const PLUGIN_COMMANDS = {
   GET_SVG_VECTOR: "get_svg_vector",
 
   // --- Styling ---
-  GET_STYLES: "get_styles",
+  GET_STYLE: "get_style",
   GET_NODE_STYLES: "get_node_styles",
   SET_FILL_AND_STROKE: "set_fill_and_stroke",
   SET_STYLE: "set_style",
@@ -202,7 +202,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.GET_SVG_VECTOR, getSvgVector);
 
   // --- Styling ---
-  registerCommand(PLUGIN_COMMANDS.GET_STYLES, styleOperations.getStyles);
+  registerCommand(PLUGIN_COMMANDS.GET_STYLE, styleOperations.getStyles);
   registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLES, getNodeStyles);
   registerCommand(PLUGIN_COMMANDS.SET_FILL_AND_STROKE, styleOperations.setFillAndStrokeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_STYLE, styleOperations.setStyle);
