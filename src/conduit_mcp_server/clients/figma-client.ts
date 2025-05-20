@@ -456,6 +456,15 @@ export class FigmaClient {
     return this.executeCommand(MCP_COMMANDS.SET_EFFECT_STYLE_ID, params);
   }
 
+  /**
+   * Sets auto layout resizing mode for a node in Figma.
+   * @param params - { nodeId: string, axis: "horizontal" | "vertical", mode: "FIXED" | "HUG" | "FILL" }
+   * @returns {Promise<any>}
+   */
+  async setAutoLayoutResizing(this: FigmaClient, params: { nodeId: string, axis: "horizontal" | "vertical", mode: "FIXED" | "HUG" | "FILL" }) {
+    return this.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING, params);
+  }
+
   
   // Node operations
   
