@@ -9,6 +9,7 @@
 https://github.com/user-attachments/assets/27fb8080-a4f6-46d4-a016-60ba3f0208e8
 
 ### What is MCP?
+
 Model Context Protocol (MCP) is the framework that allows an AI agent to communicate with external applications. This implementation enables any AI agent to send commands to and receive information from Figma in real-time.
 
 ## How it works
@@ -55,14 +56,14 @@ Model Context Protocol (MCP) is the framework that allows an AI agent to communi
 - **Figma Variables (Design Tokens)** – Create, update, delete, and apply variables for color, number, string, and boolean; switch between variable modes (e.g., light/dark theme).
 - **Export & code generation** – Export nodes as images (PNG, JPG, SVG, PDF), generate HTML structure, and extract CSS from Figma nodes.
 - **Annotation support** – Get, set, update, and delete annotations on nodes.
-- **Event subscription** – Subscribe and unsubscribe to Figma events (e.g., selection change, document change).
+- **Event subscription** – Subscribe and unsubscribe to Figma events (e.g., selection change, document change). This essentially allows Turn by turn multi-agent collaboration.
 
 ### Compatibility
 
 - VSCode w/ GitHub Copilot agent (Sonnet 3.7) (50 free Sonnet 3.5 requests per month)
 - VSCode w/ Cline (Multiple LLM's available)
 - Claude Desktop Application (Sonnet 3.7)
-- Cursor agent (Sonnet 3.7)
+- Cursor agent (Sonnet 3.7 / GPT 4.1)
 
 ## Prerequisites
 
@@ -131,6 +132,9 @@ Claude: [executes commands in Figma and displays the results]
 - **Connection Error:** Ensure the WebSocket server is running (`bun socket`).  
 - **Plugin Not Appearing:** Verify the plugin import in Figma Development settings.  
 - **Execution or Font Loading Errors:** Check Figma’s development console for details.  
+
+> [!TIP]
+> In VSCode command pallet: `> Reload Window` this restarts cline and refreshes your MCP servers (To get new updates)
 
 ## Testing
 
