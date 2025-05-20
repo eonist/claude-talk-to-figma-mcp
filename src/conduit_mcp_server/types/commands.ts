@@ -140,7 +140,7 @@ export const MCP_COMMANDS = {
 
   // --- Components ---
   GET_COMPONENTS: "get_components", // Get components from the current document, a team library, or remote team libraries (unified)
-  CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes", // Convert nodes to components
+  CREATE_COMPONENTS_FROM_NODE: "create_components_from_node", // Convert node(s) to components
   CREATE_COMPONENT_INSTANCE: "create_component_instance", // Create component instances
   CREATE_BUTTON: "create_button", // Create a complete button
   DETACH_INSTANCES: "detach_instances", // Detach one or more component instances from their masters (single or batch)
@@ -178,7 +178,7 @@ export const MCP_COMMANDS = {
   GROUP_NODE: "group_node", // Group nodes (unified)
   CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame", // Convert a rectangle to a frame
   DELETE_NODE: "delete_node", // Delete one or more nodes
-  CLONE_NODE: "clone_node", // Clone a node (single or batch)
+  DUPLICATE_NODE: "duplicate_node", // Duplicate a node (single or batch)
   SET_NODE: "set_node", // Set or insert a child node into a parent (single)
   SET_NODE_PROP: "set_node_prop", // Set node properties (locked, visible, etc.) for one or more nodes
 
@@ -187,8 +187,8 @@ export const MCP_COMMANDS = {
   GET_GRID: "get_grid", // Get all layout grids for one or more nodes
   SET_GUIDE: "set_guide", // Add or delete one or more guides on the current page
   GET_GUIDE: "get_guide", // Get all guides on the current page
-  SET_CONSTRAINTS: "set_constraints", // Set constraints for one or more nodes
-  GET_CONSTRAINTS: "get_constraints", // Get constraints for one or more nodes
+  SET_CONSTRAINT: "set_constraint", // Set constraint for one or more nodes
+  GET_CONSTRAINT: "get_constraint", // Get constraint for one or more nodes
 
   // --- Figma Variables (Design Tokens) ---
   SET_VARIABLE: "set_variable", // Create, update, or delete one or more Figma Variables (design tokens)
@@ -203,7 +203,7 @@ export const MCP_COMMANDS = {
 
   // --- Misc ---
   RENAME_LAYER: "rename_layer", // Rename nodes (single or batch, each with its own name)
-  AI_RENAME_LAYERS: "ai_rename_layers", // AI-powered renaming 
+  AI_RENAME_LAYER: "ai_rename_layer", // AI-powered renaming 
   SET_VARIANT: "set_variant", // Create, add, rename, delete, organize, or batch create variants/properties in a component set
   GET_VARIANT: "get_variant", // Get info about variants/properties for one or more component sets
   SUBSCRIBE_EVENT: "subscribe_event", // Subscribe or unsubscribe to a Figma event (e.g., selection_change, document_change) using a boolean param

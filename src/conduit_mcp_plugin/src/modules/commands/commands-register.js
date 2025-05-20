@@ -40,7 +40,7 @@ export const PLUGIN_COMMANDS = {
   
   // --- Components ---
   GET_COMPONENTS: "get_components",
-  CREATE_COMPONENTS_FROM_NODES: "create_components_from_nodes",
+  CREATE_COMPONENTS_FROM_NODE: "create_components_from_node",
   CREATE_COMPONENT_INSTANCE: "create_component_instance",
   CREATE_BUTTON: "create_button",
   DETACH_INSTANCES: "detach_instances",
@@ -79,7 +79,7 @@ export const PLUGIN_COMMANDS = {
   GROUP_NODE: "group_node",
   CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame",
   DELETE_NODE: "delete_node",
-  CLONE_NODE: "clone_node",
+  DUPLICATE_NODE: "duplicate_node",
   SET_NODE: "set_node",
   SET_NODE_PROP: "set_node_prop",
 
@@ -88,8 +88,8 @@ export const PLUGIN_COMMANDS = {
   GET_GRID: "get_grid",
   SET_GUIDE: "set_guide",
   GET_GUIDE: "get_guide",
-  SET_CONSTRAINTS: "set_constraints",
-  GET_CONSTRAINTS: "get_constraints",
+  SET_CONSTRAINT: "set_constraint",
+  GET_CONSTRAINT: "get_constraint",
 
   // --- Figma Variables (Design Tokens) ---
   SET_VARIABLE: "set_variable",
@@ -104,7 +104,7 @@ export const PLUGIN_COMMANDS = {
 
   // --- Misc ---
   RENAME_LAYER: "rename_layer",
-  AI_RENAME_LAYERS: "ai_rename_layers",
+  AI_RENAME_LAYER: "ai_rename_layer",
   SET_VARIANT: "set_variant",
   GET_VARIANT: "get_variant",
   GET_ANNOTATION: "get_annotation",
@@ -190,7 +190,7 @@ export function initializeCommands() {
 
   // --- Components ---
   registerCommand(PLUGIN_COMMANDS.GET_COMPONENTS, componentOperations.getComponents);
-  registerCommand(PLUGIN_COMMANDS.CREATE_COMPONENTS_FROM_NODES, componentOperations.createComponentsFromNodes);
+  registerCommand(PLUGIN_COMMANDS.CREATE_COMPONENTS_FROM_NODE, componentOperations.createComponentsFromNodes);
   registerCommand(PLUGIN_COMMANDS.CREATE_COMPONENT_INSTANCE, componentOperations.createComponentInstance);
   registerCommand(PLUGIN_COMMANDS.CREATE_BUTTON, createButton);
   registerCommand(PLUGIN_COMMANDS.DETACH_INSTANCES, componentOperations.detachInstances);
@@ -228,7 +228,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.GROUP_NODE, layoutOperations.groupOrUngroupNodes);
   registerCommand(PLUGIN_COMMANDS.CONVERT_RECTANGLE_TO_FRAME, shapeOperations.convertRectangleToFrame);
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, deleteNodeUnified);
-  registerCommand(PLUGIN_COMMANDS.CLONE_NODE, layoutOperations.cloneNodeUnified);
+  registerCommand(PLUGIN_COMMANDS.DUPLICATE_NODE, layoutOperations.cloneNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE, layoutOperations.setNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE_PROP, nodeOperations.setNodePropUnified);
 
@@ -237,8 +237,8 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.GET_GRID, getGrid);
   registerCommand(PLUGIN_COMMANDS.SET_GUIDE, setGuide);
   registerCommand(PLUGIN_COMMANDS.GET_GUIDE, getGuide);
-  registerCommand(PLUGIN_COMMANDS.SET_CONSTRAINTS, setConstraints);
-  registerCommand(PLUGIN_COMMANDS.GET_CONSTRAINTS, getConstraints);
+  registerCommand(PLUGIN_COMMANDS.SET_CONSTRAINT, setConstraints);
+  registerCommand(PLUGIN_COMMANDS.GET_CONSTRAINT, getConstraints);
 
   // --- Figma Variables (Design Tokens) ---
   registerCommand(PLUGIN_COMMANDS.SET_VARIABLE, variableOperations.setVariable);
@@ -253,7 +253,7 @@ export function initializeCommands() {
 
   // --- Misc ---
   registerCommand(PLUGIN_COMMANDS.RENAME_LAYER, renameOperations.rename_layer);
-  registerCommand(PLUGIN_COMMANDS.AI_RENAME_LAYERS, utilsOperations.aiRenameLayersUnified);
+  registerCommand(PLUGIN_COMMANDS.AI_RENAME_LAYER, utilsOperations.aiRenameLayersUnified);
   registerCommand(PLUGIN_COMMANDS.SET_VARIANT, setVariant);
   registerCommand(PLUGIN_COMMANDS.GET_VARIANT, getVariant);
   registerCommand(PLUGIN_COMMANDS.GET_ANNOTATION, getAnnotationUnified);
