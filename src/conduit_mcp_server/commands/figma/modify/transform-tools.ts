@@ -49,48 +49,4 @@ Returns:
     }
   );
 
-  // Resize Multiple Nodes Tool
-  server.tool(
-    MCP_COMMANDS.RESIZE_NODES,
-    `Resize multiple nodes in Figma.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the number of nodes resized.
-`,
-    {
-      // Enforce array of Figma node IDs, each must match format
-      nodeIds: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("A Figma node ID to resize. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
-      )
-      .min(1)
-      .max(100)
-      .describe("Array of Figma node IDs to resize. Must contain 1 to 100 items."),
-      // Enforce positive width/height for targetSize, reasonable upper bound
-      targetSize: z.object({
-        width: z.number()
-          .min(1)
-          .max(10000)
-          .describe("The new width for each node, in pixels. Must be a positive number between 1 and 10,000."),
-        height: z.number()
-          .min(1)
-          .max(10000)
-          .describe("The new height for each node, in pixels. Must be a positive number between 1 and 10,000."),
-      })
-      .describe("The target size to apply to all nodes. Must include width and height."),
-    },
-    {
-      title: "Resize Nodes (Batch)",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false
-    },
-    async ({ nodeIds, targetSize }) => {
-      const ids = nodeIds.map(ensureNodeIdIsString);
-      await figmaClient.executeCommand(MCP_COMMANDS.RESIZE_NODES, { nodeIds: ids, targetSize });
-      return { content: [{ type: "text", text: `Resized ${ids.length} nodes` }] };
-    }
-  );
 }

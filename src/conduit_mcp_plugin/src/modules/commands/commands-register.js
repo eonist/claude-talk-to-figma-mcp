@@ -83,7 +83,6 @@ export const PLUGIN_COMMANDS = {
   SUBTRACT_SELECTION: "subtract_selection",
   INTERSECT_SELECTION: "intersect_selection",
   EXCLUDE_SELECTION: "exclude_selection",
-  // RESIZE_NODES: "resize_nodes",
   BOOLEAN: "boolean", // not in use yet
 
   // --- Node Management ---
