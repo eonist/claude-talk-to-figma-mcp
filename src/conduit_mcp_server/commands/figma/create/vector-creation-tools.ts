@@ -171,16 +171,35 @@ Returns:
         }
         const results = await processBatch(
           vectorsArr,
-          async (cfg) => figmaClient.createVector(cfg).then(node => node.id)
+          async (cfg) => {
+            const result = await figmaClient.createVector(cfg);
+            // Support both { id } and { ids: [...] } return shapes
+            if (result && typeof result.id === "string") {
+              return result.id;
+            } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+              return result.ids[0];
+            } else {
+              throw new Error("Failed to create vector: missing node ID from figmaClient.createVector");
+            }
+          }
         );
         const nodeIds = results.map(r => r.result).filter(Boolean);
-        if (nodeIds.length === 1) {
-          return { content: [{ type: "text", text: `Created vector ${nodeIds[0]}` }] };
-        } else {
-          return { content: [{ type: "text", text: `Created vectors: ${nodeIds.join(", ")}` }] };
-        }
+        return {
+          success: true,
+          message: nodeIds.length === 1
+            ? `Vector created successfully.`
+            : `Vectors created successfully.`,
+          nodeIds
+        };
       } catch (err) {
-        return handleToolError(err, "vector-creation-tools", "create_vector") as any;
+        // Return a structured error response.
+        return {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+          }
+        };
       }
     }
   );
