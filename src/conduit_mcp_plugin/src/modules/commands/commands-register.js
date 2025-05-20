@@ -59,8 +59,7 @@ export const PLUGIN_COMMANDS = {
   // --- Styling ---
   GET_STYLES: "get_styles",
   GET_NODE_STYLES: "get_node_styles",
-  SET_FILL_COLOR: "set_fill_color",
-  SET_STROKE_COLOR: "set_stroke_color",
+  SET_FILL_AND_STROKE: "set_fill_and_stroke",
   SET_STYLE: "set_style",
   CREATE_GRADIENT_STYLE: "create_gradient_style",
   SET_GRADIENT: "set_gradient",
@@ -217,8 +216,7 @@ export function initializeCommands() {
   // --- Styling ---
   registerCommand(PLUGIN_COMMANDS.GET_STYLES, styleOperations.getStyles);
   registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLES, getNodeStyles);
-  registerCommand(PLUGIN_COMMANDS.SET_FILL_COLOR, styleOperations.setFillColor);
-  registerCommand(PLUGIN_COMMANDS.SET_STROKE_COLOR, styleOperations.setStrokeColor);
+  registerCommand(PLUGIN_COMMANDS.SET_FILL_AND_STROKE, styleOperations.setFillAndStrokeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_STYLE, styleOperations.setStyle);
   registerCommand(PLUGIN_COMMANDS.CREATE_GRADIENT_STYLE, styleOperations.createGradientStyle);
   registerCommand(PLUGIN_COMMANDS.SET_GRADIENT, styleOperations.setGradient);

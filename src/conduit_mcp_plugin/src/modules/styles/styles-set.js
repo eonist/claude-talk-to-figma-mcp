@@ -9,6 +9,25 @@
  * @param {boolean} [entry.delete] - If true, deletes the style (ignores properties)
  * @returns {Promise<object>} Result: { styleId, styleType, action, success, [error] }
  */
+export async function setFillAndStrokeUnified(params) {
+  const { nodeId, nodeIds, fill, stroke } = params;
+  const ids = nodeIds || (nodeId ? [nodeId] : []);
+  if (!ids.length) throw new Error("No node IDs provided");
+  const results = [];
+  for (const id of ids) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (!node) throw new Error(`Node not found: ${id}`);
+    if ("fill" in params) node.fills = Array.isArray(fill) ? fill : [fill];
+    if ("stroke" in params) node.strokes = Array.isArray(stroke) ? stroke : [stroke];
+    results.push({
+      id,
+      ...( "fill" in params ? { fill: node.fills } : {} ),
+      ...( "stroke" in params ? { stroke: node.strokes } : {} )
+    });
+  }
+  return { results };
+}
+
 export async function setStyle(entry) {
   const { styleId, styleType, properties, delete: del } = entry || {};
   let style = null;
