@@ -79,10 +79,6 @@ export const PLUGIN_COMMANDS = {
   RESIZE_NODE: "resize_node",
   FLATTEN_NODE: "flatten_node",
   // we call these from boolean in server, we will fix that later
-  UNION_SELECTION: "union_selection",
-  SUBTRACT_SELECTION: "subtract_selection",
-  INTERSECT_SELECTION: "intersect_selection",
-  EXCLUDE_SELECTION: "exclude_selection",
   BOOLEAN: "boolean", // not in use yet
 
   // --- Node Management ---
@@ -127,21 +123,19 @@ export const PLUGIN_COMMANDS = {
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
-import { createBoundedText } from '../text/text-create.js';
 import { setParagraphSpacingUnified, setLineHeightUnified, setLetterSpacingUnified, setTextCaseUnified, setTextDecorationUnified } from '../text/text-edit.js';
 import * as styleOperations from '../styles.js';
 import * as componentOperations from '../components.js';
 import * as layoutOperations from '../layout.js';
 import { setAutoLayoutUnified } from '../layout/layout-auto.js';
-import { createGrid, updateGrid, removeGrid } from '../layout/layout-grid.js';
 import { setGrid, getGrid } from '../layout/layout-grid-unified.js';
 import { setGuide, getGuide } from '../layout/layout-guide.js';
 import { setConstraints, getConstraints } from '../layout/layout-constraint.js';
 import { setPage, getPage } from '../document/document-page.js';
 import { setVariant, getVariant } from '../components/component-variant.js';
 import * as renameOperations from '../rename.js';
-import { setNodeLocked, setNodeVisible, reorderNode, reorderNodes } from '../node/node-modify.js';
-import HTMLGenerator, { generateHtmlUnified } from '../html-generator.js';
+import { setNodeLocked, setNodeVisible, reorderNodes } from '../node/node-modify.js';
+import { generateHtmlUnified } from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePageUnified } from '../document/document-duplicate.js';
@@ -179,7 +173,6 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_SELECTION, documentOperations.setSelection);
   registerCommand(PLUGIN_COMMANDS.GET_NODE_INFO, documentOperations.getNodeInfo);
   registerCommand(PLUGIN_COMMANDS.GET_CSS_ASYNC, documentOperations.getCssAsync);
-
   // Image Operations (Unified)
   registerCommand(PLUGIN_COMMANDS.INSERT_IMAGE, imageOperations.insertImage);
   registerCommand(PLUGIN_COMMANDS.INSERT_SVG_VECTOR, insertSvgVector);
@@ -194,60 +187,44 @@ export function initializeCommands() {
   // Vector creation (merged, create_rectangle style)
   registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, shapeOperations.createVectorUnified);
   registerCommand(PLUGIN_COMMANDS.CREATE_LINE, shapeOperations.createLine);
-
   // Unified grid commands (setGrid, getGrid)
   registerCommand(PLUGIN_COMMANDS.SET_GRID, setGrid);
   registerCommand(PLUGIN_COMMANDS.GET_GRID, getGrid);
-
   // Unified guide commands (setGuide, getGuide)
   registerCommand(PLUGIN_COMMANDS.SET_GUIDE, setGuide);
   registerCommand(PLUGIN_COMMANDS.GET_GUIDE, getGuide);
-
   // Unified constraint commands (setConstraints, getConstraints)
   registerCommand(PLUGIN_COMMANDS.SET_CONSTRAINTS, setConstraints);
   registerCommand(PLUGIN_COMMANDS.GET_CONSTRAINTS, getConstraints);
-
   // Unified page commands (setPage, getPage, getPages)
   registerCommand(PLUGIN_COMMANDS.SET_PAGE, setPage);
   registerCommand(PLUGIN_COMMANDS.GET_PAGE, getPage);
   registerCommand(PLUGIN_COMMANDS.GET_PAGES, documentOperations.getPages);
-
   // Unified variant commands (setVariant, getVariant)
   registerCommand(PLUGIN_COMMANDS.SET_VARIANT, setVariant);
   registerCommand(PLUGIN_COMMANDS.GET_VARIANT, getVariant);
-
   // Resize operation (merged, create_rectangle style)
   registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, shapeOperations.resizeNodeUnified);
-
   // Delete operation (supports single or array)
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, deleteNodeUnified);
   // Move operations
   registerCommand(PLUGIN_COMMANDS.MOVE_NODE, shapeOperations.moveNode);
-  // Flatten
-
   // Node lock/visibility operations
   registerCommand(PLUGIN_COMMANDS.SET_NODE_LOCKED, setNodeLocked);
   registerCommand(PLUGIN_COMMANDS.SET_NODE_VISIBLE, setNodeVisible);
-
   // Layer reorder operations
   registerCommand(PLUGIN_COMMANDS.REORDER_NODES, reorderNodes);
-
   // Unified boolean operation command
   registerCommand(PLUGIN_COMMANDS.BOOLEAN, shapeOperations.boolean);
-
   // Rectangle to Frame conversion command
   registerCommand(PLUGIN_COMMANDS.CONVERT_RECTANGLE_TO_FRAME, shapeOperations.convertRectangleToFrame);
-
   // Annotation commands
   registerCommand(PLUGIN_COMMANDS.GET_ANNOTATION, getAnnotationUnified);
-
   registerCommand(PLUGIN_COMMANDS.SET_ANNOTATION, setAnnotationUnified);
-
   registerCommand(PLUGIN_COMMANDS.CREATE_TEXT, textOperations.createTextUnified);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_CONTENT, textOperations.setTextContent);
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_STYLE, textOperations.setTextStyle);
   registerCommand(PLUGIN_COMMANDS.SCAN_TEXT_NODES, textOperations.scanTextNodes);
-
   registerCommand(PLUGIN_COMMANDS.SET_LETTER_SPACING, textOperations.setLetterSpacing);
   registerCommand(PLUGIN_COMMANDS.SET_LINE_HEIGHT, textOperations.setLineHeight);
   registerCommand(PLUGIN_COMMANDS.SET_PARAGRAPH_SPACING, setParagraphSpacingUnified);
@@ -257,11 +234,6 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_TEXT_DECORATION, setTextDecorationUnified);
   registerCommand(PLUGIN_COMMANDS.GET_STYLED_TEXT_SEGMENTS, textOperations.getStyledTextSegments);
   registerCommand(PLUGIN_COMMANDS.LOAD_FONT_ASYNC, textOperations.loadFontAsyncWrapper);
-
-  /*
-  // variableOperations is now defined globally by variables.js in the build output.
-  */
-
   // Style Operations
   registerCommand(PLUGIN_COMMANDS.SET_FILL_COLOR, styleOperations.setFillColor);
   registerCommand(PLUGIN_COMMANDS.SET_STROKE_COLOR, styleOperations.setStrokeColor);
@@ -287,47 +259,33 @@ export function initializeCommands() {
   // Gradient Operations (Unified)
   registerCommand(PLUGIN_COMMANDS.CREATE_GRADIENT_STYLE, styleOperations.createGradientStyle);
   registerCommand(PLUGIN_COMMANDS.SET_GRADIENT, styleOperations.setGradient);
-
   // Detach Instance Tool (calls batch logic for DRYness)
-  // Detach Instances Tool (Batch)
   registerCommand(PLUGIN_COMMANDS.DETACH_INSTANCES, componentOperations.detachInstances);
-
   registerCommand(PLUGIN_COMMANDS.RENAME_LAYER, renameOperations.rename_layer);
-
   // AI-powered rename of specified layers
   registerCommand(PLUGIN_COMMANDS.AI_RENAME_LAYERS, utilsOperations.aiRenameLayersUnified);
-
   // Group/Ungroup operations
   registerCommand(PLUGIN_COMMANDS.GROUP_OR_UNGROUP_NODES, layoutOperations.groupOrUngroupNodes);
-
   // Auto Layout operations
   registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT, setAutoLayoutUnified);
   registerCommand(PLUGIN_COMMANDS.SET_AUTO_LAYOUT_RESIZING, layoutOperations.setAutoLayoutResizing);
-
   // Unified event subscription command
   registerCommand(PLUGIN_COMMANDS.SUBSCRIBE_EVENT, utilsOperations.subscribeEventUnified);
-
   // Insert child node operation (merged, create_rectangle style)
   registerCommand(PLUGIN_COMMANDS.INSERT_CHILD, layoutOperations.insertChildUnified);
-
   // Clone node operation (merged, create_rectangle style)
   registerCommand(PLUGIN_COMMANDS.CLONE_NODE, layoutOperations.cloneNodeUnified);
-
   // Node style inspection
   registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLES, getNodeStyles);
   registerCommand(PLUGIN_COMMANDS.GET_SVG_VECTOR, getSvgVector);
   registerCommand(PLUGIN_COMMANDS.GET_IMAGE, getImage);
   registerCommand(PLUGIN_COMMANDS.GET_TEXT_STYLE, getTextStyle);
-
   // Batch flatten nodes operation
   registerCommand(PLUGIN_COMMANDS.FLATTEN_NODE, layoutOperations.flatten_nodes);
-
   // UI Component operations
   registerCommand(PLUGIN_COMMANDS.GENERATE_HTML, generateHtmlUnified);
-
   // Button creation
   registerCommand(PLUGIN_COMMANDS.CREATE_BUTTON, createButton);
-
   // Duplicate Page (MCP-only, no UI)
   registerCommand(PLUGIN_COMMANDS.DUPLICATE_PAGE, duplicatePageUnified);
 }
