@@ -19,9 +19,18 @@ export const SingleRectangleSchema = z.object({
   parentId: z.string()
     .describe("The Figma node ID of the parent to attach the rectangle to. If omitted, the rectangle is added to the root.")
     .optional(),
-cornerRadius: z.number().min(0, "cornerRadius must be >= 0")
-  .describe("The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8")
-  .optional()
+  cornerRadius: z.number().min(0, "cornerRadius must be >= 0")
+    .describe("The corner radius (in pixels) for rounded corners. Must be >= 0. Example: 8")
+    .optional(),
+  fillColor: z.any()
+    .describe("Optional RGBA fill color for the rectangle. Example: { r: 0.2235, g: 1, b: 0.0784, a: 1 }")
+    .optional(),
+  strokeColor: z.any()
+    .describe("Optional RGBA stroke color for the rectangle. Example: { r: 0, g: 0, b: 0, a: 1 }")
+    .optional(),
+  strokeWeight: z.number()
+    .describe("Optional stroke weight for the rectangle.")
+    .optional()
 });
 
 export const BatchRectanglesSchema = z.array(SingleRectangleSchema);

@@ -24,6 +24,7 @@ import { setFill, setStroke } from "./shapes-helpers.js";
  * const batchResult = await createRectangle({ rectangles: [{ width: 50 }, { width: 60 }] });
  */
 export async function createRectangle(params) {
+  console.log("💥 PLUGIN createRectangle params:", params);
   let rectanglesArr;
   if (params.rectangles) {
     rectanglesArr = params.rectangles;
@@ -52,8 +53,38 @@ export async function createRectangle(params) {
       console.log("💥 PLUGIN: No valid cornerRadius provided, value is:", cfg.cornerRadius);
     }
 
-    if (fillColor) setFill(rect, fillColor);
-    if (strokeColor) setStroke(rect, strokeColor, strokeWeight);
+    // Fill color validation and application
+    if (
+      fillColor &&
+      typeof fillColor === "object" &&
+      typeof fillColor.r === "number" &&
+      typeof fillColor.g === "number" &&
+      typeof fillColor.b === "number"
+    ) {
+      console.log("💥 PLUGIN: Applying fillColor:", fillColor);
+      setFill(rect, fillColor);
+    } else if (fillColor) {
+      console.warn("💥 PLUGIN: Invalid fillColor provided:", fillColor);
+    }
+
+    // Stroke color and weight validation and application
+    if (
+      strokeColor &&
+      typeof strokeColor === "object" &&
+      typeof strokeColor.r === "number" &&
+      typeof strokeColor.g === "number" &&
+      typeof strokeColor.b === "number"
+    ) {
+      if (typeof strokeWeight === "number") {
+        console.log("💥 PLUGIN: Applying strokeColor and strokeWeight:", strokeColor, strokeWeight);
+        setStroke(rect, strokeColor, strokeWeight);
+      } else {
+        console.log("💥 PLUGIN: Applying strokeColor (no valid strokeWeight):", strokeColor);
+        setStroke(rect, strokeColor);
+      }
+    } else if (strokeColor) {
+      console.warn("💥 PLUGIN: Invalid strokeColor provided:", strokeColor);
+    }
 
     const parent = parentId
       ? await figma.getNodeByIdAsync(parentId)
