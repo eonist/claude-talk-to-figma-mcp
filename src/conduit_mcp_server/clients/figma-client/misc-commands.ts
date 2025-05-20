@@ -47,8 +47,8 @@ export const miscCommands = {
    * Gets all pages in the document.
    * @returns {Promise<Array<{ id: string, name: string, childCount: number }>>}
    */
-  async getPages(this: FigmaClient): Promise<Array<{ id: string, name: string, childCount: number }>> {
-    return this.executeCommand(MCP_COMMANDS.GET_PAGES);
+  async getDocPages(this: FigmaClient): Promise<Array<{ id: string, name: string, childCount: number }>> {
+    return this.executeCommand(MCP_COMMANDS.GET_DOC_PAGES);
   },
   /**
    * Inserts an image node into Figma from a URL or data.

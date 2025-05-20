@@ -22,7 +22,7 @@
  * @property {function} setCurrentPage - Set the current active page.
  * @property {function} createPage - Create a new page.
  */
-import { getDocumentInfo, getPages, setCurrentPage, createPage } from './document/document-info.js';
+import { getDocumentInfo, getDocPages, setCurrentPage, createPage } from './document/document-info.js';
 import { getSelection, setSelection } from './document/document-selection.js';
 import { getNodeInfo, ensureNodeIdIsString } from './document/document-node.js';
 import { getCssAsync } from './document/document-css.js';
@@ -34,7 +34,7 @@ export const documentOperations = {
   getNodeInfo,
   ensureNodeIdIsString,
   getCssAsync,
-  getPages,
+  getDocPages,
   setCurrentPage,
   createPage
 };

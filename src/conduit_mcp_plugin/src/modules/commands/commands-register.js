@@ -16,7 +16,7 @@ export const PLUGIN_COMMANDS = {
 
   // --- Pages ---
   GET_PAGE: "get_page",
-  GET_PAGES: "get_pages",
+  GET_DOC_PAGES: "get_doc_pages",
   SET_PAGE: "set_page",
   DUPLICATE_PAGE: "duplicate_page",
 
@@ -173,7 +173,7 @@ export function initializeCommands() {
 
   // --- Pages ---
   registerCommand(PLUGIN_COMMANDS.GET_PAGE, getPage);
-  registerCommand(PLUGIN_COMMANDS.GET_PAGES, documentOperations.getPages);
+  registerCommand(PLUGIN_COMMANDS.GET_DOC_PAGES, documentOperations.getPages);
   registerCommand(PLUGIN_COMMANDS.SET_PAGE, setPage);
   registerCommand(PLUGIN_COMMANDS.DUPLICATE_PAGE, duplicatePageUnified);
 

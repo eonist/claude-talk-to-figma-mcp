@@ -1,6 +1,6 @@
 /**
  * Document info operations for Figma.
- * Exports: getDocumentInfo, getPages, setCurrentPage, createPage
+ * Exports: getDocumentInfo, getDocPages, setCurrentPage, createPage
  */
 
 /**
@@ -49,12 +49,12 @@ export async function getDocumentInfo() {
  * @function
  * @returns {Promise<Array<{id: string, name: string, childCount: number}>>} An array of page information objects.
  */
-export async function getPages() {
+export async function getDocPages() {
   const pages = figma.root.children;
   return pages.map(page => ({
     id: page.id,
     name: page.name,
-    childCount: (page.children ? page.children.length : 0)
+    childCount: page.children.length
   }));
 }
 

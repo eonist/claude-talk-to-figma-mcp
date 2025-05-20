@@ -56,9 +56,9 @@ Returns:
     }
   );
 
-  // New: get_pages tool
+  // New: get_doc_pages tool
   server.tool(
-    MCP_COMMANDS.GET_PAGES,
+    MCP_COMMANDS.GET_DOC_PAGES,
     `Get information about all pages in the current Figma document.
 
 Returns:

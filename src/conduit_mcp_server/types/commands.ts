@@ -116,7 +116,7 @@ export const MCP_COMMANDS = {
 
   // --- Pages ---
   GET_PAGE: "getPage", // Get info for a page
-  GET_PAGES: "get_pages", // Get all pages in the current Figma document
+  GET_DOC_PAGES: "get_doc_pages", // Get all pages in the current Figma document
   SET_PAGE: "setPage", // Set the current page
   DUPLICATE_PAGE: "duplicate_page", // Duplicate a Figma page and all its children as a new page
 
