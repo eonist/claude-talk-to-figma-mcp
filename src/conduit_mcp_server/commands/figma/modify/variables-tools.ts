@@ -29,165 +29,109 @@ export function registerVariableTools(server: McpServer, figmaClient: FigmaClien
     description: z.string().optional(),
   });
 
-  // Create Variable(s)
-  const CreateVariableParamsSchema = z.object({
-    variables: z.union([
-      VariableDefSchema,
-      z.array(VariableDefSchema).min(1).max(50)
-    ])
-  });
+  // Unified Variable Operation Schema
+  const VariableOpShape = {
+    variables: z
+      .union([
+        VariableDefSchema,
+        VariableDefSchema.extend({ id: z.string().min(1) }),
+        z.array(VariableDefSchema).min(1).max(50),
+        z.array(VariableDefSchema.extend({ id: z.string().min(1) })).min(1).max(50)
+      ])
+      .optional(),
+    ids: z
+      .union([
+        z.string().min(1),
+        z.array(z.string().min(1)).min(1).max(50)
+      ])
+      .optional()
+  };
+  const VariableOpSchema = z.object(VariableOpShape).refine(
+    (data) => !!data.variables || !!data.ids,
+    { message: "Either 'variables' or 'ids' must be provided." }
+  );
 
   server.tool(
     MCP_COMMANDS.SET_VARIABLE,
-    `Creates one or more Figma Variables (design tokens).
+    `Creates, updates, or deletes one or more Figma Variables (design tokens).
 
 Params:
-  - variables: Either a single variable definition or an array of variable definitions.
+  - variables: For create/update. Either a single variable definition, a single update (with id), or an array of either.
+  - ids: For delete. Either a single variable id or an array of ids.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the created variable(s) ID(s) or a summary.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the result or summary.
 `,
-    CreateVariableParamsSchema.shape,
+    VariableOpShape,
     {
-      title: "Create Figma Variable (Single or Batch)",
+      title: "Create/Update/Delete Figma Variable(s)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
         { variables: { name: "Primary Color", type: "COLOR", value: "#3366FF", collection: "Theme" } },
-        { variables: [
-          { name: "Spacing XS", type: "NUMBER", value: 4, collection: "Spacing" },
-          { name: "Font Family", type: "STRING", value: "Inter", collection: "Typography" }
-        ]}
-      ]),
-      edgeCaseWarnings: [
-        "Name must be a non-empty string.",
-        "Type must be one of COLOR, NUMBER, STRING, BOOLEAN.",
-        "Value must match the type."
-      ],
-      extraInfo: "Creates one or more reusable Figma Variables (design tokens)."
-    },
-    async ({ variables }) => {
-      const variableList = Array.isArray(variables) ? variables : [variables];
-      // Type validation for value can be added here
-      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { variables: variableList });
-      return {
-        content: [
-          {
-            type: "text",
-            text: variableList.length === 1
-              ? `Created variable ${results[0]?.id || ""}`
-              : `Batch created ${results.length} variables`
-          }
-        ],
-        _meta: { results }
-      };
-    }
-  );
-
-  // Update Variable(s)
-  const UpdateVariableParamsSchema = z.object({
-    variables: z.union([
-      VariableDefSchema.extend({ id: z.string().min(1) }),
-      z.array(VariableDefSchema.extend({ id: z.string().min(1) })).min(1).max(50)
-    ])
-  });
-
-  server.tool(
-    MCP_COMMANDS.SET_VARIABLE,
-    `Updates one or more Figma Variables.
-
-Params:
-  - variables: Either a single variable update or an array of updates (must include id).
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the updated variable(s) ID(s) or a summary.
-`,
-    UpdateVariableParamsSchema.shape,
-    {
-      title: "Update Figma Variable (Single or Batch)",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
         { variables: { id: "var123", name: "Primary Color", value: "#123456" } },
         { variables: [
-          { id: "var123", value: "#654321" },
-          { id: "var456", value: 8 }
-        ]}
-      ]),
-      edgeCaseWarnings: [
-        "Each variable must include an id.",
-        "Value must match the type."
-      ],
-      extraInfo: "Updates one or more Figma Variables."
-    },
-    async ({ variables }) => {
-      const variableList = Array.isArray(variables) ? variables : [variables];
-      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { variables: variableList });
-      return {
-        content: [
-          {
-            type: "text",
-            text: variableList.length === 1
-              ? `Updated variable ${results[0]?.id || ""}`
-              : `Batch updated ${results.length} variables`
-          }
-        ],
-        _meta: { results }
-      };
-    }
-  );
-
-  // Delete Variable(s)
-  const DeleteVariableParamsSchema = z.object({
-    ids: z.union([
-      z.string().min(1),
-      z.array(z.string().min(1)).min(1).max(50)
-    ])
-  });
-
-  server.tool(
-    MCP_COMMANDS.SET_VARIABLE,
-    `Deletes one or more Figma Variables.
-
-Params:
-  - ids: Either a single variable id or an array of ids.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the deleted variable(s) ID(s) or a summary.
-`,
-    DeleteVariableParamsSchema.shape,
-    {
-      title: "Delete Figma Variable (Single or Batch)",
-      idempotentHint: false,
-      destructiveHint: true,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
+          { name: "Spacing XS", type: "NUMBER", value: 4, collection: "Spacing" },
+          { id: "var123", value: "#654321" }
+        ]},
         { ids: "var123" },
         { ids: ["var123", "var456"] }
       ]),
       edgeCaseWarnings: [
-        "Each id must be a non-empty string."
+        "Name must be a non-empty string for create.",
+        "Type must be one of COLOR, NUMBER, STRING, BOOLEAN.",
+        "Value must match the type.",
+        "Each update must include an id.",
+        "Each id must be a non-empty string for delete."
       ],
-      extraInfo: "Deletes one or more Figma Variables."
+      extraInfo: "Creates, updates, or deletes Figma Variables (design tokens) depending on which parameters are provided."
     },
-    async ({ ids }) => {
-      const idList = Array.isArray(ids) ? ids : [ids];
-      const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { ids: idList });
+    async (params) => {
+      if (params.ids) {
+        // Delete operation
+        const idList = Array.isArray(params.ids) ? params.ids : [params.ids];
+        const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { ids: idList });
+        return {
+          content: [
+            {
+              type: "text",
+              text: idList.length === 1
+                ? `Deleted variable ${idList[0]}`
+                : `Batch deleted ${idList.length} variables`
+            }
+          ],
+          _meta: { results }
+        };
+      } else if (params.variables) {
+        const variableList = Array.isArray(params.variables) ? params.variables : [params.variables];
+        // If all have id, treat as update; if none have id, treat as create; if mixed, handle accordingly
+        const isUpdate = variableList.every(v => "id" in v);
+        const isCreate = variableList.every(v => !("id" in v));
+        const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { variables: variableList });
+        return {
+          content: [
+            {
+              type: "text",
+              text: isCreate
+                ? (variableList.length === 1
+                    ? `Created variable ${results[0]?.id || ""}`
+                    : `Batch created ${results.length} variables`)
+                : (isUpdate
+                    ? (variableList.length === 1
+                        ? `Updated variable ${results[0]?.id || ""}`
+                        : `Batch updated ${results.length} variables`)
+                    : `Processed ${results.length} variables (mixed create/update)`)
+            }
+          ],
+          _meta: { results }
+        };
+      }
       return {
         content: [
-          {
-            type: "text",
-            text: idList.length === 1
-              ? `Deleted variable ${idList[0]}`
-              : `Batch deleted ${idList.length} variables`
-          }
-        ],
-        _meta: { results }
+          { type: "text", text: "No operation performed. Provide 'variables' or 'ids'." }
+        ]
       };
     }
   );
@@ -201,7 +145,7 @@ Returns:
   });
 
   server.tool(
-    MCP_COMMANDS.GET_VARIABLES,
+    MCP_COMMANDS.GET_VARIABLE,
     `Queries Figma Variables.
 
 Params:
@@ -229,7 +173,7 @@ Returns:
       extraInfo: "Queries Figma Variables by type, collection, mode, or ids."
     },
     async (params) => {
-      const results = await figmaClient.executeCommand(MCP_COMMANDS.GET_VARIABLES, params);
+      const results = await figmaClient.executeCommand(MCP_COMMANDS.GET_VARIABLE, params);
       return {
         content: [
           {

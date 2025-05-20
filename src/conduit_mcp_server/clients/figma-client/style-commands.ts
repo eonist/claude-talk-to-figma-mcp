@@ -88,6 +88,6 @@ export const styleCommands = {
     this: FigmaClient,
     params: any = {}
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.GET_STYLES, params);
+    return this.executeCommand(MCP_COMMANDS.GET_STYLE, params);
   }
 };

@@ -121,7 +121,7 @@ export const layoutCommands = {
     this: FigmaClient,
     params: any
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.SET_CONSTRAINTS, params);
+    return this.executeCommand(MCP_COMMANDS.SET_CONSTRAINT, params);
   },
 
   /**
@@ -133,7 +133,7 @@ export const layoutCommands = {
     this: FigmaClient,
     params: any
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.GET_CONSTRAINTS, params);
+    return this.executeCommand(MCP_COMMANDS.GET_CONSTRAINT, params);
   },
 
   /**

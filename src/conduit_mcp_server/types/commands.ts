@@ -192,7 +192,7 @@ export const MCP_COMMANDS = {
 
   // --- Figma Variables (Design Tokens) ---
   SET_VARIABLE: "set_variable", // Create, update, or delete one or more Figma Variables (design tokens)
-  GET_VARIABLES: "get_variables", // Query Figma Variables by type, collection, mode, or IDs
+  GET_VARIABLE: "get_variable", // Query Figma Variables by type, collection, mode, or IDs
   APPLY_VARIABLE_TO_NODE: "apply_variable_to_node", // Apply a Figma Variable to a node property
   SWITCH_VARIABLE_MODE: "switch_variable_mode", // Switch the mode for a Figma Variable collection
 

@@ -22,7 +22,7 @@ export async function setVariable(client: FigmaClient, params: SetVariableParams
  * @param params { type?, collection?, mode?, ids? }
  */
 export async function getVariables(client: FigmaClient, params: any) {
-  return client.executeCommand(MCP_COMMANDS.GET_VARIABLES, params);
+  return client.executeCommand(MCP_COMMANDS.GET_VARIABLE, params);
 }
 
 /**

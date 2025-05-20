@@ -23,7 +23,7 @@ import { MCP_COMMANDS } from "../../../../types/commands.js";
 export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient) {
   // Set Effect Style ID
   server.tool(
-    MCP_COMMANDS.SET_EFFECT_STYLE_ID,
+    MCP_COMMANDS.APPLY_EFFECT_STYLE,
     `Applies an effect style to a node in Figma.
 
 Returns:

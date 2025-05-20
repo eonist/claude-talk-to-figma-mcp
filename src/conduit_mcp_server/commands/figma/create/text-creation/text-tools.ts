@@ -20,7 +20,7 @@ import { handleToolError } from "../../../../utils/error-handling.js";
 export function registerTextTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch text creation (regular and bounded)
   server.tool(
-    MCP_COMMANDS.CREATE_TEXT,
+    MCP_COMMANDS.SET_TEXT,
     `Creates one or more text elements in Figma. Accepts either a single text config (via 'text') or an array of configs (via 'texts').
 If 'width' and 'height' are provided, creates a bounded text box; otherwise, creates a regular text node.
 

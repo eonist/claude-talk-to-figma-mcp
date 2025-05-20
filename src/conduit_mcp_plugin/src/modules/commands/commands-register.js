@@ -94,7 +94,7 @@ export const PLUGIN_COMMANDS = {
 
   // --- Figma Variables (Design Tokens) ---
   SET_VARIABLE: "set_variable",
-  GET_VARIABLES: "get_variables",
+  GET_VARIABLE: "get_variable",
   APPLY_VARIABLE_TO_NODE: "apply_variable_to_node",
   SWITCH_VARIABLE_MODE: "switch_variable_mode",
 
@@ -243,7 +243,7 @@ export function initializeCommands() {
 
   // --- Figma Variables (Design Tokens) ---
   registerCommand(PLUGIN_COMMANDS.SET_VARIABLE, variableOperations.setVariable);
-  registerCommand(PLUGIN_COMMANDS.GET_VARIABLES, variableOperations.getVariables);
+  registerCommand(PLUGIN_COMMANDS.GET_VARIABLE, variableOperations.getVariables);
   registerCommand(PLUGIN_COMMANDS.APPLY_VARIABLE_TO_NODE, variableOperations.applyVariableToNode);
   registerCommand(PLUGIN_COMMANDS.SWITCH_VARIABLE_MODE, variableOperations.switchVariableMode);
 

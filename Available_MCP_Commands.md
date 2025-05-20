@@ -200,7 +200,7 @@ Query Figma Variables by type, collection, mode, or IDs.
 
 **Example:**
 ```json
-{ "command": "get_variables", "params": {
+{ "command": "get_variable", "params": {
   "type": "COLOR",
   "collection": "Theme"
 } }

@@ -268,16 +268,108 @@ export interface SetNodePropParams {
 }
 
 export interface CommandParamsMap {
-  set_text_style: SetTextStyleParams;
-  get_node_styles: GetNodeStylesParams;
-  get_svg_vector: GetSvgVectorParams;
-  get_image: GetImageParams;
+  // --- Communication ---
+  join: any;
+
+  // --- Document and Information ---
+  get_document_info: any;
+  get_selection: any;
+  set_selection: any;
+  get_node_info: any;
+
+  // --- Pages ---
+  getPage: any;
+  get_doc_pages: any;
+  setPage: any;
+  duplicate_page: any;
+
+  // --- Shapes ---
+  create_rectangle: any;
+  create_frame: any;
+  create_line: any;
+  create_ellipse: any;
+  create_polygon: any;
+  create_star: any;
+  create_vector: any;
+
+  // --- Text ---
+  set_text: any;
+  set_text_content: any;
+  get_styled_text_segments: any;
   get_text_style: GetTextStyleParams;
-  set_paragraph_spacing: SetParagraphSpacingParams;
-  set_line_height: SetLineHeightParams;
-  set_letter_spacing: SetLetterSpacingParams;
-  set_text_case: SetTextCaseParams;
-  set_variable: SetVariableParams;
+  set_text_style: SetTextStyleParams;
+  scan_text_nodes: any;
+  load_font_async: any;
+
+  // --- Components ---
+  get_components: any;
+  create_components_from_node: any;
+  create_component_instance: any;
+  create_button: any;
+  detach_instances: any;
+
+  // --- Images and SVG ---
+  get_image: GetImageParams;
+  set_image: any;
+  set_svg_vector: any;
+  get_svg_vector: GetSvgVectorParams;
+
+  // --- Styling ---
+  get_style: any;
+  get_node_styles: GetNodeStylesParams;
+  set_fill_and_stroke: any;
+  set_style: any;
+  create_gradient_style: any;
+  set_gradient: any;
+
+  // --- Effects and Layout ---
+  create_effect_style_variable: any;
+  set_effect: any;
+  apply_effect_style: any;
+  set_auto_layout: SetAutoLayoutParams;
+  set_auto_layout_resizing: any;
+  set_corner_radius: any;
+
+  // --- Positioning & Sizing & Boolean Operations ---
+  move_node: any;
+  reorder_node: any;
+  resize_node: any;
+  flatten_node: any;
+  boolean: any;
+
+  // --- Node Management ---
+  group_node: any;
+  convert_rectangle_to_frame: any;
+  delete_node: any;
+  duplicate_node: any;
+  set_node: any;
   set_node_prop: SetNodePropParams;
-  // ...other command mappings
+
+  // --- Grids, Guides, and Constraints ---
+  set_grid: any;
+  get_grid: any;
+  set_guide: any;
+  get_guide: any;
+  set_constraint: any;
+  get_constraint: any;
+
+  // --- Figma Variables (Design Tokens) ---
+  set_variable: SetVariableParams;
+  get_variable: any;
+  apply_variable_to_node: any;
+  switch_variable_mode: any;
+
+  // --- Export ---
+  export_node_as_image: any;
+  get_html: any;
+  get_css_async: any;
+
+  // --- Misc ---
+  rename_layer: any;
+  ai_rename_layer: any;
+  set_variant: any;
+  get_variant: any;
+  subscribe_event: any;
+  get_annotation: any;
+  set_annotation: any;
 }
