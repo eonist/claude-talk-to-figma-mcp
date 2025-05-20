@@ -115,20 +115,34 @@ Returns:
           ellipsesArr,
           async cfg => {
             const params = { ...cfg, commandId: uuidv4() };
-            // Only pass commandId if createEllipse supports it, otherwise omit
-            const node = await figmaClient.createEllipse(params);
-            return node.id;
+            const result = await figmaClient.createEllipse(params);
+            // Support both { id } and { ids: [...] } return shapes
+            if (result && typeof result.id === "string") {
+              return result.id;
+            } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+              return result.ids[0];
+            } else {
+              throw new Error("Failed to create ellipse: missing node ID from figmaClient.createEllipse");
+            }
           }
         );
         const nodeIds = results.map(r => r.result).filter(Boolean);
-        if (nodeIds.length === 1) {
-          return { content: [{ type: "text", text: `Created ellipse ${nodeIds[0]}` }] };
-        } else {
-          return { content: [{ type: "text", text: `Created ellipses: ${nodeIds.join(", ")}` }] };
-        }
+        return {
+          success: true,
+          message: nodeIds.length === 1
+            ? `Ellipse created successfully.`
+            : `Ellipses created successfully.`,
+          nodeIds
+        };
       } catch (err) {
-        // Handle errors and return a formatted error response.
-        return handleToolError(err, "shape-creation-tools", "create_ellipse") as any;
+        // Return a structured error response.
+        return {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+          }
+        };
       }
     }
   );
