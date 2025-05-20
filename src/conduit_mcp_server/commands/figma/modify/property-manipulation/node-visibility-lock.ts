@@ -25,58 +25,40 @@ const VisibleSchema = z.object({
 );
 
 export function registerNodeLockVisibilityCommands(server, figmaClient) {
-  // Unified lock/unlock
+  // Unified set_node_prop (locked, visible, etc.)
   server.tool(
-    MCP_COMMANDS.SET_NODE_LOCKED,
-    "Locks or unlocks one or more nodes.",
-    LockSchema,
-    async (params: { nodeId?: string; nodeIds?: string[]; locked: boolean }) => {
+    MCP_COMMANDS.SET_NODE_PROP,
+    "Sets node properties (locked, visible, etc.) for one or more nodes.",
+    z.object({
+      nodeId: NodeIdSchema.optional(),
+      nodeIds: NodeIdsSchema.optional(),
+      properties: z.object({
+        locked: z.boolean().optional(),
+        visible: z.boolean().optional(),
+      }).refine(obj => Object.keys(obj).length > 0, { message: "At least one property must be specified." })
+    }).refine(
+      (data) => !!data.nodeId !== !!data.nodeIds,
+      { message: "Provide either nodeId or nodeIds, not both." }
+    ),
+    async (params: { nodeId?: string; nodeIds?: string[]; properties: { locked?: boolean; visible?: boolean } }) => {
       try {
-        if (params.nodeId) {
-          await figmaClient.setNodeLocked({ nodeId: params.nodeId, locked: params.locked });
-          return { content: [{ type: "text", text: `Node ${params.nodeId} ${params.locked ? "locked" : "unlocked"}.` }] };
-        } else if (params.nodeIds) {
-          const results = await Promise.all(
-            params.nodeIds.map((nodeId: string) =>
-              figmaClient.setNodeLocked({ nodeId, locked: params.locked })
-                .then(() => ({ nodeId, success: true }))
-                .catch((e: any) => ({ nodeId, success: false, error: e.message }))
-            )
-          );
-          return { content: [{ type: "text", text: `${params.locked ? "Locked" : "Unlocked"} nodes: ${results.map((r: { nodeId: string }) => r.nodeId).join(", ")}` }] };
-        } else {
-          throw new Error("Must provide nodeId or nodeIds");
+        const ids = params.nodeIds || (params.nodeId ? [params.nodeId] : []);
+        if (!ids.length) throw new Error("No node IDs provided");
+        const results = [];
+        for (const id of ids) {
+          const node = await figmaClient.getNodeById(id);
+          if (!node) throw new Error(`Node not found: ${id}`);
+          if ("locked" in params.properties) node.locked = params.properties.locked;
+          if ("visible" in params.properties) node.visible = params.properties.visible;
+          results.push({
+            id,
+            ...( "locked" in params.properties ? { locked: node.locked } : {} ),
+            ...( "visible" in params.properties ? { visible: node.visible } : {} )
+          });
         }
+        return { content: results };
       } catch (err: any) {
-        return handleToolError(err, "node-visibility-lock", "set_node_locked");
-      }
-    }
-  );
-
-  // Unified hide/show
-  server.tool(
-    MCP_COMMANDS.SET_NODE_VISIBLE,
-    "Shows or hides one or more nodes.",
-    VisibleSchema,
-    async (params: { nodeId?: string; nodeIds?: string[]; visible: boolean }) => {
-      try {
-        if (params.nodeId) {
-          await figmaClient.setNodeVisible({ nodeId: params.nodeId, visible: params.visible });
-          return { content: [{ type: "text", text: `Node ${params.nodeId} ${params.visible ? "shown" : "hidden"}.` }] };
-        } else if (params.nodeIds) {
-          const results = await Promise.all(
-            params.nodeIds.map((nodeId: string) =>
-              figmaClient.setNodeVisible({ nodeId, visible: params.visible })
-                .then(() => ({ nodeId, success: true }))
-                .catch((e: any) => ({ nodeId, success: false, error: e.message }))
-            )
-          );
-          return { content: [{ type: "text", text: `${params.visible ? "Shown" : "Hidden"} nodes: ${results.map((r: { nodeId: string }) => r.nodeId).join(", ")}` }] };
-        } else {
-          throw new Error("Must provide nodeId or nodeIds");
-        }
-      } catch (err: any) {
-        return handleToolError(err, "node-visibility-lock", "set_node_visible");
+        return handleToolError(err, "node-visibility-lock", "set_node_prop");
       }
     }
   );

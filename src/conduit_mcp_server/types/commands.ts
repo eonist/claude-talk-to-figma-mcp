@@ -186,8 +186,7 @@ export const MCP_COMMANDS = {
   DELETE_NODE: "delete_node", // Delete one or more nodes
   CLONE_NODE: "clone_node", // Clone a node (single or batch)
   SET_NODE: "set_node", // Set or insert a child node into a parent (single)
-  SET_NODE_LOCKED: "set_node_locked", // Lock or unlock nodes
-  SET_NODE_VISIBLE: "set_node_visible", // Show or hide nodes
+  SET_NODE_PROP: "set_node_prop", // Set node properties (locked, visible, etc.) for one or more nodes
 
   // --- Grids, Guides, and Constraints ---
   SET_GRID: "set_grid", // Create, update, or delete one or more layout grids on nodes

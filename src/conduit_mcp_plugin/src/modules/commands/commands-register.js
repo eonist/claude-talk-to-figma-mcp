@@ -87,8 +87,7 @@ export const PLUGIN_COMMANDS = {
   DELETE_NODE: "delete_node",
   CLONE_NODE: "clone_node",
   SET_NODE: "set_node",
-  SET_NODE_LOCKED: "set_node_locked",
-  SET_NODE_VISIBLE: "set_node_visible",
+  SET_NODE_PROP: "set_node_prop",
 
   // --- Grids, Guides, and Constraints ---
   SET_GRID: "set_grid",
@@ -245,8 +244,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, deleteNodeUnified);
   registerCommand(PLUGIN_COMMANDS.CLONE_NODE, layoutOperations.cloneNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE, layoutOperations.setNodeUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_NODE_LOCKED, setNodeLocked);
-  registerCommand(PLUGIN_COMMANDS.SET_NODE_VISIBLE, setNodeVisible);
+  registerCommand(PLUGIN_COMMANDS.SET_NODE_PROP, nodeOperations.setNodePropUnified);
 
   // --- Grids, Guides, and Constraints ---
   registerCommand(PLUGIN_COMMANDS.SET_GRID, setGrid);

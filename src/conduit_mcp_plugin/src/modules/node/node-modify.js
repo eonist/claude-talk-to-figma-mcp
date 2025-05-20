@@ -43,22 +43,34 @@ export async function setNodeLocked(params) {
 }
 
 /**
- * Sets the visible property of a node.
+ * Sets node properties (locked, visible, etc.) for one or more nodes.
  *
  * @async
  * @function
- * @param {Object} params - Parameters for visibility.
- * @param {string} params.nodeId - The ID of the node.
- * @param {boolean} params.visible - Whether to show (true) or hide (false) the node.
- * @returns {Promise<{success: boolean}>} Operation result.
- * @throws {Error} If nodeId is missing or node cannot be found.
+ * @param {Object} params - Parameters for property setting.
+ * @param {string} [params.nodeId] - The ID of a single node.
+ * @param {Array<string>} [params.nodeIds] - Array of node IDs for batch.
+ * @param {Object} params.properties - Properties to set (locked, visible, etc.).
+ * @returns {Promise<{results: Array<Object>}>} Operation result.
+ * @throws {Error} If no nodeId(s) provided or node cannot be found.
  */
-export async function setNodeVisible(params) {
-  const { nodeId, visible } = params;
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) throw new Error(`Node not found: ${nodeId}`);
-  node.visible = !!visible;
-  return { success: true };
+export async function setNodePropUnified(params) {
+  const { nodeId, nodeIds, properties } = params;
+  const ids = nodeIds || (nodeId ? [nodeId] : []);
+  if (!ids.length) throw new Error("No node IDs provided");
+  const results = [];
+  for (const id of ids) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (!node) throw new Error(`Node not found: ${id}`);
+    if ("locked" in properties) node.locked = !!properties.locked;
+    if ("visible" in properties) node.visible = !!properties.visible;
+    results.push({
+      id,
+      ...( "locked" in properties ? { locked: node.locked } : {} ),
+      ...( "visible" in properties ? { visible: node.visible } : {} )
+    });
+  }
+  return { results };
 }
 
 /**

@@ -250,6 +250,23 @@ export interface SetVariableParams {
   entries?: VariableEntry[];
 }
 
+/**
+ * Parameters for set_node_prop (set node properties like locked, visible, etc.).
+ * - nodeId: (string, optional) Single node to update.
+ * - nodeIds: (array, optional) Array of node IDs for batch.
+ * - properties: (object, required) Properties to set (locked, visible, etc.).
+ */
+export interface SetNodePropParams {
+  nodeId?: string;
+  nodeIds?: string[];
+  properties: {
+    locked?: boolean;
+    visible?: boolean;
+    // Extendable for more node properties
+    [key: string]: any;
+  };
+}
+
 export interface CommandParamsMap {
   set_text_style: SetTextStyleParams;
   get_node_styles: GetNodeStylesParams;
@@ -261,5 +278,6 @@ export interface CommandParamsMap {
   set_letter_spacing: SetLetterSpacingParams;
   set_text_case: SetTextCaseParams;
   set_variable: SetVariableParams;
+  set_node_prop: SetNodePropParams;
   // ...other command mappings
 }
