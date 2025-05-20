@@ -8,6 +8,110 @@ import type { FigmaClient } from "./index.js";
 
 export const miscCommands = {
   /**
+   * Gets the current channel.
+   * @returns {string | null}
+   */
+  getCurrentChannel(this: FigmaClient): string | null {
+    // getCurrentChannelWs is imported from websocket.js in read-commands.ts
+    // We'll need to import it here as well.
+    // @ts-ignore
+    return (typeof getCurrentChannelWs === "function" ? getCurrentChannelWs() : null);
+  },
+
+  /**
+   * Gets document info.
+   * @returns {Promise<DocumentInfo>}
+   */
+  async getDocumentInfo(this: FigmaClient): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.GET_DOCUMENT_INFO);
+  },
+
+  /**
+   * Gets the current selection.
+   * @returns {Promise<any>}
+   */
+  async getSelection(this: FigmaClient): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.GET_SELECTION);
+  },
+
+  /**
+   * Gets CSS asynchronously for a node.
+   * @param params - { nodeId?: string; format?: "object"|"string"|"inline" }
+   * @returns {Promise<any>}
+   */
+  async getCssAsync(this: FigmaClient, params?: { nodeId?: string; format?: "object"|"string"|"inline" }): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.GET_CSS_ASYNC, params || {});
+  },
+
+  /**
+   * Gets all pages in the document.
+   * @returns {Promise<Array<{ id: string, name: string, childCount: number }>>}
+   */
+  async getPages(this: FigmaClient): Promise<Array<{ id: string, name: string, childCount: number }>> {
+    return this.executeCommand(MCP_COMMANDS.GET_PAGES);
+  },
+  /**
+   * Inserts an image node into Figma from a URL or data.
+   * @param params - Image properties (URL, position, size, etc.)
+   * @returns The created image node.
+   */
+  async insertImage(
+    this: FigmaClient,
+    params: {
+      url: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      name?: string;
+      parentId?: string;
+    }
+  ): Promise<any> {
+    const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    return this.executeCommand(MCP_COMMANDS.INSERT_IMAGE, {
+      url: params.url,
+      x: params.x || 0,
+      y: params.y || 0,
+      width: params.width,
+      height: params.height,
+      name: params.name || "Image",
+      parentId: parent,
+    });
+  },
+
+  /**
+   * Creates a complete button with background and text.
+   * @param params - Button properties (position, size, style, etc.)
+   * @returns The IDs of the created button elements.
+   */
+  async createButton(
+    this: FigmaClient,
+    params: {
+      x: number;
+      y: number;
+      width?: number;
+      height?: number;
+      text?: string;
+      style?: {
+        background?: { r: number; g: number; b: number; a?: number };
+        text?: { r: number; g: number; b: number; a?: number };
+        fontSize?: number;
+        fontWeight?: number;
+        cornerRadius?: number;
+      };
+      name?: string;
+      parentId?: string;
+    }
+  ): Promise<{frameId: string, backgroundId: string, textId: string}> {
+    const parent = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
+    return this.executeCommand(MCP_COMMANDS.CREATE_BUTTON, {
+      ...params,
+      name: params.name || "Button",
+      parentId: parent,
+    });
+  },
+
+  /**
    * Exports a node as an image
    * 
    * @param {object} params - Export parameters
