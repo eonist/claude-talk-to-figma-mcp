@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { MCP_COMMANDS } from "../../../../types/commands";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 import { z } from "../utils.js";
 import { RectangleSchema, SingleRectangleSchema, BatchRectanglesSchema } from "./rectangle-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
@@ -140,11 +140,15 @@ Returns:
               cornerRadius: typeof cfg.cornerRadius === "number" ? cfg.cornerRadius : undefined 
             };
             // logger.info(`💥 createRectangle params: ${JSON.stringify(params)}`);
-            const node = await figmaClient.createRectangle(params);
-            if (!node || !node.id) {
+            const result = await figmaClient.createRectangle(params);
+            // Support both { id } and { ids: [...] } return shapes
+            if (result && typeof result.id === "string") {
+              return result.id;
+            } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+              return result.ids[0];
+            } else {
               throw new Error("Failed to create rectangle: missing node ID from figmaClient.createRectangle");
             }
-            return node.id;
           }
         );
         const nodeIds = results.map(r => r.result).filter(Boolean);

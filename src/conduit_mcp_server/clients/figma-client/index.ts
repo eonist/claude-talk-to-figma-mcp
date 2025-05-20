@@ -14,7 +14,21 @@ export interface IFigmaClientCommands {
 
 export class FigmaClient implements IFigmaClientCommands {
   // Mixed-in method signature for type safety
-  groupOrUngroupNodes: (params: { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }) => Promise<any>;
+  groupOrUngroupNodes!: (params: { group: boolean, nodeIds?: string[], name?: string, nodeId?: string }) => Promise<any>;
+
+  // Mixed-in shape command for type safety
+  createRectangle!: (params: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    name?: string;
+    parentId?: string;
+    fillColor?: { r: number; g: number; b: number; a?: number };
+    strokeColor?: { r: number; g: number; b: number; a?: number };
+    strokeWeight?: number;
+    cornerRadius?: number;
+  }) => Promise<any>;
 
   isConnected(): boolean {
     return isConnectedToFigma();
