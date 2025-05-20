@@ -4,7 +4,6 @@
 import { MCP_COMMANDS } from "../types/commands.js";
 
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
-import { MCP_COMMANDS } from "../types/commands.js";
 import type { FigmaClient } from "./index.js";
 
 export const miscCommands = {

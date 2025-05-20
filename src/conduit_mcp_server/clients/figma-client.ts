@@ -15,12 +15,9 @@
  * const info = await client.getDocumentInfo();
  * console.log(info);
  */
-import { filterFigmaNode } from "../utils/figma/filter-node.js";
 import { logger } from "../utils/logger.js";
-import { ensureNodeIdIsString } from "../utils/node-utils.js";
-import { FigmaCommand, MCP_COMMANDS } from "../types/commands.js";
-import { sendCommandToFigma, getCurrentChannel, isConnectedToFigma } from "../server/websocket.js";
-import { BaseFigmaNode, DocumentInfo, RGBAColor, SelectionInfo } from "../types/figma.js";
+import { FigmaCommand } from "../types/commands.js";
+import { sendCommandToFigma } from "../server/websocket.js";
 
 /**
  * Client for interacting with Figma via WebSocket
