@@ -7,7 +7,277 @@
 - The same command name is used for both single and batch; the input type determines the behavior.
 - For commands that require a specific batch parameter (e.g., `nodeIds`), this is documented per command.
 
+
+## Updated Examples for set_page, create_page, and duplicate_page
+
+### set_page
+Set the current active page in Figma.
+
+**Parameters:**
+- pageId (string)
+
+**Example:**
+```json
+{ "command": "set_page", "params": { "pageId": "123:456" } }
+```
+
+
+## Updated Examples for create_rectangle, create_frame, create_line, create_ellipse, create_polygon, create_star, create_vector, set_text, set_text_content
+
+### create_rectangle
+Create one or more rectangles.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- cornerRadius (number, optional)
+- rectangle (object) or rectangles (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_rectangle", "params": { "x": 100, "y": 100, "width": 200, "height": 100, "cornerRadius": 8, "name": "Button Background" } }
+```
+_Batch:_
+```json
+{ "command": "create_rectangle", "params": { "rectangles": [
+  { "x": 100, "y": 100, "width": 200, "height": 100, "name": "Rect1" },
+  { "x": 300, "y": 100, "width": 200, "height": 100, "name": "Rect2" }
+] } }
+```
+
 ---
+
+### create_frame
+Create one or more frames.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- frame (object) or frames (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_frame", "params": { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Mobile Screen" } }
+```
+_Batch:_
+```json
+{ "command": "create_frame", "params": { "frames": [
+  { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Screen 1" },
+  { "x": 500, "y": 100, "width": 375, "height": 812, "name": "Screen 2" }
+] } }
+```
+
+---
+
+### create_line
+Create one or more lines.
+
+**Parameters:**
+- x1, y1, x2, y2 (number)
+- parentId (string, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+- line (object) or lines (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_line", "params": { "x1": 100, "y1": 100, "x2": 300, "y2": 300 } }
+```
+_Batch:_
+```json
+{ "command": "create_line", "params": { "lines": [
+  { "x1": 100, "y1": 100, "x2": 300, "y2": 100 },
+  { "x1": 100, "y1": 200, "x2": 300, "y2": 200 }
+] } }
+```
+
+---
+
+### create_ellipse
+Create one or more ellipses.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- ellipse (object) or ellipses (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_ellipse", "params": { "x": 100, "y": 100, "width": 50, "height": 30, "name": "Profile Avatar" } }
+```
+_Batch:_
+```json
+{ "command": "create_ellipse", "params": { "ellipses": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "name": "Ellipse1" },
+  { "x": 300, "y": 100, "width": 30, "height": 30, "name": "Ellipse2" }
+] } }
+```
+
+---
+
+### create_polygon
+Create one or more polygons.
+
+**Parameters:**
+- x, y, width, height, sides (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- polygon (object) or polygons (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_polygon", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" } }
+```
+_Batch:_
+```json
+{ "command": "create_polygon", "params": { "polygons": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" },
+  { "x": 300, "y": 100, "width": 40, "height": 40, "sides": 3, "name": "Triangle" }
+] } }
+```
+
+---
+
+### create_star
+Create one or more star shapes in Figma.
+
+**Parameters:**
+- x, y, width, height (number): Position and size of the star.
+- name (string, optional): Name for the star node.
+- parentId (string, optional): Parent node ID.
+- points (number, optional): Number of points for the star (default: 5).
+- star (object) or stars (array of objects): Single or batch.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_star", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star" } }
+```
+_Batch:_
+```json
+{ "command": "create_star", "params": { "stars": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star1" },
+  { "x": 200, "y": 100, "width": 40, "height": 40, "points": 6, "name": "Star2" }
+] } }
+```
+
+---
+
+### create_vector
+Create one or more vectors.
+
+**Parameters:**
+- x, y, width, height (number)
+- vectorPaths (array)
+- name, parentId, fillColor, strokeColor, strokeWeight (optional)
+- vector (object) or vectors (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_vector", "params": {
+  "x": 100, "y": 100, "width": 50, "height": 50,
+  "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
+} }
+```
+_Batch:_
+```json
+{ "command": "create_vector", "params": { "vectors": [
+  {
+    "x": 100, "y": 100, "width": 50, "height": 50,
+    "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
+  }
+] } }
+```
+
+---
+
+### set_text
+Set or create one or more text elements in Figma. This unified command supports both single and batch creation.
+
+**Parameters:**
+- text (object, optional): Single text configuration
+- texts (array of objects, optional): Array of text configurations (batch)
+- Each text config supports:
+  - x (number): X coordinate
+  - y (number): Y coordinate
+  - text (string): Text content
+  - fontSize (number, optional): Font size
+  - fontWeight (number, optional): Font weight
+  - fontColor (object, optional): Font color
+  - name (string, optional): Node name
+  - parentId (string, optional): Parent node ID
+  - ...other supported text properties
+
+**At least one of `text` or `texts` is required.**
+
+**Examples:**
+
+_Single:_
+```json
+{ "command": "set_text", "params": { "text": { "x": 100, "y": 100, "text": "Hello, Figma!", "fontSize": 24, "name": "Heading" } } }
+```
+
+_Batch:_
+```json
+{ "command": "set_text", "params": { "texts": [
+  { "x": 100, "y": 100, "text": "Title", "fontSize": 32 },
+  { "x": 100, "y": 200, "text": "Subtitle", "fontSize": 18 }
+] } }
+```
+
+---
+
+### set_text_content
+Set text content of an existing node.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- text (string): The new text content.
+
+**Example:**
+```json
+{ "command": "set_text_content", "params": { "nodeId": "123:456", "text": "Updated text content" } }
+```
+
+### create_page
+Create a new page in the Figma document.
+
+**Parameters:**
+- name (string, optional)
+
+**Example:**
+```json
+{ "command": "create_page", "params": { "name": "New Page Name" } }
+```
+
+---
+
+### duplicate_page
+Duplicate a Figma page and all its children as a new page.
+
+**Parameters:**
+- pageId (string)
+- newPageName (string, optional)
+
+**Example:**
+```json
+{ "command": "duplicate_page", "params": { "pageId": "123:456", "newPageName": "Copy of Page" } }
+```
 
 # Available MCP Commands
 
