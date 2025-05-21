@@ -17,10 +17,6 @@ export function registerVectorCreationCommands(server: McpServer, figmaClient: F
     MCP_COMMANDS.CREATE_VECTOR,
     `Creates one or more vector nodes in Figma. Accepts either a single vector config (via 'vector') or an array of configs (via 'vectors').
 
-Input:
-  - vector: A single vector configuration object.
-  - vectors: An array of vector configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created vector node ID(s).
 `,

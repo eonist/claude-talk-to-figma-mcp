@@ -73,10 +73,6 @@ export function registerRectanglesTools(server: McpServer, figmaClient: FigmaCli
     MCP_COMMANDS.CREATE_RECTANGLE,
     `Creates one or more rectangle shape nodes in the specified Figma document. Accepts either a single rectangle config (via 'rectangle') or an array of configs (via 'rectangles'). Optionally, you can provide a name, a parent node ID to attach the rectangle(s) to, and a corner radius for rounded corners.
 
-Input:
-  - rectangle: A single rectangle configuration object.
-  - rectangles: An array of rectangle configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle node ID(s).
 `,

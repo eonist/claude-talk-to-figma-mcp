@@ -29,10 +29,6 @@ export function registerSvgCreationCommands(server: McpServer, figmaClient: Figm
     MCP_COMMANDS.SET_SVG_VECTOR,
     `Sets or inserts one or more SVG vectors in Figma. Accepts either a single SVG config (via 'svg') or an array of configs (via 'svgs').
 
-Input:
-  - svg: A single SVG configuration object.
-  - svgs: An array of SVG configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the inserted SVG vector node ID(s).
 `,

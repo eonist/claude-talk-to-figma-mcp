@@ -24,10 +24,6 @@ export function registerTextTools(server: McpServer, figmaClient: FigmaClient) {
     `Creates one or more text elements in Figma. Accepts either a single text config (via 'text') or an array of configs (via 'texts').
 If 'width' and 'height' are provided, creates a bounded text box; otherwise, creates a regular text node.
 
-Input:
-  - text: A single text configuration object.
-  - texts: An array of text configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created text node ID(s).
 `,
