@@ -14,3 +14,4 @@ Applies an effect style to a node in Figma.
   "nodeId": "123:456",
   "effectStyleId": "S:effect123"
 }
+```

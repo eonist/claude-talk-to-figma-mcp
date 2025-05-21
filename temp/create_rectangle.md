@@ -34,3 +34,4 @@ Creates one or more rectangle shape nodes in the specified Figma document. Accep
     ]
   }
 }
+```

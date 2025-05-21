@@ -11,3 +11,4 @@ Extracts text style properties from one or more nodes.
 **Example:**
 ```json
 { "nodeId": "123:456" }
+```

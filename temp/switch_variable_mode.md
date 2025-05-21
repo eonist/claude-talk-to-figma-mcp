@@ -14,3 +14,4 @@ Switch the mode for a Figma Variable collection (e.g., light/dark theme).
   "collection": "Theme",
   "mode": "dark"
 }
+```

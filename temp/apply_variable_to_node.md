@@ -16,3 +16,4 @@ Apply a Figma Variable to a node property.
   "variableId": "var123",
   "property": "fill"
 }
+```

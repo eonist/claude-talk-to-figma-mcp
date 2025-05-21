@@ -12,3 +12,4 @@ Export a node as an image from Figma in the specified format and scale.
 **Example:**
 ```json
 { "nodeId": "123:456", "format": "PNG", "scale": 2 }
+```

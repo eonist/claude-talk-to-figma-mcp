@@ -11,3 +11,4 @@ Get CSS properties from a node.
 **Example:**
 ```json
 { "nodeId": "123:456", "format": "string" }
+```

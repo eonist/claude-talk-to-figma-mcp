@@ -14,3 +14,4 @@ Get all layout grids for one or more Figma nodes (FRAME, COMPONENT, INSTANCE).
 ```
 ```json
 { "nodeIds": ["123:456", "789:101"] }
+```

@@ -22,3 +22,4 @@ Duplicate a node (single or batch) in Figma.
   { "nodeId": "123:456", "offsetX": 10, "offsetY": 20 },
   { "nodeId": "789:101", "parentId": "456:789" }
 ] }
+```

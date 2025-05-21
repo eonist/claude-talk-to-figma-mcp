@@ -14,3 +14,4 @@ Get info about variants/properties for one or more component sets.
 ```
 ```json
 { "componentSetIds": ["123:456", "789:101"] }
+```

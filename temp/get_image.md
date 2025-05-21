@@ -14,3 +14,4 @@ Extract image fills or export nodes as images (single or batch).
 ```
 ```json
 { "nodeIds": ["123:456", "789:101"] }
+```

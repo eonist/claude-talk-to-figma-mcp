@@ -14,3 +14,4 @@ Delete one or more nodes in Figma.
 ```
 ```json
 { "nodeIds": ["123:456", "789:101"] }
+```

@@ -18,3 +18,4 @@ Flatten a single node (or batch) or selection in Figma, merging all child vector
 ```
 ```json
 { "selection": true }
+```

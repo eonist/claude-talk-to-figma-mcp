@@ -12,3 +12,4 @@ Generate HTML structure from Figma nodes.
 **Example:**
 ```json
 { "nodeId": "123:456", "format": "semantic", "cssMode": "classes" }
+```

@@ -17,3 +17,4 @@ Set or insert images from URLs, local files, or base64 data (single or batch).
   { "url": "https://example.com/image1.png" },
   { "url": "https://example.com/image2.png" }
 ] }
+```

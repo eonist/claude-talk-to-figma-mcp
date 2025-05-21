@@ -17,3 +17,4 @@ At least one of (nodeId + text) or texts is required.
 ```
 ```json
 { "texts": [{ "nodeId": "123:457", "text": "Hello" }, { "nodeId": "123:458", "text": "World" }] }
+```

@@ -15,3 +15,4 @@ Detaches one or more Figma component instances from their masters.
 ```
 ```json
 { "instanceIds": ["123:456", "789:101"], "options": { "skip_errors": true } }
+```

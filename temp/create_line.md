@@ -32,3 +32,4 @@ Creates one or more line nodes in the specified Figma document. Accepts either a
     ]
   }
 }
+```

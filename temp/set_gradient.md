@@ -45,3 +45,4 @@ Set a gradient on one or more nodes in Figma, either directly or by style variab
     }
   ]
 }
+```

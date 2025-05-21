@@ -10,3 +10,4 @@ Get all guides on the current Figma page.
 **Example:**
 ```json
 {}
+```

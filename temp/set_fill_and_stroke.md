@@ -16,3 +16,4 @@ Set fill and/or stroke color(s) for one or more nodes.
   "fillColor": { "r": 1, "g": 0, "b": 0, "a": 1 },
   "strokeColor": { "r": 0, "g": 0, "b": 0, "a": 1 }
 }
+```

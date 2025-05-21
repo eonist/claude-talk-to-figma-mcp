@@ -14,3 +14,4 @@ Get annotation(s) for one or more Figma nodes.
 ```
 ```json
 { "nodeIds": ["123:456", "789:101"] }
+```

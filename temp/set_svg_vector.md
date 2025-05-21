@@ -17,3 +17,4 @@ Set or insert SVG vectors in Figma.
   { "svg": "<svg>...</svg>" },
   { "svg": "<svg>...</svg>" }
 ] }
+```

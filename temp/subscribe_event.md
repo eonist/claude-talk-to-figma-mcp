@@ -16,3 +16,4 @@ Subscribe to or unsubscribe from a Figma event (e.g., selection_change, document
 ```
 ```json
 { "eventType": "selection_change", "subscribe": false, "subscriptionId": "sub123" }
+```

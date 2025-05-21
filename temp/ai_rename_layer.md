@@ -15,3 +15,4 @@ AI-powered renaming of nodes in Figma.
 ```
 ```json
 { "nodeIds": ["123:456", "789:101"], "prompt": "Rename to descriptive names" }
+```

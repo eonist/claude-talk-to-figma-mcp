@@ -11,3 +11,4 @@ Get text segments with specific styling in a text node.
 **Example:**
 ```json
 { "nodeId": "123:456", "property": "fontSize" }
+```

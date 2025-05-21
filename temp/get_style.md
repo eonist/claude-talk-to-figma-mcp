@@ -10,3 +10,4 @@ Get all styles from the document.
 **Example:**
 ```json
 {}
+```

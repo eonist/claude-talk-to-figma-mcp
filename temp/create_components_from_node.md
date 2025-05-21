@@ -17,3 +17,4 @@ Converts one or more existing nodes into components in Figma.
 ```
 ```json
 { "entries": [{ "nodeId": "123:456" }, { "nodeId": "789:101", "maintain_position": true }], "skip_errors": true }
+```

@@ -50,3 +50,4 @@ Creates one or more effect style variables in Figma.
     }
   ]
 }
+```
