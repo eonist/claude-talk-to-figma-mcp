@@ -50,11 +50,37 @@ export async function setConstraints(params) {
     var op = ops[i];
     var node = figma.getNodeById(op.nodeId);
     if (!node) {
-      results.push({ nodeId: op.nodeId, error: "Node not found" });
+      results.push({
+        nodeId: op.nodeId,
+        error: "Node not found",
+        success: false,
+        meta: {
+          operation: "set_constraint",
+          params: { ...op, applyToChildren, maintainAspectRatio }
+        }
+      });
       continue;
     }
     var res = setNodeConstraints(node, op.horizontal, op.vertical, applyToChildren, maintainAspectRatio);
-    results = results.concat(res);
+    // Post-process each result to add success/meta
+    for (var j = 0; j < res.length; ++j) {
+      var r = res[j];
+      if (r && r.error) {
+        results.push({
+          ...r,
+          success: false,
+          meta: {
+            operation: "set_constraint",
+            params: { ...op, applyToChildren, maintainAspectRatio }
+          }
+        });
+      } else {
+        results.push({
+          ...r,
+          success: true
+        });
+      }
+    }
   }
   return results;
 }

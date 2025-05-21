@@ -11,6 +11,8 @@ import type { FigmaCommand } from "./types.js";
 export class FigmaClient {
   // Methods are mixed in at runtime via Object.assign; explicit type declarations omitted for flexibility.
 
+  // Methods are mixed in at runtime via Object.assign; explicit type declarations omitted for flexibility.
+
   isConnected(): boolean {
     return isConnectedToFigma();
   }
