@@ -20,6 +20,7 @@
  * Provides a Model Context Protocol interface for Figma through stdio transport.
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+export { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { connectToFigma, setConnectionConfig } from "./server/websocket.js";
 import { registerAllCommands } from "./commands/index.js";

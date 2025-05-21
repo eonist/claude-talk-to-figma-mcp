@@ -1,7 +1,7 @@
 import { McpServer } from "../../../../server.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
-import { MCP_COMMANDS } from "../../../../types/commands";
+import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 // Type definitions for style operations
 const StyleTypeEnum = z.enum(["PAINT", "EFFECT", "TEXT", "GRID"]);
@@ -32,7 +32,7 @@ Parameters:
 - entries (array of objects, optional): Batch style operations (same shape as above)
 
 Returns: Array of result objects: { styleId, styleType, action: "created" | "updated" | "deleted", success: true, [error?: string] }`,
-    StyleBatchSchema,
+    StyleBatchSchema.shape,
     async (params: z.infer<typeof StyleBatchSchema>) => {
       // Normalize to array of entries
       let entries: any[] = [];
@@ -43,13 +43,51 @@ Returns: Array of result objects: { styleId, styleType, action: "created" | "upd
       const results = [];
       for (const entry of entries) {
         try {
-          const result = await figmaClient.setStyle(entry);
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_STYLE, entry);
           results.push({ ...result, styleId: result.styleId || entry.styleId, styleType: entry.styleType, success: true });
         } catch (err: any) {
-          results.push({ styleId: entry.styleId, styleType: entry.styleType, success: false, error: err?.message || String(err) });
+          results.push({
+            styleId: entry.styleId,
+            styleType: entry.styleType,
+            success: false,
+            error: err?.message || String(err),
+            meta: {
+              operation: "set_style",
+              params: entry
+            }
+          });
         }
       }
-      return results;
+      const anySuccess = results.some(r => r.success);
+      if (anySuccess) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ success: true, results })
+            }
+          ]
+        };
+      } else {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                success: false,
+                error: {
+                  message: "All set_style operations failed",
+                  results,
+                  meta: {
+                    operation: "set_style",
+                    params: entries
+                  }
+                }
+              })
+            }
+          ]
+        };
+      }
     }
   );
 }
