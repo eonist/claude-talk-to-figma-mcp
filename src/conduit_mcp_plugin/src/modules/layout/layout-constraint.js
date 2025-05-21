@@ -56,7 +56,7 @@ export async function setConstraints(params) {
         success: false,
         meta: {
           operation: "set_constraint",
-          params: { ...op, applyToChildren, maintainAspectRatio }
+          params: Object.assign({}, op, { applyToChildren: applyToChildren, maintainAspectRatio: maintainAspectRatio })
         }
       });
       continue;
@@ -69,10 +69,10 @@ export async function setConstraints(params) {
         results.push({
           ...r,
           success: false,
-          meta: {
-            operation: "set_constraint",
-            params: { ...op, applyToChildren, maintainAspectRatio }
-          }
+        meta: {
+          operation: "set_constraint",
+          params: Object.assign({}, op, { applyToChildren: applyToChildren, maintainAspectRatio: maintainAspectRatio })
+        }
         });
       } else {
         results.push({
