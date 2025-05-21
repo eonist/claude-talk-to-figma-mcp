@@ -54,20 +54,35 @@ Returns:
   async (params) => {
     try {
       const result = await figmaClient.duplicatePage(params.pageId, params.newPageName);
+      const response = {
+        success: true,
+        results: [result]
+      };
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(result)
+            text: JSON.stringify(response)
           }
         ]
       };
     } catch (error) {
+      const response = {
+        success: false,
+        error: {
+          message: `Error duplicating page: ${error instanceof Error ? error.message : String(error)}`,
+          results: [],
+          meta: {
+            operation: "duplicate_page",
+            params
+          }
+        }
+      };
       return {
         content: [
           {
             type: "text",
-            text: `Error duplicating page: ${error instanceof Error ? error.message : String(error)}`,
+            text: JSON.stringify(response),
           },
         ],
       };

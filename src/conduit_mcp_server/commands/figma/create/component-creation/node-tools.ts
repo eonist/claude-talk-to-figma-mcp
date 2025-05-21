@@ -78,21 +78,28 @@ Returns:
           ? [entry]
           : [];
 
-      const results: Array<{ nodeId: string; componentId?: string; error?: string }> = [];
+      const results: Array<{ nodeId: string; componentId?: string; success: boolean; error?: string; meta?: any }> = [];
       for (const node of nodeEntries) {
         try {
           const id = ensureNodeIdIsString(node.nodeId);
-          // Directly call the Figma client logic for component creation, or update to use the new batch command if available.
-          // If the Figma client only supports single-node creation, keep this as a local helper.
           const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODE, {
             entry: { nodeId: id, maintain_position: node.maintain_position }
           });
-          results.push({ nodeId: id, componentId: result.componentId || (Array.isArray(result) && result[0]?.componentId) });
+          results.push({
+            nodeId: id,
+            componentId: result.componentId || (Array.isArray(result) && result[0]?.componentId),
+            success: true
+          });
         } catch (err: any) {
           if (skip_errors) {
             results.push({
               nodeId: node.nodeId,
+              success: false,
               error: err instanceof Error ? err.message : String(err),
+              meta: {
+                operation: "create_components_from_nodes",
+                params: node
+              }
             });
             continue;
           }
@@ -100,11 +107,28 @@ Returns:
           return handleToolError(err, "component-creation-tools", "create_components_from_nodes") as any;
         }
       }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All create_components_from_nodes operations failed",
+            results,
+            meta: {
+              operation: "create_components_from_nodes",
+              params: nodeEntries
+            }
+          }
+        };
+      }
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(results),
+            text: JSON.stringify(response),
           },
         ],
       };

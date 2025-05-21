@@ -78,24 +78,62 @@ Examples:
       } else if (entry) {
         instancesArr = [entry];
       } else {
-        return { content: [{ type: "text", text: "You must provide 'entry' or 'entries'." }] };
-      }
-      try {
-        // Create all instances in parallel
-        const results = await Promise.all(
-          instancesArr.map(
-            cfg => figmaClient.executeCommand(MCP_COMMANDS.CREATE_COMPONENT_INSTANCE, cfg).then(res => res.id)
-          )
-        );
-        return {
-          content: [{
-            type: "text",
-            text: `Created ${results.length} instance(s): ${results.join(", ")}`
-          }]
+        const response = {
+          success: false,
+          error: {
+            message: "You must provide 'entry' or 'entries'.",
+            results: [],
+            meta: {
+              operation: "create_instances_from_components",
+              params: { entry, entries }
+            }
+          }
         };
-      } catch (err) {
-        return handleToolError(err, "component-creation-tools", "create_instances_from_components") as any;
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
+      const results = [];
+      for (const cfg of instancesArr) {
+        try {
+          const res = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_COMPONENT_INSTANCE, cfg);
+          results.push({
+            componentKey: cfg.componentKey,
+            x: cfg.x,
+            y: cfg.y,
+            instanceId: res.id,
+            success: true
+          });
+        } catch (err) {
+          results.push({
+            componentKey: cfg.componentKey,
+            x: cfg.x,
+            y: cfg.y,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "create_instances_from_components",
+              params: cfg
+            }
+          });
+        }
+      }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All create_instances_from_components operations failed",
+            results,
+            meta: {
+              operation: "create_instances_from_components",
+              params: instancesArr
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }

@@ -42,20 +42,35 @@ Returns:
       extraInfo: "Use to retrieve annotation(s) for one or more nodes."
     },
     async (args) => {
-      const result = await handleGetAnnotation(figmaClient, args);
-      if (Array.isArray(result)) {
-        return {
-          content: result.map(r => ({
-            type: "text",
-            text: JSON.stringify(r)
-          }))
-        };
-      } else {
+      try {
+        const result = await handleGetAnnotation(figmaClient, args);
+        const resultsArr = Array.isArray(result) ? result : [result];
+        const response = { success: true, results: resultsArr };
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(response)
+            }
+          ]
+        };
+      } catch (err) {
+        const response = {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            results: [],
+            meta: {
+              operation: "get_annotation",
+              params: args
+            }
+          }
+        };
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(response)
             }
           ]
         };
@@ -126,20 +141,35 @@ Returns:
       extraInfo: "Use to set, update, or delete annotation(s) for one or more nodes."
     },
     async (args) => {
-      const result = await handleSetAnnotation(figmaClient, args);
-      if (Array.isArray(result)) {
-        return {
-          content: result.map(r => ({
-            type: "text",
-            text: JSON.stringify(r)
-          }))
-        };
-      } else {
+      try {
+        const result = await handleSetAnnotation(figmaClient, args);
+        const resultsArr = Array.isArray(result) ? result : [result];
+        const response = { success: true, results: resultsArr };
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(response)
+            }
+          ]
+        };
+      } catch (err) {
+        const response = {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            results: [],
+            meta: {
+              operation: "set_annotation",
+              params: args
+            }
+          }
+        };
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(response)
             }
           ]
         };
