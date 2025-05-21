@@ -51,9 +51,25 @@ Returns:
       extraInfo: "Sets hug or fill sizing mode on an auto layout frame or child node."
     },
     async ({ nodeId, axis, mode }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING, { nodeId: id, axis, mode });
-      return { content: [{ type: "text", text: `Auto layout resizing set for ${id}` }] };
+      try {
+        const id = ensureNodeIdIsString(nodeId);
+        await figmaClient.executeCommand(MCP_COMMANDS.SET_AUTO_LAYOUT_RESIZING, { nodeId: id, axis, mode });
+        const response = { success: true, results: [{ nodeId: id, axis, mode, updated: true }] };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "set_auto_layout_resizing",
+              params: { nodeId, axis, mode }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }

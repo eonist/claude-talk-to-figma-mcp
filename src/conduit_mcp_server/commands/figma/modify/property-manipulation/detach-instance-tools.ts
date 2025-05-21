@@ -73,20 +73,61 @@ Examples:
       } else if (instanceId) {
         ids = [ensureNodeIdIsString(instanceId)];
       } else {
-        return { content: [{ type: "text", text: "You must provide 'instanceId' or 'instanceIds'." }] };
+        const response = {
+          success: false,
+          error: {
+            message: "You must provide 'instanceId' or 'instanceIds'.",
+            results: [],
+            meta: {
+              operation: "detach_instances",
+              params: { instanceId, instanceIds, options }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
       // Call the batch detach command on the Figma client
       const resultArr = await figmaClient.executeCommand(MCP_COMMANDS.DETACH_INSTANCES, { instanceIds: ids, options });
-      // Return all results (could be array of {id, error?})
-      return {
-        content: Array.isArray(resultArr)
-          ? resultArr.map(r =>
-              r.error
-                ? { type: "text", text: `Error detaching ${r.instanceId}: ${r.error}` }
-                : { type: "text", text: `Detached instance ${r.id}` }
-            )
-          : [{ type: "text", text: "No instances detached." }]
-      };
+      const results = [];
+      if (Array.isArray(resultArr)) {
+        for (const r of resultArr) {
+          if (r.error) {
+            results.push({
+              instanceId: r.instanceId,
+              success: false,
+              error: r.error,
+              meta: {
+                operation: "detach_instances",
+                params: { instanceId: r.instanceId, options }
+              }
+            });
+          } else {
+            results.push({
+              instanceId: r.instanceId || r.id,
+              id: r.id,
+              success: true
+            });
+          }
+        }
+      }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All detach_instances operations failed",
+            results,
+            meta: {
+              operation: "detach_instances",
+              params: { instanceId, instanceIds, options }
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }

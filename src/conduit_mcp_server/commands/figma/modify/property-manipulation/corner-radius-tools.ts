@@ -52,9 +52,25 @@ Returns:
       extraInfo: "Use this command to set the corner radius of a node, optionally specifying which corners."
     },
     async ({ nodeId, radius, corners }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.executeCommand(MCP_COMMANDS.SET_CORNER_RADIUS, { nodeId: id, radius, corners });
-      return { content: [{ type: "text", text: `Set corner radius for ${id}` }] };
+      try {
+        const id = ensureNodeIdIsString(nodeId);
+        await figmaClient.executeCommand(MCP_COMMANDS.SET_CORNER_RADIUS, { nodeId: id, radius, corners });
+        const response = { success: true, results: [{ nodeId: id, radius, corners, updated: true }] };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "set_corner_radius",
+              params: { nodeId, radius, corners }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }
