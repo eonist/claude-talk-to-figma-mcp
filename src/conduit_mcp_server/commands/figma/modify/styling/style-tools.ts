@@ -52,7 +52,7 @@ Returns: Array of result objects: { styleId, styleType, action: "created" | "upd
             success: false,
             error: err?.message || String(err),
             meta: {
-              operation: "set_style",
+              operation: MCP_COMMANDS.SET_STYLE,
               params: entry
             }
           });
@@ -76,10 +76,10 @@ Returns: Array of result objects: { styleId, styleType, action: "created" | "upd
               text: JSON.stringify({
                 success: false,
                 error: {
-                  message: "All set_style operations failed",
+                  message: "All " + MCP_COMMANDS.SET_STYLE + " operations failed",
                   results,
                   meta: {
-                    operation: "set_style",
+                    operation: MCP_COMMANDS.SET_STYLE,
                     params: entries
                   }
                 }
