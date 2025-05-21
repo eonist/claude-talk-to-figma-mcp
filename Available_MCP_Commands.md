@@ -198,40 +198,95 @@ Create one or more rectangles.
 ```
 
 ### create_frame
-Create one or more frames.
+Create one or more frame nodes in the specified Figma document.
 
 **Parameters:**
-- x (number)
-- y (number)
-- width (number)
-- height (number)
-- name (string, optional)
-- parentId (string, optional)
-- fillColor (object, optional)
-- strokeColor (object, optional)
-- strokeWeight (number, optional)
+- frame (object, optional): A single frame configuration object with properties:
+  - x (number): X coordinate for the top-left corner.
+  - y (number): Y coordinate for the top-left corner.
+  - width (number): Width in pixels.
+  - height (number): Height in pixels.
+  - name (string, optional): Name for the frame node.
+  - parentId (string, optional): Figma node ID of the parent.
+  - fillColor (object, optional): Fill color.
+  - strokeColor (object, optional): Stroke color.
+  - strokeWeight (number, optional): Stroke weight.
+- frames (array, optional): An array of frame configuration objects (same shape as above).
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the created frame node ID(s).
 
 **Example:**
 ```json
-{ "command": "create_frame", "params": { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Mobile Screen" } }
+{ "command": "create_frame", "params": {
+  "frame": {
+    "x": 50,
+    "y": 100,
+    "width": 400,
+    "height": 300,
+    "name": "Main Frame"
+  }
+} }
 ```
+```json
+{ "command": "create_frame", "params": {
+  "frames": [
+    { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Frame1" },
+    { "x": 120, "y": 20, "width": 80, "height": 40 }
+  ]
+} }
+```
+
+**Notes:**
+- Width and height must be greater than zero.
+- If parentId is invalid, the frame will be added to the root.
+- Fill and stroke colors must be valid color objects.
+- Useful for generating UI containers, artboards, or design primitives programmatically.
+- Batch creation is efficient for generating multiple frames at once.
 
 ### create_line
-Create one or more lines.
+Create one or more line nodes in the specified Figma document.
 
 **Parameters:**
-- x1 (number)
-- y1 (number)
-- x2 (number)
-- y2 (number)
-- parentId (string, optional)
-- strokeColor (object, optional)
-- strokeWeight (number, optional)
+- line (object, optional): A single line configuration object with properties:
+  - x1 (number): X coordinate for the start point.
+  - y1 (number): Y coordinate for the start point.
+  - x2 (number): X coordinate for the end point.
+  - y2 (number): Y coordinate for the end point.
+  - parentId (string, optional): Figma node ID of the parent.
+  - strokeColor (object, optional): Stroke color.
+  - strokeWeight (number, optional): Stroke weight.
+- lines (array, optional): An array of line configuration objects (same shape as above).
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the created line node ID(s).
 
 **Example:**
 ```json
-{ "command": "create_line", "params": { "x1": 100, "y1": 100, "x2": 300, "y2": 300 } }
+{ "command": "create_line", "params": {
+  "line": {
+    "x1": 10,
+    "y1": 20,
+    "x2": 110,
+    "y2": 20
+  }
+} }
 ```
+```json
+{ "command": "create_line", "params": {
+  "lines": [
+    { "x1": 10, "y1": 20, "x2": 110, "y2": 20 },
+    { "x1": 20, "y1": 30, "x2": 120, "y2": 30 }
+  ]
+} }
+```
+
+**Notes:**
+- Start and end points must not be identical.
+- If parentId is invalid, the line will be added to the root.
+- Stroke color must be a valid color object.
+- Useful for generating connectors, dividers, or design primitives programmatically.
+- Batch creation is efficient for generating multiple lines or connectors at once.
 
 ### create_ellipse
 Create one or more ellipses.
