@@ -13,10 +13,6 @@ export function registerAnnotationCommands(server: McpServer, figmaClient: Figma
     MCP_COMMANDS.GET_ANNOTATION,
     `Get annotation(s) for one or more Figma nodes.
 
-Parameters:
-  - nodeId: (string, optional) Node ID for single node.
-  - nodeIds: (string[], optional) Array of node IDs for batch.
-
 Returns:
   - For single: { nodeId, annotations }
   - For batch: Array<{ nodeId, annotations }>
@@ -82,12 +78,6 @@ Returns:
   server.tool(
     MCP_COMMANDS.SET_ANNOTATION,
     `Set, update, or delete annotation(s) for one or more Figma nodes.
-
-Parameters:
-  - entry: { nodeId, annotation, delete } (for single)
-  - entries: Array<{ nodeId, annotation, delete }> (for batch)
-    - annotation: { label, labelMarkdown }
-    - delete: (boolean, optional) If true, deletes annotation(s) for node(s).
 
 Returns:
   - For single: { nodeId, updated/deleted }
