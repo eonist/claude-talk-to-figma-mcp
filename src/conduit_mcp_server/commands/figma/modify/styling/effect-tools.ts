@@ -40,9 +40,6 @@ export function registerEffectTools(server: McpServer, figmaClient: FigmaClient)
     MCP_COMMANDS.SET_EFFECT,
     `Set effect(s) directly or by style variable on one or more nodes in Figma.
 
-Params:
-  - entries: Either a single application or an array of applications.
-
 Returns:
   - content: Array containing a text message with the updated node(s) ID(s) or a summary.
 `,
@@ -98,9 +95,6 @@ Returns:
   server.tool(
     MCP_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE,
     `Creates one or more effect style variables in Figma.
-
-Params:
-  - effects: Either a single effect definition or an array of effect definitions.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created effect style(s) ID(s) or a summary.
