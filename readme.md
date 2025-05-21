@@ -1,4 +1,4 @@
-[![version](https://img.shields.io/badge/version-0.8.6-blue.svg)](https://github.com/eonist/conduit/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green)
+[![version](https://img.shields.io/badge/version-0.8.7-blue.svg)](https://github.com/eonist/conduit/releases) [![Publish Package to npm](https://github.com/eonist/conduit/actions/workflows/publish.yml/badge.svg)](https://github.com/eonist/conduit/actions/workflows/publish.yml) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <img width="100" alt="img" src="logo.svg">
 
