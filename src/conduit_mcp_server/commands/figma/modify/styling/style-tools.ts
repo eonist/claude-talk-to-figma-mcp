@@ -23,14 +23,6 @@ export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) 
     MCP_COMMANDS.SET_STYLE,
     `Create, update, or delete one or more Figma styles (PAINT, EFFECT, TEXT, GRID) in a unified call.
 
-Parameters:
-- entry (object, optional): Single style operation
-  - styleId (string, optional): Required for update/delete, omitted for create
-  - styleType (string, required): "PAINT", "EFFECT", "TEXT", or "GRID"
-  - properties (object, optional): Properties to set (required for create/update, omitted for delete)
-  - delete (boolean, optional): If true, deletes the style (ignores properties)
-- entries (array of objects, optional): Batch style operations (same shape as above)
-
 Returns: Array of result objects: { styleId, styleType, action: "created" | "updated" | "deleted", success: true, [error?: string] }`,
     StyleBatchSchema.shape,
     async (params: z.infer<typeof StyleBatchSchema>) => {

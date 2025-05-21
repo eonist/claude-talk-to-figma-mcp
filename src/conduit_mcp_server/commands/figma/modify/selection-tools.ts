@@ -13,10 +13,6 @@ export function registerSelectionModifyTools(server: FigmaMcpServer) {
     {
       description: `Set the current selection in Figma to the specified node(s) by ID.
 
-Parameters:
-  - nodeId: (string, optional) A single node ID to select.
-  - nodeIds: (string[], optional) An array of node IDs to select.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the selection result as JSON.
 `,

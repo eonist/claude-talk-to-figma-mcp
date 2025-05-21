@@ -44,14 +44,6 @@ export function registerUnifiedGridCommands(server: McpServer, figmaClient: Figm
     MCP_COMMANDS.SET_GRID,
     `Create, update, or delete one or more layout grids on Figma nodes (FRAME, COMPONENT, INSTANCE).
 
-Parameters:
-- entry (object, optional): Single grid operation
-  - nodeId (string): Node to modify
-  - gridIndex (number, optional): Index of grid to update/delete (omit for create)
-  - properties (object, optional): Grid properties (for create/update)
-  - delete (boolean, optional): If true, delete the grid at gridIndex
-- entries (array, optional): Batch of grid operations (same shape as above)
-
 Returns: Array of result objects for each operation.`,
     SetGridSchema,
     async (params) => {
@@ -73,10 +65,6 @@ Returns: Array of result objects for each operation.`,
   server.tool(
     MCP_COMMANDS.GET_GRID,
     `Get all layout grids for one or more Figma nodes (FRAME, COMPONENT, INSTANCE).
-
-Parameters:
-- nodeId (string, optional): Single node ID
-- nodeIds (array of string, optional): Multiple node IDs
 
 Returns: For single: { nodeId, grids: [...] }, for batch: Array<{ nodeId, grids: [...] }>.`,
     GetGridSchema,
