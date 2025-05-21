@@ -1144,7 +1144,6 @@ Apply variable to node.
 ```
 
 ### switch_variable_mode
-Switch variable mode.
 
 **Parameters:**
 - collection (string)
@@ -1152,11 +1151,16 @@ Switch variable mode.
 
 **Example:**
 ```json
-{ "command": "switch_variable_mode", "params": { "collection": "Theme", "mode": "Dark" } }
+{
+  "command": "switch_variable_mode",
+  "params": {
+    "collection": "Theme",
+    "mode": "Dark"
+  }
+}
 ```
 
 ### export_node_as_image
-Export node as image.
 
 **Parameters:**
 - nodeId (string)
