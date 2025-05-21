@@ -83,7 +83,15 @@ export async function set_auto_layout(
       results.push({ nodeId, success: true });
     } catch (error: any) {
       if (options?.skipErrors) {
-        results.push({ nodeId: config.nodeId, success: false, error: error && error.message ? error.message : String(error) });
+        results.push({
+          nodeId: config.nodeId,
+          success: false,
+          error: error && error.message ? error.message : String(error),
+          meta: {
+            operation: "set_auto_layout",
+            params: { ...config }
+          }
+        });
         continue;
       } else {
         throw error;
@@ -102,7 +110,11 @@ export async function set_auto_layout(
       success: false,
       error: {
         message: "All auto-layout operations failed",
-        results
+        results,
+        meta: {
+          operation: "set_auto_layout",
+          params: configs
+        }
       }
     };
   }

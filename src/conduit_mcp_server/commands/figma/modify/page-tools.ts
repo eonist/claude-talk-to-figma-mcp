@@ -53,7 +53,15 @@ Returns: Array of result objects for each operation.`,
             if (!result.error) anySuccess = true;
           }
         } catch (err: any) {
-          results.push({ pageId: op.pageId, success: false, error: err?.message || String(err) });
+          results.push({
+            pageId: op.pageId,
+            success: false,
+            error: err?.message || String(err),
+            meta: {
+              operation: "set_page",
+              params: { ...op }
+            }
+          });
         }
       }
       if (anySuccess) {
@@ -63,7 +71,11 @@ Returns: Array of result objects for each operation.`,
           success: false,
           error: {
             message: "All page operations failed",
-            results
+            results,
+            meta: {
+              operation: "set_page",
+              params: ops
+            }
           }
         };
       }
