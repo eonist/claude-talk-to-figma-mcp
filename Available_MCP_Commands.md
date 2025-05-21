@@ -118,3 +118,918 @@
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
 # Examples: 
+
+### get_doc_pages
+Get all pages in the current Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_doc_pages", "params": {} }
+```
+
+### set_page
+Set the current active page in Figma.
+
+**Parameters:**
+- pageId (string)
+
+**Example:**
+```json
+{ "command": "set_page", "params": { "pageId": "123:456" } }
+```
+
+### create_page
+Create a new page.
+
+**Parameters:**
+- name (string, optional)
+
+**Example:**
+```json
+{ "command": "create_page", "params": { "name": "New Page" } }
+```
+
+### duplicate_page
+Duplicate a Figma page and all its children as a new page.
+
+**Parameters:**
+- pageId (string)
+- newPageName (string, optional)
+
+**Example:**
+```json
+{ "command": "duplicate_page", "params": { "pageId": "123:456", "newPageName": "Copy of Page" } }
+```
+
+### create_rectangle
+Create one or more rectangles.
+
+**Parameters:**
+- x (number)
+- y (number)
+- width (number)
+- height (number)
+- name (string, optional)
+- parentId (string, optional)
+- cornerRadius (number, optional)
+
+**Example:**
+```json
+{ "command": "create_rectangle", "params": { "x": 100, "y": 100, "width": 200, "height": 100, "name": "Button Background" } }
+```
+
+### create_frame
+Create one or more frames.
+
+**Parameters:**
+- x (number)
+- y (number)
+- width (number)
+- height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor (object, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+
+**Example:**
+```json
+{ "command": "create_frame", "params": { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Mobile Screen" } }
+```
+
+### create_line
+Create one or more lines.
+
+**Parameters:**
+- x1 (number)
+- y1 (number)
+- x2 (number)
+- y2 (number)
+- parentId (string, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+
+**Example:**
+```json
+{ "command": "create_line", "params": { "x1": 100, "y1": 100, "x2": 300, "y2": 300 } }
+```
+
+### create_ellipse
+Create one or more ellipses.
+
+**Parameters:**
+- x (number)
+- y (number)
+- width (number)
+- height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor (object, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+
+**Example:**
+```json
+{ "command": "create_ellipse", "params": { "x": 100, "y": 100, "width": 50, "height": 30, "name": "Profile Avatar" } }
+```
+
+### create_polygon
+Create one or more polygons.
+
+**Parameters:**
+- x (number)
+- y (number)
+- width (number)
+- height (number)
+- sides (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor (object, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+
+**Example:**
+```json
+{ "command": "create_polygon", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" } }
+```
+
+### create_star
+Create one or more star shapes.
+
+**Parameters:**
+- x (number)
+- y (number)
+- width (number)
+- height (number)
+- points (number, optional)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor (object, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+
+**Example:**
+```json
+{ "command": "create_star", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star" } }
+```
+
+### create_vector
+Create one or more vectors.
+
+**Parameters:**
+- x (number)
+- y (number)
+- width (number)
+- height (number)
+- vectorPaths (array)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor (object, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+
+**Example:**
+```json
+{ "command": "create_vector", "params": {
+  "x": 100, "y": 100, "width": 50, "height": 50,
+  "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
+} }
+```
+
+### set_text
+Set or create one or more text elements.
+
+**Parameters:**
+- x (number)
+- y (number)
+- text (string)
+- fontSize (number, optional)
+- fontWeight (number, optional)
+- fontColor (object, optional)
+- name (string, optional)
+- parentId (string, optional)
+
+**Example:**
+```json
+{ "command": "set_text", "params": { "x": 100, "y": 100, "text": "Hello, Figma!", "fontSize": 24, "name": "Heading" } }
+```
+
+### set_text_content
+Set text content of an existing node.
+
+**Parameters:**
+- nodeId (string)
+- text (string)
+
+**Example:**
+```json
+{ "command": "set_text_content", "params": { "nodeId": "123:456", "text": "Updated text content" } }
+```
+
+### get_styled_text_segments
+Get text segments with specific styling in a text node.
+
+**Parameters:**
+- nodeId (string)
+- property (string)
+
+**Example:**
+```json
+{ "command": "get_styled_text_segments", "params": { "nodeId": "123:456", "property": "fontWeight" } }
+```
+
+### get_text_style
+Get text style properties for one or more nodes.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "get_text_style", "params": { "nodeId": "123:456" } }
+```
+
+### scan_text_nodes
+Scan all text nodes in the selected node.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "scan_text_nodes", "params": { "nodeId": "123:456" } }
+```
+
+### set_text_style
+Set one or more text style properties.
+
+**Parameters:**
+- nodeId (string)
+- styles (object)
+
+**Example:**
+```json
+{ "command": "set_text_style", "params": { "nodeId": "123:456", "styles": { "fontSize": 18, "fontWeight": 700 } } }
+```
+
+### set_paragraph_spacing
+Set paragraph spacing of one or more text nodes.
+
+**Parameters:**
+- nodeId (string)
+- paragraphSpacing (number)
+
+**Example:**
+```json
+{ "command": "set_paragraph_spacing", "params": { "nodeId": "123:456", "paragraphSpacing": 12 } }
+```
+
+### set_line_height
+Set line height of one or more text nodes.
+
+**Parameters:**
+- nodeId (string)
+- ranges (array)
+
+**Example:**
+```json
+{ "command": "set_line_height", "params": { "nodeId": "123:456", "ranges": [ { "start": 0, "end": 5, "value": 150, "unit": "PERCENT" } ] } }
+```
+
+### set_letter_spacing
+Set letter spacing of one or more text nodes.
+
+**Parameters:**
+- nodeId (string)
+- spacings (array)
+
+**Example:**
+```json
+{ "command": "set_letter_spacing", "params": { "nodeId": "123:456", "spacings": [ { "start": 0, "end": 5, "value": 2, "unit": "PIXELS" } ] } }
+```
+
+### set_text_case
+Set text case of one or more text nodes.
+
+**Parameters:**
+- nodeId (string)
+- ranges (array)
+
+**Example:**
+```json
+{ "command": "set_text_case", "params": { "nodeId": "123:456", "ranges": [ { "start": 0, "end": 5, "value": "UPPER" } ] } }
+```
+
+### set_text_decoration
+Set text decoration of one or more text nodes.
+
+**Parameters:**
+- nodeId (string)
+- ranges (array)
+
+**Example:**
+```json
+{ "command": "set_text_decoration", "params": { "nodeId": "123:456", "ranges": [ { "start": 0, "end": 5, "type": "UNDERLINE" } ] } }
+```
+
+### load_font_async
+Load a font asynchronously.
+
+**Parameters:**
+- family (string)
+- style (string, optional)
+
+**Example:**
+```json
+{ "command": "load_font_async", "params": { "family": "Inter", "style": "Bold" } }
+```
+
+### get_components
+Get components from the current document or team libraries.
+
+**Parameters:**
+- source (string)
+
+**Example:**
+```json
+{ "command": "get_components", "params": { "source": "local" } }
+```
+
+### create_components_from_node
+Convert nodes to components.
+
+**Parameters:**
+- entry (object)
+
+**Example:**
+```json
+{ "command": "create_components_from_node", "params": { "entry": { "nodeId": "123:456" } } }
+```
+
+### create_component_instance
+Create component instances.
+
+**Parameters:**
+- entry (object)
+
+**Example:**
+```json
+{ "command": "create_component_instance", "params": { "entry": { "componentKey": "123:456", "x": 100, "y": 100 } } }
+```
+
+### create_button
+Create a complete button.
+
+**Parameters:**
+- x (number)
+- y (number)
+- text (string)
+
+**Example:**
+```json
+{ "command": "create_button", "params": { "x": 100, "y": 100, "text": "Click Me" } }
+```
+
+### detach_instances
+Detach component instances.
+
+**Parameters:**
+- instanceId (string)
+
+**Example:**
+```json
+{ "command": "detach_instances", "params": { "instanceId": "123:456" } }
+```
+
+### get_image
+Extract image fills or export nodes as images.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "get_image", "params": { "nodeId": "123:456" } }
+```
+
+### set_image
+Set or insert images.
+
+**Parameters:**
+- image (object)
+
+**Example:**
+```json
+{ "command": "set_image", "params": { "image": { "url": "https://example.com/image.jpg", "x": 100, "y": 100 } } }
+```
+
+### set_svg_vector
+Set or insert SVG vectors.
+
+**Parameters:**
+- svg (string)
+
+**Example:**
+```json
+{ "command": "set_svg_vector", "params": { "svg": "<svg .../>", "x": 100, "y": 100 } }
+```
+
+### get_svg_vector
+Get SVG markup for vector nodes.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "get_svg_vector", "params": { "nodeId": "123:456" } }
+```
+
+### get_style
+Get all styles.
+
+**Example:**
+```json
+{ "command": "get_style", "params": {} }
+```
+
+### set_fill_and_stroke
+Set fill and/or stroke colors.
+
+**Parameters:**
+- entries (array)
+
+**Example:**
+```json
+{ "command": "set_fill_and_stroke", "params": { "entries": [ { "nodeId": "123:456", "fillColor": { "r": 1, "g": 0, "b": 0 }, "strokeColor": { "r": 0, "g": 0, "b": 0 } } ] } }
+```
+
+### set_style
+Set styles.
+
+**Parameters:**
+- entries (array)
+
+**Example:**
+```json
+{ "command": "set_style", "params": { "entries": [ { "styleType": "PAINT", "properties": { "name": "Accent", "paints": [ { "type": "SOLID", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } } ] } } ] } }
+```
+
+### create_gradient_style
+Create gradient styles.
+
+**Parameters:**
+- gradients (array)
+
+**Example:**
+```json
+{ "command": "create_gradient_style", "params": { "gradients": [ { "name": "Primary Linear", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [ 1, 0, 0, 1 ] }, { "position": 1, "color": [ 0, 0, 1, 1 ] } ] } ] } }
+```
+
+### set_gradient
+Set gradients.
+
+**Parameters:**
+- entries (array)
+
+**Example:**
+```json
+{ "command": "set_gradient", "params": { "entries": [ { "nodeId": "123:456", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [ 1, 0, 0, 1 ] }, { "position": 1, "color": [ 0, 0, 1, 1 ] } ], "applyTo": "FILL" } ] } }
+```
+
+### create_effect_style_variable
+Create effect style variables.
+
+**Parameters:**
+- effects (array)
+
+**Example:**
+```json
+{ "command": "create_effect_style_variable", "params": { "effects": [ { "name": "Soft Shadow", "type": "DROP_SHADOW", "color": "#000", "radius": 8, "opacity": 0.2 } ] } }
+```
+
+### set_effect
+Set effects.
+
+**Parameters:**
+- entries (array)
+
+**Example:**
+```json
+{ "command": "set_effect", "params": { "entries": [ { "nodeId": "123:456", "effects": [ { "type": "DROP_SHADOW", "color": "#000", "radius": 4 } ] } ] } }
+```
+
+### apply_effect_style
+Apply effect style.
+
+**Parameters:**
+- nodeId (string)
+- effectStyleId (string)
+
+**Example:**
+```json
+{ "command": "apply_effect_style", "params": { "nodeId": "123:456", "effectStyleId": "effect123" } }
+```
+
+### set_auto_layout
+Set auto layout.
+
+**Parameters:**
+- layouts (array)
+
+**Example:**
+```json
+{ "command": "set_auto_layout", "params": { "layouts": [ { "nodeId": "1:23", "mode": "VERTICAL", "itemSpacing": 20 } ] } }
+```
+
+### set_auto_layout_resizing
+Set auto layout resizing.
+
+**Parameters:**
+- nodeId (string)
+- axis (string)
+- mode (string)
+
+**Example:**
+```json
+{ "command": "set_auto_layout_resizing", "params": { "nodeId": "123:456", "axis": "horizontal", "mode": "HUG" } }
+```
+
+### set_corner_radius
+Set corner radius.
+
+**Parameters:**
+- nodeId (string)
+- radius (number)
+
+**Example:**
+```json
+{ "command": "set_corner_radius", "params": { "nodeId": "123:456", "radius": 8 } }
+```
+
+### move_node
+Move node.
+
+**Parameters:**
+- move (object)
+
+**Example:**
+```json
+{ "command": "move_node", "params": { "move": { "nodeId": "123:456", "x": 100, "y": 200 } } }
+```
+
+### reorder_node
+Reorder node.
+
+**Parameters:**
+- reorders (array)
+
+**Example:**
+```json
+{ "command": "reorder_node", "params": { "reorders": [ { "nodeId": "123:456", "direction": "up" } ] } }
+```
+
+### resize_node
+Resize node.
+
+**Parameters:**
+- nodeId (string)
+- width (number)
+- height (number)
+
+**Example:**
+```json
+{ "command": "resize_node", "params": { "nodeId": "123:456", "width": 200, "height": 100 } }
+```
+
+### flatten_node
+Flatten node.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "flatten_node", "params": { "nodeId": "123:456" } }
+```
+
+### boolean
+Boolean operation.
+
+**Parameters:**
+- operation (string)
+- selection (boolean, optional)
+- nodeId (string, optional)
+- nodeIds (array, optional)
+
+**Example:**
+```json
+{ "command": "boolean", "params": { "operation": "union", "selection": true } }
+```
+
+### group_node
+Group nodes.
+
+**Parameters:**
+- group (boolean)
+- nodeIds (array)
+
+**Example:**
+```json
+{ "command": "group_node", "params": { "group": true, "nodeIds": ["123:456", "789:101"] } }
+```
+
+### convert_rectangle_to_frame
+Convert rectangle to frame.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "convert_rectangle_to_frame", "params": { "nodeId": "123:456" } }
+```
+
+### delete_node
+Delete node.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "delete_node", "params": { "nodeId": "123:456" } }
+```
+
+### duplicate_node
+Duplicate node.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "duplicate_node", "params": { "nodeId": "123:456" } }
+```
+
+### set_node
+Set or insert child node.
+
+**Parameters:**
+- parentId (string)
+- childId (string)
+- index (number, optional)
+
+**Example:**
+```json
+{ "command": "set_node", "params": { "parentId": "123:456", "childId": "789:101", "index": 2 } }
+```
+
+### set_node_prop
+Set node properties.
+
+**Parameters:**
+- nodeIds (array)
+- properties (object)
+
+**Example:**
+```json
+{ "command": "set_node_prop", "params": { "nodeIds": ["123:456", "789:101"], "properties": { "locked": true } } }
+```
+
+### set_grid
+Set grid.
+
+**Parameters:**
+- entries (array)
+
+**Example:**
+```json
+{ "command": "set_grid", "params": { "entries": [ { "nodeId": "123:456", "properties": { "pattern": "COLUMNS", "count": 12 } } ] } }
+```
+
+### get_grid
+Get grid.
+
+**Parameters:**
+- nodeIds (array)
+
+**Example:**
+```json
+{ "command": "get_grid", "params": { "nodeIds": ["123:456"] } }
+```
+
+### set_guide
+Set guide.
+
+**Parameters:**
+- guides (array)
+
+**Example:**
+```json
+{ "command": "set_guide", "params": { "guides": [ { "axis": "X", "offset": 100 } ] } }
+```
+
+### get_guide
+Get guide.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_guide", "params": {} }
+```
+
+### set_constraint
+Set constraint.
+
+**Parameters:**
+- constraints (array)
+
+**Example:**
+```json
+{ "command": "set_constraint", "params": { "constraints": [ { "nodeId": "123:456", "horizontal": "left", "vertical": "top" } ] } }
+```
+
+### get_constraint
+Get constraint.
+
+**Parameters:**
+- nodeIds (array)
+
+**Example:**
+```json
+{ "command": "get_constraint", "params": { "nodeIds": ["123:456"] } }
+```
+
+### set_variable
+Set variable.
+
+**Parameters:**
+- variables (array)
+
+**Example:**
+```json
+{ "command": "set_variable", "params": { "variables": [ { "name": "Primary Color", "type": "COLOR", "value": "#3366FF" } ] } }
+```
+
+### get_variable
+Get variable.
+
+**Parameters:**
+- type (string, optional)
+- collection (string, optional)
+- mode (string, optional)
+- ids (array, optional)
+
+**Example:**
+```json
+{ "command": "get_variable", "params": { "type": "COLOR", "collection": "Theme" } }
+```
+
+### apply_variable_to_node
+Apply variable to node.
+
+**Parameters:**
+- nodeId (string)
+- variableId (string)
+- property (string)
+
+**Example:**
+```json
+{ "command": "apply_variable_to_node", "params": { "nodeId": "123:456", "variableId": "var123", "property": "fill" } }
+```
+
+### switch_variable_mode
+Switch variable mode.
+
+**Parameters:**
+- collection (string)
+- mode (string)
+
+**Example:**
+```json
+{ "command": "switch_variable_mode", "params": { "collection": "Theme", "mode": "Dark" } }
+```
+
+### export_node_as_image
+Export node as image.
+
+**Parameters:**
+- nodeId (string)
+- format (string, optional)
+- scale (number, optional)
+
+**Example:**
+```json
+{ "command": "export_node_as_image", "params": { "nodeId": "123:456", "format": "PNG", "scale": 2 } }
+```
+
+### get_html
+Get HTML.
+
+**Parameters:**
+- nodeId (string)
+- format (string, optional)
+- cssMode (string, optional)
+
+**Example:**
+```json
+{ "command": "get_html", "params": { "nodeId": "123:456", "format": "semantic", "cssMode": "classes" } }
+```
+
+### get_css_async
+Get CSS asynchronously.
+
+**Parameters:**
+- nodeId (string)
+- format (string, optional)
+
+**Example:**
+```json
+{ "command": "get_css_async", "params": { "nodeId": "123:456", "format": "string" } }
+```
+
+### rename_layer
+Rename layer.
+
+**Parameters:**
+- rename (object) or renames (array of objects)
+
+**Example:**
+```json
+{ "command": "rename_layer", "params": { "rename": { "nodeId": "123:456", "newName": "Header Section" } } }
+```
+
+### ai_rename_layer
+AI rename layer.
+
+**Parameters:**
+- layer_ids (array of string)
+- context_prompt (string, optional)
+
+**Example:**
+```json
+{ "command": "ai_rename_layer", "params": { "layer_ids": ["123:456"], "context_prompt": "Rename for clarity" } }
+```
+
+### set_variant
+Set variant.
+
+**Parameters:**
+- variant (object, optional)
+- variants (array, optional)
+
+**Example:**
+```json
+{ "command": "set_variant", "params": { "variant": { "componentSetId": "123:456", "action": "add", "properties": { "state": "hover" } } } }
+```
+
+### get_variant
+Get variant.
+
+**Parameters:**
+- componentSetId (string, optional)
+- componentSetIds (array, optional)
+
+**Example:**
+```json
+{ "command": "get_variant", "params": { "componentSetId": "123:456" } }
+```
+
+### subscribe_event
+Subscribe event.
+
+**Parameters:**
+- eventType (string)
+- filter (object, optional)
+
+**Example:**
+```json
+{ "command": "subscribe_event", "params": { "eventType": "selection_change" } }
+```
+
+### get_annotation
+Get annotation.
+
+**Parameters:**
+- nodeId (string, optional)
+- nodeIds (array, optional)
+
+**Example:**
+```json
+{ "command": "get_annotation", "params": { "nodeId": "123:456" } }
+```
+
+### set_annotation
+Set annotation.
+
+**Parameters:**
+- entry (object, optional)
+- entries (array, optional)
+
+**Example:**
+```json
+{ "command": "set_annotation", "params": { "entry": { "nodeId": "123:456", "annotation": { "label": "Note" } } } }
