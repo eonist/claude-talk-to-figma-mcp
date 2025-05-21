@@ -141,24 +141,40 @@ Returns:
           svgsArr,
           async (cfg) => {
             const content = cfg.svg;
-            const node = await (figmaClient as any).insertSvgVector({
+            const result = await (figmaClient as any).insertSvgVector({
               svg: content,
               x: cfg.x,
               y: cfg.y,
               name: cfg.name,
               parentId: cfg.parentId ? ensureNodeIdIsString(cfg.parentId) : undefined
             });
-            return node.id;
+            // Support both { id } and { ids: [...] } return shapes
+            if (result && typeof result.id === "string") {
+              return result.id;
+            } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+              return result.ids[0];
+            } else {
+              throw new Error("Failed to insert SVG vector: missing node ID from figmaClient.insertSvgVector");
+            }
           }
         );
         const nodeIds = results.map(r => r.result).filter(Boolean);
-        if (nodeIds.length === 1) {
-          return { content: [{ type: "text", text: `Inserted SVG vector ${nodeIds[0]}` }] };
-        } else {
-          return { content: [{ type: "text", text: `Inserted SVG vectors: ${nodeIds.join(", ")}` }] };
-        }
+        return {
+          success: true,
+          message: nodeIds.length === 1
+            ? `SVG vector inserted successfully.`
+            : `SVG vectors inserted successfully.`,
+          nodeIds
+        };
       } catch (err) {
-        return handleToolError(err, "svg-creation-tools", "set_svg_vector") as any;
+        // Return a structured error response.
+        return {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+          }
+        };
       }
     }
   );
