@@ -117,4 +117,116 @@
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
+
+
+
 # Examples:
+
+### get_doc_pages
+Get information about all pages in the current Figma document.
+
+**Parameters:**
+- None
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the pages info as JSON.
+
+**Example:**
+```json
+{ "command": "get_doc_pages", "params": {} }
+```
+
+### create_rectangle
+Creates one or more rectangle shape nodes in the specified Figma document. Accepts either a single rectangle config (via the 'rectangle' property) or an array of configs (via the 'rectangles' property). Optionally, you can provide a name, a parent node ID to attach the rectangle(s) to, and a corner radius for rounded corners.
+
+**Parameters:**
+- rectangle (object, optional): A single rectangle configuration object. Each object should include coordinates, dimensions, and optional properties for a rectangle.
+- rectangles (array, optional): An array of rectangle configuration objects. Each object should include coordinates, dimensions, and optional properties for a rectangle.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the created rectangle node ID(s).
+
+**Example:**
+```json
+{
+  "command": "create_rectangle",
+  "params": {
+    "rectangle": {
+      "x": 100,
+      "y": 200,
+      "width": 300,
+      "height": 150,
+      "name": "Button Background",
+      "cornerRadius": 8
+    }
+  }
+}
+```
+```json
+{
+  "command": "create_rectangle",
+  "params": {
+    "rectangles": [
+      { "x": 10, "y": 20, "width": 100, "height": 50, "name": "Rect1" },
+      { "x": 120, "y": 20, "width": 80, "height": 40 }
+    ]
+  }
+}
+```
+
+### set_page
+Create, delete, rename, or set current page (single or batch).
+
+**Parameters:**
+- page (object, optional): Single page operation
+  - pageId (string, optional): Target page (for delete/rename/set current)
+  - name (string, optional): Name for create/rename
+  - delete (boolean, optional): If true, delete the page
+  - setCurrent (boolean, optional): If true, set as current page
+- pages (array, optional): Batch of page operations (same shape as above)
+
+**Returns:**
+- Array of result objects for each operation.
+
+**Example:**
+```json
+{ "command": "set_page", "params": { "page": { "pageId": "123:456", "setCurrent": true } } }
+```
+```json
+{ "command": "set_page", "params": { "pages": [
+  { "pageId": "123:456", "delete": true },
+  { "name": "New Page" }
+] } }
+```
+
+### create_page
+Create a new page.
+
+**Parameters:**
+- name (string, required): Name of the new page.
+
+**Returns:**
+- Object with success status and new page info.
+
+**Example:**
+```json
+{ "command": "set_page", "params": { "page": { "name": "New Page" } } }
+```
+
+### duplicate_page
+Duplicate a Figma page and all its children as a new page.
+
+**Parameters:**
+- pageId (string): The ID of the page to duplicate.
+- newPageName (string, optional): Optional name for the new page.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the new page info as JSON.
+
+**Example:**
+```json
+{ "command": "duplicate_page", "params": { "pageId": "123:456" } }
+```
+```json
+{ "command": "duplicate_page", "params": { "pageId": "123:456", "newPageName": "My Duplicated Page" } }
+```
