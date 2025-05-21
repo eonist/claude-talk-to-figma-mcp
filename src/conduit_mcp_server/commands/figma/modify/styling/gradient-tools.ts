@@ -50,9 +50,6 @@ export function registerGradientTools(server: McpServer, figmaClient: FigmaClien
     MCP_COMMANDS.CREATE_GRADIENT_STYLE,
     `Creates one or more gradient style variables in Figma.
 
-Params:
-  - gradients: Either a single gradient definition or an array of gradient definitions.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created gradient(s) ID(s) or a summary.
 `,
