@@ -857,15 +857,32 @@ Apply an effect style to a node in Figma.
 - Effect styles include shadows, blurs, and other visual effects.
 - Use this to maintain consistent styling across multiple nodes.
 
+---
+
 ### set_auto_layout
-Set auto layout.
+Configure auto layout properties for one or more nodes (single or batch).
 
 **Parameters:**
-- layouts (array)
+- layout (object, optional): Single auto-layout config.
+- layouts (array of objects, optional): Batch of auto-layout configs.
+  - Each config:
+    - nodeId (string): Node to update
+    - mode ("HORIZONTAL" | "VERTICAL" | "NONE"): Layout mode
+    - primaryAxisSizing ("FIXED" | "AUTO", optional)
+    - counterAxisSizing ("FIXED" | "AUTO", optional)
+    - itemSpacing (number, optional)
+    - padding (object, optional): { top, right, bottom, left }
+    - alignItems ("MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN", optional)
+- options (object, optional): { skipErrors?: boolean, maintainPosition?: boolean }
+- At least one of layout or layouts is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
 
 **Example:**
 ```json
-{ "command": "set_auto_layout", "params": { "layouts": [ { "nodeId": "1:23", "mode": "VERTICAL", "itemSpacing": 20 } ] } }
+{ "command": "set_auto_layout", "params": { "layout": { "nodeId": "1:23", "mode": "VERTICAL", "itemSpacing": 20 } } }
 ```
 
 ### set_auto_layout_resizing
