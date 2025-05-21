@@ -66,19 +66,17 @@ export async function setConstraints(params) {
     for (var j = 0; j < res.length; ++j) {
       var r = res[j];
       if (r && r.error) {
-        results.push({
-          ...r,
+        results.push(Object.assign({}, r, {
           success: false,
-        meta: {
-          operation: "set_constraint",
-          params: Object.assign({}, op, { applyToChildren: applyToChildren, maintainAspectRatio: maintainAspectRatio })
-        }
-        });
+          meta: {
+            operation: "set_constraint",
+            params: Object.assign({}, op, { applyToChildren: applyToChildren, maintainAspectRatio: maintainAspectRatio })
+          }
+        }));
       } else {
-        results.push({
-          ...r,
+        results.push(Object.assign({}, r, {
           success: true
-        });
+        }));
       }
     }
   }
