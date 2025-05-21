@@ -173,17 +173,18 @@ Returns:
           vectorsArr,
           async (cfg) => {
             const result = await figmaClient.createVector(cfg);
-            // Support both { id } and { ids: [...] } return shapes
-            if (result && typeof result.id === "string") {
-              return result.id;
-            } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
-              return result.ids[0];
+            // Always extract all IDs from { ids: [...] }
+            if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+              return result.ids;
+            } else if (result && typeof result.id === "string") {
+              return [result.id];
             } else {
               throw new Error("Failed to create vector: missing node ID from figmaClient.createVector");
             }
           }
         );
-        const nodeIds = results.map(r => r.result).filter(Boolean);
+        // Flatten all returned ID arrays into a single array
+        const nodeIds = results.flat().filter(Boolean);
         return {
           success: true,
           message: nodeIds.length === 1
