@@ -42,20 +42,33 @@ Returns:
         if (nodeId !== undefined) params.nodeId = ensureNodeIdIsString(nodeId);
         if (format !== undefined) params.format = format;
         const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_CSS_ASYNC, params);
+        const resultsArr = Array.isArray(result) ? result : [result];
+        const response = { success: true, results: resultsArr };
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(response)
             }
           ]
         };
       } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "get_css_async",
+              params: { nodeId, format }
+            }
+          }
+        };
         return {
           content: [
             {
               type: "text",
-              text: `Error getting CSS: ${error instanceof Error ? error.message : String(error)}`
+              text: JSON.stringify(response)
             }
           ]
         };

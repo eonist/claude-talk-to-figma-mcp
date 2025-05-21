@@ -61,20 +61,33 @@ Returns:
           nodeId: nodeIdString,
           property
         });
+        const resultsArr = Array.isArray(result) ? result : [result];
+        const response = { success: true, results: resultsArr };
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result, null, 2)
+              text: JSON.stringify(response)
             }
           ]
         };
       } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "get_styled_text_segments",
+              params: { nodeId, property }
+            }
+          }
+        };
         return {
           content: [
             {
               type: "text",
-              text: `Error getting styled text segments: ${error instanceof Error ? error.message : String(error)}`
+              text: JSON.stringify(response)
             }
           ]
         };
@@ -113,10 +126,6 @@ Returns:
     },
     async ({ nodeId }) => {
       try {
-        const initialStatus = {
-          type: "text" as const,
-          text: "Starting text node scanning. This may take a moment for large designs...",
-        };
         const nodeIdString = ensureNodeIdIsString(nodeId);
         logger.debug(`Scanning text nodes for node ID: ${nodeIdString}`);
         const result = await figmaClient.executeCommand(MCP_COMMANDS.SCAN_TEXT_NODES, {
@@ -124,50 +133,35 @@ Returns:
           useChunking: true,
           chunkSize: 10
         });
-        if (result && typeof result === 'object' && 'chunks' in result) {
-          const typedResult = result as {
-            success: boolean,
-            totalNodes: number,
-            processedNodes: number,
-            chunks: number,
-            textNodes: Array<any>
-          };
-          const summaryText = `
-          Scan completed:
-          - Found ${typedResult.totalNodes} text nodes
-          - Processed in ${typedResult.chunks} chunks
-          `;
-          return {
-            content: [
-              initialStatus,
-              {
-                type: "text" as const,
-                text: summaryText
-              },
-              {
-                type: "text" as const,
-                text: JSON.stringify(typedResult.textNodes, null, 2)
-              }
-            ],
-          };
-        }
+        const resultsArr = Array.isArray(result) ? result : [result];
+        const response = { success: true, results: resultsArr };
         return {
           content: [
-            initialStatus,
             {
               type: "text",
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
+              text: JSON.stringify(response)
+            }
+          ]
         };
       } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "scan_text_nodes",
+              params: { nodeId }
+            }
+          }
+        };
         return {
           content: [
             {
               type: "text",
-              text: `Error scanning text nodes: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
+              text: JSON.stringify(response)
+            }
+          ]
         };
       }
     }

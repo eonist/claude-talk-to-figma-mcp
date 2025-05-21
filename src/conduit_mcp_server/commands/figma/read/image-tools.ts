@@ -106,11 +106,28 @@ export async function get_image(
     }
   }
 
+  const anySuccess = results.some(r => !r.error);
+  let response;
+  if (anySuccess) {
+    response = { success: true, results };
+  } else {
+    response = {
+      success: false,
+      error: {
+        message: "All get_image operations failed",
+        results,
+        meta: {
+          operation: "get_image",
+          params
+        }
+      }
+    };
+  }
   return {
     content: [
       {
         type: "text",
-        text: JSON.stringify(results)
+        text: JSON.stringify(response)
       }
     ]
   };

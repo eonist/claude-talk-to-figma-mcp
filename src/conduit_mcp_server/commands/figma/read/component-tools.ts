@@ -56,12 +56,22 @@ Examples:
     },
     async (args: any) => {
       const { source, team_id, page_size, after } = args || {};
-      // No implementation for get_components: legacy methods removed.
+      const response = {
+        success: false,
+        error: {
+          message: "get_components is not implemented. Legacy component queries have been removed. Please implement a unified component retrieval method.",
+          results: [],
+          meta: {
+            operation: "get_components",
+            params: { source, team_id, page_size, after }
+          }
+        }
+      };
       return {
         content: [
           {
             type: "text",
-            text: "Error: get_components is not implemented. Legacy component queries have been removed. Please implement a unified component retrieval method."
+            text: JSON.stringify(response)
           }
         ]
       };
