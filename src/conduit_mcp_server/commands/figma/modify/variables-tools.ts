@@ -55,10 +55,6 @@ export function registerVariableTools(server: McpServer, figmaClient: FigmaClien
     MCP_COMMANDS.SET_VARIABLE,
     `Creates, updates, or deletes one or more Figma Variables (design tokens).
 
-Params:
-  - variables: For create/update. Either a single variable definition, a single update (with id), or an array of either.
-  - ids: For delete. Either a single variable id or an array of ids.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the result or summary.
 `,
@@ -211,12 +207,6 @@ Returns:
     MCP_COMMANDS.GET_VARIABLE,
     `Queries Figma Variables.
 
-Params:
-  - type: Optional. Filter by variable type.
-  - collection: Optional. Filter by collection.
-  - mode: Optional. Filter by mode.
-  - ids: Optional. Filter by specific variable ids.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the variable(s) info as JSON.
 `,
@@ -260,11 +250,6 @@ Returns:
     MCP_COMMANDS.APPLY_VARIABLE_TO_NODE,
     `Applies a Figma Variable to a node property.
 
-Params:
-  - nodeId: The Figma node ID.
-  - variableId: The variable ID to apply.
-  - property: The property to apply the variable to (e.g., "fill", "stroke", "fontSize").
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the result.
 `,
@@ -306,10 +291,6 @@ Returns:
   server.tool(
     MCP_COMMANDS.SWITCH_VARIABLE_MODE,
     `Switches the mode for a Figma Variable collection (e.g., light/dark theme).
-
-Params:
-  - collection: The variable collection name.
-  - mode: The mode to switch to.
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the result.
