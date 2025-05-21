@@ -541,28 +541,77 @@ Convert nodes to components.
 ```
 
 ### create_component_instance
-Create component instances.
+Create one or more component instances in Figma.
 
 **Parameters:**
-- entry (object)
+- entry (object, optional): Single instance config: { componentKey (string), x (number), y (number) }
+- entries (array, optional): Array of instance configs
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the created instance IDs.
 
 **Example:**
 ```json
-{ "command": "create_component_instance", "params": { "entry": { "componentKey": "123:456", "x": 100, "y": 100 } } }
+{ "command": "create_component_instance", "params": { "entry": { "componentKey": "abc:123", "x": 100, "y": 200 } } }
 ```
+```json
+{ "command": "create_component_instance", "params": { "entries": [
+  { "componentKey": "abc:123", "x": 100, "y": 200 },
+  { "componentKey": "def:456", "x": 300, "y": 400 }
+] } }
+```
+
+**Notes:**
+- componentKey must be valid.
+- x and y must be within Figma canvas bounds.
+- You must provide either 'entry' or 'entries'.
+- Creates one or more instances of a component at specified positions.
 
 ### create_button
-Create a complete button.
+Create a complete button with background and text in Figma at the specified coordinates.
 
 **Parameters:**
-- x (number)
-- y (number)
-- text (string)
+- x (number, optional): X coordinate for the button.
+- y (number, optional): Y coordinate for the button.
+- width (number, optional): Width of the button.
+- height (number, optional): Height of the button.
+- text (string, optional): Text to display on the button.
+- background (object, optional): Background color with r, g, b, a channels (0-1).
+- textColor (object, optional): Text color with r, g, b, a channels (0-1).
+- fontSize (number, optional): Font size.
+- fontWeight (number, optional): Font weight.
+- cornerRadius (number, optional): Corner radius for rounded corners.
+- name (string, optional): Name of the button node.
+- parentId (string, optional): Figma node ID of the parent.
+- buttons (array, optional): Batch of button configurations (same shape as above).
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the created button's frame, background, and text node IDs.
 
 **Example:**
 ```json
-{ "command": "create_button", "params": { "x": 100, "y": 100, "text": "Click Me" } }
+{ "command": "create_button", "params": {
+  "x": 100,
+  "y": 200,
+  "width": 120,
+  "height": 40,
+  "text": "Click Me",
+  "background": { "r": 0.2, "g": 0.5, "b": 0.8, "a": 1 },
+  "textColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+  "fontSize": 16,
+  "fontWeight": 600,
+  "cornerRadius": 8,
+  "name": "Primary Button"
+} }
 ```
+
+**Notes:**
+- Width and height must be within allowed range.
+- Text must be a non-empty string.
+- Color values must be between 0 and 1.
+- If parentId is invalid, the button will be added to the root.
+- Creates a visually complete button with customizable style and text.
+- Supports batch creation via the 'buttons' array.
 
 ### detach_instances
 Detach component instances.
