@@ -39,11 +39,6 @@
 - [get_text_style](#get_text_style): Get text style properties for one or more nodes (single or batch)
 - [scan_text_nodes](#scan_text_nodes): Scan all text nodes in the selected node
 - [set_text_style](#set_text_style): Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes (unified)
-- [set_paragraph_spacing](#set_paragraph_spacing): Set the paragraph spacing of one or more text nodes (single or batch)
-- [set_line_height](#set_line_height): Set the line height of one or more text nodes (single or batch, range-based)
-- [set_letter_spacing](#set_letter_spacing): Set the letter spacing of one or more text nodes (single or batch, range-based)
-- [set_text_case](#set_text_case): Set the text case of one or more text nodes (single or batch, range-based)
-- [set_text_decoration](#set_text_decoration): Set the text decoration of one or more text nodes (single or batch, range-based)
 - [load_font_async](#load_font_async): Load a font asynchronously
 
 **Components:**

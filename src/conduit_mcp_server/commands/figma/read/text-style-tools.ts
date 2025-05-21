@@ -38,7 +38,7 @@ export async function get_text_style(
           nodeId,
           success: false,
           error: "Node not found",
-          meta: { operation: "get_text_style", params: { nodeId } }
+          meta: { operation: MCP_COMMANDS.GET_TEXT_STYLE, params: { nodeId } }
         });
         continue;
       }
@@ -48,7 +48,7 @@ export async function get_text_style(
           nodeId,
           success: false,
           error: "Node is not a text node",
-          meta: { operation: "get_text_style", params: { nodeId } }
+          meta: { operation: MCP_COMMANDS.GET_TEXT_STYLE, params: { nodeId } }
         });
         continue;
       }
@@ -98,10 +98,10 @@ export async function get_text_style(
           text: JSON.stringify({
             success: false,
             error: {
-              message: "All get_text_style operations failed",
+              message: "All " + MCP_COMMANDS.GET_TEXT_STYLE + " operations failed",
               results,
               meta: {
-                operation: "get_text_style",
+                operation: MCP_COMMANDS.GET_TEXT_STYLE,
                 params: ids
               }
             }
