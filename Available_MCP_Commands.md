@@ -646,6 +646,29 @@ Get information about the current selection in Figma.
 
 ---
 
+## set_selection
+Set the current selection in Figma to the specified node(s) by ID.
+
+**Parameters:**
+- nodeId (string, optional): A single node ID to select.
+- nodeIds (array of string, optional): An array of node IDs to select.
+- At least one of `nodeId` or `nodeIds` is required.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the selection result as JSON, including which nodes were selected and which were not found.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_selection", "params": { "inputSchema": { "nodeId": "123:456" } } }
+```
+_Batch:_
+```json
+{ "command": "set_selection", "params": { "inputSchema": { "nodeIds": ["123:456", "789:101"] } } }
+```
+
+---
+
 ## get_node_info
 Get detailed information about one or more nodes (single or batch).
 
@@ -666,29 +689,6 @@ _Single:_
 _Batch:_
 ```json
 { "command": "get_node_info", "params": { "nodeIds": ["123:456", "123:789"] } }
-```
-
----
-
-## get_annotation
-Get annotation(s) for one or more Figma nodes.
-
-**Parameters:**
-- nodeId (string, optional): Node ID for single node.
-- nodeIds (array of string, optional): Array of node IDs for batch.
-
-**Returns:**
-- For single: `{ nodeId, annotations }`
-- For batch: `Array<{ nodeId, annotations }>`
-
-**Examples:**
-_Single:_
-```json
-{ "command": "get_annotation", "params": { "nodeId": "123:456" } }
-```
-_Batch:_
-```json
-{ "command": "get_annotation", "params": { "nodeIds": ["123:456", "789:101"] } }
 ```
 
 ---
