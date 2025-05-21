@@ -96,61 +96,96 @@ Returns:
       extraInfo: "Supports inserting images from remote URLs, local files, or base64 data. Batch insertion is efficient for adding multiple images at once."
     },
     async (args): Promise<any> => {
-      try {
-        let imagesArr;
-        if (args.images) {
-          imagesArr = args.images;
-        } else if (args.image) {
-          imagesArr = [args.image];
-        } else {
-          throw new Error("You must provide either 'image' or 'images' as input.");
-        }
-        const results = await processBatch(
-          imagesArr,
-          async (config) => {
-            if (config.url) {
-              // Remote image
-              const node = await (figmaClient as any).insertImage(config);
-              return node.id;
-            } else if (config.imagePath || config.imageData) {
-              // Local image
-              let data: Uint8Array;
-              if (config.imageData) {
-                const base64 = config.imageData.startsWith("data:")
-                  ? config.imageData.split(",")[1]
-                  : config.imageData;
-                data = Uint8Array.from(Buffer.from(base64, "base64"));
-              } else if (config.imagePath) {
-                const fs = require("fs");
-                const fileBuffer = fs.readFileSync(config.imagePath);
-                data = new Uint8Array(fileBuffer);
-              } else {
-                throw new Error("Either imageData or imagePath must be provided for each image.");
-              }
-              const node = await (figmaClient as any).insertLocalImage({
-                data: Array.from(data),
-                x: config.x,
-                y: config.y,
-                width: config.width,
-                height: config.height,
-                name: config.name,
-                parentId: config.parentId
-              });
-              return node.id;
-            } else {
-              throw new Error("Each image must have at least one of url, imagePath, or imageData.");
+      let imagesArr;
+      if (args.images) {
+        imagesArr = args.images;
+      } else if (args.image) {
+        imagesArr = [args.image];
+      } else {
+        const response = {
+          success: false,
+          error: {
+            message: "You must provide either 'image' or 'images' as input.",
+            results: [],
+            meta: {
+              operation: "set_image",
+              params: args
             }
           }
-        );
-        const nodeIds = results.map(r => r.result).filter(Boolean);
-        if (nodeIds.length === 1) {
-          return { content: [{ type: "text", text: `Inserted image ${nodeIds[0]}` }] };
-        } else {
-          return { content: [{ type: "text", text: `Inserted images: ${nodeIds.join(", ")}` }] };
-        }
-      } catch (err) {
-        return handleToolError(err, "image-creation-tools", "set_image") as any;
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
+      const results = [];
+      for (const config of imagesArr) {
+        try {
+          let nodeId;
+          if (config.url) {
+            // Remote image
+            const node = await (figmaClient as any).insertImage(config);
+            nodeId = node.id;
+          } else if (config.imagePath || config.imageData) {
+            // Local image
+            let data: Uint8Array;
+            if (config.imageData) {
+              const base64 = config.imageData.startsWith("data:")
+                ? config.imageData.split(",")[1]
+                : config.imageData;
+              data = Uint8Array.from(Buffer.from(base64, "base64"));
+            } else if (config.imagePath) {
+              const fs = require("fs");
+              const fileBuffer = fs.readFileSync(config.imagePath);
+              data = new Uint8Array(fileBuffer);
+            } else {
+              throw new Error("Either imageData or imagePath must be provided for each image.");
+            }
+            const node = await (figmaClient as any).insertLocalImage({
+              data: Array.from(data),
+              x: config.x,
+              y: config.y,
+              width: config.width,
+              height: config.height,
+              name: config.name,
+              parentId: config.parentId
+            });
+            nodeId = node.id;
+          } else {
+            throw new Error("Each image must have at least one of url, imagePath, or imageData.");
+          }
+          results.push({
+            config,
+            nodeId,
+            success: true
+          });
+        } catch (err) {
+          results.push({
+            config,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "set_image",
+              params: config
+            }
+          });
+        }
+      }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All set_image operations failed",
+            results,
+            meta: {
+              operation: "set_image",
+              params: imagesArr
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }
