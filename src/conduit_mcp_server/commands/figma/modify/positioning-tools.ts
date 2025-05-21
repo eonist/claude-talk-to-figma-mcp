@@ -91,7 +91,17 @@ Returns:
             results.push({ nodeId: id, x: cfg.x, y: cfg.y, success: true });
             anySuccess = true;
           } catch (err: any) {
-            results.push({ nodeId: id, x: cfg.x, y: cfg.y, success: false, error: err?.message || String(err) });
+            results.push({
+              nodeId: id,
+              x: cfg.x,
+              y: cfg.y,
+              success: false,
+              error: err?.message || String(err),
+              meta: {
+                operation: "move_node",
+                params: { ...cfg }
+              }
+            });
           }
         }
         if (anySuccess) {
