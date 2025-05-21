@@ -25,11 +25,6 @@ export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
     MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODE,
     `Converts one or more existing nodes into components in Figma.
 
-Parameters:
-  - entry: { nodeId: string, maintain_position?: boolean } (for single node)
-  - entries: Array<{ nodeId: string, maintain_position?: boolean }> (for batch)
-  - skip_errors: boolean (optional, default: false)
-
 Returns:
   - content: Array of objects. Each object contains:
       - type: "text"
