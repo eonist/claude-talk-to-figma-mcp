@@ -29,18 +29,8 @@ export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
     MCP_COMMANDS.GET_NODE_INFO,
     `Get detailed information about one or more nodes in Figma.
 
-Input:
-  - nodeId: The unique Figma node ID to get information about. (string)
-  - nodeIds: An array of Figma node IDs to get information about. (string[]; min 1, max 100)
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the node(s) info as JSON.
-
-Examples:
-  // Single node
-  { nodeId: "123:456" }
-  // Multiple nodes
-  { nodeIds: ["123:456", "789:101"] }
 `,
     {
       nodeId: z.string()

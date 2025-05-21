@@ -11,20 +11,8 @@ export function registerSvgVectorTool(server: McpServer, figmaClient: FigmaClien
     MCP_COMMANDS.GET_SVG_VECTOR,
     `Get SVG markup for one or more vector nodes.
 
-Input:
-  - nodeId: (optional) The unique Figma vector node ID to extract SVG from (for single).
-  - nodeIds: (optional) Array of vector node IDs to extract SVG from (for batch).
-
-At least one of nodeId or nodeIds is required.
-
 Returns:
   - Array of { nodeId, svg } objects, one per node.
-
-Examples:
-  // Single
-  { nodeId: "123:456" }
-  // Batch
-  { nodeIds: ["123:456", "789:101"] }
 `,
     {
       nodeId: z.string().optional(),

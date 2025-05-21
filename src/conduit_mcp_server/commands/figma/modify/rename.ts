@@ -26,10 +26,6 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
     MCP_COMMANDS.RENAME_LAYER,
     `Renames one or more nodes in Figma. Accepts either a single rename config (via 'rename') or an array of configs (via 'renames').
 
-Input:
-  - rename: A single rename configuration object ({ nodeId, newName, setAutoRename? }).
-  - renames: An array of rename configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the original and new name(s).
 `,
