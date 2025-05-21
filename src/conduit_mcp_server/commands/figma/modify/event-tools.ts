@@ -19,12 +19,6 @@ export function registerEventCommands(server: McpServer, figmaClient: FigmaClien
     MCP_COMMANDS.SUBSCRIBE_EVENT,
     `Subscribe or unsubscribe to a Figma event (e.g., selection_change, document_change).
 
-Parameters:
-- eventType (string): Event type to subscribe to (e.g., "selection_change", "document_change")
-- filter (object, optional): Optional filter for event payloads
-- subscribe (boolean): true to subscribe, false to unsubscribe
-- subscriptionId (string, required for unsubscribe): The subscription ID to remove
-
 Returns: { subscriptionId } for subscribe, { success: true } for unsubscribe`,
     UnifiedEventSchema,
     async (params, context) => {
