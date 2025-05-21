@@ -102,48 +102,73 @@ Returns:
     },
     // Tool handler: supports both single object and array input via 'frame' or 'frames'.
     async (args) => {
-      try {
-        let framesArr;
-        if (args.frames) {
-          framesArr = args.frames;
-        } else if (args.frame) {
-          framesArr = [args.frame];
-        } else {
-          throw new Error("You must provide either 'frame' or 'frames' as input.");
-        }
-        const results = await processBatch(
-          framesArr,
-          async cfg => {
-            const params = { ...cfg, commandId: uuidv4() };
-            const result = await figmaClient.createFrame(params);
-            // Support both { id } and { ids: [...] } return shapes
-            if (result && typeof result.id === "string") {
-              return result.id;
-            } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
-              return result.ids[0];
-            } else {
-              throw new Error("Failed to create frame: missing node ID from figmaClient.createFrame");
-            }
-          }
-        );
-        const nodeIds = results.map(r => r.result).filter(Boolean);
-        return {
-          success: true,
-          message: nodeIds.length === 1
-            ? `Frame created successfully.`
-            : `Frames created successfully.`,
-          nodeIds
-        };
-      } catch (err) {
-        // Return a structured error response.
-        return {
+      let framesArr;
+      if (args.frames) {
+        framesArr = args.frames;
+      } else if (args.frame) {
+        framesArr = [args.frame];
+      } else {
+        const response = {
           success: false,
           error: {
-            message: err instanceof Error ? err.message : String(err),
-            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+            message: "You must provide either 'frame' or 'frames' as input.",
+            results: [],
+            meta: {
+              operation: "create_frame",
+              params: args
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
+      const results = [];
+      for (const cfg of framesArr) {
+        try {
+          const params = { ...cfg, commandId: uuidv4() };
+          const result = await figmaClient.createFrame(params);
+          let nodeId;
+          if (result && typeof result.id === "string") {
+            nodeId = result.id;
+          } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
+            nodeId = result.ids[0];
+          } else {
+            throw new Error("Failed to create frame: missing node ID from figmaClient.createFrame");
+          }
+          results.push({
+            config: cfg,
+            nodeId,
+            success: true
+          });
+        } catch (err) {
+          results.push({
+            config: cfg,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "create_frame",
+              params: cfg
+            }
+          });
+        }
+      }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All create_frame operations failed",
+            results,
+            meta: {
+              operation: "create_frame",
+              params: framesArr
+            }
           }
         };
       }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }
