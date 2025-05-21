@@ -154,8 +154,6 @@ _Batch:_
 ```
 
 
-## Additional Examples for Final Set of Commands
-
 ### set_node
 Set or insert a child node into a parent node.
 
