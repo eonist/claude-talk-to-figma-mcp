@@ -628,12 +628,30 @@ Detach component instances.
 Extract image fills or export nodes as images.
 
 **Parameters:**
-- nodeId (string)
+- nodeId (string, optional): Single node ID to extract image from.
+- nodeIds (array of string, optional): Array of node IDs for batch extraction.
+- fillIndex (number, optional): For nodes with multiple fills, which fill to extract (default: 0).
+
+**Returns:**
+- content: Array of objects. Each object contains:
+  - nodeId (string)
+  - imageData (string): Base64 data URI of the image.
+  - mimeType (string): Image MIME type (e.g., "image/png").
+  - fillIndex (number, optional)
+  - error (string, optional): Error message if extraction failed.
 
 **Example:**
 ```json
 { "command": "get_image", "params": { "nodeId": "123:456" } }
 ```
+```json
+{ "command": "get_image", "params": { "nodeIds": ["123:456", "789:101"], "fillIndex": 1 } }
+```
+
+**Notes:**
+- Extracts image fills if present; otherwise, exports node as PNG.
+- Supports batch extraction.
+- Returns errors for nodes without image fills or on failure.
 
 ### set_image
 Set or insert images.
