@@ -61,27 +61,79 @@ Examples:
           // Fetch node info
           const node = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId: id });
           if (!node) {
-            results.push({ nodeId: id, error: "Node not found" });
+            results.push({
+              nodeId: id,
+              success: false,
+              error: "Node not found",
+              meta: { operation: "get_svg_vector", params: { nodeId: id } }
+            });
             continue;
           }
           // Check if node is a vector or compatible type
           if (node.type !== "VECTOR" && node.type !== "LINE" && node.type !== "ELLIPSE" && node.type !== "POLYGON" && node.type !== "STAR" && node.type !== "RECTANGLE") {
-            results.push({ nodeId: id, error: `Node type ${node.type} is not a vector-compatible type` });
+            results.push({
+              nodeId: id,
+              success: false,
+              error: `Node type ${node.type} is not a vector-compatible type`,
+              meta: { operation: "get_svg_vector", params: { nodeId: id } }
+            });
             continue;
           }
           // Use Figma's export API or plugin helper to get SVG markup
-          // Here we assume a backend helper or plugin command exists; otherwise, this is a stub
           const svgResult = await figmaClient.executeCommand(MCP_COMMANDS.EXPORT_NODE_AS_IMAGE, { nodeId: id, format: "SVG" });
           if (svgResult && svgResult.imageData) {
-            results.push({ nodeId: id, svg: svgResult.imageData });
+            results.push({
+              nodeId: id,
+              success: true,
+              svg: svgResult.imageData
+            });
           } else {
-            results.push({ nodeId: id, error: "SVG export failed" });
+            results.push({
+              nodeId: id,
+              success: false,
+              error: "SVG export failed",
+              meta: { operation: "get_svg_vector", params: { nodeId: id } }
+            });
           }
         } catch (error) {
-          results.push({ nodeId: id, error: error instanceof Error ? error.message : String(error) });
+          results.push({
+            nodeId: id,
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+            meta: { operation: "get_svg_vector", params: { nodeId: id } }
+          });
         }
       }
-      return { content: [{ type: "text", text: JSON.stringify(results) }] };
+      const anySuccess = results.some(r => r.success);
+      if (anySuccess) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ success: true, results })
+            }
+          ]
+        };
+      } else {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                success: false,
+                error: {
+                  message: "All get_svg_vector operations failed",
+                  results,
+                  meta: {
+                    operation: "get_svg_vector",
+                    params: ids
+                  }
+                }
+              })
+            }
+          ]
+        };
+      }
     }
   );
 }
