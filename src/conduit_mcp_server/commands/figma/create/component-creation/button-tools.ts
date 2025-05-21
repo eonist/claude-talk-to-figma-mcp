@@ -129,18 +129,43 @@ Returns:
               name: btn.name,
               parentId: btn.parentId
             };
-            const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_BUTTON, params);
-            results.push({
-              type: "text",
-              text: `Created button with frame ID: ${result.frameId}, background ID: ${result.backgroundId}, text ID: ${result.textId}`,
-              _meta: {
+            try {
+              const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_BUTTON, params);
+              results.push({
                 frameId: result.frameId,
                 backgroundId: result.backgroundId,
-                textId: result.textId
-              }
-            });
+                textId: result.textId,
+                success: true
+              });
+            } catch (err) {
+              results.push({
+                success: false,
+                error: err?.message || String(err),
+                meta: {
+                  operation: "create_button",
+                  params
+                }
+              });
+            }
           }
-          return { content: results };
+          const anySuccess = results.some(r => r.success);
+          let response;
+          if (anySuccess) {
+            response = { success: true, results };
+          } else {
+            response = {
+              success: false,
+              error: {
+                message: "All create_button operations failed",
+                results,
+                meta: {
+                  operation: "create_button",
+                  params: args.buttons
+                }
+              }
+            };
+          }
+          return { content: [{ type: "text", text: JSON.stringify(response) }] };
         } else {
           // Single button
           const params = {
@@ -159,21 +184,45 @@ Returns:
             name: args.name,
             parentId: args.parentId
           };
-          const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_BUTTON, params);
-          return { 
-            content: [{ 
-              type: "text", 
-              text: `Created button with frame ID: ${result.frameId}, background ID: ${result.backgroundId}, text ID: ${result.textId}` 
-            }],
-            _meta: {
-              frameId: result.frameId,
-              backgroundId: result.backgroundId,
-              textId: result.textId
-            }
-          };
+          try {
+            const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_BUTTON, params);
+            const response = {
+              success: true,
+              results: [{
+                frameId: result.frameId,
+                backgroundId: result.backgroundId,
+                textId: result.textId
+              }]
+            };
+            return { content: [{ type: "text", text: JSON.stringify(response) }] };
+          } catch (err) {
+            const response = {
+              success: false,
+              error: {
+                message: err?.message || String(err),
+                results: [],
+                meta: {
+                  operation: "create_button",
+                  params
+                }
+              }
+            };
+            return { content: [{ type: "text", text: JSON.stringify(response) }] };
+          }
         }
       } catch (err) {
-        return handleToolError(err, "component-creation-tools", "create_button") as any;
+        const response = {
+          success: false,
+          error: {
+            message: err?.message || String(err),
+            results: [],
+            meta: {
+              operation: "create_button",
+              params: args
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
     }
   );

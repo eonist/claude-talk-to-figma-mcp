@@ -35,13 +35,32 @@ Returns: { subscriptionId } for subscribe, { success: true } for unsubscribe`,
           filter: params.filter,
           client: context.client // context.client is the WebSocket or session
         };
-        return { subscriptionId };
+        const result = {
+          success: true,
+          results: [{ subscriptionId }]
+        };
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
       } else {
         if (params.subscriptionId && subscriptions[params.subscriptionId]) {
           delete subscriptions[params.subscriptionId];
-          return { success: true };
+          const result = {
+            success: true,
+            results: [{ subscriptionId: params.subscriptionId, unsubscribed: true }]
+          };
+          return { content: [{ type: "text", text: JSON.stringify(result) }] };
         } else {
-          return { success: false, error: "Invalid or missing subscriptionId" };
+          const errorResult = {
+            success: false,
+            error: {
+              message: "Invalid or missing subscriptionId",
+              results: [],
+              meta: {
+                operation: "unsubscribe_event",
+                params
+              }
+            }
+          };
+          return { content: [{ type: "text", text: JSON.stringify(errorResult) }] };
         }
       }
     }
