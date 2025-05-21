@@ -56,22 +56,32 @@ Returns:
           format,
           cssMode,
         });
+        const response = { success: true, results: [{ html: result }] };
         return {
           content: [
             {
               type: "text",
-              text: result as string,
+              text: JSON.stringify(response),
             },
           ],
         };
       } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "get_html",
+              params: { nodeId, format, cssMode }
+            }
+          }
+        };
         return {
           content: [
             {
               type: "text",
-              text: `HTML generation failed: ${
-                error instanceof Error ? error.message : String(error)
-              }`,
+              text: JSON.stringify(response),
             },
           ],
         };

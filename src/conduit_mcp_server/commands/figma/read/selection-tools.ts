@@ -34,22 +34,35 @@ Returns:
     async () => {
       try {
         const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_SELECTION);
+        const resultsArr = Array.isArray(result) ? result : [result];
+        const response = { success: true, results: resultsArr };
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result)
+              text: JSON.stringify(response)
             }
           ]
         };
       } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "get_selection",
+              params: {}
+            }
+          }
+        };
         return {
           content: [
             {
               type: "text",
-              text: `Error getting selection: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
+              text: JSON.stringify(response)
+            }
+          ]
         };
       }
     }

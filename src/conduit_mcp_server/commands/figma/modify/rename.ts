@@ -91,43 +91,75 @@ Returns:
         for (const cfg of renamesArr) {
           const nodeIdString = ensureNodeIdIsString(cfg.nodeId);
           logger.debug(`Renaming node with ID: ${nodeIdString} to "${cfg.newName}"`);
-          const result = await figmaClient.executeCommand(MCP_COMMANDS.RENAME_LAYER, {
-            nodeId: nodeIdString,
-            newName: cfg.newName,
-            setAutoRename: cfg.setAutoRename
-          });
-          results.push({
-            originalName: result.originalName,
-            newName: result.newName,
-            nodeId: nodeIdString,
-            setAutoRename: cfg.setAutoRename
-          });
-        }
-        if (results.length === 1) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: `Renamed node from "${results[0].originalName}" to "${results[0].newName}"${results[0].setAutoRename !== undefined ? ` with autoRename ${results[0].setAutoRename ? 'enabled' : 'disabled'}` : ''}`
+          try {
+            const result = await figmaClient.executeCommand(MCP_COMMANDS.RENAME_LAYER, {
+              nodeId: nodeIdString,
+              newName: cfg.newName,
+              setAutoRename: cfg.setAutoRename
+            });
+            results.push({
+              originalName: result.originalName,
+              newName: result.newName,
+              nodeId: nodeIdString,
+              setAutoRename: cfg.setAutoRename,
+              success: true
+            });
+          } catch (err) {
+            results.push({
+              nodeId: nodeIdString,
+              newName: cfg.newName,
+              setAutoRename: cfg.setAutoRename,
+              success: false,
+              error: err instanceof Error ? err.message : String(err),
+              meta: {
+                operation: "rename_layer",
+                params: cfg
               }
-            ]
-          };
+            });
+          }
+        }
+        const anySuccess = results.some(r => r.success);
+        let response;
+        if (anySuccess) {
+          response = { success: true, results };
         } else {
-          return {
-            content: [
-              {
-                type: "text",
-                text: `Renamed ${results.length} nodes: ${results.map(r => `"${r.originalName}"→"${r.newName}"`).join(", ")}`
+          response = {
+            success: false,
+            error: {
+              message: "All rename_layer operations failed",
+              results,
+              meta: {
+                operation: "rename_layer",
+                params: renamesArr
               }
-            ]
+            }
           };
         }
-      } catch (error) {
         return {
           content: [
             {
               type: "text",
-              text: `Error renaming node(s): ${error instanceof Error ? error.message : String(error)}`
+              text: JSON.stringify(response)
+            }
+          ]
+        };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "rename_layer",
+              params: args
+            }
+          }
+        };
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(response)
             }
           ]
         };

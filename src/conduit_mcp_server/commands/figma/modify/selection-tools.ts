@@ -34,15 +34,39 @@ Returns:
       extraInfo: "Node IDs must be valid and present on the current page. Returns which nodes were selected and which were not found."
     },
     async (params, { figmaClient }) => {
-      const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_SELECTION, params);
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(result)
+      try {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_SELECTION, params);
+        const resultsArr = Array.isArray(result) ? result : [result];
+        const response = { success: true, results: resultsArr };
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(response)
+            }
+          ]
+        };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "set_selection",
+              params
+            }
           }
-        ]
-      };
+        };
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(response)
+            }
+          ]
+        };
+      }
     }
   );
 }
