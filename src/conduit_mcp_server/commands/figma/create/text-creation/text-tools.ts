@@ -89,17 +89,36 @@ Returns:
         } else {
           throw new Error("You must provide either 'text' or 'texts' as input.");
         }
-        const results = [];
+        const nodeIds: string[] = [];
         for (const textConfig of textsArr) {
           const params: CreateTextParams = { commandId: uuidv4(), ...textConfig };
-          let node;
-          // Use modular createText for both regular and bounded text
-          node = await (figmaClient as any).createText(params);
-          results.push({ type: "text", text: `Created text ${node.id}` });
+          const result = await (figmaClient as any).createText(params);
+          if (result && typeof result.id === "string") {
+            nodeIds.push(result.id);
+          } else if (result && Array.isArray(result.nodes)) {
+            for (const node of result.nodes) {
+              if (node && typeof node.id === "string") {
+                nodeIds.push(node.id);
+              }
+            }
+          }
         }
-        return { content: results };
+        return {
+          success: true,
+          message: nodeIds.length === 1
+            ? `Text node created successfully.`
+            : `Text nodes created successfully.`,
+          nodeIds
+        };
       } catch (err) {
-        return handleToolError(err, "text-creation-tools", "create_text") as any;
+        // Return a structured error response.
+        return {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+          }
+        };
       }
     }
   );
