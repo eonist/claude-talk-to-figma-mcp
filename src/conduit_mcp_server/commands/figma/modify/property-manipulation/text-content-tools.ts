@@ -12,22 +12,9 @@ export function registerTextContentTools(server: McpServer, figmaClient: FigmaCl
   server.tool(
     MCP_COMMANDS.SET_TEXT_CONTENT,
     `Sets the text content of one or more text nodes in Figma.
-
-Input:
-  - nodeId: (optional) The unique Figma text node ID to update (for single).
-  - text: (optional) The new text content to set for the node (for single).
-  - texts: (optional) Array of { nodeId, text } for batch updates.
-
-At least one of (nodeId + text) or texts is required.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the update result.
 
-Examples:
-  // Single
-  { nodeId: "123:456", text: "Hello" }
-  // Batch
-  { texts: [{ nodeId: "123:456", text: "Hello" }, { nodeId: "789:101", text: "World" }] }
 `,
     {
       nodeId: z.string()
@@ -130,26 +117,9 @@ export function registerTextStyleTool(server: McpServer, figmaClient: FigmaClien
   server.tool(
     MCP_COMMANDS.SET_TEXT_STYLE,
     `Sets one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes in Figma.
-
-Input:
-  - nodeId: (optional) The unique Figma text node ID to update (for single).
-  - styles: (optional) Object of style properties to set (for single).
-  - entries: (optional) Array of { nodeId, styles } for batch updates.
-
-At least one of (nodeId + styles) or entries is required.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the update result.
 
-Examples:
-  // Single
-  { nodeId: "123:456", styles: { fontSize: 18, fontWeight: 700 } }
-  // Batch
-  { entries: [
-      { nodeId: "123:456", styles: { fontSize: 18 } },
-      { nodeId: "789:101", styles: { fontWeight: 400, letterSpacing: 2 } }
-    ]
-  }
 `,
     {
       nodeId: z.string()
