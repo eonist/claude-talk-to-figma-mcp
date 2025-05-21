@@ -33,15 +33,35 @@ Returns: Array of result objects for each operation.`,
     async (params) => {
       const ops = params.guide ? [params.guide] : (params.guides || []);
       const results = [];
+      let anySuccess = false;
       for (const op of ops) {
         try {
           const result = await figmaClient.setGuide(op);
-          results.push({ ...result, axis: op.axis, offset: op.offset, success: true });
+          // If plugin returns an array, flatten it
+          if (Array.isArray(result)) {
+            for (const r of result) {
+              results.push({ ...r, axis: op.axis, offset: op.offset, success: !r.error });
+              if (!r.error) anySuccess = true;
+            }
+          } else {
+            results.push({ ...result, axis: op.axis, offset: op.offset, success: !result.error });
+            if (!result.error) anySuccess = true;
+          }
         } catch (err: any) {
           results.push({ axis: op.axis, offset: op.offset, success: false, error: err?.message || String(err) });
         }
       }
-      return results;
+      if (anySuccess) {
+        return { success: true, results };
+      } else {
+        return {
+          success: false,
+          error: {
+            message: "All guide operations failed",
+            results
+          }
+        };
+      }
     }
   );
 

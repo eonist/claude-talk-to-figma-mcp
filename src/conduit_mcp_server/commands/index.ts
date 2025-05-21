@@ -21,7 +21,6 @@ import { logger } from "../utils/logger.js";
 import { registerHtmlCommands } from "./html-tools.js";
 import { registerReorderLayerTools } from "./figma/modify/layer-management/reorder-layer-tools.js";
 import { registerAnnotationCommands } from "./figma/annotation-tools.js";
-import { registerGridCommands } from "./figma/modify/grid-tools.js";
 import { registerUnifiedGridCommands } from "./figma/modify/grid-unified-tools.js";
 import { registerGuideCommands } from "./figma/modify/guide-tools.js";
 import { registerConstraintCommands } from "./figma/modify/constraint-tools.js";
@@ -53,7 +52,6 @@ export function registerAllCommands(server: McpServer): void {
     registerModifyCommands(server, figmaClient);// Register modify commands (element mutation)
     registerChannelCommand(server, figmaClient);// Register channel commands (communication channel management)
     registerHtmlCommands(server, figmaClient);// Register HTML commands (HTML generation from Figma nodes)
-    registerGridCommands(server, figmaClient); // Register grid commands (layout grid support)
     registerUnifiedGridCommands(server, figmaClient); // Register unified grid commands (set_grid, get_grid)
     registerGuideCommands(server, figmaClient); // Register guide commands (set_guide, get_guide)
     registerConstraintCommands(server, figmaClient); // Register constraint commands (set_constraints, get_constraints)
