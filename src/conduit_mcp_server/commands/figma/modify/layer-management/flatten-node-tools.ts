@@ -24,18 +24,8 @@ export function registerFlattenNodeTools(server: McpServer, figmaClient: FigmaCl
     MCP_COMMANDS.FLATTEN_NODE,
     `Flatten one or more nodes in Figma, or the current selection, merging all child vector layers and shapes into a single vector layer.
 
-Input:
-  - nodeId: (optional) A single node ID to flatten.
-  - nodeIds: (optional) An array of node IDs to flatten.
-  - selection: (optional) If true, flattens all currently selected nodes.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the results for each node.
-
-Examples:
-  { "nodeId": "123:456" }
-  { "nodeIds": ["123:456", "789:101"] }
-  { "selection": true }
 `,
     {
       nodeId: z.string()

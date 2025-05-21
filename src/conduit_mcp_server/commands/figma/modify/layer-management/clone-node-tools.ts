@@ -25,10 +25,6 @@ export function registerCloneNodeTools(server: McpServer, figmaClient: FigmaClie
     MCP_COMMANDS.DUPLICATE_NODE,
     `Clones one or more nodes in Figma. Accepts either a single node config (via 'node') or an array of configs (via 'nodes'). Optionally, you can specify positions, offsets, and parent.
 
-Input:
-  - node: A single node clone configuration object ({ nodeId, position?, offsetX?, offsetY?, parentId? }).
-  - nodes: An array of node clone configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the new node ID(s).
 `,

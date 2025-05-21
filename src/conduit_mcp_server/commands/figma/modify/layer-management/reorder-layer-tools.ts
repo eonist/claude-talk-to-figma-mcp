@@ -21,11 +21,6 @@ export function registerReorderLayerTools(server: McpServer, figmaClient: FigmaC
     MCP_COMMANDS.REORDER_NODE,
     `Reorders one or more nodes in their parents' children arrays. Accepts either a single reorder config (via 'reorder') or an array of configs (via 'reorders'). Optionally, you can provide options such as skip_errors.
 
-Input:
-  - reorder: A single reorder configuration object ({ nodeId, direction?, index? }).
-  - reorders: An array of reorder configuration objects (same shape as above).
-  - options: (optional) { skip_errors?: boolean }
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the results and any errors.
 `,

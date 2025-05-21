@@ -26,16 +26,8 @@ export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient)
     MCP_COMMANDS.DELETE_NODE,
     `Deletes one or more nodes in Figma.
 
-Input:
-  - nodeId: (optional) A single node ID to delete.
-  - nodeIds: (optional) An array of node IDs to delete.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the deleted node's ID(s).
-
-Examples:
-  { "nodeId": "123:456" }
-  { "nodeIds": ["123:456", "789:101"] }
 `,
     {
       nodeId: z.string()

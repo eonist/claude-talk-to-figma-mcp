@@ -25,19 +25,8 @@ export function registerCreateInstancesFromComponentsTools(server: McpServer, fi
     MCP_COMMANDS.CREATE_COMPONENT_INSTANCE,
     `Creates one or more component instances in Figma. Accepts either a single entry (via 'entry') or an array of entries (via 'entries').
 
-Input:
-  - entry: (object, optional) Single instance config: { componentKey, x, y }
-  - entries: (array, optional) Array of instance configs
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created instance IDs.
-
-Examples:
-  { "entry": { "componentKey": "abc:123", "x": 100, "y": 200 } }
-  { "entries": [
-      { "componentKey": "abc:123", "x": 100, "y": 200 },
-      { "componentKey": "def:456", "x": 300, "y": 400 }
-    ] }
 `,
     {
       entry: z.object({
