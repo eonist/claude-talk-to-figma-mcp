@@ -1154,6 +1154,7 @@ Set hug or fill sizing mode on an auto layout frame or child node in Figma.
   "axis": "horizontal",
   "mode": "HUG"
 }
+```
 ### set_constraint
 Set constraints (left/right/top/bottom/center/scale/stretch) for one or more Figma nodes.
 
@@ -1449,6 +1450,7 @@ Set style or styles on one or more nodes.
     "strokeWeight": 2
   }
 }
+```
 ### set_svg_vector
 Set or insert SVG vectors in Figma.
 
