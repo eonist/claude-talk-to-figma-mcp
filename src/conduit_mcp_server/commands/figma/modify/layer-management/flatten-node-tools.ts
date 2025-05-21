@@ -83,23 +83,99 @@ Examples:
         ) {
           ids = selectionResult.nodeIds.map(ensureNodeIdIsString);
         } else {
-          return { content: [{ type: "text", text: "No nodes selected." }] };
+          const response = {
+            success: false,
+            error: {
+              message: "No nodes selected.",
+              results: [],
+              meta: {
+                operation: "flatten_node",
+                params: args
+              }
+            }
+          };
+          return { content: [{ type: "text", text: JSON.stringify(response) }] };
         }
       } else if (Array.isArray(args.nodeIds)) {
         ids = args.nodeIds.map(ensureNodeIdIsString);
       } else if (args.nodeId) {
         ids = [ensureNodeIdIsString(args.nodeId)];
       } else {
-        return { content: [{ type: "text", text: "You must provide 'nodeId', 'nodeIds', or 'selection: true'." }] };
+        const response = {
+          success: false,
+          error: {
+            message: "You must provide 'nodeId', 'nodeIds', or 'selection: true'.",
+            results: [],
+            meta: {
+              operation: "flatten_node",
+              params: args
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
       // Flatten all nodes
-      const result = await figmaClient.flattenNode({ nodeIds: ids });
-      return {
-        content: [{
-          type: "text",
-          text: `Flattened ${ids.length} node(s): ${ids.join(", ")} (success: ${result.success ?? true})`
-        }]
-      };
+      try {
+        const result = await figmaClient.flattenNode({ nodeIds: ids });
+        const results = [];
+        if (result && Array.isArray(result.results)) {
+          for (let i = 0; i < ids.length; i++) {
+            const r = result.results[i];
+            if (r && r.error) {
+              results.push({
+                nodeId: ids[i],
+                success: false,
+                error: r.error,
+                meta: {
+                  operation: "flatten_node",
+                  params: { nodeId: ids[i] }
+                }
+              });
+            } else {
+              results.push({
+                nodeId: ids[i],
+                success: true
+              });
+            }
+          }
+        } else {
+          // Fallback: treat as all success if no per-node results
+          for (const id of ids) {
+            results.push({ nodeId: id, success: true });
+          }
+        }
+        const anySuccess = results.some(r => r.success);
+        let response;
+        if (anySuccess) {
+          response = { success: true, results };
+        } else {
+          response = {
+            success: false,
+            error: {
+              message: "All flatten_node operations failed",
+              results,
+              meta: {
+                operation: "flatten_node",
+                params: args
+              }
+            }
+          };
+        }
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "flatten_node",
+              params: args
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }

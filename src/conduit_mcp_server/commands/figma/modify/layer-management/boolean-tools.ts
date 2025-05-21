@@ -70,9 +70,54 @@ Returns:
         if (nodeIds && nodeIds.length) ids = nodeIds.map(ensureNodeIdIsString);
         if (nodeId) ids.push(ensureNodeIdIsString(nodeId));
       }
-      if (ids.length < 2) throw new Error("At least two node IDs are required for boolean operations.");
-      await figmaClient.executeCommand(MCP_COMMANDS.BOOLEAN, { operation, nodeIds: ids });
-      return { content: [{ type: "text", text: `${operation[0].toUpperCase() + operation.slice(1)}d ${ids.length} nodes` }] };
+      if (ids.length < 2) {
+        const response = {
+          success: false,
+          error: {
+            message: "At least two node IDs are required for boolean operations.",
+            results: [],
+            meta: {
+              operation: "boolean",
+              params: { operation, selection, nodeId, nodeIds }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
+      try {
+        await figmaClient.executeCommand(MCP_COMMANDS.BOOLEAN, { operation, nodeIds: ids });
+        const response = {
+          success: true,
+          results: [{
+            nodeIds: ids,
+            operation,
+            success: true
+          }]
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [{
+              nodeIds: ids,
+              operation,
+              success: false,
+              error: error instanceof Error ? error.message : String(error),
+              meta: {
+                operation: "boolean",
+                params: { operation, selection, nodeId, nodeIds }
+              }
+            }],
+            meta: {
+              operation: "boolean",
+              params: { operation, selection, nodeId, nodeIds }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }

@@ -69,12 +69,54 @@ Examples:
       } else if (nodeId) {
         ids = [ensureNodeIdIsString(nodeId)];
       } else {
-        return { content: [{ type: "text", text: "You must provide 'nodeId' or 'nodeIds'." }] };
+        const response = {
+          success: false,
+          error: {
+            message: "You must provide 'nodeId' or 'nodeIds'.",
+            results: [],
+            meta: {
+              operation: "delete_node",
+              params: { nodeId, nodeIds }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
+      const results = [];
       for (const id of ids) {
-        await figmaClient.deleteNode(id);
+        try {
+          await figmaClient.deleteNode(id);
+          results.push({ nodeId: id, success: true });
+        } catch (err) {
+          results.push({
+            nodeId: id,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "delete_node",
+              params: { nodeId: id }
+            }
+          });
+        }
       }
-      return { content: [{ type: "text", text: `Deleted ${ids.length} node(s): ${ids.join(", ")}` }] };
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All delete_node operations failed",
+            results,
+            meta: {
+              operation: "delete_node",
+              params: { nodeId, nodeIds }
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }

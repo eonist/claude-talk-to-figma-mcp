@@ -82,17 +82,28 @@ Returns:
       extraInfo: "Cloning is useful for duplicating components or layouts. Use offsets or positions for layout control."
     },
     async (args) => {
-      try {
-        let nodesArr;
-        if (args.nodes) {
-          nodesArr = args.nodes;
-        } else if (args.node) {
-          nodesArr = [args.node];
-        } else {
-          throw new Error("You must provide either 'node' or 'nodes' as input.");
-        }
-        const results = [];
-        for (const cfg of nodesArr) {
+      let nodesArr;
+      if (args.nodes) {
+        nodesArr = args.nodes;
+      } else if (args.node) {
+        nodesArr = [args.node];
+      } else {
+        const response = {
+          success: false,
+          error: {
+            message: "You must provide either 'node' or 'nodes' as input.",
+            results: [],
+            meta: {
+              operation: "clone_node",
+              params: args
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
+      const results = [];
+      for (const cfg of nodesArr) {
+        try {
           const id = ensureNodeIdIsString(cfg.nodeId);
           const params: any = { nodeId: id };
           if (cfg.position) params.position = cfg.position;
@@ -100,26 +111,41 @@ Returns:
           if (cfg.offsetY !== undefined) params.offsetY = cfg.offsetY;
           if (cfg.parentId) params.parentId = cfg.parentId;
           const result = await figmaClient.cloneNode(params);
-          results.push(result.newNodeId ?? "(unknown)");
+          results.push({
+            nodeId: id,
+            newNodeId: result.newNodeId ?? "(unknown)",
+            success: true
+          });
+        } catch (err) {
+          results.push({
+            nodeId: cfg.nodeId,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "clone_node",
+              params: cfg
+            }
+          });
         }
-        if (results.length === 1) {
-          return {
-            content: [{
-              type: "text",
-              text: `Cloned node to new node ${results[0]}`
-            }]
-          };
-        } else {
-          return {
-            content: [{
-              type: "text",
-              text: `Cloned ${results.length} nodes. New node IDs: ${results.join(", ")}`
-            }]
-          };
-        }
-      } catch (err) {
-        return handleToolError(err, "layer-management-tools", "clone_node") as any;
       }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All clone_node operations failed",
+            results,
+            meta: {
+              operation: "clone_node",
+              params: nodesArr
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }
