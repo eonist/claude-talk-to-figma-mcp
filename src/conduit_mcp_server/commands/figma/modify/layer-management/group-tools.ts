@@ -69,30 +69,74 @@ Returns:
       extraInfo: "Grouping is useful for organizing layers and applying transformations collectively. Ungrouping is useful for breaking apart grouped elements for individual editing."
     },
     async ({ group, nodeIds, name, nodeId }) => {
-      if (group) {
-        if (!nodeIds || nodeIds.length < 2) {
-          throw new Error("When grouping, 'nodeIds' (min 2) is required.");
+      try {
+        if (group) {
+          if (!nodeIds || nodeIds.length < 2) {
+            const response = {
+              success: false,
+              error: {
+                message: "When grouping, 'nodeIds' (min 2) is required.",
+                results: [],
+                meta: {
+                  operation: "group_nodes",
+                  params: { group, nodeIds, name }
+                }
+              }
+            };
+            return { content: [{ type: "text", text: JSON.stringify(response) }] };
+          }
+          const ids = nodeIds.map(ensureNodeIdIsString);
+          const result = await figmaClient.groupOrUngroupNodes({ group: true, nodeIds: ids, name });
+          const response = {
+            success: true,
+            results: [{
+              groupId: result.id,
+              name: result.name,
+              nodeIds: ids,
+              grouped: true
+            }]
+          };
+          return { content: [{ type: "text", text: JSON.stringify(response) }] };
+        } else {
+          if (!nodeId) {
+            const response = {
+              success: false,
+              error: {
+                message: "When ungrouping, 'nodeId' is required.",
+                results: [],
+                meta: {
+                  operation: "ungroup_nodes",
+                  params: { group, nodeId }
+                }
+              }
+            };
+            return { content: [{ type: "text", text: JSON.stringify(response) }] };
+          }
+          const id = ensureNodeIdIsString(nodeId);
+          const result = await figmaClient.groupOrUngroupNodes({ group: false, nodeId: id });
+          const response = {
+            success: true,
+            results: [{
+              nodeId: id,
+              ungroupedCount: result.ungroupedCount,
+              ungrouped: true
+            }]
+          };
+          return { content: [{ type: "text", text: JSON.stringify(response) }] };
         }
-        const ids = nodeIds.map(ensureNodeIdIsString);
-        const result = await figmaClient.groupOrUngroupNodes({ group: true, nodeIds: ids, name });
-        return {
-          content: [{
-            type: "text",
-            text: `Grouped ${ids.length} nodes into "${result.name}" (ID: ${result.id})`
-          }]
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: group ? "group_nodes" : "ungroup_nodes",
+              params: { group, nodeIds, name, nodeId }
+            }
+          }
         };
-      } else {
-        if (!nodeId) {
-          throw new Error("When ungrouping, 'nodeId' is required.");
-        }
-        const id = ensureNodeIdIsString(nodeId);
-        const result = await figmaClient.groupOrUngroupNodes({ group: false, nodeId: id });
-        return {
-          content: [{
-            type: "text",
-            text: `Ungrouped node ${id}, released ${result.ungroupedCount} children.`
-          }]
-        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
     }
   );

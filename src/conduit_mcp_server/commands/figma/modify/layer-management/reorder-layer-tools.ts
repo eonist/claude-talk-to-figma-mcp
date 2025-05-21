@@ -73,33 +73,78 @@ Returns:
       } else if (args.reorder) {
         reordersArr = [args.reorder];
       } else {
-        return { content: [{ type: "text", text: "Error: You must provide either 'reorder' or 'reorders' as input." }] };
+        const response = {
+          success: false,
+          error: {
+            message: "Error: You must provide either 'reorder' or 'reorders' as input.",
+            results: [],
+            meta: {
+              operation: "reorder_node",
+              params: args
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
       try {
         const result = await figmaClient.executeCommand(MCP_COMMANDS.REORDER_NODE, {
           reorders: reordersArr,
           options: args.options
         });
-        if (reordersArr.length === 1) {
-          // Single result
-          return {
-            content: [{
-              type: "text",
-              text: `Reordered node ${reordersArr[0].nodeId}${result.results && result.results[0] && typeof result.results[0].newIndex !== "undefined" ? " to index " + result.results[0].newIndex : ""}${result.errors ? " Errors: " + result.errors.join("; ") : ""}`
-            }]
-          };
+        const results = [];
+        if (result && Array.isArray(result.results)) {
+          for (let i = 0; i < reordersArr.length; i++) {
+            const r = result.results[i];
+            if (r && r.error) {
+              results.push({
+                nodeId: reordersArr[i].nodeId,
+                success: false,
+                error: r.error,
+                meta: {
+                  operation: "reorder_node",
+                  params: reordersArr[i]
+                }
+              });
+            } else {
+              results.push({
+                nodeId: reordersArr[i].nodeId,
+                newIndex: r && typeof r.newIndex !== "undefined" ? r.newIndex : undefined,
+                success: true
+              });
+            }
+          }
+        }
+        const anySuccess = results.some(r => r.success);
+        let response;
+        if (anySuccess) {
+          response = { success: true, results };
         } else {
-          // Batch result
-          return {
-            content: [{
-              type: "text",
-              text: `Batch reorder complete. Results: ${JSON.stringify(result.results)}${result.errors ? " Errors: " + result.errors.join("; ") : ""}`
-            }]
+          response = {
+            success: false,
+            error: {
+              message: "All reorder_node operations failed",
+              results,
+              meta: {
+                operation: "reorder_node",
+                params: reordersArr
+              }
+            }
           };
         }
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        return { content: [{ type: "text", text: `Error: ${message}` }] };
+        const response = {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            results: [],
+            meta: {
+              operation: "reorder_node",
+              params: args
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
     }
   );

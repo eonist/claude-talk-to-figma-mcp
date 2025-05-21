@@ -102,9 +102,21 @@ Returns:
         };
         const { operations, options } = params;
         if (!operations || !Array.isArray(operations) || operations.length === 0) {
-          throw new Error("Batch insert requires a non-empty 'operations' array.");
+          const response = {
+            success: false,
+            error: {
+              message: "Batch insert requires a non-empty 'operations' array.",
+              results: [],
+              meta: {
+                operation: "set_node",
+                params
+              }
+            }
+          };
+          return { content: [{ type: "text", text: JSON.stringify(response) }] };
         }
-        const results = await processBatch(
+        const results = [];
+        await processBatch(
           operations,
           async (op: InsertChildOp) => {
             try {
@@ -114,16 +126,26 @@ Returns:
               if (op.index !== undefined) cmdParams.index = op.index;
               if (op.maintainPosition !== undefined) cmdParams.maintainPosition = op.maintainPosition;
               const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, cmdParams);
-              return {
-                type: "text",
-                text: `Inserted child node ${child} into parent ${parent} at index ${result.index ?? "end"} (success: ${result.success ?? true})`
-              };
+              results.push({
+                parentId: parent,
+                childId: child,
+                index: result.index ?? op.index,
+                success: true
+              });
             } catch (error: any) {
               if (options?.skipErrors) {
-                return {
-                  type: "text",
-                  text: `Failed to insert child node ${op.childId} into parent ${op.parentId}: ${error.message || error}`
-                };
+                results.push({
+                  parentId: op.parentId,
+                  childId: op.childId,
+                  index: op.index,
+                  success: false,
+                  error: error.message || String(error),
+                  meta: {
+                    operation: "set_node",
+                    params: op
+                  }
+                });
+                return;
               }
               throw error;
             }
@@ -133,20 +155,56 @@ Returns:
             concurrency: 5
           }
         );
-        return { content: results as any };
+        const anySuccess = results.some(r => r.success);
+        let response;
+        if (anySuccess) {
+          response = { success: true, results };
+        } else {
+          response = {
+            success: false,
+            error: {
+              message: "All set_node operations failed",
+              results,
+              meta: {
+                operation: "set_node",
+                params
+              }
+            }
+          };
+        }
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
       // Single mode
       const parent = ensureNodeIdIsString(params.parentId);
       const child = ensureNodeIdIsString(params.childId);
       const cmdParams: any = { parentId: parent, childId: child };
       if (params.index !== undefined) cmdParams.index = params.index;
-      const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, cmdParams);
-      return {
-        content: [{
-          type: "text",
-          text: `Inserted child node ${child} into parent ${parent} at index ${result.index ?? "end"} (success: ${result.success ?? true})`
-        }]
-      };
+      try {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, cmdParams);
+        const response = {
+          success: true,
+          results: [{
+            parentId: parent,
+            childId: child,
+            index: result.index ?? params.index,
+            success: true
+          }]
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "set_node",
+              params
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }
