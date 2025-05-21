@@ -135,6 +135,448 @@ Get text segments with specific styling in a text node.
 { "command": "get_styled_text_segments", "params": { "nodeId": "123:456", "property": "fontWeight" } }
 ```
 
+
+## Additional Examples for Remaining Commands
+
+### detach_instances
+Detach one or more component instances from their masters.
+
+**Parameters:**
+- instanceId (string, optional): A single instance node ID to detach.
+- instanceIds (array of string, optional): Array of instance node IDs to detach.
+- options (object, optional): { maintain_position (boolean, optional), skip_errors (boolean, optional) }
+- At least one of `instanceId` or `instanceIds` is required.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the detach result as JSON.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "detach_instances", "params": { "instanceId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"], "options": { "skip_errors": true } } }
+```
+
+---
+
+### get_image
+Extract image fills or export nodes as images (single or batch).
+
+**Parameters:**
+- nodeId (string, optional): Single node to extract image from.
+- nodeIds (array of string, optional): Array of node IDs for batch.
+- fillIndex (number, optional): For nodes with multiple fills, which fill to extract (default: 0).
+- At least one of nodeId or nodeIds is required.
+
+**Returns:**
+- For each node: `{ nodeId, imageData, mimeType, [fillIndex], [error] }`
+  - imageData: Base64 or binary image data (PNG/JPG).
+  - mimeType: "image/png", "image/jpeg", etc.
+  - fillIndex: (optional) The fill index used.
+  - error: (optional) Error message if extraction failed.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "get_image", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "get_image", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+_With fill index:_
+```json
+{ "command": "get_image", "params": { "nodeId": "123:456", "fillIndex": 1 } }
+```
+
+---
+
+### set_image
+Set or insert one or more images from URLs, local files, or base64 data.
+
+**Parameters:**
+- image (object, optional): Single image config
+- images (array of objects, optional): Array of image configs
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_image", "params": { "image": { "url": "https://example.com/image.jpg", "x": 100, "y": 100 } } }
+```
+_Batch:_
+```json
+{ "command": "set_image", "params": { "images": [
+  { "url": "https://example.com/image1.jpg", "x": 100, "y": 100 },
+  { "imagePath": "/path/to/image2.png", "x": 300, "y": 100 }
+] } }
+```
+
+---
+
+### set_svg_vector
+Set or insert one or more SVG vectors.
+
+**Parameters:**
+- svg (string, optional): Single SVG content or URL
+- svgs (array of strings, optional): Array of SVG contents or URLs
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_svg_vector", "params": { "svg": "<svg .../>", "x": 100, "y": 100 } }
+```
+_Batch:_
+```json
+{ "command": "set_svg_vector", "params": { "svgs": [
+  { "svg": "<svg .../>", "x": 100, "y": 100 },
+  { "svg": "<svg .../>", "x": 300, "y": 100 }
+] } }
+```
+
+---
+
+### get_svg_vector
+Get SVG markup for one or more vector nodes (single or batch).
+
+**Parameters:**
+- nodeId (string, optional): Single vector node to extract SVG from.
+- nodeIds (array of string, optional): Array of vector node IDs for batch.
+- At least one of nodeId or nodeIds is required.
+
+**Returns:**
+- Array of `{ nodeId, svg }` objects, one per node.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "get_svg_vector", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "get_svg_vector", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+### get_style
+Get all styles from the current Figma document.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_style", "params": {} }
+```
+
+---
+
+### set_fill_and_stroke
+Set fill and/or stroke color(s) for one or more nodes.
+
+**Parameters:**
+- entries (object or array): Each entry:
+  - nodeId (string): Node to update
+  - fillColor (object, optional): Fill color
+  - strokeColor (object, optional): Stroke color
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_fill_and_stroke", "params": { "entries": { "nodeId": "123:456", "fillColor": { "r": 1, "g": 0, "b": 0 }, "strokeColor": { "r": 0, "g": 0, "b": 0 } } } }
+```
+_Batch:_
+```json
+{ "command": "set_fill_and_stroke", "params": { "entries": [
+  { "nodeId": "123:456", "fillColor": { "r": 1, "g": 0, "b": 0 } },
+  { "nodeId": "789:101", "strokeColor": { "r": 0, "g": 0, "b": 0 } }
+] } }
+```
+
+---
+
+### set_style
+Create, update, or delete one or more Figma styles (PAINT, EFFECT, TEXT, GRID) in a unified call.
+
+**Parameters:**
+- entry (object, optional): Single style operation
+  - styleId (string, optional): Required for update/delete, omitted for create
+  - styleType (string, required): "PAINT", "EFFECT", "TEXT", or "GRID"
+  - properties (object, optional): Properties to set (required for create/update, omitted for delete)
+  - delete (boolean, optional): If true, deletes the style (ignores properties)
+- entries (array of objects, optional): Batch style operations (same shape as above)
+
+**Operation Semantics:**
+- Create: `styleId` omitted, `delete` false/omitted, `properties` present → create new style.
+- Update: `styleId` present, `delete` false/omitted, `properties` present → update existing style.
+- Delete: `styleId` present, `delete: true`, `properties` ignored/omitted → delete style.
+
+**Returns:**
+- Array of result objects: `{ styleId, styleType, action: "created" | "updated" | "deleted", success: true, [error?: string] }`
+
+**Examples:**
+
+_Single Create:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleType": "PAINT",
+    "properties": {
+      "name": "Accent",
+      "paints": [{ "type": "SOLID", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } }]
+    }
+  }
+} }
+```
+
+_Single Update:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleId": "S:1234",
+    "styleType": "PAINT",
+    "properties": {
+      "name": "Accent Updated",
+      "paints": [{ "type": "SOLID", "color": { "r": 0, "g": 1, "b": 0, "a": 1 } }]
+    }
+  }
+} }
+```
+
+_Single Delete:_
+```json
+{ "command": "set_style", "params": {
+  "entry": {
+    "styleId": "S:1234",
+    "styleType": "PAINT",
+    "delete": true
+  }
+} }
+```
+
+_Batch Mixed:_
+```json
+{ "command": "set_style", "params": {
+  "entries": [
+    {
+      "styleType": "PAINT",
+      "properties": { "name": "New Style", "paints": [{ "type": "SOLID", "color": { "r": 0.5, "g": 0.5, "b": 0.5, "a": 1 } }] }
+    },
+    {
+      "styleId": "S:5678",
+      "styleType": "EFFECT",
+      "properties": { "name": "Shadow", "effects": [{ "type": "DROP_SHADOW", "color": { "r": 0, "g": 0, "b": 0, "a": 0.5 }, "radius": 8 }] }
+    },
+    {
+      "styleId": "S:9999",
+      "styleType": "TEXT",
+      "delete": true
+    }
+  ]
+} }
+```
+
+---
+
+### create_gradient_style
+Create one or more gradient style variables in Figma.
+
+**Parameters:**
+- gradients (object or array): Gradient definition(s), each with:
+  - name (string)
+  - gradientType (string): "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND"
+  - stops (array): Array of color stops
+  - (other optional gradient properties)
+
+**Example:**
+_Single:_
+```json
+{ "command": "create_gradient_style", "params": { "gradients": { "name": "Primary Linear", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ] } } }
+```
+_Batch:_
+```json
+{ "command": "create_gradient_style", "params": { "gradients": [
+  { "name": "Primary Linear", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ] },
+  { "name": "Accent Radial", "gradientType": "RADIAL", "stops": [ { "position": 0, "color": [0,1,0,1] }, { "position": 1, "color": [0,0,0,1] } ] }
+] } }
+```
+
+---
+
+### set_gradient
+Set a gradient on one or more nodes in Figma, either directly or by style variable.
+
+**Parameters:**
+- entries (object or array): Each entry:
+  - nodeId (string): Node to update
+  - EITHER:
+    - gradientType (string): "LINEAR", "RADIAL", "ANGULAR", or "DIAMOND"
+    - stops (array): Array of color stops
+  - OR
+    - gradientStyleId (string): Style variable to apply
+  - applyTo (string, optional): "FILL", "STROKE", or "BOTH"
+
+**At least one of direct args or styleId is required per entry.**
+
+**Examples:**
+_Single node, direct:_
+```json
+{ "command": "set_gradient", "params": { "entries": { "nodeId": "123:456", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ], "applyTo": "FILL" } } }
+```
+_Single node, style variable:_
+```json
+{ "command": "set_gradient", "params": { "entries": { "nodeId": "123:456", "gradientStyleId": "S:gradient123", "applyTo": "FILL" } } }
+```
+_Batch (mixed):_
+```json
+{ "command": "set_gradient", "params": { "entries": [
+  { "nodeId": "123:456", "gradientType": "LINEAR", "stops": [ { "position": 0, "color": [1,0,0,1] }, { "position": 1, "color": [0,0,1,1] } ], "applyTo": "FILL" },
+  { "nodeId": "789:101", "gradientStyleId": "S:gradient123", "applyTo": "STROKE" }
+] } }
+```
+
+---
+
+## create_effect_style_variable
+Create one or more effect style variables in Figma.
+
+**Parameters:**
+- effects (object or array): Effect style definition(s), each with:
+  - name (string): Name for the effect style
+  - type (string): "DROP_SHADOW", "INNER_SHADOW", "LAYER_BLUR", or "BACKGROUND_BLUR"
+  - color (string, optional): Color for shadow effects (hex or rgba)
+  - offset (object, optional): { x, y }
+  - radius (number, optional)
+  - spread (number, optional)
+  - visible (boolean, optional)
+  - blendMode (string, optional)
+  - opacity (number, optional)
+
+**Example:**
+```json
+{ "command": "create_effect_style_variable", "params": { "effects": { "name": "Soft Shadow", "type": "DROP_SHADOW", "color": "#000", "radius": 8, "opacity": 0.2 } } }
+```
+_Batch:_
+```json
+{ "command": "create_effect_style_variable", "params": { "effects": [
+  { "name": "Soft Shadow", "type": "DROP_SHADOW", "color": "#000", "radius": 8, "opacity": 0.2 },
+  { "name": "Blur", "type": "LAYER_BLUR", "radius": 12 }
+] } }
+```
+
+---
+
+## set_effect
+Set effect(s) directly or by style variable on one or more nodes in Figma (single or batch).
+
+**Parameters:**
+- entries (object or array): Each entry:
+  - nodeId (string): Node to update
+  - effects (object or array, optional): Effect(s) to set directly (see EffectSchema)
+  - effectStyleId (string, optional): Effect style variable to apply
+
+**At least one of `effects` or `effectStyleId` is required per entry.**
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_effect", "params": { "entries": { "nodeId": "123:456", "effects": { "type": "DROP_SHADOW", "color": "#000", "radius": 4 } } } }
+```
+_Batch:_
+```json
+{ "command": "set_effect", "params": { "entries": [
+  { "nodeId": "123:456", "effects": [{ "type": "DROP_SHADOW", "color": "#000", "radius": 4 }] },
+  { "nodeId": "789:101", "effectStyleId": "S:effect123" }
+] } }
+```
+
+---
+
+## apply_effect_style
+Apply an effect style to a node in Figma.
+
+**Parameters:**
+- nodeId (string): The node ID to update.
+- effectStyleId (string): The effect style ID to apply.
+
+**Example:**
+```json
+{ "command": "apply_effect_style", "params": { "nodeId": "123:456", "effectStyleId": "effect123" } }
+```
+
+---
+
+## set_auto_layout
+Configure auto layout properties for one or more nodes (single or batch).
+
+**Parameters:**
+- layout (object, optional): Single auto-layout config.
+- layouts (array of objects, optional): Batch of auto-layout configs.
+  - Each config:
+    - nodeId (string): Node to update
+    - mode ("HORIZONTAL" | "VERTICAL" | "NONE"): Layout mode
+    - primaryAxisSizing ("FIXED" | "AUTO", optional)
+    - counterAxisSizing ("FIXED" | "AUTO", optional)
+    - itemSpacing (number, optional)
+    - padding (object, optional): { top, right, bottom, left }
+    - alignItems ("MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN", optional)
+- options (object, optional): { skipErrors?: boolean, maintainPosition?: boolean }
+- At least one of layout or layouts is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_auto_layout", "params": { "layout": { "nodeId": "1:23", "mode": "VERTICAL", "itemSpacing": 20 } } }
+```
+_Batch:_
+```json
+{ "command": "set_auto_layout", "params": { "layouts": [
+  { "nodeId": "1:23", "mode": "VERTICAL", "itemSpacing": 20 },
+  { "nodeId": "4:56", "mode": "HORIZONTAL", "counterAxisSizing": "FIXED", "itemSpacing": 10 }
+], "options": { "maintainPosition": true } } }
+```
+
+**Limitations & Notes:**
+- Only nodes supporting auto layout (FRAME, COMPONENT, INSTANCE, etc.) will be updated; others return an error.
+- All Figma auto-layout properties are supported.
+- Optionally skips errors or maintains node position after layout change.
+
+---
+
+## set_auto_layout_resizing
+Set hug or fill sizing mode on an auto layout frame or child node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- axis (string): "horizontal" or "vertical".
+- mode (string): "FIXED", "HUG", or "FILL".
+
+**Example:**
+```json
+{ "command": "set_auto_layout_resizing", "params": { "nodeId": "123:456", "axis": "horizontal", "mode": "HUG" } }
+```
+
+---
+
+## set_corner_radius
+Set the corner radius of a node in Figma.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to update.
+- radius (number): The new corner radius to set, in pixels.
+- corners (array of boolean, optional): [top-left, top-right, bottom-right, bottom-left].
+
+**Example:**
+```json
+{ "command": "set_corner_radius", "params": { "nodeId": "123:456", "radius": 8 } }
+```
+
 ---
 
 ### get_text_style
