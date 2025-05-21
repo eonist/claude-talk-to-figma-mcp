@@ -168,47 +168,47 @@ export const MCP_COMMANDS = {
   SET_CORNER_RADIUS: "set_corner_radius", // Set corner radius
 
   // --- Positioning & Sizing & Boolean Operations ---
-  MOVE_NODE: "move_node", // Move one or more nodes (single or batch)
-  REORDER_NODE: "reorder_node", // Reorder one or more nodes in their parents' children arrays (single or batch)
-  RESIZE_NODE: "resize_node", // Resize a node (single or batch)
-  FLATTEN_NODE: "flatten_node", // Flatten a single node (or batch) or selection
-  BOOLEAN: "boolean", // Perform union, subtract, intersect, or exclude on nodes or selection
+  MOVE_NODE: "move_node", // Move one or more nodes to new coordinates, supports single or batch operations
+  REORDER_NODE: "reorder_node", // Change the order of one or more nodes within their parent's children array, supports single or batch operations
+  RESIZE_NODE: "resize_node", // Resize one or more nodes to specified width and height, supports single or batch operations
+  FLATTEN_NODE: "flatten_node", // Merge all child vector layers and shapes of a node into a single vector layer, supports single node, batch, or current selection
+  BOOLEAN: "boolean", // Perform boolean operations (union, subtract, intersect, exclude) on one or more nodes or the current selection
 
   // --- Node Management ---
-  GROUP_NODE: "group_node", // Group nodes (unified)
-  CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame", // Convert a rectangle to a frame
-  DELETE_NODE: "delete_node", // Delete one or more nodes
-  DUPLICATE_NODE: "duplicate_node", // Duplicate a node (single or batch)
-  SET_NODE: "set_node", // Set or insert a child node into a parent (single)
-  SET_NODE_PROP: "set_node_prop", // Set node properties (locked, visible, etc.) for one or more nodes
+  GROUP_NODE: "group_node", // Group or ungroup nodes; supports grouping multiple nodes or ungrouping a group node
+  CONVERT_RECTANGLE_TO_FRAME: "convert_rectangle_to_frame", // Convert a rectangle node into a frame node
+  DELETE_NODE: "delete_node", // Delete one or more nodes from the document
+  DUPLICATE_NODE: "duplicate_node", // Clone one or more nodes; supports single or batch duplication
+  SET_NODE: "set_node", // Insert or set a child node into a parent node at an optional index position
+  SET_NODE_PROP: "set_node_prop", // Set properties (e.g., locked, visible) on one or more nodes
 
   // --- Grids, Guides, and Constraints ---
-  SET_GRID: "set_grid", // Create, update, or delete one or more layout grids on nodes
-  GET_GRID: "get_grid", // Get all layout grids for one or more nodes
-  SET_GUIDE: "set_guide", // Add or delete one or more guides on the current page
-  GET_GUIDE: "get_guide", // Get all guides on the current page
-  SET_CONSTRAINT: "set_constraint", // Set constraint for one or more nodes
-  GET_CONSTRAINT: "get_constraint", // Get constraint for one or more nodes
+  SET_GRID: "set_grid", // Create, update, or delete layout grids on one or more nodes
+  GET_GRID: "get_grid", // Retrieve all layout grids for one or more nodes
+  SET_GUIDE: "set_guide", // Add or delete guides on the current page
+  GET_GUIDE: "get_guide", // Retrieve all guides on the current page
+  SET_CONSTRAINT: "set_constraint", // Set layout constraints (horizontal and vertical) for one or more nodes
+  GET_CONSTRAINT: "get_constraint", // Get layout constraints for one or more nodes
 
   // --- Figma Variables (Design Tokens) ---
-  SET_VARIABLE: "set_variable", // Create, update, or delete one or more Figma Variables (design tokens)
-  GET_VARIABLE: "get_variable", // Query Figma Variables by type, collection, mode, or IDs
-  APPLY_VARIABLE_TO_NODE: "apply_variable_to_node", // Apply a Figma Variable to a node property
-  SWITCH_VARIABLE_MODE: "switch_variable_mode", // Switch the mode for a Figma Variable collection
+  SET_VARIABLE: "set_variable", // Create, update, or delete one or more Figma design tokens (variables)
+  GET_VARIABLE: "get_variable", // Query Figma variables by type, collection, mode, or specific IDs
+  APPLY_VARIABLE_TO_NODE: "apply_variable_to_node", // Apply a Figma variable to a specific node property (e.g., fill, stroke)
+  SWITCH_VARIABLE_MODE: "switch_variable_mode", // Switch the mode (e.g., light/dark) for a Figma variable collection
 
   // --- Export ---
-  EXPORT_NODE_AS_IMAGE: "export_node_as_image", // Export a node as an image
-  GET_HTML: "get_html", // Get HTML structure from Figma nodes
-  GET_CSS_ASYNC: "get_css_async", // Get CSS properties from a node
+  EXPORT_NODE_AS_IMAGE: "export_node_as_image", // Export a node as an image in various formats
+  GET_HTML: "get_html", // Generate HTML structure from Figma nodes
+  GET_CSS_ASYNC: "get_css_async", // Retrieve CSS properties from a node asynchronously
 
   // --- Misc ---
-  RENAME_LAYER: "rename_layer", // Rename nodes (single or batch, each with its own name)
-  AI_RENAME_LAYER: "ai_rename_layer", // AI-powered renaming 
+  RENAME_LAYER: "rename_layer", // Rename one or more nodes, each with its own new name
+  AI_RENAME_LAYER: "ai_rename_layer", // AI-powered renaming of nodes
   SET_VARIANT: "set_variant", // Create, add, rename, delete, organize, or batch create variants/properties in a component set
-  GET_VARIANT: "get_variant", // Get info about variants/properties for one or more component sets
-  SUBSCRIBE_EVENT: "subscribe_event", // Subscribe or unsubscribe to a Figma event (e.g., selection_change, document_change) using a boolean param
-  GET_ANNOTATION: "get_annotation", // Get annotation(s) for one or more nodes
-  SET_ANNOTATION: "set_annotation" // Set, update, or delete annotation(s) for one or more nodes
+  GET_VARIANT: "get_variant", // Retrieve information about variants/properties for one or more component sets
+  SUBSCRIBE_EVENT: "subscribe_event", // Subscribe or unsubscribe to Figma events (e.g., selection_change, document_change)
+  GET_ANNOTATION: "get_annotation", // Retrieve annotations for one or more nodes
+  SET_ANNOTATION: "set_annotation" // Set, update, or delete annotations for one or more nodes
 } as const;
 
 export type McpCommand = typeof MCP_COMMANDS[keyof typeof MCP_COMMANDS];

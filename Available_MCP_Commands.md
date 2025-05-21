@@ -16,7 +16,7 @@
 > **Note:** For batch operations, pass an array to the singular command (e.g., `rectangles` for `create_rectangle`). Plural command names are deprecated.
 
 ### Communication
-- [join_channel](#join_channel): Join a specific communication channel
+- [join](#join): Join a specific communication channel
 
 ### Document and Information
 - [get_document_info](#get_document_info): Get detailed information about the current Figma document
@@ -25,10 +25,10 @@
 - [get_node_info](#get_node_info): Get detailed information about one or more nodes (single or batch)
 
 **Pages:**
-- [get_pages](#get_pages): Get all pages in the current Figma document
-- [set_current_page](#set_current_page): Set the current active page in Figma
+- [get_doc_pages](#get_doc_pages): Get all pages in the current Figma document
+- [set_page](#set_page): Set the current active page in Figma
 - [create_page](#create_page): Create a new page
-- [duplicate_page](#duplicate_page): Duplicate a Figma page and all its children as a new page**
+- [duplicate_page](#duplicate_page): Duplicate a Figma page and all its children as a new page
 
 **Shapes:**
 - [create_rectangle](#create_rectangle): Create one or more rectangles
@@ -40,7 +40,7 @@
 - [create_vector](#create_vector): Create one or more vectors
 
 **Text:**
-- [create_text](#create_text): Create one or more text elements
+- [set_text](#set_text): Set or create one or more text elements
 - [set_text_content](#set_text_content): Set text content of an existing node
 - [get_styled_text_segments](#get_styled_text_segments): Get text segments with specific styling
 - [get_text_style](#get_text_style): Get text style properties for one or more nodes (single or batch)
@@ -55,73 +55,69 @@
 
 **Components:**
 - [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
-- [create_components_from_nodes](#create_components_from_nodes): Convert nodes to components
+- [create_components_from_node](#create_components_from_node): Convert nodes to components
 - [create_component_instance](#create_component_instance): Create component instances
 - [create_button](#create_button): Create a complete button
 - [detach_instances](#detach_instances): Detach one or more component instances from their masters (single or batch)
 
 **Images and SVG:**
 - [get_image](#get_image): Extract image fills or export nodes as images (single or batch)
-- [insert_image](#insert_image): Insert images from URLs, local files, or base64 data (single or batch)
-- [insert_svg_vector](#insert_svg_vector): Insert SVG vectors
+- [set_image](#set_image): Set or insert images from URLs, local files, or base64 data (single or batch)
+- [set_svg_vector](#set_svg_vector): Set or insert SVG vectors
 - [get_svg_vector](#get_svg_vector): Get SVG markup for one or more vector nodes
 
 **Styling:**
-- [get_styles](#get_styles): Get all styles from the document
-- [set_fill_color](#set_fill_color): Set fill color
-- [set_stroke_color](#set_stroke_color): Set stroke color
-- [set_style](#set_style): Set both fill and stroke
+- [get_style](#get_style): Get all styles from the document
+- [set_fill_and_stroke](#set_fill_and_stroke): Set fill and/or stroke color(s) for one or more nodes
+- [set_style](#set_style): Set style or styles
 - [create_gradient_style](#create_gradient_style): Create one or more gradient styles
 - [set_gradient](#set_gradient): Set gradient(s) directly or by style variable
 
 **Effects and Layout:**
 - [create_effect_style_variable](#create_effect_style_variable): Create one or more effect style variables
 - [set_effect](#set_effect): Set effect(s) directly or by style variable
-- [set_effect_style_id](#set_effect_style_id): Apply an effect style
+- [apply_effect_style](#apply_effect_style): Apply an effect style
 - [set_auto_layout](#set_auto_layout): Configure auto layout (single or batch)
 - [set_auto_layout_resizing](#set_auto_layout_resizing): Set hug or fill sizing mode
 - [set_corner_radius](#set_corner_radius): Set corner radius
 
 **Positioning & Sizing & Boolean Operations:**
 - [move_node](#move_node): Move one or more nodes (single or batch)
-- [reorder_nodes](#reorder_nodes): Reorder one or more nodes in their parents' children arrays (single or batch)
+- [reorder_node](#reorder_node): Reorder one or more nodes in their parents' children arrays (single or batch)
 - [resize_node](#resize_node): Resize a node (single or batch)
 - [flatten_node](#flatten_node): Flatten a single node (or batch) or selection
 - [boolean](#boolean): Perform union, subtract, intersect, or exclude on nodes or selection
 
 **Node Management:**
-- [group_or_ungroup_nodes](#group_or_ungroup_nodes): Group or ungroup nodes
+- [group_node](#group_node): Group or ungroup nodes
 - [convert_rectangle_to_frame](#convert_rectangle_to_frame): Convert a rectangle to a frame
 - [delete_node](#delete_node): Delete one or more nodes
-- [clone_node](#clone_node): Clone a node (single or batch)
-- [insert_child](#insert_child): Insert a child node into a parent (single or batch)
-- [set_node_locked](#set_node_locked): Lock or unlock nodes
-- [set_node_visible](#set_node_visible): Show or hide nodes
+- [duplicate_node](#duplicate_node): Duplicate a node (single or batch)
+- [set_node](#set_node): Set or insert a child node into a parent (single)
+- [set_node_prop](#set_node_prop): Set node properties (locked, visible, etc.) for one or more nodes
 
 ### Grids, Guides, and Constraints
 - [set_grid](#set_grid): Create, update, or delete one or more layout grids on nodes
 - [get_grid](#get_grid): Get all layout grids for one or more nodes
 - [set_guide](#set_guide): Add or delete one or more guides on the current page
 - [get_guide](#get_guide): Get all guides on the current page
-- [set_constraints](#set_constraints): Set constraints for one or more nodes
-- [get_constraints](#get_constraints): Get constraints for one or more nodes
+- [set_constraint](#set_constraint): Set constraints for one or more nodes
+- [get_constraint](#get_constraint): Get constraints for one or more nodes
 
 ### Figma Variables (Design Tokens)
-- [create_variable](#create_variable): Create one or more Figma Variables (design tokens)
-- [update_variable](#update_variable): Update one or more Figma Variables
-- [delete_variable](#delete_variable): Delete one or more Figma Variables
-- [get_variables](#get_variables): Query Figma Variables by type, collection, mode, or IDs
+- [set_variable](#set_variable): Create, update, or delete one or more Figma Variables (design tokens)
+- [get_variable](#get_variable): Query Figma Variables by type, collection, mode, or IDs
 - [apply_variable_to_node](#apply_variable_to_node): Apply a Figma Variable to a node property
 - [switch_variable_mode](#switch_variable_mode): Switch the mode for a Figma Variable collection
 
 ### Export 
 - [export_node_as_image](#export_node_as_image): Export a node as an image
-- [generate_html](#generate_html): Generate HTML structure from Figma nodes
+- [get_html](#get_html): Generate HTML structure from Figma nodes
 - [get_css_async](#get_css_async): Get CSS properties from a node
 
 ### Misc
 - [rename_layer](#rename_layer): Rename nodes (single or batch, each with its own name)
-- [ai_rename_layers](#ai_rename_layers): AI-powered renaming 
+- [ai_rename_layer](#ai_rename_layer): AI-powered renaming 
 - [set_variant](#set_variant): Create, add, rename, delete, organize, or batch create variants/properties in a component set
 - [get_variant](#get_variant): Get info about variants/properties for one or more component sets
 - [subscribe_event](#subscribe_event): Subscribe to or unsubscribe from a Figma event (e.g., selection_change, document_change)
