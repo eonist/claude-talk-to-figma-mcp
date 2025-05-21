@@ -132,15 +132,34 @@ Get all pages in the current Figma document.
 ---
 
 ### set_page
-Set the current active page in Figma.
+Create, delete, rename, or set current page (single or batch).
 
 **Parameters:**
-- pageId (string)
+- page (object, optional): Single page operation
+  - pageId (string, optional): Target page (for delete/rename/set current)
+  - name (string, optional): Name for create/rename
+  - delete (boolean, optional): If true, delete the page
+  - setCurrent (boolean, optional): If true, set as current page
+- pages (array, optional): Batch of page operations (same shape as above)
+
+**Returns:**
+- Array of result objects for each operation, each with pageId, success, and optional error.
 
 **Example:**
 ```json
-{ "command": "set_page", "params": { "pageId": "123:456" } }
+{ "command": "set_page", "params": { "page": { "pageId": "123:456", "setCurrent": true } } }
 ```
+```json
+{ "command": "set_page", "params": { "pages": [
+  { "pageId": "123:456", "delete": true },
+  { "name": "New Page" }
+] } }
+```
+
+**Notes:**
+- Supports creating, deleting, renaming, and setting current page.
+- Batch operations supported.
+- Returns success status and error details per operation.
 
 ---
 
@@ -822,16 +841,21 @@ Set effects.
 ```
 
 ### apply_effect_style
-Apply effect style.
+Apply an effect style to a node in Figma.
 
 **Parameters:**
-- nodeId (string)
-- effectStyleId (string)
+- nodeId (string): The unique Figma node ID to update.
+- effectStyleId (string): The effect style ID to apply.
 
 **Example:**
 ```json
 { "command": "apply_effect_style", "params": { "nodeId": "123:456", "effectStyleId": "effect123" } }
 ```
+
+**Notes:**
+- Applies a predefined effect style to the specified node.
+- Effect styles include shadows, blurs, and other visual effects.
+- Use this to maintain consistent styling across multiple nodes.
 
 ### set_auto_layout
 Set auto layout.
