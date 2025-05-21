@@ -66,13 +66,54 @@ Examples:
       } else if (nodeId && text) {
         updates = [{ nodeId: ensureNodeIdIsString(nodeId), text }];
       } else {
-        return { content: [{ type: "text", text: "Error: Provide either (nodeId + text) or texts array." }] };
+        const response = {
+          success: false,
+          error: {
+            message: "Error: Provide either (nodeId + text) or texts array.",
+            results: [],
+            meta: {
+              operation: "set_text_content",
+              params: { nodeId, text, texts }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
-      await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_CONTENT, updates.length === 1
-        ? { nodeId: updates[0].nodeId, text: updates[0].text }
-        : { texts: updates }
-      );
-      return { content: [{ type: "text", text: `Updated ${updates.length} text node(s)` }] };
+      const results = [];
+      for (const upd of updates) {
+        try {
+          await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_CONTENT, { nodeId: upd.nodeId, text: upd.text });
+          results.push({ nodeId: upd.nodeId, success: true });
+        } catch (err) {
+          results.push({
+            nodeId: upd.nodeId,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "set_text_content",
+              params: upd
+            }
+          });
+        }
+      }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All set_text_content operations failed",
+            results,
+            meta: {
+              operation: "set_text_content",
+              params: updates
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }
@@ -155,14 +196,54 @@ Examples:
       } else if (nodeId && styles && Object.keys(styles).length > 0) {
         updates = [{ nodeId: ensureNodeIdIsString(nodeId), styles }];
       } else {
-        return { content: [{ type: "text", text: "Error: Provide either (nodeId + styles) or entries array." }] };
+        const response = {
+          success: false,
+          error: {
+            message: "Error: Provide either (nodeId + styles) or entries array.",
+            results: [],
+            meta: {
+              operation: "set_text_style",
+              params: { nodeId, styles, entries }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
-      // Forward to plugin/Figma client for actual style application
-      await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, updates.length === 1
-        ? { nodeId: updates[0].nodeId, styles: updates[0].styles }
-        : { entries: updates }
-      );
-      return { content: [{ type: "text", text: `Updated text style for ${updates.length} node(s)` }] };
+      const results = [];
+      for (const upd of updates) {
+        try {
+          await figmaClient.executeCommand(MCP_COMMANDS.SET_TEXT_STYLE, { nodeId: upd.nodeId, styles: upd.styles });
+          results.push({ nodeId: upd.nodeId, success: true });
+        } catch (err) {
+          results.push({
+            nodeId: upd.nodeId,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "set_text_style",
+              params: upd
+            }
+          });
+        }
+      }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All set_text_style operations failed",
+            results,
+            meta: {
+              operation: "set_text_style",
+              params: updates
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }

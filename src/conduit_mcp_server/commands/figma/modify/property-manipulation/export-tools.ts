@@ -43,9 +43,25 @@ Returns:
       openWorldHint: false
     },
     async ({ nodeId, format, scale }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      const result = await figmaClient.executeCommand(MCP_COMMANDS.EXPORT_NODE_AS_IMAGE, { nodeId: id, format, scale });
-      return { content: [{ type: "image", data: result.imageData, mimeType: result.mimeType }] };
+      try {
+        const id = ensureNodeIdIsString(nodeId);
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.EXPORT_NODE_AS_IMAGE, { nodeId: id, format, scale });
+        const response = { success: true, results: [{ imageData: result.imageData, mimeType: result.mimeType }] };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "export_node_as_image",
+              params: { nodeId, format, scale }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }

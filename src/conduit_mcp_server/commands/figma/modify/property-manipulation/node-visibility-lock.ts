@@ -41,25 +41,64 @@ export function registerNodeLockVisibilityCommands(server, figmaClient) {
       { message: "Provide either nodeId or nodeIds, not both." }
     ),
     async (params: { nodeId?: string; nodeIds?: string[]; properties: { locked?: boolean; visible?: boolean } }) => {
-      try {
-        const ids = params.nodeIds || (params.nodeId ? [params.nodeId] : []);
-        if (!ids.length) throw new Error("No node IDs provided");
-        const results = [];
-        for (const id of ids) {
+      const ids = params.nodeIds || (params.nodeId ? [params.nodeId] : []);
+      if (!ids.length) {
+        const response = {
+          success: false,
+          error: {
+            message: "No node IDs provided",
+            results: [],
+            meta: {
+              operation: "set_node_prop",
+              params
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
+      const results = [];
+      for (const id of ids) {
+        try {
           const node = await figmaClient.getNodeById(id);
           if (!node) throw new Error(`Node not found: ${id}`);
           if ("locked" in params.properties) node.locked = params.properties.locked;
           if ("visible" in params.properties) node.visible = params.properties.visible;
           results.push({
-            id,
+            nodeId: id,
             ...( "locked" in params.properties ? { locked: node.locked } : {} ),
-            ...( "visible" in params.properties ? { visible: node.visible } : {} )
+            ...( "visible" in params.properties ? { visible: node.visible } : {} ),
+            success: true
+          });
+        } catch (err) {
+          results.push({
+            nodeId: id,
+            success: false,
+            error: err instanceof Error ? err.message : String(err),
+            meta: {
+              operation: "set_node_prop",
+              params: { nodeId: id, properties: params.properties }
+            }
           });
         }
-        return { content: results };
-      } catch (err: any) {
-        return handleToolError(err, "node-visibility-lock", "set_node_prop");
       }
+      const anySuccess = results.some(r => r.success);
+      let response;
+      if (anySuccess) {
+        response = { success: true, results };
+      } else {
+        response = {
+          success: false,
+          error: {
+            message: "All set_node_prop operations failed",
+            results,
+            meta: {
+              operation: "set_node_prop",
+              params
+            }
+          }
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(response) }] };
     }
   );
 }

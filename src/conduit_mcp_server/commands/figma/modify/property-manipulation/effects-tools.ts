@@ -55,9 +55,25 @@ Returns:
       extraInfo: "Applies a predefined effect style to a node."
     },
     async ({ nodeId, effectStyleId }) => {
-      const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.setEffectStyleId({ nodeId: id, effectStyleId });
-      return { content: [{ type: "text", text: `Effect style applied to ${id}` }] };
+      try {
+        const id = ensureNodeIdIsString(nodeId);
+        await figmaClient.setEffectStyleId({ nodeId: id, effectStyleId });
+        const response = { success: true, results: [{ nodeId: id, effectStyleId, applied: true }] };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "apply_effect_style",
+              params: { nodeId, effectStyleId }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }

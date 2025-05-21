@@ -35,8 +35,24 @@ Returns:
       ...FontFamilyStyleSchema.shape,
     },
     async ({ family, style }) => {
-      await figmaClient.executeCommand(MCP_COMMANDS.LOAD_FONT_ASYNC, { family, style });
-      return { content: [{ type: "text", text: `Font loaded: ${family}` }] };
+      try {
+        await figmaClient.executeCommand(MCP_COMMANDS.LOAD_FONT_ASYNC, { family, style });
+        const response = { success: true, results: [{ family, style, loaded: true }] };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      } catch (error) {
+        const response = {
+          success: false,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            results: [],
+            meta: {
+              operation: "load_font_async",
+              params: { family, style }
+            }
+          }
+        };
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
+      }
     }
   );
 }
