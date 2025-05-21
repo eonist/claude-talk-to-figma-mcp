@@ -132,9 +132,6 @@ Returns:
     MCP_COMMANDS.SET_GRADIENT,
     `Set a gradient on one or more nodes in Figma, either directly or by style variable.
 
-Params:
-  - entries: Either a single application or an array of applications.
-
 Returns:
   - content: Array containing a text message with the updated node(s) ID(s) or a summary.
 `,
