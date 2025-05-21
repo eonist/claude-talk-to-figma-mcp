@@ -21,13 +21,6 @@ export function registerGuideCommands(server: McpServer, figmaClient: FigmaClien
     MCP_COMMANDS.SET_GUIDE,
     `Add or delete one or more guides on the current Figma page.
 
-Parameters:
-- guide (object, optional): Single guide operation
-  - axis ("X"|"Y"): Guide direction
-  - offset (number): Position in canvas coordinates
-  - delete (boolean, optional): If true, delete the guide at axis/offset
-- guides (array, optional): Batch of guide operations (same shape as above)
-
 Returns: Array of result objects for each operation.`,
     SetGuideSchema,
     async (params) => {
@@ -69,8 +62,6 @@ Returns: Array of result objects for each operation.`,
   server.tool(
     MCP_COMMANDS.GET_GUIDE,
     `Get all guides on the current Figma page.
-
-Parameters: none
 
 Returns: Array of guides, each with { axis, offset }`,
     GetGuideSchema,

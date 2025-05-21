@@ -24,10 +24,6 @@ export function registerInsertChildTools(server: McpServer, figmaClient: FigmaCl
     MCP_COMMANDS.SET_NODE,
     `Sets or inserts one or more child nodes into parent nodes at optional index positions in Figma.
 
-Parameters:
-  - For single insert: { parentId, childId, index? }
-  - For batch insert: { operations: Array<{ parentId, childId, index?, maintainPosition? }>, options?: { skipErrors?: boolean } }
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the parentId, childId, index, success status, and any error message.
 `,

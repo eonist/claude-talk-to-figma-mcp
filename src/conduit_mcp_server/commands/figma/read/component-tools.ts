@@ -12,12 +12,6 @@ export function registerComponentTools(server: McpServer, figmaClient: FigmaClie
     MCP_COMMANDS.GET_COMPONENTS,
     `Get components from the current document, a team library, or remote team libraries.
 
-Parameters:
-  - source: "local" | "team" | "remote" (required)
-  - team_id: Figma team ID (string, required if source is "team")
-  - page_size: Number of components per page (number, optional, for team/remote)
-  - after: Pagination cursor (string/number, optional, for team/remote)
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the components info as JSON.
 

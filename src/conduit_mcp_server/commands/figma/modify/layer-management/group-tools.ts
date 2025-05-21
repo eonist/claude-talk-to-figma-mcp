@@ -26,12 +26,6 @@ export function registerGroupTools(server: McpServer, figmaClient: FigmaClient) 
     MCP_COMMANDS.GROUP_NODE,
     `Groups or ungroups nodes in Figma, depending on the 'group' flag.
 
-Parameters:
-  - group (boolean, required): If true, groups nodes; if false, ungroups a group node.
-  - nodeIds (array of string, min 2, required if grouping): The nodes to group.
-  - name (string, optional): Name for the group (only if grouping).
-  - nodeId (string, required if ungrouping): The group node to ungroup.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the result.
 `,

@@ -25,14 +25,6 @@ export function registerPageCommands(server: McpServer, figmaClient: FigmaClient
     MCP_COMMANDS.SET_PAGE,
     `Create, delete, rename, or set current page (single or batch).
 
-Parameters:
-- page (object, optional): Single page operation
-  - pageId (string, optional): Target page (for delete/rename/set current)
-  - name (string, optional): Name for create/rename
-  - delete (boolean, optional): If true, delete the page
-  - setCurrent (boolean, optional): If true, set as current page
-- pages (array, optional): Batch of page operations (same shape as above)
-
 Returns: Array of result objects for each operation.`,
     SetPageSchema,
     async (params) => {
@@ -86,11 +78,6 @@ Returns: Array of result objects for each operation.`,
   server.tool(
     MCP_COMMANDS.GET_PAGE,
     `Get info for one, many, or all pages.
-
-Parameters:
-- pageId (string, optional): Single page ID
-- pageIds (array of string, optional): Multiple page IDs
-- If neither is provided, returns all pages.
 
 Returns: For single: { pageId, name, isActive }, for batch: Array<{ pageId, name, isActive }>.`,
     GetPageSchema,

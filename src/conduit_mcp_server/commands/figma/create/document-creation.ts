@@ -14,10 +14,6 @@ server.tool(
   MCP_COMMANDS.DUPLICATE_PAGE,
   `Duplicate a Figma page and all its children as a new page.
 
-Parameters:
-  - pageId: The ID of the page to duplicate.
-  - newPageName: Optional name for the new page.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the new page info as JSON.
 `,

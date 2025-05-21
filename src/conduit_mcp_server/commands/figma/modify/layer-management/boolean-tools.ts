@@ -26,12 +26,6 @@ export function registerBooleanTools(server: McpServer, figmaClient: FigmaClient
     MCP_COMMANDS.BOOLEAN,
     `Perform boolean operations (union, subtract, intersect, exclude) on Figma nodes.
 
-Parameters:
-  - operation (string, required): One of "union", "subtract", "intersect", "exclude".
-  - selection (boolean, optional): If true, use the current selection in Figma.
-  - nodeId (string, optional): Single node ID.
-  - nodeIds (array of string, optional): Multiple node IDs (min 2).
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the result.
 `,
