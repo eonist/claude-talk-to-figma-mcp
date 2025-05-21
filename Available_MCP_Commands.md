@@ -4,12 +4,9 @@
 - You can pass either a single object or an array of objects (using a pluralized parameter) for batch operations.
 - The same command name is used for both single and batch; the input type determines the behavior.
 - For commands that require a specific batch parameter (e.g., `nodeIds`), this is documented per command.
+- For batch operations, pass an array to the singular command (e.g., `rectangles` for `create_rectangle`). Plural command names are deprecated.
 
 # Available MCP Commands
-
-# Quick Reference
-
-> **Note:** For batch operations, pass an array to the singular command (e.g., `rectangles` for `create_rectangle`). Plural command names are deprecated.
 
 ### Communication
 - [join](#join): Join a specific communication channel
@@ -120,8 +117,7 @@
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
-
-## Additional Examples for Text and Component Commands
+# Examples: 
 
 ### get_styled_text_segments
 Get text segments with specific styling in a text node.
@@ -134,10 +130,7 @@ Get text segments with specific styling in a text node.
 ```json
 { "command": "get_styled_text_segments", "params": { "nodeId": "123:456", "property": "fontWeight" } }
 ```
-
-
-## Additional Examples for Remaining Commands
-
+ 
 ### detach_instances
 Detach one or more component instances from their masters.
 
@@ -160,7 +153,319 @@ _Batch:_
 { "command": "detach_instances", "params": { "instanceIds": ["123:456", "123:789"], "options": { "skip_errors": true } } }
 ```
 
+
+## Additional Examples for Final Set of Commands
+
+### set_node
+Set or insert a child node into a parent node.
+
+**Parameters:**
+- parentId (string): ID of the parent node
+- childId (string): ID of the child node to insert
+- index (number, optional): Insertion index (0-based)
+
+**Example:**
+```json
+{ "command": "set_node", "params": { "parentId": "123:456", "childId": "789:101", "index": 2 } }
+```
+
 ---
+
+### set_node_prop
+Set node properties (locked, visible, etc.) for one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Node ID
+- nodeIds (array of string, optional): Array of node IDs
+- properties (object): Properties to set (e.g., locked, visible)
+
+**Example:**
+```json
+{ "command": "set_node_prop", "params": { "nodeIds": ["123:456", "789:101"], "properties": { "locked": true } } }
+```
+
+---
+
+### set_grid
+Create, update, or delete one or more layout grids on Figma nodes.
+
+**Parameters:**
+- entry (object, optional): Single grid operation
+- entries (array, optional): Batch of grid operations
+
+**Example:**
+```json
+{ "command": "set_grid", "params": { "entry": { "nodeId": "123:456", "properties": { "pattern": "COLUMNS", "count": 12 } } } }
+```
+
+---
+
+### get_grid
+Get all layout grids for one or more Figma nodes.
+
+**Parameters:**
+- nodeId (string, optional): Single node ID
+- nodeIds (array of string, optional): Multiple node IDs
+
+**Example:**
+```json
+{ "command": "get_grid", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+### set_guide
+Add or delete one or more guides on the current Figma page.
+
+**Parameters:**
+- guide (object, optional): Single guide operation
+- guides (array, optional): Batch of guide operations
+
+**Example:**
+```json
+{ "command": "set_guide", "params": { "guide": { "axis": "X", "offset": 100 } } }
+```
+
+---
+
+### get_guide
+Get all guides on the current Figma page.
+
+**Parameters:** none
+
+**Example:**
+```json
+{ "command": "get_guide", "params": {} }
+```
+
+---
+
+### set_constraint
+Set constraints for one or more nodes.
+
+**Parameters:**
+- constraint (object, optional): Single constraint operation
+- constraints (array, optional): Batch of constraint operations
+
+**Example:**
+```json
+{ "command": "set_constraint", "params": { "constraint": { "nodeId": "123:456", "horizontal": "left", "vertical": "top" } } }
+```
+
+---
+
+### get_constraint
+Get constraints for one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Single node ID
+- nodeIds (array, optional): Multiple node IDs
+
+**Example:**
+```json
+{ "command": "get_constraint", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+### set_variable
+Create, update, or delete one or more Figma Variables (design tokens).
+
+**Parameters:**
+- variables (object or array): Variable definitions for create/update
+- ids (string or array): Variable IDs for delete
+
+**Example:**
+```json
+{ "command": "set_variable", "params": { "variables": [ { "name": "Primary Color", "type": "COLOR", "value": "#3366FF" } ] } }
+```
+
+---
+
+### get_variable
+Query Figma Variables by type, collection, mode, or IDs.
+
+**Parameters:**
+- type (string, optional)
+- collection (string, optional)
+- mode (string, optional)
+- ids (array, optional)
+
+**Example:**
+```json
+{ "command": "get_variable", "params": { "type": "COLOR", "collection": "Theme" } }
+```
+
+---
+
+### apply_variable_to_node
+Apply a Figma Variable to a node property.
+
+**Parameters:**
+- nodeId (string)
+- variableId (string)
+- property (string)
+
+**Example:**
+```json
+{ "command": "apply_variable_to_node", "params": { "nodeId": "123:456", "variableId": "var123", "property": "fill" } }
+```
+
+---
+
+### switch_variable_mode
+Switch the mode for a Figma Variable collection.
+
+**Parameters:**
+- collection (string)
+- mode (string)
+
+**Example:**
+```json
+{ "command": "switch_variable_mode", "params": { "collection": "Theme", "mode": "Dark" } }
+```
+
+---
+
+### export_node_as_image
+Export a node as an image.
+
+**Parameters:**
+- nodeId (string)
+- format (string, optional)
+- scale (number, optional)
+
+**Example:**
+```json
+{ "command": "export_node_as_image", "params": { "nodeId": "123:456", "format": "PNG", "scale": 2 } }
+```
+
+---
+
+### get_html
+Generate HTML structure from Figma nodes.
+
+**Parameters:**
+- nodeId (string)
+- format (string, optional)
+- cssMode (string, optional)
+
+**Example:**
+```json
+{ "command": "get_html", "params": { "nodeId": "123:456", "format": "semantic", "cssMode": "classes" } }
+```
+
+---
+
+### get_css_async
+Get CSS properties from a node.
+
+**Parameters:**
+- nodeId (string)
+- format (string, optional)
+
+**Example:**
+```json
+{ "command": "get_css_async", "params": { "nodeId": "123:456", "format": "string" } }
+```
+
+---
+
+### rename_layer
+Rename one or more nodes.
+
+**Parameters:**
+- rename (object, optional)
+- renames (array of objects, optional)
+
+**Example:**
+```json
+{ "command": "rename_layer", "params": { "rename": { "nodeId": "123:456", "newName": "New Name" } } }
+```
+
+---
+
+### ai_rename_layer
+AI-powered renaming of layers.
+
+**Parameters:**
+- layer_ids (array of string)
+- context_prompt (string, optional)
+
+**Example:**
+```json
+{ "command": "ai_rename_layer", "params": { "layer_ids": ["123:456"], "context_prompt": "Rename for clarity" } }
+```
+
+---
+
+### set_variant
+Create, add, rename, delete, organize, or batch create variants/properties in a component set.
+
+**Parameters:**
+- variant (object, optional)
+- variants (array, optional)
+
+**Example:**
+```json
+{ "command": "set_variant", "params": { "variant": { "componentSetId": "123:456", "action": "add", "properties": { "state": "hover" } } } }
+```
+
+---
+
+### get_variant
+Get info about variants/properties for one or more component sets.
+
+**Parameters:**
+- componentSetId (string, optional)
+- componentSetIds (array, optional)
+
+**Example:**
+```json
+{ "command": "get_variant", "params": { "componentSetId": "123:456" } }
+```
+
+---
+
+### subscribe_event
+Subscribe to a Figma event.
+
+**Parameters:**
+- eventType (string)
+- filter (object, optional)
+
+**Example:**
+```json
+{ "command": "subscribe_event", "params": { "eventType": "selection_change" } }
+```
+
+---
+
+### get_annotation
+Get annotation(s) for one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional)
+- nodeIds (array, optional)
+
+**Example:**
+```json
+{ "command": "get_annotation", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+### set_annotation
+Set, update, or delete annotation(s) for one or more nodes.
+
+**Parameters:**
+- entry (object, optional)
+- entries (array, optional)
+
+**Example:**
+```json
+{ "command": "set_annotation", "params": { "entry": { "nodeId": "123:456", "annotation": { "label": "Note" } } } }
+```
 
 ### get_image
 Extract image fills or export nodes as images (single or batch).
