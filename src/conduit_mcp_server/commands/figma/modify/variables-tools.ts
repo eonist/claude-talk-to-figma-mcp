@@ -89,50 +89,113 @@ Returns:
       extraInfo: "Creates, updates, or deletes Figma Variables (design tokens) depending on which parameters are provided."
     },
     async (params) => {
-      if (params.ids) {
-        // Delete operation
-        const idList = Array.isArray(params.ids) ? params.ids : [params.ids];
-        const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { ids: idList });
+      try {
+        if (params.ids) {
+          // Delete operation
+          const idList = Array.isArray(params.ids) ? params.ids : [params.ids];
+          const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { ids: idList });
+          const perOpResults = idList.map((id, i) => ({
+            variableId: id,
+            success: !results[i]?.error,
+            ...(results[i] || {}),
+            meta: results[i]?.error ? { operation: "delete_variable", params: { id } } : undefined
+          }));
+          const anySuccess = perOpResults.some(r => r.success);
+          if (anySuccess) {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({ success: true, results: perOpResults })
+                }
+              ]
+            };
+          } else {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: false,
+                    error: {
+                      message: "All delete_variable operations failed",
+                      results: perOpResults,
+                      meta: { operation: "delete_variable", params: idList }
+                    }
+                  })
+                }
+              ]
+            };
+          }
+        } else if (params.variables) {
+          const variableList = Array.isArray(params.variables) ? params.variables : [params.variables];
+          const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { variables: variableList });
+          const perOpResults = variableList.map((v, i) => ({
+            variableId: (results[i] && results[i].id) || (typeof (v as any).id === "string" ? (v as any).id : undefined),
+            success: !results[i]?.error,
+            ...(results[i] || {}),
+            meta: results[i]?.error ? { operation: "set_variable", params: v } : undefined
+          }));
+          const anySuccess = perOpResults.some(r => r.success);
+          if (anySuccess) {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({ success: true, results: perOpResults })
+                }
+              ]
+            };
+          } else {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: false,
+                    error: {
+                      message: "All set_variable operations failed",
+                      results: perOpResults,
+                      meta: { operation: "set_variable", params: variableList }
+                    }
+                  })
+                }
+              ]
+            };
+          }
+        }
         return {
           content: [
             {
               type: "text",
-              text: idList.length === 1
-                ? `Deleted variable ${idList[0]}`
-                : `Batch deleted ${idList.length} variables`
+              text: JSON.stringify({
+                success: false,
+                error: {
+                  message: "No operation performed. Provide 'variables' or 'ids'.",
+                  results: [],
+                  meta: { operation: "set_variable", params }
+                }
+              })
             }
-          ],
-          _meta: { results }
+          ]
         };
-      } else if (params.variables) {
-        const variableList = Array.isArray(params.variables) ? params.variables : [params.variables];
-        // If all have id, treat as update; if none have id, treat as create; if mixed, handle accordingly
-        const isUpdate = variableList.every(v => "id" in v);
-        const isCreate = variableList.every(v => !("id" in v));
-        const results = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIABLE, { variables: variableList });
+      } catch (err: any) {
         return {
           content: [
             {
               type: "text",
-              text: isCreate
-                ? (variableList.length === 1
-                    ? `Created variable ${results[0]?.id || ""}`
-                    : `Batch created ${results.length} variables`)
-                : (isUpdate
-                    ? (variableList.length === 1
-                        ? `Updated variable ${results[0]?.id || ""}`
-                        : `Batch updated ${results.length} variables`)
-                    : `Processed ${results.length} variables (mixed create/update)`)
+              text: JSON.stringify({
+                success: false,
+                error: {
+                  message: err?.message || String(err),
+                  results: [],
+                  meta: { operation: "set_variable", params }
+                }
+              })
             }
-          ],
-          _meta: { results }
+          ]
         };
       }
-      return {
-        content: [
-          { type: "text", text: "No operation performed. Provide 'variables' or 'ids'." }
-        ]
-      };
     }
   );
 

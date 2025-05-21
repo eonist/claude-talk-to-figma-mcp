@@ -44,8 +44,53 @@ Returns:
     },
     async ({ nodeId, width, height }) => {
       const id = ensureNodeIdIsString(nodeId);
-      await figmaClient.resizeNode({ nodeId: id, width, height });
-      return { content: [{ type: "text", text: `Resized ${id} to ${width}x${height}` }] };
+      try {
+        await figmaClient.executeCommand(MCP_COMMANDS.RESIZE_NODE, { nodeId: id, width, height });
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                success: true,
+                results: [
+                  { nodeId: id, width, height, success: true }
+                ]
+              })
+            }
+          ]
+        };
+      } catch (err: any) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                success: false,
+                error: {
+                  message: "Resize failed",
+                  results: [
+                    {
+                      nodeId: id,
+                      width,
+                      height,
+                      success: false,
+                      error: err?.message || String(err),
+                      meta: {
+                        operation: "resize_node",
+                        params: { nodeId: id, width, height }
+                      }
+                    }
+                  ],
+                  meta: {
+                    operation: "resize_node",
+                    params: [{ nodeId: id, width, height }]
+                  }
+                }
+              })
+            }
+          ]
+        };
+      }
     }
   );
 

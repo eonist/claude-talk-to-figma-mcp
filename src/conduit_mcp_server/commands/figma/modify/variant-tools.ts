@@ -46,7 +46,7 @@ Parameters:
 - variants (array, optional): Batch of variant operations (same shape as above)
 
 Returns: Array of result objects for each operation.`,
-    SetVariantSchema,
+    SetVariantSchema.shape,
     async (params) => {
       const ops = params.variant ? [params.variant] : (params.variants || []);
       const results = [];
@@ -55,10 +55,41 @@ Returns: Array of result objects for each operation.`,
           const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_VARIANT, op);
           results.push({ ...result, componentSetId: op.componentSetId, success: true });
         } catch (err: any) {
-          results.push({ componentSetId: op.componentSetId, success: false, error: err?.message || String(err) });
+          results.push({
+            componentSetId: op.componentSetId,
+            success: false,
+            error: err?.message || String(err),
+            meta: { operation: "set_variant", params: op }
+          });
         }
       }
-      return results;
+      const anySuccess = results.some(r => r.success);
+      if (anySuccess) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ success: true, results })
+            }
+          ]
+        };
+      } else {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                success: false,
+                error: {
+                  message: "All set_variant operations failed",
+                  results,
+                  meta: { operation: "set_variant", params: ops }
+                }
+              })
+            }
+          ]
+        };
+      }
     }
   );
 
@@ -72,7 +103,7 @@ Parameters:
 - componentSetIds (array, optional): Multiple component set nodes
 
 Returns: For single: { componentSetId, variants: [...] }, for batch: Array<{ componentSetId, variants: [...] }>.`,
-    GetVariantSchema,
+    GetVariantSchema.shape,
     async (params) => {
       return await figmaClient.executeCommand(MCP_COMMANDS.GET_VARIANT, params);
     }
