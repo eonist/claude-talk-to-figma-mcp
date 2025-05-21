@@ -129,6 +129,8 @@ Get all pages in the current Figma document.
 { "command": "get_doc_pages", "params": {} }
 ```
 
+---
+
 ### set_page
 Set the current active page in Figma.
 
@@ -139,6 +141,8 @@ Set the current active page in Figma.
 ```json
 { "command": "set_page", "params": { "pageId": "123:456" } }
 ```
+
+---
 
 ### create_page
 Create a new page.
@@ -151,17 +155,30 @@ Create a new page.
 { "command": "create_page", "params": { "name": "New Page" } }
 ```
 
+---
+
 ### duplicate_page
 Duplicate a Figma page and all its children as a new page.
 
 **Parameters:**
-- pageId (string)
-- newPageName (string, optional)
+- pageId (string): The ID of the page to duplicate.
+- newPageName (string, optional): Optional name for the new page.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the new page info as JSON.
 
 **Example:**
 ```json
-{ "command": "duplicate_page", "params": { "pageId": "123:456", "newPageName": "Copy of Page" } }
+{ "command": "duplicate_page", "params": { "pageId": "123:456" } }
 ```
+```json
+{ "command": "duplicate_page", "params": { "pageId": "123:456", "newPageName": "My Duplicated Page" } }
+```
+
+**Notes:**
+- Duplicates all children of the original page.
+- The new page will have a unique name and independent children.
+- Use this command to duplicate an entire page and its contents.
 
 ### create_rectangle
 Create one or more rectangles.
