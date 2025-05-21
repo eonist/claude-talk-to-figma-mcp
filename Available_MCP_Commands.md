@@ -925,6 +925,8 @@ Get SVG markup for one or more vector nodes.
 ```
 ```json
 { "nodeIds": ["123:456", "789:101"] }
+```
+
 ### get_text_style
 Extracts text style properties from one or more nodes.
 
