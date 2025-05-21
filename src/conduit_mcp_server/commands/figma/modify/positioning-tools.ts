@@ -83,18 +83,36 @@ Returns:
           throw new Error("You must provide either 'move' or 'moves' as input.");
         }
         const results = [];
+        let anySuccess = false;
         for (const cfg of movesArr) {
           const id = ensureNodeIdIsString(cfg.nodeId);
-          await figmaClient.moveNode({ nodeId: id, x: cfg.x, y: cfg.y });
-          results.push({ id, x: cfg.x, y: cfg.y });
+          try {
+            await figmaClient.moveNode({ nodeId: id, x: cfg.x, y: cfg.y });
+            results.push({ nodeId: id, x: cfg.x, y: cfg.y, success: true });
+            anySuccess = true;
+          } catch (err: any) {
+            results.push({ nodeId: id, x: cfg.x, y: cfg.y, success: false, error: err?.message || String(err) });
+          }
         }
-        if (results.length === 1) {
-          return { content: [{ type: "text", text: `Moved ${results[0].id} to (${results[0].x},${results[0].y})` }] };
+        if (anySuccess) {
+          return { success: true, results };
         } else {
-          return { content: [{ type: "text", text: `Moved ${results.length} nodes to new positions.` }] };
+          return {
+            success: false,
+            error: {
+              message: "All move operations failed",
+              results
+            }
+          };
         }
       } catch (err) {
-        return handleToolError(err, "positioning-tools", "move_node") as any;
+        return {
+          success: false,
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
+          }
+        };
       }
     }
   );

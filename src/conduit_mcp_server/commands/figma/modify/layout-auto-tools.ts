@@ -91,14 +91,21 @@ export async function set_auto_layout(
     }
   }
 
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify(results)
+  const anySuccess = results.some(r => r.success);
+  if (anySuccess) {
+    return {
+      success: true,
+      results
+    };
+  } else {
+    return {
+      success: false,
+      error: {
+        message: "All auto-layout operations failed",
+        results
       }
-    ]
-  };
+    };
+  }
 }
 
 /**

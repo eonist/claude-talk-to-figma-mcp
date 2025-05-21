@@ -38,15 +38,35 @@ Returns: Array of result objects for each operation.`,
     async (params) => {
       const ops = params.page ? [params.page] : (params.pages || []);
       const results = [];
+      let anySuccess = false;
       for (const op of ops) {
         try {
           const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_PAGE, op);
-          results.push({ ...result, pageId: op.pageId, success: true });
+          // If plugin returns an array, flatten it
+          if (Array.isArray(result)) {
+            for (const r of result) {
+              results.push({ ...r, pageId: op.pageId, success: !r.error });
+              if (!r.error) anySuccess = true;
+            }
+          } else {
+            results.push({ ...result, pageId: op.pageId, success: !result.error });
+            if (!result.error) anySuccess = true;
+          }
         } catch (err: any) {
           results.push({ pageId: op.pageId, success: false, error: err?.message || String(err) });
         }
       }
-      return results;
+      if (anySuccess) {
+        return { success: true, results };
+      } else {
+        return {
+          success: false,
+          error: {
+            message: "All page operations failed",
+            results
+          }
+        };
+      }
     }
   );
 
