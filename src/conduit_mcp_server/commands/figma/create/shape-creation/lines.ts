@@ -58,10 +58,6 @@ export function registerLinesTools(server: McpServer, figmaClient: FigmaClient) 
     MCP_COMMANDS.CREATE_LINE,
     `Creates one or more line nodes in the specified Figma document. Accepts either a single line config (via 'line') or an array of configs (via 'lines'). Optionally, you can provide a parent node ID, stroke color, and stroke weight.
 
-Input:
-  - line: A single line configuration object.
-  - lines: An array of line configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created line node ID(s).
 `,

@@ -54,10 +54,6 @@ export function registerPolygonsTools(server: McpServer, figmaClient: FigmaClien
     MCP_COMMANDS.CREATE_POLYGON,
     `Creates one or more polygons in Figma. Accepts either a single polygon config (via 'polygon') or an array of configs (via 'polygons'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
 
-Input:
-  - polygon: A single polygon configuration object.
-  - polygons: An array of polygon configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created polygon node ID(s).
 `,

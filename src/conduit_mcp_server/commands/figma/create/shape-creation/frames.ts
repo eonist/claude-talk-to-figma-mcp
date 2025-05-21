@@ -55,10 +55,6 @@ export function registerFramesTools(server: McpServer, figmaClient: FigmaClient)
     MCP_COMMANDS.CREATE_FRAME,
     `Creates one or more frame nodes in the specified Figma document. Accepts either a single frame config (via 'frame') or an array of configs (via 'frames'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
 
-Input:
-  - frame: A single frame configuration object.
-  - frames: An array of frame configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created frame node ID(s).
 `,

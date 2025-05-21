@@ -16,10 +16,6 @@ export function registerPositioningCommands(server: McpServer, figmaClient: Figm
     MCP_COMMANDS.MOVE_NODE,
     `Moves one or more nodes to a new position in Figma. Accepts either a single move config (via 'move') or an array of configs (via 'moves').
 
-Input:
-  - move: A single move configuration object ({ nodeId, x, y }).
-  - moves: An array of move configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the moved node ID(s) and new position(s).
 `,
