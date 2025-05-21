@@ -1,283 +1,9 @@
 # MCP Commands for Conduit Integration
 
-## Unified Command Pattern
-
 **Most commands support both single and batch operations via a unified API:**
 - You can pass either a single object or an array of objects (using a pluralized parameter) for batch operations.
 - The same command name is used for both single and batch; the input type determines the behavior.
 - For commands that require a specific batch parameter (e.g., `nodeIds`), this is documented per command.
-
-
-## Updated Examples for set_page, create_page, and duplicate_page
-
-### set_page
-Set the current active page in Figma.
-
-**Parameters:**
-- pageId (string)
-
-**Example:**
-```json
-{ "command": "set_page", "params": { "pageId": "123:456" } }
-```
-
-
-## Updated Examples for create_rectangle, create_frame, create_line, create_ellipse, create_polygon, create_star, create_vector, set_text, set_text_content
-
-### create_rectangle
-Create one or more rectangles.
-
-**Parameters:**
-- x, y, width, height (number)
-- name (string, optional)
-- parentId (string, optional)
-- cornerRadius (number, optional)
-- rectangle (object) or rectangles (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_rectangle", "params": { "x": 100, "y": 100, "width": 200, "height": 100, "cornerRadius": 8, "name": "Button Background" } }
-```
-_Batch:_
-```json
-{ "command": "create_rectangle", "params": { "rectangles": [
-  { "x": 100, "y": 100, "width": 200, "height": 100, "name": "Rect1" },
-  { "x": 300, "y": 100, "width": 200, "height": 100, "name": "Rect2" }
-] } }
-```
-
----
-
-### create_frame
-Create one or more frames.
-
-**Parameters:**
-- x, y, width, height (number)
-- name (string, optional)
-- parentId (string, optional)
-- fillColor, strokeColor (object, optional)
-- strokeWeight (number, optional)
-- frame (object) or frames (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_frame", "params": { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Mobile Screen" } }
-```
-_Batch:_
-```json
-{ "command": "create_frame", "params": { "frames": [
-  { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Screen 1" },
-  { "x": 500, "y": 100, "width": 375, "height": 812, "name": "Screen 2" }
-] } }
-```
-
----
-
-### create_line
-Create one or more lines.
-
-**Parameters:**
-- x1, y1, x2, y2 (number)
-- parentId (string, optional)
-- strokeColor (object, optional)
-- strokeWeight (number, optional)
-- line (object) or lines (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_line", "params": { "x1": 100, "y1": 100, "x2": 300, "y2": 300 } }
-```
-_Batch:_
-```json
-{ "command": "create_line", "params": { "lines": [
-  { "x1": 100, "y1": 100, "x2": 300, "y2": 100 },
-  { "x1": 100, "y1": 200, "x2": 300, "y2": 200 }
-] } }
-```
-
----
-
-### create_ellipse
-Create one or more ellipses.
-
-**Parameters:**
-- x, y, width, height (number)
-- name (string, optional)
-- parentId (string, optional)
-- fillColor, strokeColor (object, optional)
-- strokeWeight (number, optional)
-- ellipse (object) or ellipses (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_ellipse", "params": { "x": 100, "y": 100, "width": 50, "height": 30, "name": "Profile Avatar" } }
-```
-_Batch:_
-```json
-{ "command": "create_ellipse", "params": { "ellipses": [
-  { "x": 100, "y": 100, "width": 50, "height": 50, "name": "Ellipse1" },
-  { "x": 300, "y": 100, "width": 30, "height": 30, "name": "Ellipse2" }
-] } }
-```
-
----
-
-### create_polygon
-Create one or more polygons.
-
-**Parameters:**
-- x, y, width, height, sides (number)
-- name (string, optional)
-- parentId (string, optional)
-- fillColor, strokeColor (object, optional)
-- strokeWeight (number, optional)
-- polygon (object) or polygons (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_polygon", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" } }
-```
-_Batch:_
-```json
-{ "command": "create_polygon", "params": { "polygons": [
-  { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" },
-  { "x": 300, "y": 100, "width": 40, "height": 40, "sides": 3, "name": "Triangle" }
-] } }
-```
-
----
-
-### create_star
-Create one or more star shapes in Figma.
-
-**Parameters:**
-- x, y, width, height (number): Position and size of the star.
-- name (string, optional): Name for the star node.
-- parentId (string, optional): Parent node ID.
-- points (number, optional): Number of points for the star (default: 5).
-- star (object) or stars (array of objects): Single or batch.
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_star", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star" } }
-```
-_Batch:_
-```json
-{ "command": "create_star", "params": { "stars": [
-  { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star1" },
-  { "x": 200, "y": 100, "width": 40, "height": 40, "points": 6, "name": "Star2" }
-] } }
-```
-
----
-
-### create_vector
-Create one or more vectors.
-
-**Parameters:**
-- x, y, width, height (number)
-- vectorPaths (array)
-- name, parentId, fillColor, strokeColor, strokeWeight (optional)
-- vector (object) or vectors (array of objects)
-
-**Examples:**
-_Single:_
-```json
-{ "command": "create_vector", "params": {
-  "x": 100, "y": 100, "width": 50, "height": 50,
-  "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
-} }
-```
-_Batch:_
-```json
-{ "command": "create_vector", "params": { "vectors": [
-  {
-    "x": 100, "y": 100, "width": 50, "height": 50,
-    "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
-  }
-] } }
-```
-
----
-
-### set_text
-Set or create one or more text elements in Figma. This unified command supports both single and batch creation.
-
-**Parameters:**
-- text (object, optional): Single text configuration
-- texts (array of objects, optional): Array of text configurations (batch)
-- Each text config supports:
-  - x (number): X coordinate
-  - y (number): Y coordinate
-  - text (string): Text content
-  - fontSize (number, optional): Font size
-  - fontWeight (number, optional): Font weight
-  - fontColor (object, optional): Font color
-  - name (string, optional): Node name
-  - parentId (string, optional): Parent node ID
-  - ...other supported text properties
-
-**At least one of `text` or `texts` is required.**
-
-**Examples:**
-
-_Single:_
-```json
-{ "command": "set_text", "params": { "text": { "x": 100, "y": 100, "text": "Hello, Figma!", "fontSize": 24, "name": "Heading" } } }
-```
-
-_Batch:_
-```json
-{ "command": "set_text", "params": { "texts": [
-  { "x": 100, "y": 100, "text": "Title", "fontSize": 32 },
-  { "x": 100, "y": 200, "text": "Subtitle", "fontSize": 18 }
-] } }
-```
-
----
-
-### set_text_content
-Set text content of an existing node.
-
-**Parameters:**
-- nodeId (string): The unique Figma text node ID to update.
-- text (string): The new text content.
-
-**Example:**
-```json
-{ "command": "set_text_content", "params": { "nodeId": "123:456", "text": "Updated text content" } }
-```
-
-### create_page
-Create a new page in the Figma document.
-
-**Parameters:**
-- name (string, optional)
-
-**Example:**
-```json
-{ "command": "create_page", "params": { "name": "New Page Name" } }
-```
-
----
-
-### duplicate_page
-Duplicate a Figma page and all its children as a new page.
-
-**Parameters:**
-- pageId (string)
-- newPageName (string, optional)
-
-**Example:**
-```json
-{ "command": "duplicate_page", "params": { "pageId": "123:456", "newPageName": "Copy of Page" } }
-```
 
 # Available MCP Commands
 
@@ -394,7 +120,393 @@ Duplicate a Figma page and all its children as a new page.
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
 
+
+## Additional Examples for Text and Component Commands
+
+### get_styled_text_segments
+Get text segments with specific styling in a text node.
+
+**Parameters:**
+- nodeId (string)
+- property (string): e.g. "fontWeight", "fontSize", etc.
+
+**Example:**
+```json
+{ "command": "get_styled_text_segments", "params": { "nodeId": "123:456", "property": "fontWeight" } }
+```
+
 ---
+
+### get_text_style
+Get text style properties for one or more nodes (single or batch).
+
+**Parameters:**
+- nodeId (string, optional): Single node to extract text style from.
+- nodeIds (array of string, optional): Array of node IDs for batch.
+- At least one of nodeId or nodeIds is required.
+
+**Returns:**
+- For each node: `{ nodeId, textStyle, [error] }`
+  - textStyle: Object with text style properties (fontName, fontSize, fontWeight, letterSpacing, lineHeight, paragraphSpacing, textCase, textDecoration, textStyleId, etc.)
+  - error: (optional) Error message if extraction failed.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "get_text_style", "params": { "nodeId": "123:456" } }
+```
+_Batch:_
+```json
+{ "command": "get_text_style", "params": { "nodeIds": ["123:456", "789:101"] } }
+```
+
+---
+
+### scan_text_nodes
+Scan all text nodes in the selected Figma node.
+
+**Parameters:**
+- nodeId (string)
+
+**Example:**
+```json
+{ "command": "scan_text_nodes", "params": { "nodeId": "123:456" } }
+```
+
+---
+
+### set_text_style
+Set one or more text style properties (font, size, weight, spacing, case, decoration, etc.) on one or more nodes in Figma (unified).
+
+**Parameters:**
+- nodeId (string, optional): Single node to update.
+- styles (object, optional): Key-value pairs of style properties to set.
+- entries (array, optional): Array of { nodeId, styles } for batch updates.
+- At least one of (nodeId + styles) or entries is required.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the update result.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_text_style", "params": { "nodeId": "123:456", "styles": { "fontSize": 18, "fontWeight": 700 } } }
+```
+_Batch:_
+```json
+{ "command": "set_text_style", "params": { "entries": [
+  { "nodeId": "123:456", "styles": { "fontSize": 18 } },
+  { "nodeId": "789:101", "styles": { "fontWeight": 400, "letterSpacing": 2 } }
+] } }
+```
+
+---
+
+### set_paragraph_spacing
+Set the paragraph spacing of one or more text nodes (single or batch).
+
+**Parameters:**
+- entry (object, optional): Single config { nodeId, paragraphSpacing }
+- entries (array of objects, optional): Batch of configs [{ nodeId, paragraphSpacing }, ...]
+- At least one of entry or entries is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_paragraph_spacing", "params": { "entry": { "nodeId": "123:456", "paragraphSpacing": 12 } } }
+```
+_Batch:_
+```json
+{ "command": "set_paragraph_spacing", "params": { "entries": [
+  { "nodeId": "123:456", "paragraphSpacing": 12 },
+  { "nodeId": "789:101", "paragraphSpacing": 16 }
+] } }
+```
+
+---
+
+### set_line_height
+Set the line height of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, ranges: [{ start, end, value, unit }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, ranges: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_line_height", "params": { "operation": {
+  "nodeId": "1:23",
+  "ranges": [
+    { "start": 0, "end": 5, "value": 150, "unit": "PERCENT" },
+    { "start": 6, "end": 12, "value": 24, "unit": "PIXELS" },
+    { "start": 13, "end": 20, "unit": "AUTO" }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_line_height", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "ranges": [{ "start": 0, "end": 10, "value": 120, "unit": "PERCENT" }]
+  },
+  {
+    "nodeId": "4:56",
+    "ranges": [{ "start": 0, "end": 5, "value": 20, "unit": "PIXELS" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+---
+
+### set_letter_spacing
+Set the letter spacing of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, spacings: [{ start, end, value, unit }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, spacings: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_letter_spacing", "params": { "operation": {
+  "nodeId": "1:23",
+  "spacings": [
+    { "start": 0, "end": 5, "value": 2, "unit": "PIXELS" },
+    { "start": 6, "end": 12, "value": 150, "unit": "PERCENT" }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_letter_spacing", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "spacings": [{ "start": 0, "end": 10, "value": 120, "unit": "PERCENT" }]
+  },
+  {
+    "nodeId": "4:56",
+    "spacings": [{ "start": 0, "end": 5, "value": 2, "unit": "PIXELS" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Supports 'PIXELS' and 'PERCENT' units.
+- Applies letter spacing to specific text ranges.
+- Optionally loads all required fonts before applying.
+
+---
+
+## set_text_case
+Set the text case of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, ranges: [{ start, end, value }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, ranges: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_text_case", "params": { "operation": {
+  "nodeId": "1:23",
+  "ranges": [
+    { "start": 0, "end": 5, "value": "UPPER" },
+    { "start": 6, "end": 12, "value": "LOWER" },
+    { "start": 13, "end": 20, "value": "TITLE" }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_text_case", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "ranges": [{ "start": 0, "end": 10, "value": "UPPER" }]
+  },
+  {
+    "nodeId": "4:56",
+    "ranges": [{ "start": 0, "end": 5, "value": "TITLE" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Supports all Figma text case types: ORIGINAL, UPPER, LOWER, TITLE, SMALL_CAPS, SMALL_CAPS_FORCED.
+- Applies text case to specific text ranges.
+- Optionally loads all required fonts before applying.
+
+---
+
+## set_text_decoration
+Set the text decoration of one or more text nodes (single or batch, range-based).
+
+**Parameters:**
+- operation (object, optional): Single config { nodeId, ranges: [{ start, end, type, style }] }
+- operations (array of objects, optional): Batch of configs [{ nodeId, ranges: [...] }]
+- options (object, optional): { skipErrors?: boolean, loadMissingFonts?: boolean }
+- At least one of operation or operations is required.
+
+**Returns:**
+- For each node: `{ nodeId, success, [error] }`
+- If batch, returns an array of results.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "set_text_decoration", "params": { "operation": {
+  "nodeId": "1:23",
+  "ranges": [
+    { "start": 0, "end": 5, "type": "UNDERLINE" },
+    { "start": 6, "end": 12, "type": "STRIKETHROUGH", "style": { "color": { "r": 1, "g": 0, "b": 0 }, "thickness": 2 } }
+  ]
+} } }
+```
+_Batch:_
+```json
+{ "command": "set_text_decoration", "params": { "operations": [
+  {
+    "nodeId": "1:23",
+    "ranges": [{ "start": 0, "end": 10, "type": "UNDERLINE" }]
+  },
+  {
+    "nodeId": "4:56",
+    "ranges": [{ "start": 0, "end": 5, "type": "STRIKETHROUGH" }]
+  }
+], "options": { "loadMissingFonts": true } } }
+```
+
+**Limitations & Notes:**
+- Only text nodes will be updated; others return an error.
+- Supports all Figma text decoration types: NONE, UNDERLINE, STRIKETHROUGH.
+- Applies decoration to specific text ranges.
+- Optionally loads all required fonts before applying.
+- Additional style properties (color, thickness, offset, style, skipInk) are supported if available in the Figma API.
+
+---
+
+## load_font_async
+Load a font asynchronously in Figma.
+
+**Parameters:**
+- family (string): The font family to set.
+- style (string, optional): The font style to set.
+
+**Example:**
+```json
+{ "command": "load_font_async", "params": { "family": "Inter", "style": "Bold" } }
+```
+
+---
+
+## get_components
+Get components from the current document, a team library, or remote team libraries (unified).
+
+**Parameters:**
+- source (string, required): "local", "team", or "remote"
+- team_id (string, required if source is "team")
+- page_size (number, optional, for team/remote)
+- after (string/number, optional, for team/remote)
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the components info as JSON.
+
+**Examples:**
+_Local components:_
+```json
+{ "command": "get_components", "params": { "source": "local" } }
+```
+_Team components:_
+```json
+{ "command": "get_components", "params": { "source": "team", "team_id": "123456" } }
+```
+_Remote components:_
+```json
+{ "command": "get_components", "params": { "source": "remote" } }
+```
+
+---
+
+## create_components_from_node
+Convert nodes to components.
+
+**Parameters:**
+- entry (object, optional): Single node to convert
+- entries (array, optional): Array of nodes to convert
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_components_from_node", "params": { "entry": { "nodeId": "123:456" } } }
+```
+_Batch:_
+```json
+{ "command": "create_components_from_node", "params": { "entries": [
+  { "nodeId": "123:456" },
+  { "nodeId": "789:101" }
+] } }
+```
+
+---
+
+## create_component_instance
+Create component instances.
+
+**Parameters:**
+- entry (object, optional): Single instance config: { componentKey, x, y }
+- entries (array, optional): Array of instance configs
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_component_instance", "params": { "entry": { "componentKey": "123:456", "x": 100, "y": 100 } } }
+```
+_Batch:_
+```json
+{ "command": "create_component_instance", "params": { "entries": [
+  { "componentKey": "123:456", "x": 100, "y": 100 },
+  { "componentKey": "123:789", "x": 300, "y": 100 }
+] } }
+```
+
+---
+
+## create_button
+Create a complete button with background and text.
+
+**Parameters:**
+- x, y (number)
+- width, height, text, background, textColor, fontSize, fontWeight, cornerRadius, name, parentId (optional)
+
+**Example:**
+```json
+{ "command": "create_button", "params": { "x": 100, "y": 100, "text": "Click Me" } }
+```
 
 # Command Index
 
@@ -3162,3 +3274,271 @@ _Batch Mixed:_
 ```
 
 ---
+
+
+ 
+### set_page
+Set the current active page in Figma.
+
+**Parameters:**
+- pageId (string)
+
+**Example:**
+```json
+{ "command": "set_page", "params": { "pageId": "123:456" } }
+```
+ 
+### create_rectangle
+Create one or more rectangles.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- cornerRadius (number, optional)
+- rectangle (object) or rectangles (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_rectangle", "params": { "x": 100, "y": 100, "width": 200, "height": 100, "cornerRadius": 8, "name": "Button Background" } }
+```
+_Batch:_
+```json
+{ "command": "create_rectangle", "params": { "rectangles": [
+  { "x": 100, "y": 100, "width": 200, "height": 100, "name": "Rect1" },
+  { "x": 300, "y": 100, "width": 200, "height": 100, "name": "Rect2" }
+] } }
+```
+
+---
+
+### create_frame
+Create one or more frames.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- frame (object) or frames (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_frame", "params": { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Mobile Screen" } }
+```
+_Batch:_
+```json
+{ "command": "create_frame", "params": { "frames": [
+  { "x": 100, "y": 100, "width": 375, "height": 812, "name": "Screen 1" },
+  { "x": 500, "y": 100, "width": 375, "height": 812, "name": "Screen 2" }
+] } }
+```
+
+---
+
+### create_line
+Create one or more lines.
+
+**Parameters:**
+- x1, y1, x2, y2 (number)
+- parentId (string, optional)
+- strokeColor (object, optional)
+- strokeWeight (number, optional)
+- line (object) or lines (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_line", "params": { "x1": 100, "y1": 100, "x2": 300, "y2": 300 } }
+```
+_Batch:_
+```json
+{ "command": "create_line", "params": { "lines": [
+  { "x1": 100, "y1": 100, "x2": 300, "y2": 100 },
+  { "x1": 100, "y1": 200, "x2": 300, "y2": 200 }
+] } }
+```
+
+---
+
+### create_ellipse
+Create one or more ellipses.
+
+**Parameters:**
+- x, y, width, height (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- ellipse (object) or ellipses (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_ellipse", "params": { "x": 100, "y": 100, "width": 50, "height": 30, "name": "Profile Avatar" } }
+```
+_Batch:_
+```json
+{ "command": "create_ellipse", "params": { "ellipses": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "name": "Ellipse1" },
+  { "x": 300, "y": 100, "width": 30, "height": 30, "name": "Ellipse2" }
+] } }
+```
+
+---
+
+### create_polygon
+Create one or more polygons.
+
+**Parameters:**
+- x, y, width, height, sides (number)
+- name (string, optional)
+- parentId (string, optional)
+- fillColor, strokeColor (object, optional)
+- strokeWeight (number, optional)
+- polygon (object) or polygons (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_polygon", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" } }
+```
+_Batch:_
+```json
+{ "command": "create_polygon", "params": { "polygons": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "sides": 6, "name": "Hexagon" },
+  { "x": 300, "y": 100, "width": 40, "height": 40, "sides": 3, "name": "Triangle" }
+] } }
+```
+
+---
+
+### create_star
+Create one or more star shapes in Figma.
+
+**Parameters:**
+- x, y, width, height (number): Position and size of the star.
+- name (string, optional): Name for the star node.
+- parentId (string, optional): Parent node ID.
+- points (number, optional): Number of points for the star (default: 5).
+- star (object) or stars (array of objects): Single or batch.
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_star", "params": { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star" } }
+```
+_Batch:_
+```json
+{ "command": "create_star", "params": { "stars": [
+  { "x": 100, "y": 100, "width": 50, "height": 50, "points": 5, "name": "Star1" },
+  { "x": 200, "y": 100, "width": 40, "height": 40, "points": 6, "name": "Star2" }
+] } }
+```
+
+---
+
+### create_vector
+Create one or more vectors.
+
+**Parameters:**
+- x, y, width, height (number)
+- vectorPaths (array)
+- name, parentId, fillColor, strokeColor, strokeWeight (optional)
+- vector (object) or vectors (array of objects)
+
+**Examples:**
+_Single:_
+```json
+{ "command": "create_vector", "params": {
+  "x": 100, "y": 100, "width": 50, "height": 50,
+  "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
+} }
+```
+_Batch:_
+```json
+{ "command": "create_vector", "params": { "vectors": [
+  {
+    "x": 100, "y": 100, "width": 50, "height": 50,
+    "vectorPaths": [{ "data": "M10 10 H 90 V 90 H 10 Z" }]
+  }
+] } }
+```
+
+---
+
+### set_text
+Set or create one or more text elements in Figma. This unified command supports both single and batch creation.
+
+**Parameters:**
+- text (object, optional): Single text configuration
+- texts (array of objects, optional): Array of text configurations (batch)
+- Each text config supports:
+  - x (number): X coordinate
+  - y (number): Y coordinate
+  - text (string): Text content
+  - fontSize (number, optional): Font size
+  - fontWeight (number, optional): Font weight
+  - fontColor (object, optional): Font color
+  - name (string, optional): Node name
+  - parentId (string, optional): Parent node ID
+  - ...other supported text properties
+
+**At least one of `text` or `texts` is required.**
+
+**Examples:**
+
+_Single:_
+```json
+{ "command": "set_text", "params": { "text": { "x": 100, "y": 100, "text": "Hello, Figma!", "fontSize": 24, "name": "Heading" } } }
+```
+
+_Batch:_
+```json
+{ "command": "set_text", "params": { "texts": [
+  { "x": 100, "y": 100, "text": "Title", "fontSize": 32 },
+  { "x": 100, "y": 200, "text": "Subtitle", "fontSize": 18 }
+] } }
+```
+
+---
+
+### set_text_content
+Set text content of an existing node.
+
+**Parameters:**
+- nodeId (string): The unique Figma text node ID to update.
+- text (string): The new text content.
+
+**Example:**
+```json
+{ "command": "set_text_content", "params": { "nodeId": "123:456", "text": "Updated text content" } }
+```
+
+### create_page
+Create a new page in the Figma document.
+
+**Parameters:**
+- name (string, optional)
+
+**Example:**
+```json
+{ "command": "create_page", "params": { "name": "New Page Name" } }
+```
+
+---
+
+### duplicate_page
+Duplicate a Figma page and all its children as a new page.
+
+**Parameters:**
+- pageId (string)
+- newPageName (string, optional)
+
+**Example:**
+```json
+{ "command": "duplicate_page", "params": { "pageId": "123:456", "newPageName": "Copy of Page" } }
+```
