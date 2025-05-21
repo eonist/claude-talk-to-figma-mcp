@@ -654,15 +654,76 @@ Extract image fills or export nodes as images.
 - Returns errors for nodes without image fills or on failure.
 
 ### set_image
-Set or insert images.
+Set or insert one or more images into Figma. Each image can be specified by a remote URL, a local file path, or a base64 data URI.
 
 **Parameters:**
-- image (object)
+- image (object, optional): A single image configuration object. Must include at least one of:
+  - url (string): Remote image URL.
+  - imagePath (string): Local file path.
+  - imageData (string): Base64 data URI.
+  - x, y (number, optional): Coordinates.
+  - width, height (number, optional): Size.
+  - name (string, optional): Node name.
+  - parentId (string, optional): Parent node ID.
+- images (array, optional): Array of image configuration objects (same shape as above).
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the inserted image node ID(s).
 
 **Example:**
 ```json
-{ "command": "set_image", "params": { "image": { "url": "https://example.com/image.jpg", "x": 100, "y": 100 } } }
+{ "command": "set_image", "params": {
+  "image": {
+    "url": "https://example.com/image.png",
+    "x": 100,
+    "y": 200,
+    "width": 300,
+    "height": 150,
+    "name": "Remote Image"
+  }
+} }
 ```
+```json
+{ "command": "set_image", "params": {
+  "image": {
+    "imagePath": "/Users/youruser/Pictures/photo.jpg",
+    "x": 50,
+    "y": 60,
+    "width": 200,
+    "height": 200,
+    "name": "Local File Image"
+  }
+} }
+```
+```json
+{ "command": "set_image", "params": {
+  "image": {
+    "imageData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...",
+    "x": 10,
+    "y": 20,
+    "width": 100,
+    "height": 100,
+    "name": "Base64 Image"
+  }
+} }
+```
+```json
+{ "command": "set_image", "params": {
+  "images": [
+    { "url": "https://example.com/image1.png", "x": 0, "y": 0, "width": 100, "height": 100, "name": "Remote 1" },
+    { "imagePath": "/Users/youruser/Pictures/photo2.jpg", "x": 120, "y": 0, "width": 100, "height": 100, "name": "Local 2" },
+    { "imageData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...", "x": 240, "y": 0, "width": 100, "height": 100, "name": "Base64 3" }
+  ]
+} }
+```
+
+**Notes:**
+- Each image must have at least one of url, imagePath, or imageData.
+- Width and height must be positive if specified.
+- If parentId is invalid, the image will be added to the root.
+- Network errors, invalid URLs, or invalid file paths will cause failure.
+- Base64 data must be a valid image string.
+- Supports batch insertion for multiple images.
 
 ### set_svg_vector
 Set or insert SVG vectors.
