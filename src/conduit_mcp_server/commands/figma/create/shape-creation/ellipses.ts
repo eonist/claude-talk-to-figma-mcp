@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { EllipseSchema, SingleEllipseSchema, BatchEllipsesSchema } from "./ellipse-schema.js";
+import { EllipseSchema, SingleEllipseSchema, BatchEllipsesSchema } from "./schema/ellipse-schema.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";

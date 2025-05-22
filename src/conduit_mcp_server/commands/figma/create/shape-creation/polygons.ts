@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { PolygonSchema, SinglePolygonSchema, BatchPolygonsSchema } from "./polygon-schema.js";
+import { PolygonSchema, SinglePolygonSchema, BatchPolygonsSchema } from "./schema/polygon-schema.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
 
