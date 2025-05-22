@@ -3,7 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
-import { FontFamilyStyleSchema, FontSizeSchema, FontWeightSchema } from "./font-schema.js";
+import { FontFamilyStyleSchema, FontSizeSchema, FontWeightSchema } from "./schema/font-schema.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
-import { BatchTextUpdateArraySchema } from "./batch-text-schema.js";
+import { BatchTextUpdateArraySchema } from "./schema/batch-text-schema.js";
 
 /**
  * Registers the unified "set_text_content" tool on the MCP server.
