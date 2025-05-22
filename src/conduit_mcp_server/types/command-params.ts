@@ -316,7 +316,7 @@ export interface CommandParamsMap {
 
   // --- Styling ---
   get_doc_style: any;
-  get_node_styles: GetNodeStylesParams;
+  get_node_style: GetNodeStylesParams;
   get_fill_and_stroke: GetNodeStylesParams;
   set_fill_and_stroke: any;
   set_style: any;

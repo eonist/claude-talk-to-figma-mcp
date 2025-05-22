@@ -54,7 +54,7 @@ export const PLUGIN_COMMANDS = {
 
   // --- Styling ---
   GET_DOC_STYLE: "get_doc_style",
-  GET_NODE_STYLES: "get_node_styles",
+  GET_NODE_STYLE: "get_node_style",
   GET_FILL_AND_STROKE: "get_fill_and_stroke",
   SET_FILL_AND_STROKE: "set_fill_and_stroke",
   SET_STYLE: "set_style",
@@ -206,7 +206,7 @@ export function initializeCommands() {
 
   // --- Styling ---
   registerCommand(PLUGIN_COMMANDS.GET_DOC_STYLE, styleOperations.getStyles);
-  registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLES, getNodeStyles);
+  registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLE, getNodeStyles);
   registerCommand(PLUGIN_COMMANDS.GET_FILL_AND_STROKE, getFillAndStroke);
   registerCommand(PLUGIN_COMMANDS.SET_FILL_AND_STROKE, styleOperations.setFillAndStrokeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_STYLE, styleOperations.setStyle);

@@ -73,9 +73,9 @@ Returns:
  */
 export function registerNodeStylesTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    MCP_COMMANDS.GET_NODE_STYLES,
+    MCP_COMMANDS.GET_NODE_STYLE,
     `Get all style properties (fills, strokes, effects, text styles, style IDs, etc.) for one or more nodes.
-  
+
 Returns:
   - Array of { nodeId, styles } objects, one per node.
 `,
@@ -84,7 +84,7 @@ Returns:
       nodeIds: require("zod").z.array(require("zod").z.string()).optional()
     },
     {
-      title: "Get Node Styles (Unified)",
+      title: "Get Node Style (Unified)",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,

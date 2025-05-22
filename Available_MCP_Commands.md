@@ -56,6 +56,7 @@
 
 **Styling:**
 - [get_doc_style](#get_doc_style): Get all styles from the document
+- [get_node_style](#get_node_style): Get all style properties for one or more nodes
 - [set_fill_and_stroke](#set_fill_and_stroke): Set fill and/or stroke color(s) for one or more nodes
 - [set_style](#set_style): Set style or styles
 - [create_gradient_style](#create_gradient_style): Create one or more gradient styles
@@ -879,6 +880,26 @@ Extract image fills or export nodes as images (single or batch).
 ```
 ### get_doc_style
 Get all styles from the document.
+
+### get_node_style
+Get all style properties (fills, strokes, effects, text styles, style IDs, etc.) for one or more nodes.
+
+**Parameters:**
+- nodeId (string, optional): Single node to inspect.
+- nodeIds (array of string, optional): Array of node IDs for batch.
+
+At least one of nodeId or nodeIds is required.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the style info as JSON.
+
+**Example:**
+```json
+{ "nodeId": "123:456" }
+```
+```json
+{ "nodeIds": ["123:456", "789:101"] }
+```
 
 **Parameters:**
 - None
