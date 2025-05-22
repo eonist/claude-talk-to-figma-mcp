@@ -3,7 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
-import { NodeIdsArraySchema } from "./node-ids-schema.js";
+import { NodeIdsArraySchema } from "./schema/node-ids-schema.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
 
 /**
