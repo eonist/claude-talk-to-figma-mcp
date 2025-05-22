@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
-import { CssExportOptionsSchema } from "./css-schema.js";
+import { CssExportOptionsSchema } from "./schema/css-schema.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
