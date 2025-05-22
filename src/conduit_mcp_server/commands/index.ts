@@ -19,7 +19,7 @@ import { registerModifyCommands } from "./figma/modify.js";
 import { registerChannelCommand } from "./channel.js";
 import { logger } from "../utils/logger.js";
 import { registerHtmlCommands } from "./html-tools.js";
-import { registerReorderLayerTools } from "./figma/modify/layer-management/reorder-layer-tools.js";
+import { registerReorderLayerTools } from "./figma/node/reorder-layer-tools.js";
 import { registerAnnotationCommands } from "./figma/annotation-tools.js";
 import { registerUnifiedGridCommands } from "./figma/modify/grid-unified-tools.js";
 import { registerGuideCommands } from "./figma/modify/guide-tools.js";

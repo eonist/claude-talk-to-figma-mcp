@@ -1,9 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
-import { ensureNodeIdIsString } from "../../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
-import { MCP_COMMANDS } from "../../../../types/commands.js";
+import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers the set_node command on the MCP server to enable setting or inserting a child node into a parent node in Figma.
@@ -90,7 +90,7 @@ Returns:
     async (params) => {
       // Batch mode
       if ("operations" in params) {
-        const { processBatch } = await import("../../../../utils/batch-processor.js");
+        const { processBatch } = await import("../../../utils/batch-processor.js");
         type InsertChildOp = {
           parentId: string;
           childId: string;

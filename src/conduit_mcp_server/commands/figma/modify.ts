@@ -4,7 +4,7 @@ import { FigmaClient } from "../../clients/figma-client.js";
 import { registerStylingCommands } from "./style/index.js";
 import { registerPositioningCommands } from "./modify/positioning-tools.js";
 import { registerTransformCommands } from "./modify/transform-tools.js";
-import { registerLayerManagementCommands } from "./modify/layer-management/index.js";
+import { registerLayerManagementCommands } from "./node/index.js";
 import { registerPropertyManipulationCommands } from "./modify/property-manipulation/index.js";
 import { registerRenameCommands } from "./modify/rename.js";
 import { registerSelectionModifyTools } from "./modify/selection-tools.js";
