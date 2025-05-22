@@ -6,7 +6,7 @@ import { logger } from "../../../utils/logger.js";
 import { filterFigmaNode } from "../../../utils/figma/filter-node.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
-import { NodeIdsArraySchema } from "../modify/layer-management/node-ids-schema.js";
+import { NodeIdsArraySchema } from "../modify/layer-management/schema/node-ids-schema.js";
 
 /**
  * Registers node info read commands on the MCP server.
