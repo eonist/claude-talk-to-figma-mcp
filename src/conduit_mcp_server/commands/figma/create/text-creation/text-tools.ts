@@ -3,7 +3,7 @@ import { FigmaClient } from "../../../../clients/figma-client.js";
 import { MCP_COMMANDS } from "../../../../types/commands";
 import { z, ensureNodeIdIsString } from "../utils.js";
 import { CreateTextParams, CreateBoundedTextParams } from "../../../../types/command-params.js";
-import { SingleTextSchema, BatchTextsSchema, TextSchema } from "./text-schema.js";
+import { SingleTextSchema, BatchTextsSchema, TextSchema } from "./schema/text-schema.js";
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../../utils/error-handling.js";
 
