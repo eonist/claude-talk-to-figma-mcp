@@ -4,7 +4,7 @@ import { z } from "../utils.js";
 import { processBatch } from "../../../../utils/batch-processor.js";
 import { handleToolError } from "../../../../utils/error-handling.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
-import { SingleUnifiedImageSchema, BatchUnifiedImagesSchema } from "./image-schema.js";
+import { SingleUnifiedImageSchema, BatchUnifiedImagesSchema } from "./schema/image-schema.js";
 
 /**
  * Registers the unified image insertion command on the MCP server.
