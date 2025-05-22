@@ -9,7 +9,7 @@ import { registerTextAnalysisTools } from "../text/text-analysis-tools.js";
 import { registerCssTools } from "./css-tools.js";
 import { registerSvgVectorTool } from "../vector/vector-tools.js";
 import { registerImageTools } from "./image-tools.js";
-import { registerTextStyleTools } from "./text-style-tools.js";
+import { registerTextStyleTools } from "../style/text-style-tools.js";
 
 /**
  * Registers all read commands by delegating to submodules.
