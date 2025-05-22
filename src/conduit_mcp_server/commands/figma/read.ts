@@ -18,7 +18,7 @@ import { FigmaClient } from "../../clients/figma-client/index.js";
 import { registerDocumentTools } from "./read/document-tools.js";
 import { registerNodeTools } from "./read/node-tools.js";
 import { registerSelectionTools } from "./read/selection-tools.js";
-import { registerStyleTools } from "./read/style-tools.js";
+import { registerStyleTools } from "./style/style-tools.js";
 import { registerComponentTools } from "./read/component-tools.js";
 import { registerTextAnalysisTools } from "./read/text-analysis-tools.js";
 import { registerCssTools } from "./read/css-tools.js";
@@ -40,4 +40,4 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
   registerComponentTools(server, figmaClient); // fixme add comment
   registerTextAnalysisTools(server, figmaClient); // fixme add comment
   registerCssTools(server, figmaClient); // fixme add comment
-}  
+}

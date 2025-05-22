@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client.js";
 
-import { registerStylingCommands } from "./modify/styling/index.js";
+import { registerStylingCommands } from "./style/index.js";
 import { registerPositioningCommands } from "./modify/positioning-tools.js";
 import { registerTransformCommands } from "./modify/transform-tools.js";
 import { registerLayerManagementCommands } from "./modify/layer-management/index.js";

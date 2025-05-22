@@ -4,7 +4,7 @@ import { registerFillTools } from "./fill-tools.js";
 import { registerStyleTools } from "./style-tools.js";
 import { registerGradientTools } from "./gradient-tools.js";
 import { registerEffectTools } from "./effect-tools.js";
-import { registerVariableTools } from "../variables-tools.js";
+import { registerVariableTools } from "../modify/variables-tools.js";
 
 /**
  * Registers all styling commands by delegating to submodules.
