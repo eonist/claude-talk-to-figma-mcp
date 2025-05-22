@@ -15,9 +15,9 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client/index.js";
 
 // Import all tool registration functions from submodules
-import { registerDocumentTools } from "./read/document-tools.js";
-import { registerNodeTools } from "./read/node-tools.js";
-import { registerSelectionTools } from "./read/selection-tools.js";
+import { registerDocumentTools } from "../node/document-tools.ts";
+import { registerNodeTools } from "../node/node-tools.ts";
+import { registerSelectionTools } from "../node/selection-tools.ts";
 import { registerStyleTools } from "./style/style-tools.js";
 import { registerComponentTools } from "./read/component-tools.js";
 import { registerTextAnalysisTools } from "./read/text-analysis-tools.js";
