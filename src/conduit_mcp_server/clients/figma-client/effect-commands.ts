@@ -53,17 +53,6 @@ export const effectCommands = {
     return this.executeCommand(MCP_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE, params);
   },
 
-  /**
-   * Gets all styles in Figma.
-   * @param params - (optional) parameters
-   * @returns {Promise<any>}
-   */
-  async getStyles(
-    this: FigmaClient,
-    params: any = {}
-  ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.GET_STYLE, params);
-  },
 
   /**
    * Set effect(s) directly or by style variable on one or more nodes.

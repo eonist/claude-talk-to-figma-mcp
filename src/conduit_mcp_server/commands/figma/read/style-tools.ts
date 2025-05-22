@@ -44,7 +44,8 @@ Returns:
     },
     async () => {
       try {
-        const result = await figmaClient.getStyles();
+        // Use executeCommand directly to avoid issues if getStyles is not present on the type
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_STYLE, {});
         return {
           content: [
             {
