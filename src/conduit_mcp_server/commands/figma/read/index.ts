@@ -5,9 +5,9 @@ import { registerSelectionTools } from "./selection-tools.js";
 import { registerNodeTools } from "./node-tools.js";
 import { registerStyleTools, registerNodeStylesTool } from "./style-tools.js";
 import { registerComponentTools } from "./component-tools.js";
-import { registerTextAnalysisTools } from "./text-analysis-tools.js";
+import { registerTextAnalysisTools } from "../text/text-analysis-tools.js";
 import { registerCssTools } from "./css-tools.js";
-import { registerSvgVectorTool } from "./vector-tools.js";
+import { registerSvgVectorTool } from "../vector/vector-tools.js";
 import { registerImageTools } from "./image-tools.js";
 import { registerTextStyleTools } from "./text-style-tools.js";
 

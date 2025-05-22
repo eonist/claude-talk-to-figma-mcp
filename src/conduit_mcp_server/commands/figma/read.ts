@@ -20,7 +20,7 @@ import { registerNodeTools } from "./node/node-tools.js";
 import { registerSelectionTools } from "./node/selection-tools.js";
 import { registerStyleTools } from "./style/style-tools.js";
 import { registerComponentTools } from "./read/component-tools.js";
-import { registerTextAnalysisTools } from "./read/text-analysis-tools.js";
+import { registerTextAnalysisTools } from "./text/text-analysis-tools.js";
 import { registerCssTools } from "./read/css-tools.js";
 
 // Optionally, import from index.ts if it re-exports all registration functions

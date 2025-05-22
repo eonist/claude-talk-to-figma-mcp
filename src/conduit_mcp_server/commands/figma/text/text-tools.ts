@@ -1,11 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
-import { MCP_COMMANDS } from "../../../../types/commands";
-import { z, ensureNodeIdIsString } from "../utils.js";
-import { CreateTextParams, CreateBoundedTextParams } from "../../../../types/command-params.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
+import { z } from "zod";
+import { ensureNodeIdIsString } from "../../../utils/figma/node-operations.js";
 import { SingleTextSchema, BatchTextsSchema, TextSchema } from "./schema/text-schema.js";
 import { v4 as uuidv4 } from "uuid";
-import { handleToolError } from "../../../../utils/error-handling.js";
+import { handleToolError } from "../../../utils/error-handling.js";
 
 /**
  * Registers text-creation-related commands with the MCP server.
@@ -87,7 +87,7 @@ Returns:
         }
         const nodeIds: string[] = [];
         for (const textConfig of textsArr) {
-          const params: CreateTextParams = { commandId: uuidv4(), ...textConfig };
+          const params = { commandId: uuidv4(), ...textConfig };
           const result = await (figmaClient as any).createText(params);
           if (result && typeof result.id === "string") {
             nodeIds.push(result.id);
@@ -100,20 +100,20 @@ Returns:
           }
         }
         return {
-          success: true,
-          message: nodeIds.length === 1
-            ? `Text node created successfully.`
-            : `Text nodes created successfully.`,
-          nodeIds
+          content: nodeIds.map(id => ({
+            type: "text",
+            text: id
+          }))
         };
       } catch (err) {
-        // Return a structured error response.
         return {
-          success: false,
-          error: {
-            message: err instanceof Error ? err.message : String(err),
-            ...(err && typeof err === "object" && "stack" in err ? { stack: (err as Error).stack } : {})
-          }
+          content: [
+            {
+              type: "text",
+              text: err instanceof Error ? err.message : String(err)
+            }
+          ],
+          isError: true
         };
       }
     }
