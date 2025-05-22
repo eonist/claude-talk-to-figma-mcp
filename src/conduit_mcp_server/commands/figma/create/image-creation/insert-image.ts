@@ -26,10 +26,6 @@ export function registerUnifiedImageTool(server: McpServer, figmaClient: FigmaCl
     MCP_COMMANDS.SET_IMAGE,
     `Sets or inserts one or more images into Figma. Each image can be specified by a remote URL, a local file path, or a base64 data URI. Accepts either a single image config (via 'image') or an array of configs (via 'images'). You can customize size, name, and parent node.
 
-Input:
-  - image: A single image configuration object.
-  - images: An array of image configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the inserted image node ID(s).
 `,

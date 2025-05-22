@@ -55,10 +55,6 @@ export function registerEllipsesTools(server: McpServer, figmaClient: FigmaClien
     MCP_COMMANDS.CREATE_ELLIPSE,
     `Creates one or more ellipse nodes in the specified Figma document. Accepts either a single ellipse config (via 'ellipse') or an array of configs (via 'ellipses'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
 
-Input:
-  - ellipse: A single ellipse configuration object.
-  - ellipses: An array of ellipse configuration objects.
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created ellipse node ID(s).
 `,

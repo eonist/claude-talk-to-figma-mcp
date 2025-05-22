@@ -74,21 +74,9 @@ export function registerNodeStylesTool(server: McpServer, figmaClient: FigmaClie
   server.tool(
     MCP_COMMANDS.GET_NODE_STYLES,
     `Get all style properties (fills, strokes, effects, text styles, style IDs, etc.) for one or more nodes.
-
-Input:
-  - nodeId: (optional) The unique Figma node ID to inspect (for single).
-  - nodeIds: (optional) Array of node IDs to inspect (for batch).
-
-At least one of nodeId or nodeIds is required.
-
+  
 Returns:
   - Array of { nodeId, styles } objects, one per node.
-
-Examples:
-  // Single
-  { nodeId: "123:456" }
-  // Batch
-  { nodeIds: ["123:456", "789:101"] }
 `,
     {
       nodeId: require("zod").z.string().optional(),
