@@ -78,7 +78,7 @@ irm bun.sh/install.ps1 | iex
 
 ## Installation
 
-### Step 1: Install the server
+### Step 1: Install the server and plugin
 
 1. Clone this repository:
    ```bash
