@@ -55,7 +55,7 @@
 - [get_svg_vector](#get_svg_vector): Get SVG markup for one or more vector nodes
 
 **Styling:**
-- [get_style](#get_style): Get all styles from the document
+- [get_doc_style](#get_doc_style): Get all styles from the document
 - [set_fill_and_stroke](#set_fill_and_stroke): Set fill and/or stroke color(s) for one or more nodes
 - [set_style](#set_style): Set style or styles
 - [create_gradient_style](#create_gradient_style): Create one or more gradient styles
@@ -877,7 +877,7 @@ Extract image fills or export nodes as images (single or batch).
 ```json
 { "nodeIds": ["123:456", "789:101"] }
 ```
-### get_style
+### get_doc_style
 Get all styles from the document.
 
 **Parameters:**

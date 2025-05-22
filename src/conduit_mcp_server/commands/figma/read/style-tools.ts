@@ -19,7 +19,7 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  */
 export function registerStyleTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    MCP_COMMANDS.GET_STYLE,
+    MCP_COMMANDS.GET_DOC_STYLE,
     `Get all styles from the current Figma document.
 
 Returns:
@@ -27,7 +27,7 @@ Returns:
 `,
     {},
     {
-      title: "Get Styles",
+      title: "Get Doc Style",
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: true,
@@ -45,7 +45,7 @@ Returns:
     async () => {
       try {
         // Use executeCommand directly to avoid issues if getStyles is not present on the type
-        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_STYLE, {});
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_DOC_STYLE, {});
         return {
           content: [
             {

@@ -152,7 +152,7 @@ export const MCP_COMMANDS = {
   GET_SVG_VECTOR: "get_svg_vector", // Get SVG markup for one or more vector nodes
 
   // --- Styling ---
-  GET_STYLE: "get_style", // Get all styles from the document
+  GET_DOC_STYLE: "get_doc_style", // Get all styles from the document
   GET_NODE_STYLES: "get_node_styles", // Get all style properties for one or more nodes
   GET_FILL_AND_STROKE: "get_fill_and_stroke", // Get fill and stroke properties for one or more nodes
   SET_FILL_AND_STROKE: "set_fill_and_stroke", // Set fill and/or stroke color(s) for one or more nodes

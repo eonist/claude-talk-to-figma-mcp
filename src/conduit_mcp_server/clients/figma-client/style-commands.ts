@@ -79,7 +79,7 @@ export const styleCommands = {
   },
 
   /**
-   * Gets all styles in Figma.
+   * Gets all styles in Figma (GET_DOC_STYLE).
    * @param params - (optional) parameters
    * @returns {Promise<any>}
    */
@@ -87,6 +87,6 @@ export const styleCommands = {
     this: FigmaClient,
     params: any = {}
   ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.GET_STYLE, params);
+    return this.executeCommand(MCP_COMMANDS.GET_DOC_STYLE, params);
   }
 };
