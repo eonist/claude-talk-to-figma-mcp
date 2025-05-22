@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z } from "../utils.js";
+import { z } from "zod";
 import { handleToolError } from "../../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
