@@ -25,18 +25,9 @@ export function registerDetachInstanceTools(server: McpServer, figmaClient: Figm
   server.tool(
     MCP_COMMANDS.DETACH_INSTANCES,
     `Detaches one or more Figma component instances from their masters.
-
-Input:
-  - instanceId: (optional) A single instance ID to detach.
-  - instanceIds: (optional) An array of instance IDs to detach.
-  - options: (optional) { maintain_position?: boolean, skip_errors?: boolean }
-
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the detached instance's ID or error info.
 
-Examples:
-  { "instanceId": "123:456" }
-  { "instanceIds": ["123:456", "789:101"], "options": { "skip_errors": true } }
 `,
     {
       instanceId: InstanceIdSchema.optional(),

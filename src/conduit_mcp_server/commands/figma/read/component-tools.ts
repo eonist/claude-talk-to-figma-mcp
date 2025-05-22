@@ -14,14 +14,6 @@ export function registerComponentTools(server: McpServer, figmaClient: FigmaClie
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the components info as JSON.
-
-Examples:
-  // Local components
-  { source: "local" }
-  // Team components
-  { source: "team", team_id: "123456" }
-  // Remote components
-  { source: "remote" }
 `,
     {
       source: z.enum(["local", "team", "remote"]),
