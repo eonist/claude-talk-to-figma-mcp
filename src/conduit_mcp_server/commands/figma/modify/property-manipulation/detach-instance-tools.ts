@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { z, ensureNodeIdIsString } from "../utils.js";
+import { z } from "zod";
+import { ensureNodeIdIsString } from "../../../../utils/node-utils.js";
 import { InstanceIdSchema } from "./instance-id-schema.js";
 import { MCP_COMMANDS } from "../../../../types/commands.js";
 
