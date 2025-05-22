@@ -55,6 +55,7 @@ export const PLUGIN_COMMANDS = {
   // --- Styling ---
   GET_STYLE: "get_style",
   GET_NODE_STYLES: "get_node_styles",
+  GET_FILL_AND_STROKE: "get_fill_and_stroke",
   SET_FILL_AND_STROKE: "set_fill_and_stroke",
   SET_STYLE: "set_style",
   CREATE_GRADIENT_STYLE: "create_gradient_style",
@@ -117,6 +118,7 @@ import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
 import { setParagraphSpacingUnified, setLineHeightUnified, setLetterSpacingUnified, setTextCaseUnified, setTextDecorationUnified } from '../text/text-edit.js';
 import * as styleOperations from '../styles.js';
+import { getFillAndStroke } from '../styles/styles-get.js';
 import * as componentOperations from '../components.js';
 import * as layoutOperations from '../layout.js';
 import { setAutoLayoutUnified } from '../layout/layout-auto.js';
@@ -131,7 +133,7 @@ import { generateHtmlUnified } from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePageUnified } from '../document/document-duplicate.js';
-import { getNodeStyles, getImage, getTextStyle, deleteNode, deleteNodeUnified } from '../node/node-edit.js';
+import { getNodeStyles, getFillAndStroke, getImage, getTextStyle, deleteNode, deleteNodeUnified } from '../node/node-edit.js';
 import { utilsOperations } from '../utils.js';
 
 /**
@@ -205,6 +207,7 @@ export function initializeCommands() {
   // --- Styling ---
   registerCommand(PLUGIN_COMMANDS.GET_STYLE, styleOperations.getStyles);
   registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLES, getNodeStyles);
+  registerCommand(PLUGIN_COMMANDS.GET_FILL_AND_STROKE, getFillAndStroke);
   registerCommand(PLUGIN_COMMANDS.SET_FILL_AND_STROKE, styleOperations.setFillAndStrokeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_STYLE, styleOperations.setStyle);
   registerCommand(PLUGIN_COMMANDS.CREATE_GRADIENT_STYLE, styleOperations.createGradientStyle);

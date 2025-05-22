@@ -154,6 +154,7 @@ export const MCP_COMMANDS = {
   // --- Styling ---
   GET_STYLE: "get_style", // Get all styles from the document
   GET_NODE_STYLES: "get_node_styles", // Get all style properties for one or more nodes
+  GET_FILL_AND_STROKE: "get_fill_and_stroke", // Get fill and stroke properties for one or more nodes
   SET_FILL_AND_STROKE: "set_fill_and_stroke", // Set fill and/or stroke color(s) for one or more nodes
   SET_STYLE: "set_style", // Set style or styles
   CREATE_GRADIENT_STYLE: "create_gradient_style", // Create one or more gradient styles

@@ -45,3 +45,33 @@ export async function getStyles() {
     })),
   };
 }
+
+/**
+ * Gets fill and/or stroke color(s) for one or more nodes.
+ * @param {Object} params - { nodeId } or { nodeIds }
+ * @returns {Promise<Array<{ nodeId: string, fills: Array, strokes: Array, error?: string }>>}
+ */
+export async function getFillAndStroke(params) {
+  let ids = [];
+  if (Array.isArray(params.nodeIds) && params.nodeIds.length > 0) {
+    ids = params.nodeIds;
+  } else if (params.nodeId) {
+    ids = [params.nodeId];
+  } else {
+    throw new Error("getFillAndStroke: Provide either nodeId or nodeIds.");
+  }
+  const results = [];
+  for (const nodeId of ids) {
+    const node = await figma.getNodeByIdAsync(nodeId);
+    if (!node) {
+      results.push({ nodeId, error: "Node not found" });
+      continue;
+    }
+    results.push({
+      nodeId,
+      fills: "fills" in node ? node.fills : [],
+      strokes: "strokes" in node ? node.strokes : []
+    });
+  }
+  return results;
+}

@@ -58,7 +58,7 @@ Returns:
       ],
       extraInfo: "Unified version of get_node_info and get_nodes_info. Use this command to inspect properties and metadata of one or more Figma nodes."
     },
-    async (args) => {
+    async (args: { nodeId?: string; nodeIds?: string[] }) => {
       try {
         let nodeIdList: string[] = [];
         if (args.nodeIds) {
@@ -72,7 +72,22 @@ Returns:
         // Directly fetch node info for each nodeId
         const results = [];
         for (const nodeId of nodeIdList) {
-          const node = await figmaClient.getNodeInfo(nodeId);
+          const nodeInfoResult = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId });
+          // nodeInfoResult.content is an array of { type: "text", text: JSON.stringify([node]) }
+          let node = null;
+          if (
+            nodeInfoResult &&
+            Array.isArray(nodeInfoResult.content) &&
+            nodeInfoResult.content.length > 0 &&
+            nodeInfoResult.content[0].type === "text"
+          ) {
+            try {
+              const arr = JSON.parse(nodeInfoResult.content[0].text);
+              node = arr && arr.length > 0 ? arr[0] : null;
+            } catch (e) {
+              node = null;
+            }
+          }
           results.push(node);
         }
         return {
@@ -95,4 +110,5 @@ Returns:
       }
     }
   );
+
 }
