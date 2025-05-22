@@ -1,10 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
-import { MCP_COMMANDS } from "../../../../types/commands";
+import { FigmaClient } from "../../../clients/figma-client.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 import { FrameSchema, SingleFrameSchema, BatchFramesSchema } from "./schema/frame-schema.js";
-import { processBatch } from "../../../../utils/batch-processor.js";
+import { processBatch } from "../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
-import { handleToolError } from "../../../../utils/error-handling.js";
+import { handleToolError } from "../../../utils/error-handling.js";
 
 /**
  * Registers frame creation commands with the MCP server.

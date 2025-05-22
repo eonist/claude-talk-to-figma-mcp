@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { LineSchema, SingleLineSchema, BatchLinesSchema } from "./schema/line-schema.js";
-import { processBatch } from "../../../../utils/batch-processor.js";
-import { MCP_COMMANDS } from "../../../../types/commands.js";
+import { processBatch } from "../../../utils/batch-processor.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers line creation commands with the MCP server.

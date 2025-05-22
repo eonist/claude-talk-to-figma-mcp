@@ -14,7 +14,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client.js";
 import { logger } from "../../utils/logger.js";
 
-import { registerShapeCreationCommands } from "./create/shape-creation/index.js";
+import { registerShapeCreationCommands } from "./shape/index.js";
 import { registerTextCreationCommands } from "./create/text-creation/index.js";
 import { registerVectorCreationCommands } from "./create/vector-creation-tools.js";
 import { registerComponentCreationCommands } from "./create/component-creation/index.js";

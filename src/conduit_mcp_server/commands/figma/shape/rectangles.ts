@@ -1,12 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
-import { MCP_COMMANDS } from "../../../../types/commands.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 import { z } from "../utils.js";
 import { RectangleSchema, SingleRectangleSchema, BatchRectanglesSchema } from "./schema/rectangle-schema.js";
-import { processBatch } from "../../../../utils/batch-processor.js";
+import { processBatch } from "../../../utils/batch-processor.js";
 import { v4 as uuidv4 } from "uuid";
-import { handleToolError } from "../../../../utils/error-handling.js";
-import { logger } from "../../../../utils/logger.js";
+import { handleToolError } from "../../../utils/error-handling.js";
+import { logger } from "../../../utils/logger.js";
 
 /**
  * Registers shape-creation-related commands with the MCP server.
