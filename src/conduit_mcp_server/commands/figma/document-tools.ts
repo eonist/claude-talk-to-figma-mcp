@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../clients/figma-client/index.js";
-import { MCP_COMMANDS } from "../../../types/commands.js";
+import { FigmaClient } from "../../clients/figma-client/index.js";
+import { MCP_COMMANDS } from "../../types/commands.js";
 
 /**
  * Registers document info read command:
