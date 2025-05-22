@@ -1,7 +1,6 @@
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import { MCP_COMMANDS } from "../../types/commands.js";
 import type { FigmaClient } from "./index.js";
-import type { RGBAColor } from "./types.js";
 
 /**
  * Style-related Figma commands.
@@ -24,9 +23,9 @@ export const styleCommands = {
     }
   ): Promise<any> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_FILL_COLOR, {
+    return this.executeCommand(MCP_COMMANDS.SET_FILL_AND_STROKE, {
       nodeId: nodeIdString,
-      color: {
+      fill: {
         r: params.r,
         g: params.g,
         b: params.b,
@@ -53,15 +52,15 @@ export const styleCommands = {
     }
   ): Promise<any> {
     const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_STROKE_COLOR, {
+    return this.executeCommand(MCP_COMMANDS.SET_FILL_AND_STROKE, {
       nodeId: nodeIdString,
-      color: {
+      stroke: {
         r: params.r,
         g: params.g,
         b: params.b,
-        a: params.a || 1
-      },
-      weight: params.weight || 1
+        a: params.a || 1,
+        weight: params.weight || 1
+      }
     });
   },
 
