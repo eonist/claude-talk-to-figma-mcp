@@ -11,13 +11,11 @@ import { registerFontTools } from "./font-tools.js";
 
 export function registerStyleCommands(server: McpServer, figmaClient: FigmaClient): void {
   registerFillTools(server, figmaClient);
-  registerStyleTools(server, figmaClient);
   registerGradientTools(server, figmaClient);
   registerEffectTools(server, figmaClient);
   registerEffectsTools(server, figmaClient);
   registerStyleTools(server, figmaClient); // fixme add comment
   registerTextStyleTools(server, figmaClient); // fixme: add doc
-  registerStyleTools(server, figmaClient); // fixme: add doc
   registerFontTools(server, figmaClient);
 }
 // Re-export for granular imports if needed
