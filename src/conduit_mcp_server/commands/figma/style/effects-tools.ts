@@ -1,10 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
-import { ensureNodeIdIsString } from "../../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
+import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { EffectsArraySchema } from "./schema/effect-schema.js";
-import { MCP_COMMANDS } from "../../../../types/commands.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers effect-related commands on the MCP server.
