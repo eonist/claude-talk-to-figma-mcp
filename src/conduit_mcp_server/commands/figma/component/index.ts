@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { registerCreateInstancesFromComponentsTools } from "./instance-tools.js";
 import { registerNodeTools } from "./node-tools.js";
-import { registerButtonTools } from "./button-tools.js";
+import { registerButtonTools } from "./../shape/button-tools.js";
 
 /**
  * Registers all component creation commands on the MCP server by delegating to submodules.
