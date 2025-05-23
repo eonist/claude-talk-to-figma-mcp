@@ -1,8 +1,8 @@
-import { filterFigmaNode } from "../../utils/node-filter.js";
+import { filterFigmaNode } from "./../../utils/filter-node.js";
 import { logger } from "../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import { sendCommandToFigma, getCurrentChannel, isConnectedToFigma } from "../../server/websocket.js";
-import type { FigmaCommand } from "./types.js";
+import type { FigmaCommand } from "./../../types/commands.js";
 
 /**
  * Core FigmaClient class with basic connectivity and command dispatch.

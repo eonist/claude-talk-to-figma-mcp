@@ -21,7 +21,7 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  * @example
  * registerNodeTools(server, figmaClient);
  */
-export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
+export function registerComponentNodeTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     MCP_COMMANDS.CREATE_COMPONENTS_FROM_NODE,
     `Converts one or more existing nodes into components in Figma.

@@ -59,10 +59,10 @@ import { registerImageTools } from "./figma/image/image-tools.js";
 import { registerTextStyleTools } from "./figma/style/text-style-tools.js";
 
 // modify imports
-import { registerStylingCommands } from "./figma/style/index.js";
+//import { registerStylingCommands } from "./figma/style/index.js";
 import { registerPositioningCommands } from "./figma/layout/positioning-tools.js";
 import { registerTransformCommands } from "./figma/layout/transform-tools.js";
-import { registerLayerManagementCommands } from "./figma/node/index.js";
+// import { registerLayerManagementCommands } from "./figma/node/index.js";
 import { registerPropertyManipulationCommands } from "./figma/export/index.js";
 import { registerRenameCommands } from "./figma/node/rename.js";
 import { registerSelectionModifyTools } from "./figma/document/selection-tools.js";
@@ -88,14 +88,33 @@ import { registerVariableTools } from "./figma/document/variables-tools.js";
  * registerCreateCommands(server, figmaClient);
  */
  
-import { registerShapeCreationCommands } from "./figma/shape/index.js";
+// import { registerShapeCreationCommands } from "./figma/shape/index.js";
 //import { registerTextCreationCommands } from "./figma/text/index.js";
 import { registerTextTools } from "./figma/text/text-tools.js";
 import { registerVectorCreationCommands } from "./figma/vector/vector-creation-tools.js";
-import { registerComponentCreationCommands } from "./figma/component/index.js";
-import { registerImageCreationCommands } from "./figma/image/index.js";
+// import { registerComponentCreationCommands } from "./figma/component/index.js";
+//import { registerImageCreationCommands } from "./figma/image/index.js";
 import { registerSvgCreationCommands } from "./figma/svg/svg-creation-tools.js";
 import { registerDocumentCreationCommands } from "./figma/document/document-creation.js";
+// node
+import { registerBooleanTools } from "./figma/node/boolean-tools.js";
+import { registerGroupTools } from "./figma/node/group-tools.js";
+import { registerDeleteTools } from "./figma/node/delete-tools.js";
+import { registerInsertChildTools } from "./figma/node/insert-child-tools.js";
+import { registerFlattenNodeTools } from "./figma/node/flatten-node-tools.js";
+import { registerCloneNodeTools } from "./figma/node/clone-node-tools.js";
+
+import { registerRectanglesTools } from "./figma/shape/rectangles.js";
+import { registerFramesTools } from "./figma/shape/frames.js";
+import { registerLinesTools } from "./figma/shape/lines.js";
+import { registerEllipsesTools } from "./figma/shape/ellipses.js";
+import { registerPolygonsTools } from "./figma/shape/polygons.js";
+
+import { registerUnifiedImageTool } from "./figma/image/insert-image.js";
+
+import { registerCreateInstancesFromComponentsTools } from "./figma/component/instance-tools.js";
+import { registerComponentNodeTools } from "./figma/component/component-node-tools.js";
+import { registerButtonTools } from "./figma/shape/button-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.
@@ -155,7 +174,7 @@ export function registerReadCommands(server: McpServer, figmaClient: FigmaClient
   registerSelectionTools(server, figmaClient); // fixme: add doc
   registerNodeTools(server, figmaClient); // fixme: add doc
   registerStyleTools(server, figmaClient); // fixme: add doc
-  registerNodeStylesTool(server, figmaClient); // fixme: add doc
+  //registerNodeStylesTool(server, figmaClient); // fixme: add doc
   registerComponentTools(server, figmaClient); // fixme: add doc
   registerTextAnalysisTools(server, figmaClient); // fixme: add doc
   registerCssTools(server, figmaClient); // fixme: add doc
@@ -212,6 +231,112 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
   registerVariableTools(server, figmaClient);
 }
 
+/**
+ * Registers all layer management commands on the MCP server by delegating to submodules.
+ *
+ * This function acts as a central registration point for layer management tools including boolean operations,
+ * grouping, deletion, child insertion, flattening, and cloning. It calls the respective registration functions for each tool.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerLayerManagementCommands(server, figmaClient);
+ */
+export function registerLayerManagementCommands(server: McpServer, figmaClient: FigmaClient) {
+  registerBooleanTools(server, figmaClient);
+  registerGroupTools(server, figmaClient);
+  registerDeleteTools(server, figmaClient);
+  registerInsertChildTools(server, figmaClient);
+  registerFlattenNodeTools(server, figmaClient);
+  registerCloneNodeTools(server, figmaClient);
+}
+
+ 
+/**
+ * Registers all shape creation commands on the MCP server by delegating to submodules.
+ *
+ * This function acts as a central registration point for shape creation tools including rectangles,
+ * frames, lines, ellipses, and polygons. It calls the respective registration functions for each shape type.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerShapeCreationCommands(server, figmaClient);
+ */
+export function registerShapeCreationCommands(server: McpServer, figmaClient: FigmaClient) {
+  registerRectanglesTools(server, figmaClient);
+  registerFramesTools(server, figmaClient);
+  registerLinesTools(server, figmaClient);
+  registerEllipsesTools(server, figmaClient);
+  registerPolygonsTools(server, figmaClient);
+}
+
+/**
+ * Registers all image creation commands by delegating to submodules.
+ */
+export function registerImageCreationCommands(server: McpServer, figmaClient: FigmaClient) {
+  registerUnifiedImageTool(server, figmaClient);
+}
+
+
+/**
+ * Registers all component creation commands on the MCP server by delegating to submodules.
+ *
+ * This function acts as a central registration point for component creation tools including instance creation,
+ * node conversion, and button creation. It calls the respective registration functions for each tool.
+ *
+ * @param {McpServer} server - The MCP server instance to register the tools on.
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
+ *
+ * @returns {void} This function does not return a value but registers the tools asynchronously.
+ *
+ * @example
+ * registerComponentCreationCommands(server, figmaClient);
+ */
+export function registerComponentCreationCommands(server: McpServer, figmaClient: FigmaClient) {
+  registerCreateInstancesFromComponentsTools(server, figmaClient);
+  registerComponentNodeTools(server, figmaClient);
+  registerButtonTools(server, figmaClient);
+}
+
+
+// Re-export for granular imports if needed
+// export {
+//   registerCreateInstancesFromComponentsTools as registerInstanceTools,
+//   registerNodeTools,
+//   registerButtonTools,
+// };
+
+
+
+// Re-export for granular imports if needed
+// export {
+//   registerRectanglesTools,
+//   registerFramesTools,
+//   registerLinesTools,
+//   registerEllipsesTools,
+//   registerPolygonsTools,
+// };
+ 
+
+
+// Re-export for granular imports if needed
+// export {
+//   registerBooleanTools,
+//   registerGroupTools,
+//   registerDeleteTools,
+//   registerInsertChildTools,
+//   registerFlattenNodeTools,
+//   registerCloneNodeTools,
+// };
+
+
 // Re-export for granular imports if needed
 //export {
 //  registerFillTools,
@@ -235,5 +360,3 @@ export function registerStylingCommands(server: McpServer, figmaClient: FigmaCli
 //   registerImageTools,
 //   registerTextStyleTools,
 // };
-
-
