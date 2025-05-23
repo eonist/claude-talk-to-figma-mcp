@@ -89,6 +89,8 @@ irm bun.sh/install.ps1 | iex
 4. Terminal: `bun run build:all` -> Builds the Server and Plugin  
 5. Terminal: `bun socket` -> Starts the Server   
 
+<img width="286" alt="img" src="https://s14.gifyu.com/images/bsAnX.gif">
+
 ### Step 2: Install the Figma Plugin
 
 1. Open Figma Desktop App
