@@ -114,7 +114,7 @@ irm bun.sh/install.ps1 | iex
 }
 ```
 4. AI Agent app: Ensure MCP “Conduit” is enabled.  
-5. AI Agent app: "Talk to Figma on channel: (unique channel id)"  
+5. AI Agent app: "Talk to Figma on channel: (unique channel id copied from plugin)"  
 
 
 ### Quick Example
