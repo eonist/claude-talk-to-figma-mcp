@@ -1,14 +1,14 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
-import { registerDocumentTools } from "./document-tools.js";
-import { registerSelectionTools } from "./selection-tools.js";
-import { registerNodeTools } from "./node-tools.js";
-import { registerStyleTools, registerNodeStylesTool } from "./style-tools.js";
-import { registerComponentTools } from "./component-tools.js";
+import { registerDocumentTools } from "./../document/document-tools.js";
+import { registerSelectionTools } from "./../document/selection-tools.js";
+import { registerNodeTools } from "./../node/node-tools.js";
+import { registerStyleTools, registerNodeStylesTool } from "./../style/style-tools.js";
+import { registerComponentTools } from "../component/component-tools.js";
 import { registerTextAnalysisTools } from "../text/text-analysis-tools.js";
-import { registerCssTools } from "./css-tools.js";
+import { registerCssTools } from "../export/css-tools.js";
 import { registerSvgVectorTool } from "../vector/vector-tools.js";
-import { registerImageTools } from "./image-tools.js";
+import { registerImageTools } from "../image/image-tools.js";
 import { registerTextStyleTools } from "../style/text-style-tools.js";
 
 /**

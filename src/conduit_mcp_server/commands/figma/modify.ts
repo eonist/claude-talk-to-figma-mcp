@@ -2,13 +2,13 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../clients/figma-client.js";
 
 import { registerStylingCommands } from "./style/index.js";
-import { registerPositioningCommands } from "./modify/positioning-tools.js";
-import { registerTransformCommands } from "./modify/transform-tools.js";
+import { registerPositioningCommands } from "./layout/positioning-tools.js";
+import { registerTransformCommands } from "./layout/transform-tools.js";
 import { registerLayerManagementCommands } from "./node/index.js";
-import { registerPropertyManipulationCommands } from "./modify/property-manipulation/index.js";
-import { registerRenameCommands } from "./modify/rename.js";
-import { registerSelectionModifyTools } from "./modify/selection-tools.js";
-import { registerLayoutAutoTools } from "./modify/layout-auto-tools.js";
+import { registerPropertyManipulationCommands } from "./export/index.js";
+import { registerRenameCommands } from "./document/rename.js";
+import { registerSelectionModifyTools } from "./document/selection-tools.js";
+import { registerLayoutAutoTools } from "./layout/layout-auto-tools.js";
 
 /**
  * Registers all modify commands by delegating to category modules.

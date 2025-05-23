@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { registerTextContentTools, registerTextStyleTool } from "./text-content-tools.js";
 import { registerCornerRadiusTools } from "../layout/corner-radius-tools";
 import { registerExportTools } from "./export-tools.js";

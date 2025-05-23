@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../../clients/figma-client.js";
-import { registerUnifiedImageTool } from "./insert-image.js";
+import { registerUnifiedImageTool } from "../../image/insert-image.js";
 
 /**
  * Registers all image creation commands by delegating to submodules.

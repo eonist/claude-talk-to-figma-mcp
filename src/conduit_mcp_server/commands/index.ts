@@ -18,15 +18,15 @@ import { registerCreateCommands } from "./figma/create.js";
 import { registerModifyCommands } from "./figma/modify.js";
 import { registerChannelCommand } from "./channel.js";
 import { logger } from "../utils/logger.js";
-import { registerHtmlCommands } from "./html-tools.js";
+import { registerHtmlCommands } from "./figma/export/html-tools.js";
 import { registerReorderLayerTools } from "./figma/node/reorder-layer-tools.js";
-import { registerAnnotationCommands } from "./figma/annotation-tools.js";
-import { registerUnifiedGridCommands } from "./figma/modify/grid-unified-tools.js";
-import { registerGuideCommands } from "./figma/modify/guide-tools.js";
-import { registerConstraintCommands } from "./figma/modify/constraint-tools.js";
-import { registerPageCommands } from "./figma/modify/page-tools.js";
-import { registerEventCommands } from "./figma/modify/event-tools.js";
-import { registerVariantCommands } from "./figma/modify/variant-tools.js";
+import { registerAnnotationCommands } from "./figma/document/annotation-tools.js";
+import { registerUnifiedGridCommands } from "./figma/page/grid-unified-tools.js";
+import { registerGuideCommands } from "./figma/page/guide-tools.js";
+import { registerConstraintCommands } from "./figma/layout/constraint-tools.js";
+import { registerPageCommands } from "./figma/page/page-tools.js";
+import { registerEventCommands } from "./figma/document/event-tools.js";
+import { registerVariantCommands } from "./figma/component/variant-tools.js";
 
 /**
  * Registers all tool commands with the given MCP server.

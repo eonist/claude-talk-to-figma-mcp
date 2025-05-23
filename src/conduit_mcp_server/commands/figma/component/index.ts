@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { registerCreateInstancesFromComponentsTools } from "./instance-tools.js";
 import { registerNodeTools } from "./node-tools.js";
 import { registerButtonTools } from "./button-tools.js";

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { FigmaMcpServer } from "../../../types/commands";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id";
+import { FigmaMcpServer } from "../../../types/commands.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**

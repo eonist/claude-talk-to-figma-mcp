@@ -1,10 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { registerFillTools } from "./fill-tools.js";
 import { registerStyleTools } from "./style-tools.js";
 import { registerGradientTools } from "./gradient-tools.js";
 import { registerEffectTools } from "./effect-tools.js";
-import { registerVariableTools } from "../modify/variables-tools.js";
+import { registerVariableTools } from "../document/variables-tools.js";
 
 /**
  * Registers all styling commands by delegating to submodules.

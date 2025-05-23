@@ -17,10 +17,10 @@ import { logger } from "../../utils/logger.js";
 import { registerShapeCreationCommands } from "./shape/index.js";
 import { registerTextCreationCommands } from "./text/index.js";
 import { registerVectorCreationCommands } from "./vector/vector-creation-tools.js";
-import { registerComponentCreationCommands } from "./create/component-creation/index.js";
-import { registerImageCreationCommands } from "./create/image-creation/index.js";
+import { registerComponentCreationCommands } from "./component/index.js";
+import { registerImageCreationCommands } from "./image/index.js";
 import { registerSvgCreationCommands } from "./svg/svg-creation-tools.js";
-import { registerDocumentCreationCommands } from "./create/document-creation.js";
+import { registerDocumentCreationCommands } from "./document/document-creation.js";
 
 /**
  * Registers all creation commands by delegating to category modules.

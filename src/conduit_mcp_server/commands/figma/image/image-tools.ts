@@ -1,6 +1,6 @@
-import { GetImageParams } from "../../../types/command-params";
-import { FigmaClient } from "../../../clients/figma-client";
-import { CommandResult, MCP_COMMANDS } from "../../../types/commands";
+import { GetImageParams } from "../../../types/command-params.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
+import { CommandResult, MCP_COMMANDS } from "../../../types/commands.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
