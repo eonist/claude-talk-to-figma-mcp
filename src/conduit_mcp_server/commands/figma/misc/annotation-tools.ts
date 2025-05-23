@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../clients/figma-client.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { GetAnnotationParams, SetAnnotationParams, SetAnnotationEntry, AnnotationInput } from "../../types/command-params.js";
 import { z } from "zod";
-import { MCP_COMMANDS } from "../../types/commands.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers annotation commands with the MCP server.

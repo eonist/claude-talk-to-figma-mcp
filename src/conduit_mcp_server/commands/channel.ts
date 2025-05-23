@@ -11,7 +11,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { FigmaClient } from "../clients/figma-client/index.js";
-import { logger } from "../utils/logger.js";
+//import { logger } from "../utils/logger.js";
 import { joinChannel, connectToFigma, isConnectedToFigma } from "../server/websocket.js";
 import { MCP_COMMANDS } from "../types/commands.js";
 

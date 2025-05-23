@@ -1,6 +1,6 @@
 import { GetImageParams } from "../../../types/command-params.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { CommandResult, MCP_COMMANDS } from "../../../types/commands.js";
+import { /*CommandResult,*/ MCP_COMMANDS } from "../../../types/commands.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
@@ -10,7 +10,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 export async function get_image(
   client: FigmaClient,
   params: GetImageParams
-): Promise<CommandResult> {
+): Promise<any> { // CommandResult
   const { nodeId, nodeIds, fillIndex = 0 } = params;
   const ids: string[] = [];
   if (nodeId) ids.push(nodeId);

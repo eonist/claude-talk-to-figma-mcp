@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
-import { handleToolError } from "../../../../utils/error-handling.js";
-import { MCP_COMMANDS } from "../../../../types/commands.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+// import { handleToolError } from "../../../utils/error-handling.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 const NodeIdSchema = z.string().refine(isValidNodeId, { message: "Invalid Figma node ID" });
 const NodeIdsSchema = z.array(NodeIdSchema).min(1).max(100);

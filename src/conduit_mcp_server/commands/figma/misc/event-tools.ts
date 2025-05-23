@@ -1,5 +1,5 @@
-import { McpServer } from "../../../../server.js";
-import { FigmaClient } from "../../../../clients/figma-client.js";
+import { McpServer } from "../../../server.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 

@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../clients/figma-client.js";
-import { isValidNodeId } from "../utils/figma/is-valid-node-id.js";
-import { MCP_COMMANDS } from "../types/commands.js";
+import { FigmaClient } from "../../../clients/figma-client.js";
+import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+//import { MCP_COMMANDS } from "../types/commands.js";
+import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers HTML generation commands on the MCP server to generate HTML structure from Figma nodes.

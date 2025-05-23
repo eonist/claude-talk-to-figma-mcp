@@ -1,37 +1,39 @@
-import { z } from "zod";
-import { FigmaMcpServer } from "../../../types/commands.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { FigmaClient } from "../../../clients/figma-client.js";//index
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
- * Registers selection modification tools for Figma.
- * - set_selection: Set the current selection to one or more node IDs.
+ * Registers selection info read command:
+ * - get_selection
  */
-export function registerSelectionModifyTools(server: FigmaMcpServer) {
+export function registerSelectionTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
-    MCP_COMMANDS.SET_SELECTION,
-    {
-      description: `Set the current selection in Figma to the specified node(s) by ID.
+    MCP_COMMANDS.GET_SELECTION,
+    `Get information about the current selection in Figma.
 
 Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the selection result as JSON.
+  - content: Array of objects. Each object contains a type: "text" and a text field with the selection info as JSON.
 `,
-      inputSchema: z.object({
-        nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." }).optional(),
-        nodeIds: z.array(z.string().refine(isValidNodeId)).optional()
-      }).refine(
-        (data) => data.nodeId || (Array.isArray(data.nodeIds) && data.nodeIds.length > 0),
-        { message: "You must provide 'nodeId' or 'nodeIds'." }
-      ),
+    {},
+    {
+      title: "Get Selection",
+      idempotentHint: true,
+      destructiveHint: false,
+      readOnlyHint: true,
+      openWorldHint: false,
       usageExamples: JSON.stringify([
-        { nodeId: "123:456" },
-        { nodeIds: ["123:456", "789:101"] }
+        {}
       ]),
-      extraInfo: "Node IDs must be valid and present on the current page. Returns which nodes were selected and which were not found."
+      edgeCaseWarnings: [
+        "Returns an empty array if nothing is selected.",
+        "Selection info may include node IDs, types, and properties.",
+        "If multiple nodes are selected, the result is an array."
+      ],
+      extraInfo: "Use this command to inspect the current selection context in the Figma document."
     },
-    async (params, { figmaClient }) => {
+    async () => {
       try {
-        const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_SELECTION, params);
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_SELECTION);
         const resultsArr = Array.isArray(result) ? result : [result];
         const response = { success: true, results: resultsArr };
         return {
@@ -49,8 +51,8 @@ Returns:
             message: error instanceof Error ? error.message : String(error),
             results: [],
             meta: {
-              operation: "set_selection",
-              params
+              operation: "get_selection",
+              params: {}
             }
           }
         };

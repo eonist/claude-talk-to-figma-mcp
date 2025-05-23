@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
-import { processBatch } from "../../../utils/batch-processor.js";
-import { handleToolError } from "../../../utils/error-handling.js";
+//import { processBatch } from "../../../utils/batch-processor.js";
+//import { handleToolError } from "../../../utils/error-handling.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**

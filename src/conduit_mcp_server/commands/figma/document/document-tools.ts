@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { FigmaClient } from "../../../clients/figma-client/index.js";
+import { FigmaClient } from "../../../clients/figma-client.js"; // /index
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
