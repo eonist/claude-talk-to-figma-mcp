@@ -1,8 +1,7 @@
 import { MCP_COMMANDS } from "../../types/commands.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaClient } from "./index.js";
-import type { BaseFigmaNode, RGBAColor } from "./types.js";
-
+import type { BaseFigmaNode, RGBAColor } from "./../../types/figma.js";
 /**
  * Text-related Figma commands.
  */

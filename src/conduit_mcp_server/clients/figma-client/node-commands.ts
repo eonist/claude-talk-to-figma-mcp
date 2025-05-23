@@ -2,8 +2,7 @@ import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import { MCP_COMMANDS } from "../../types/commands.js";
 import { filterFigmaNode } from "../../utils/figma/filter-node.js";
 import type { FigmaClient } from "./index.js";
-import type { BaseFigmaNode } from "./types.js";
-
+import type { BaseFigmaNode } from "./../../types/figma.js";
 /**
  * Node-related Figma commands.
  */

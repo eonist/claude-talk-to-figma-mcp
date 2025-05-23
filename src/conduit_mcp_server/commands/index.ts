@@ -54,7 +54,7 @@ import { registerCssTools } from "./figma/export/css-tools.js";
 // import { registerComponentTools } from "./figma/component/component-tools.js";
 // import { registerTextAnalysisTools } from "./figma/text/text-analysis-tools.js";
 // import { registerCssTools } from "./figma/export/css-tools.js";
-import { registerSvgVectorTool } from "./figma/vector/vector-tools.js";
+import { registerSvgVectorTool } from "./figma/svg/vector-tools.js";
 import { registerImageTools } from "./figma/image/image-tools.js";
 import { registerTextStyleTools } from "./figma/style/text-style-tools.js";
 
@@ -91,7 +91,7 @@ import { registerVariableTools } from "./figma/document/variables-tools.js";
 // import { registerShapeCreationCommands } from "./figma/shape/index.js";
 //import { registerTextCreationCommands } from "./figma/text/index.js";
 import { registerTextTools } from "./figma/text/text-tools.js";
-import { registerVectorCreationCommands } from "./figma/vector/vector-creation-tools.js";
+
 // import { registerComponentCreationCommands } from "./figma/component/index.js";
 //import { registerImageCreationCommands } from "./figma/image/index.js";
 import { registerSvgCreationCommands } from "./figma/svg/svg-creation-tools.js";
@@ -211,7 +211,7 @@ export function registerCreateCommands(server: McpServer, figmaClient: FigmaClie
   registerShapeCreationCommands(server, figmaClient); // fixme add comment
   //registerTextCreationCommands(server, figmaClient); // fixme add comment
   registerTextTools(server, figmaClient); // Registers all text creation commands by delegating to submodules.
-  registerVectorCreationCommands(server, figmaClient); // fixme add comment
+  
   registerComponentCreationCommands(server, figmaClient); // fixme add comment
   registerImageCreationCommands(server, figmaClient); // fixme add comment
   registerSvgCreationCommands(server, figmaClient); // fixme add comment

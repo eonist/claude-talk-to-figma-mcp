@@ -1,4 +1,4 @@
-import { filterFigmaNode } from "./../../utils/filter-node.js";
+import { filterFigmaNode } from "./../../utils/figma/filter-node.js";
 import { logger } from "../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import { sendCommandToFigma, getCurrentChannel, isConnectedToFigma } from "../../server/websocket.js";
