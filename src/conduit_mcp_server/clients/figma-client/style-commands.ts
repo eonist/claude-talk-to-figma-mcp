@@ -1,4 +1,4 @@
-import { ensureNodeIdIsString } from "../../utils/node-utils.js";
+//import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import { MCP_COMMANDS } from "../../types/commands.js";
 import type { FigmaClient } from "./index.js";
 
@@ -12,27 +12,27 @@ export const styleCommands = {
    * @param {object} params - Fill color parameters
    * @returns {Promise<any>} Operation result
    */
-  async setFillColor(
-    this: FigmaClient,
-    params: {
-      nodeId: string;
-      r: number;
-      g: number;
-      b: number;
-      a?: number;
-    }
-  ): Promise<any> {
-    const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_FILL_AND_STROKE, {
-      nodeId: nodeIdString,
-      fill: {
-        r: params.r,
-        g: params.g,
-        b: params.b,
-        a: params.a || 1
-      }
-    });
-  },
+//  async setFillColor(
+//    this: FigmaClient,
+//    params: {
+//      nodeId: string;
+//      r: number;
+//      g: number;
+//      b: number;
+//      a?: number;
+//    }
+//  ): Promise<any> {
+//    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+//    return this.executeCommand(MCP_COMMANDS.SET_FILL_AND_STROKE, {
+//      nodeId: nodeIdString,
+//      fill: {
+//        r: params.r,
+//        g: params.g,
+//        b: params.b,
+//        a: params.a || 1
+//      }
+//    });
+//  },
 
   /**
    * Sets the stroke color of a node
@@ -40,29 +40,29 @@ export const styleCommands = {
    * @param {object} params - Stroke color parameters
    * @returns {Promise<any>} Operation result
    */
-  async setStrokeColor(
-    this: FigmaClient,
-    params: {
-      nodeId: string;
-      r: number;
-      g: number;
-      b: number;
-      a?: number;
-      weight?: number;
-    }
-  ): Promise<any> {
-    const nodeIdString = ensureNodeIdIsString(params.nodeId);
-    return this.executeCommand(MCP_COMMANDS.SET_FILL_AND_STROKE, {
-      nodeId: nodeIdString,
-      stroke: {
-        r: params.r,
-        g: params.g,
-        b: params.b,
-        a: params.a || 1,
-        weight: params.weight || 1
-      }
-    });
-  },
+//  async setStrokeColor(
+//    this: FigmaClient,
+//    params: {
+//      nodeId: string;
+//      r: number;
+//      g: number;
+//      b: number;
+//      a?: number;
+//      weight?: number;
+//    }
+//  ): Promise<any> {
+//    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+//    return this.executeCommand(MCP_COMMANDS.SET_FILL_AND_STROKE, {
+//      nodeId: nodeIdString,
+//      stroke: {
+//        r: params.r,
+//        g: params.g,
+//        b: params.b,
+//        a: params.a || 1,
+//        weight: params.weight || 1
+//      }
+//    });
+//  },
 
   /**
    * Sets both fill and stroke properties on a node in a single call
@@ -83,10 +83,10 @@ export const styleCommands = {
    * @param params - (optional) parameters
    * @returns {Promise<any>}
    */
-  async getStyles(
-    this: FigmaClient,
-    params: any = {}
-  ): Promise<any> {
-    return this.executeCommand(MCP_COMMANDS.GET_DOC_STYLE, params);
-  }
+//  async getStyles(
+//    this: FigmaClient,
+//    params: any = {}
+//  ): Promise<any> {
+//    return this.executeCommand(MCP_COMMANDS.GET_DOC_STYLE, params);
+//  }
 };

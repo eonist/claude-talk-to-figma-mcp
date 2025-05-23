@@ -266,7 +266,7 @@ export interface SetNodePropParams {
     [key: string]: any;
   };
 }
-
+// fixme: figure out the significance of these:
 export interface CommandParamsMap {
   // --- Communication ---
   join: any;
