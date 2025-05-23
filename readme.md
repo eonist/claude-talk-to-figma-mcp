@@ -85,7 +85,7 @@ irm bun.sh/install.ps1 | iex
    git clone https://github.com/eonist/conduit.git
    ```
 2. Terminal: `cd path-to-conduit`  
-3. Terminal: `bunx install` -> Builds dependencies  
+3. Terminal: `npm install` -> Builds dependencies  
 4. Terminal: `bun run build:all` -> Builds the Server and Plugin  
 5. Terminal: `bun socket` -> Starts the Server   
 
