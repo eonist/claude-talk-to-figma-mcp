@@ -53,19 +53,23 @@ export async function createTextUnified(params) {
   if (params && Array.isArray(params.texts)) {
     const results = [];
     for (const textConfig of params.texts) {
-      if (textConfig.width && textConfig.height) {
+      if (textConfig.width !== undefined || textConfig.height !== undefined) {
+        console.log("[createTextUnified] Batch: using createBoundedText for", textConfig);
         results.push(await createBoundedText(textConfig));
       } else {
+        console.log("[createTextUnified] Batch: using createText for", textConfig);
         results.push(await createText(textConfig));
       }
     }
     return results;
   }
-  // Bounded text support (single)
-  if (params && (params.width && params.height)) {
+  // Bounded text support (single) if width or height is present
+  if (params && (params.width !== undefined || params.height !== undefined)) {
+    console.log("[createTextUnified] Single: using createBoundedText for", params);
     return createBoundedText(params);
   }
   // Regular text (single)
+  console.log("[createTextUnified] Single: using createText for", params);
   return createText(params);
 }
 
