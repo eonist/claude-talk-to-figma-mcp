@@ -40,6 +40,11 @@ export async function createText(params) {
     } = (cfg.text && typeof cfg.text === "object") ? cfg.text : cfg || {};
     // Debug: log font properties
     console.log("fontSize:", fontSize, "fontWeight:", fontWeight, "fontColor:", fontColor);
+    // Log all received parameters for debugging
+    console.log("[createText] received params:", {
+      x, y, text, fontSize, fontWeight, fontColor, name, parentId,
+      width: cfg.width, height: cfg.height
+    });
     // Fix: if text is an object (from server), extract the "text" property
     if (typeof text === "object" && text !== null && typeof text.text === "string") {
       text = text.text;
@@ -217,16 +222,21 @@ export async function createBoundedText(params) {
       // - Only width: Auto height ("HEIGHT")
       // - Only height: Auto width ("WIDTH")
       // - Neither: Auto width ("WIDTH")
+      console.log("[createBoundedText] width:", width, "height:", height);
       if (width !== undefined && height !== undefined) {
+        console.log("[createBoundedText] Setting Fixed size (NONE)");
         textNode.textAutoResize = "NONE";
         textNode.resize(width, height);
       } else if (width !== undefined) {
+        console.log("[createBoundedText] Setting Auto height (HEIGHT)");
         textNode.textAutoResize = "HEIGHT";
         textNode.resize(width, textNode.height);
       } else if (height !== undefined) {
+        console.log("[createBoundedText] Setting Auto width (WIDTH)");
         textNode.textAutoResize = "WIDTH";
         textNode.resize(textNode.width, height);
       } else {
+        console.log("[createBoundedText] Setting Auto width (WIDTH, default)");
         textNode.textAutoResize = "WIDTH";
       }
 

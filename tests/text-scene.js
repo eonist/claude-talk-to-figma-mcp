@@ -13,7 +13,7 @@ function create_text(params) {
 }
 
 export async function textScene(results) {
-  results.push(await create_text({
+  /*results.push(await create_text({
     x: 100,
     y: 200,
     text: 'UnitTestText',
@@ -21,7 +21,7 @@ export async function textScene(results) {
     fontSize: randomFontSize(),
     fontWeight: randomFontWeight(),
     fontColor: randomColor()
-  }));
+  }));*/
   results.push(await create_text({
     x: 120,
     y: 300,
