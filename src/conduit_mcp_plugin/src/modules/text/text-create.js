@@ -27,7 +27,8 @@ export async function createText(params) {
   textsArr = textsArr.filter(Boolean);
   const results = [];
   for (const cfg of textsArr) {
-    const {
+    console.log("createText received cfg:", cfg);
+    let {
       x = 0,
       y = 0,
       text = "Text",
@@ -37,6 +38,10 @@ export async function createText(params) {
       name = "Text",
       parentId,
     } = cfg || {};
+    // Fix: if text is an object (from server), extract the "text" property
+    if (typeof text === "object" && text !== null && typeof text.text === "string") {
+      text = text.text;
+    }
 
     const getFontStyle = (weight) => {
       switch (weight) {
