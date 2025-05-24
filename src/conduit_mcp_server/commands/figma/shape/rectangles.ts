@@ -154,7 +154,7 @@ Returns:
           }
         );
         // results is an array of rectangle info objects
-        const validResults = results.filter(r => r && r.result);
+        const validResults = results.filter(r => r && r.result && typeof r.result.id === "string");
         return {
           content: validResults.map(r => ({
             type: "text",
