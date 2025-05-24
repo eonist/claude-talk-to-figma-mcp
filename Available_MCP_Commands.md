@@ -1334,6 +1334,7 @@ Set fill and/or stroke color(s) for one or more nodes.
   "strokeColor": { "r": 0, "g": 0, "b": 0, "a": 1 }
 }
 ```
+
 ### set_gradient
 Set a gradient on one or more nodes in Figma, either directly or by style variable.
 
