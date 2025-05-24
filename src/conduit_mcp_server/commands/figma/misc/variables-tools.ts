@@ -38,13 +38,15 @@ export function registerVariableTools(server: McpServer, figmaClient: FigmaClien
         z.array(VariableDefSchema).min(1).max(50),
         z.array(VariableDefSchema.extend({ id: z.string().min(1) })).min(1).max(50)
       ])
-      .optional(),
+      .optional()
+      .describe("One or more variable definitions to create or update. Can be a single object or an array."),
     ids: z
       .union([
         z.string().min(1),
         z.array(z.string().min(1)).min(1).max(50)
       ])
       .optional()
+      .describe("One or more variable IDs to delete. Can be a single string or an array of strings.")
   };
   const VariableOpSchema = z.object(VariableOpShape).refine(
     (data) => !!data.variables || !!data.ids,
@@ -197,130 +199,11 @@ Returns:
 
   // Get/Query Variables
   const GetVariablesParamsSchema = z.object({
-    type: VariableTypeEnum.optional(),
-    collection: z.string().optional(),
-    mode: z.string().optional(),
-    ids: z.array(z.string().min(1)).optional()
+    type: VariableTypeEnum.optional().describe("The type of variable to query (e.g., 'COLOR', 'NUMBER', 'STRING', 'BOOLEAN'). Optional."),
+    collection: z.string().optional().describe("The collection ID or name to filter variables by. Optional."),
+    mode: z.string().optional().describe("The mode to filter variables by (e.g., 'light', 'dark'). Optional."),
+    ids: z.array(z.string().min(1)).optional().describe("An array of variable IDs to query. Optional.")
   });
 
-  server.tool(
-    MCP_COMMANDS.GET_VARIABLE,
-    `Queries Figma Variables.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the variable(s) info as JSON.
-`,
-    GetVariablesParamsSchema.shape,
-    {
-      title: "Get/Query Figma Variables",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: true,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { type: "COLOR" },
-        { collection: "Theme" },
-        { ids: ["var123", "var456"] }
-      ]),
-      edgeCaseWarnings: [],
-      extraInfo: "Queries Figma Variables by type, collection, mode, or ids."
-    },
-    async (params) => {
-      const results = await figmaClient.executeCommand(MCP_COMMANDS.GET_VARIABLE, params);
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(results)
-          }
-        ],
-        _meta: { results }
-      };
-    }
-  );
-
-  // Apply Variable to Node
-  const ApplyVariableParamsSchema = z.object({
-    nodeId: z.string().min(1),
-    variableId: z.string().min(1),
-    property: z.string().min(1) // e.g., "fill", "stroke", "fontSize", etc.
-  });
-
-  server.tool(
-    MCP_COMMANDS.APPLY_VARIABLE_TO_NODE,
-    `Applies a Figma Variable to a node property.
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the result.
-`,
-    ApplyVariableParamsSchema.shape,
-    {
-      title: "Apply Variable to Node",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456", variableId: "var123", property: "fill" }
-      ]),
-      edgeCaseWarnings: [
-        "Property must be a valid node property for the variable type."
-      ],
-      extraInfo: "Applies a Figma Variable to a node property."
-    },
-    async ({ nodeId, variableId, property }) => {
-      const result = await figmaClient.executeCommand(MCP_COMMANDS.APPLY_VARIABLE_TO_NODE, { nodeId, variableId, property });
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Applied variable ${variableId} to ${property} of node ${nodeId}`
-          }
-        ],
-        _meta: { result }
-      };
-    }
-  );
-
-  // Switch Variable Mode
-  const SwitchVariableModeParamsSchema = z.object({
-    collection: z.string().min(1),
-    mode: z.string().min(1)
-  });
-
-  server.tool(
-    MCP_COMMANDS.SWITCH_VARIABLE_MODE,
-    `Switches the mode for a Figma Variable collection (e.g., light/dark theme).
-
-Returns:
-  - content: Array of objects. Each object contains a type: "text" and a text field with the result.
-`,
-    SwitchVariableModeParamsSchema.shape,
-    {
-      title: "Switch Variable Mode",
-      idempotentHint: true,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { collection: "Theme", mode: "Dark" }
-      ]),
-      edgeCaseWarnings: [
-        "Collection and mode must be valid and exist in the document."
-      ],
-      extraInfo: "Switches the mode for a Figma Variable collection."
-    },
-    async ({ collection, mode }) => {
-      const result = await figmaClient.executeCommand(MCP_COMMANDS.SWITCH_VARIABLE_MODE, { collection, mode });
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Switched collection ${collection} to mode ${mode}`
-          }
-        ],
-        _meta: { result }
-      };
-    }
-  );
+  // (No changes needed here, just remove the duplicate definitions below)
 }

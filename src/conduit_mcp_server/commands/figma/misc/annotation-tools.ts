@@ -18,8 +18,8 @@ Returns:
   - For batch: Array<{ nodeId, annotations }>
 `,
     {
-      nodeId: z.string().optional(),
-      nodeIds: z.array(z.string()).optional()
+      nodeId: z.string().optional().describe("The ID of a single node to get annotations for. Optional."),
+      nodeIds: z.array(z.string()).optional().describe("An array of node IDs to get annotations for in batch. Optional.")
     },
     {
       title: "Get Annotation(s)",
@@ -95,7 +95,8 @@ Returns:
             .optional(),
           delete: z.boolean().optional()
         })
-        .optional(),
+        .optional()
+        .describe("A single annotation operation to perform. Optional."),
       entries: z
         .array(
           z.object({
@@ -110,6 +111,7 @@ Returns:
           })
         )
         .optional()
+        .describe("An array of annotation operations to perform in batch. Optional.")
     },
     {
       title: "Set Annotation(s)",

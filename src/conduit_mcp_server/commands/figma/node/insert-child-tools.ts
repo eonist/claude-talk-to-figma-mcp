@@ -51,7 +51,9 @@ Returns:
           .describe("ID of the child node to insert"),
         index: z.number().int().min(0).optional().describe("Optional insertion index (0-based)"),
         maintainPosition: z.boolean().optional().describe("Maintain child's absolute position (default: false)")
-      })).optional(),
+      }))
+      .optional()
+      .describe("An array of set/insert operations to perform in batch. Optional."),
       options: z.object({
         skipErrors: z.boolean()
           .optional()

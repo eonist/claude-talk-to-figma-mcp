@@ -41,7 +41,7 @@ Returns:
         offsetX: z.number().optional().describe("Optional X offset to apply to the cloned node's position."),
         offsetY: z.number().optional().describe("Optional Y offset to apply to the cloned node's position."),
         parentId: z.string().optional().describe("Optional parent node ID to attach the cloned node to.")
-      }).optional(),
+      }).optional().describe("A single node clone configuration. Optional."),
       nodes: z.array(
         z.object({
           nodeId: z.string()
@@ -55,7 +55,7 @@ Returns:
           offsetY: z.number().optional().describe("Optional Y offset to apply to the cloned node's position."),
           parentId: z.string().optional().describe("Optional parent node ID to attach the cloned node to.")
         })
-      ).optional()
+      ).optional().describe("An array of node clone configurations for batch cloning. Optional.")
     },
     {
       title: "Clone Node(s)",

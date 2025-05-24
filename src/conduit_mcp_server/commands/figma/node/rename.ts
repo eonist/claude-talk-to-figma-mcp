@@ -38,7 +38,7 @@ Returns:
           .max(100)
           .describe("The new name for the node. Must be a non-empty string up to 100 characters."),
         setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename"),
-      }).optional(),
+      }).optional().describe("A single rename configuration object. Optional."),
       renames: z.array(
         z.object({
           nodeId: z.string()
@@ -50,7 +50,7 @@ Returns:
             .describe("The new name for the node. Must be a non-empty string up to 100 characters."),
           setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename"),
         })
-      ).optional()
+      ).optional().describe("An array of rename configuration objects for batch renaming. Optional.")
     },
     {
       title: "Rename Layer(s)",
