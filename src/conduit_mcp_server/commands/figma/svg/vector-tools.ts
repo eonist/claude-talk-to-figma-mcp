@@ -15,8 +15,12 @@ Returns:
   - Array of { nodeId, svg } objects, one per node.
 `,
     {
-      nodeId: z.string().optional(),
-      nodeIds: z.array(z.string()).optional()
+      nodeId: z.string()
+        .optional()
+        .describe("The unique Figma node ID to extract SVG from. Provide either nodeId or nodeIds, not both."),
+      nodeIds: z.array(z.string())
+        .optional()
+        .describe("An array of Figma node IDs to extract SVG from. Provide either nodeId or nodeIds, not both.")
     },
     {
       title: "Get SVG Vector (Unified)",

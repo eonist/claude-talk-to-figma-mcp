@@ -41,7 +41,9 @@ Returns:
       .max(100)
       .describe("Array of Figma node IDs to flatten. Must contain 1 to 100 items.")
       .optional(),
-      selection: z.boolean().optional()
+      selection: z.boolean()
+        .optional()
+        .describe("If true, use the current Figma selection for the operation. If true, nodeId and nodeIds are ignored.")
     },
     {
       title: "Flatten Nodes (Unified)",
