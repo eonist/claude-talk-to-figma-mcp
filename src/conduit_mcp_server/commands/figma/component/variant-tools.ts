@@ -1,30 +1,7 @@
 import type { McpServer } from "../../../server.js";
 import type { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
-
-// Variant operation schema
-const VariantOp = z.object({
-  componentSetId: z.string(),
-  action: z.enum(["create", "add", "rename", "delete", "organize", "batch_create"]),
-  properties: z.record(z.string()).optional(),
-  variantId: z.string().optional(),
-  propertyName: z.string().optional(),
-  newPropertyName: z.string().optional(),
-  propertyValue: z.string().optional(),
-  newPropertyValue: z.string().optional(),
-  templateComponentId: z.string().optional(),
-  propertiesList: z.array(z.record(z.string())).optional(),
-  organizeBy: z.array(z.string()).optional()
-});
-const SetVariantSchema = z.object({
-  variant: VariantOp.optional(),
-  variants: z.array(VariantOp).optional(),
-});
-const GetVariantSchema = z.object({
-  componentSetId: z.string().optional(),
-  componentSetIds: z.array(z.string()).optional(),
-});
+import { VariantOp, SetVariantSchema, GetVariantSchema } from "./schema/variant-schema.js";
 
 export function registerVariantCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_variant: create, add, rename, delete, organize, batch_create (single or batch)
