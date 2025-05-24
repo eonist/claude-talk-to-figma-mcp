@@ -38,6 +38,8 @@ export async function createText(params) {
       name = "Text",
       parentId,
     } = cfg || {};
+    // Debug: log font properties
+    console.log("fontSize:", fontSize, "fontWeight:", fontWeight, "fontColor:", fontColor);
     // Fix: if text is an object (from server), extract the "text" property
     if (typeof text === "object" && text !== null && typeof text.text === "string") {
       text = text.text;
