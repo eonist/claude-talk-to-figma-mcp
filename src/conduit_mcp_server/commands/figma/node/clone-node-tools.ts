@@ -35,12 +35,12 @@ Returns:
           .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
           .describe("ID of the node to clone."),
         position: z.object({
-          x: z.number(),
-          y: z.number()
-        }).optional(),
-        offsetX: z.number().optional(),
-        offsetY: z.number().optional(),
-        parentId: z.string().optional()
+          x: z.number().describe("X coordinate for the new node's position."),
+          y: z.number().describe("Y coordinate for the new node's position.")
+        }).optional().describe("Optional absolute position for the cloned node."),
+        offsetX: z.number().optional().describe("Optional X offset to apply to the cloned node's position."),
+        offsetY: z.number().optional().describe("Optional Y offset to apply to the cloned node's position."),
+        parentId: z.string().optional().describe("Optional parent node ID to attach the cloned node to.")
       }).optional(),
       nodes: z.array(
         z.object({
@@ -48,12 +48,12 @@ Returns:
             .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
             .describe("ID of the node to clone."),
           position: z.object({
-            x: z.number(),
-            y: z.number()
-          }).optional(),
-          offsetX: z.number().optional(),
-          offsetY: z.number().optional(),
-          parentId: z.string().optional()
+            x: z.number().describe("X coordinate for the new node's position."),
+            y: z.number().describe("Y coordinate for the new node's position.")
+          }).optional().describe("Optional absolute position for the cloned node."),
+          offsetX: z.number().optional().describe("Optional X offset to apply to the cloned node's position."),
+          offsetY: z.number().optional().describe("Optional Y offset to apply to the cloned node's position."),
+          parentId: z.string().optional().describe("Optional parent node ID to attach the cloned node to.")
         })
       ).optional()
     },
