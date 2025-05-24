@@ -47,4 +47,4 @@ export async function shapeScene(results) {
   }));
 }
 
-export { create_rectangle, create_ellipse };
+//export { create_rectangle, create_ellipse };

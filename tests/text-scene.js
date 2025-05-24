@@ -22,6 +22,17 @@ export async function textScene(results) {
     fontWeight: randomFontWeight(),
     fontColor: randomColor()
   }));
+  results.push(await create_text({
+    x: 120,
+    y: 300,
+    text: 'This is a longer text\nwith multiple lines.\nLine 3.\nLine 4.',
+    name: 'UnitTestTextArea',
+    width: 250,
+    height: 100,
+    fontSize: randomFontSize(),
+    fontWeight: randomFontWeight(),
+    fontColor: randomColor()
+  }));
 }
 
-export { create_text };
+//export { create_text };
