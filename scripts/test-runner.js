@@ -33,6 +33,18 @@ function parseArgs() {
 /**
  * Assert that the response echoes the command and params as sent.
  */
+function deepEqual(a, b) {
+  if (a === b) return true;
+  if (typeof a !== typeof b) return false;
+  if (typeof a !== "object" || a === null || b === null) return false;
+  const keysA = Object.keys(a), keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  for (const key of keysA) {
+    if (!deepEqual(a[key], b[key])) return false;
+  }
+  return true;
+}
+
 function assertEchoedCommand(expectedCommand, expectedParams) {
   return (response) => {
     if (!response) return { pass: false, reason: 'No response received' };
@@ -43,8 +55,14 @@ function assertEchoedCommand(expectedCommand, expectedParams) {
     const actual = response.params && (response.params.rectangle || response.params.ellipse || response.params.text);
     if (expectedParams) {
       for (const key of Object.keys(expectedParams)) {
-        if (actual[key] !== expectedParams[key]) {
-          return { pass: false, reason: `Property "${key}" expected ${expectedParams[key]}, got ${actual[key]}` };
+        if (typeof expectedParams[key] === "object" && expectedParams[key] !== null) {
+          if (!deepEqual(actual[key], expectedParams[key])) {
+            return { pass: false, reason: `Property "${key}" did not match expected object value` };
+          }
+        } else {
+          if (actual[key] !== expectedParams[key]) {
+            return { pass: false, reason: `Property "${key}" expected ${expectedParams[key]}, got ${actual[key]}` };
+          }
         }
       }
     }
