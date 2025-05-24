@@ -70,7 +70,7 @@ Returns:
           .max(100)
           .optional()
           .describe("Optional. Stroke weight for the vector. Must be between 0 and 100."),
-      }).optional(),
+      }).optional().describe("A single vector node configuration. Optional."),
       vectors: z.array(
         z.object({
           x: z.number()
@@ -120,7 +120,7 @@ Returns:
             .optional()
             .describe("Optional. Stroke weight for the vector. Must be between 0 and 100."),
         })
-      ).optional(),
+      ).optional().describe("An array of vector node configurations for batch creation. Optional."),
     },
     {
       title: "Create Vector(s)",

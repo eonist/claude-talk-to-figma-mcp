@@ -28,8 +28,8 @@ Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created text node ID(s).
 `,
     {
-      text: SingleTextSchema.optional(),
-      texts: BatchTextsSchema.optional(),
+      text: SingleTextSchema.optional().describe("A single text element configuration. Optional."),
+      texts: BatchTextsSchema.optional().describe("An array of text element configurations for batch creation. Optional."),
     },
     {
       title: "Create Text(s)",

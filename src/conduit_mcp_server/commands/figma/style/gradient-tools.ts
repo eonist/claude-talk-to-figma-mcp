@@ -43,7 +43,7 @@ export function registerGradientTools(server: McpServer, figmaClient: FigmaClien
     gradients: z.union([
       GradientDefSchema,
       z.array(GradientDefSchema).min(1).max(20)
-    ])
+    ]).describe("One or more gradient style definitions to create. Can be a single object or an array.")
   });
 
   // Unified Create Gradient Style
@@ -126,7 +126,7 @@ Returns:
     entries: z.union([
       SetGradientEntrySchema,
       z.array(SetGradientEntrySchema).min(1).max(100)
-    ])
+    ]).describe("One or more gradient set operations to perform. Can be a single object or an array.")
   });
 
   server.tool(

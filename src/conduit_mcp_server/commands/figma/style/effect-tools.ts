@@ -34,7 +34,20 @@ export function registerEffectTools(server: McpServer, figmaClient: FigmaClient)
     entries: z.union([
       SetEffectEntrySchema,
       z.array(SetEffectEntrySchema).min(1).max(100)
-    ])
+    ]).describe("One or more effect set operations to perform. Can be a single object or an array.")
+  });
+
+  // 3. create_effect_style_variable
+  const EffectStyleDefSchema = EffectSchema.extend({
+    name: z.string().min(1).max(100)
+      .describe("Name for the effect style. Must be a non-empty string up to 100 characters.")
+  });
+
+  const CreateEffectStyleParamsSchema = z.object({
+    effects: z.union([
+      EffectStyleDefSchema,
+      z.array(EffectStyleDefSchema).min(1).max(20)
+    ]).describe("One or more effect style definitions to create. Can be a single object or an array.")
   });
 
   server.tool(
