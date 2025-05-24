@@ -36,6 +36,13 @@ function randomColor() {
     a: 1
   };
 }
+function randomFontSize() {
+  return Math.floor(Math.random() * 32) + 8; // 8 to 40 px
+}
+function randomFontWeight() {
+  const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+  return weights[Math.floor(Math.random() * weights.length)];
+}
 
 // --- Test Step/Scene/Sequence Definitions ---
 
@@ -113,34 +120,8 @@ function create_text(params) {
   });
 }
 
-// Scenes
-async function shapeScene(results) {
-  results.push(await create_rectangle({
-    x: 0,
-    y: 0,
-    width: 200,
-    height: 100,
-    name: 'UnitTestRectangle',
-    cornerRadius: 12,
-    fillColor: randomColor(),
-    strokeColor: randomColor(),
-    strokeWeight: Math.floor(Math.random() * 8) + 1
-  }));
-  results.push(await create_ellipse({
-    x: 50,
-    y: 50,
-    width: 100,
-    height: 100,
-    name: 'UnitTestEllipse',
-    fillColor: randomColor(),
-    strokeColor: randomColor(),
-    strokeWeight: Math.floor(Math.random() * 8) + 1
-  }));
-}
-
-async function textScene(results) {
-  results.push(await create_text({ x: 100, y: 200, text: 'UnitTestText', name: 'UnitTestTextNode' }));
-}
+import { shapeScene } from "./shape-scene.js";
+import { textScene } from "./text-scene.js";
 
 // --- Step Runner ---
 function runStep({ ws, channel, command, params, assert, label }) {
@@ -257,3 +238,12 @@ main().catch(err => {
   console.error('Test runner failed:', err);
   process.exit(1);
 });
+
+export {
+  create_rectangle,
+  create_ellipse,
+  create_text,
+  randomColor,
+  randomFontSize,
+  randomFontWeight
+};
