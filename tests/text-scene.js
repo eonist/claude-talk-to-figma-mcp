@@ -6,14 +6,27 @@ function create_text(params) {
     ws,
     channel,
     command: 'set_text',
-    params: params,
-    assert: assertEchoedCommand('set_text', params),
+    params: { text: params },
+    assert: (response) => {
+      const expected = params;
+      const actual = response && response.params && response.params.text;
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        return {
+          pass: false,
+          message:
+            "Response params.text does not match input params.\n" +
+            "Expected: " + JSON.stringify(expected, null, 2) + "\n" +
+            "Actual:   " + JSON.stringify(actual, null, 2)
+        };
+      }
+      return { pass: true };
+    },
     label: `set_text (${params.name || ''})`
   });
 }
 
 export async function textScene(results) {
-  /*results.push(await create_text({
+  results.push(await create_text({
     x: 100,
     y: 200,
     text: 'UnitTestText',
@@ -21,7 +34,7 @@ export async function textScene(results) {
     fontSize: randomFontSize(),
     fontWeight: randomFontWeight(),
     fontColor: randomColor()
-  }));*/
+  }));
   results.push(await create_text({
     x: 120,
     y: 300,
