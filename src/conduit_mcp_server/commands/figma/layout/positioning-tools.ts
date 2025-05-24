@@ -14,6 +14,7 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  */
 export function registerPositioningCommands(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch node move
+  console.log("REGISTERING MOVE_NODE:", MCP_COMMANDS.MOVE_NODE);
   server.tool(
     MCP_COMMANDS.MOVE_NODE,
     `Moves one or more nodes to a new position in Figma. Accepts either a single move config (via 'move') or an array of configs (via 'moves').

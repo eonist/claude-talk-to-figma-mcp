@@ -22,6 +22,7 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  * registerCornerRadiusTools(server, figmaClient);
  */
 export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaClient) {
+  console.log("ENTERED registerCornerRadiusTools");
   // Set Corner Radius
   server.tool(
     MCP_COMMANDS.SET_CORNER_RADIUS,

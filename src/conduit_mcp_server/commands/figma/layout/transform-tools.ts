@@ -13,7 +13,11 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  * - (future: rotation, scaling, flipping)
  */
 export function registerTransformCommands(server: McpServer, figmaClient: FigmaClient) {
+  console.log("ENTERED registerTransformCommands");
+  // Debug MCP_COMMANDS
+  console.log("MCP_COMMANDS at runtime:", MCP_COMMANDS);
   // Resize Node Tool
+  console.log("REGISTERING RESIZE_NODE:", MCP_COMMANDS.RESIZE_NODE);
   server.tool(
     MCP_COMMANDS.RESIZE_NODE,
     `Resize a node in Figma.

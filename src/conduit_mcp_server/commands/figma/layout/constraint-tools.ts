@@ -5,6 +5,7 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
 
 export function registerConstraintCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_constraints: set constraints (single or batch)
+  console.log("REGISTERING SET_CONSTRAINT:", MCP_COMMANDS.SET_CONSTRAINT);
   server.tool(
     MCP_COMMANDS.SET_CONSTRAINT,
     `Set constraints (left/right/top/bottom/center/scale/stretch) for one or more Figma nodes.
@@ -77,6 +78,7 @@ Returns: Array of result objects for each operation.`,
   );
 
   // get_constraints: get constraints for one or more nodes (with children)
+  console.log("REGISTERING GET_CONSTRAINT:", MCP_COMMANDS.GET_CONSTRAINT);
   server.tool(
     MCP_COMMANDS.GET_CONSTRAINT,
     `Get constraints for one or more Figma nodes (optionally including children).
