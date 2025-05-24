@@ -266,7 +266,17 @@ export interface SetNodePropParams {
     [key: string]: any;
   };
 }
-// fixme: figure out the significance of these:
+/**
+ * CommandParamsMap maps each supported Figma command name to the expected parameter type for that command.
+ * This is used for type-safe command dispatching and validation throughout the MCP server.
+ * - Keys are command names as strings.
+ * - Values are the parameter types (interfaces) expected by each command.
+ * - Properties typed as `any` indicate commands with flexible or currently unspecified parameter types.
+ *
+ * @remarks
+ * This interface is central to the command routing system. When adding new commands, update this map with the appropriate parameter type.
+ * For commands with a specific parameter interface, see the referenced type for details.
+ */
 export interface CommandParamsMap {
   // --- Communication ---
   join: any;

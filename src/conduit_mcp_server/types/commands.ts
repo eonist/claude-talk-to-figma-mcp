@@ -20,16 +20,19 @@ export interface GridProperties {
   sectionSize?: number;
   offset?: number;
 }
+// fixme: add doc
 export interface SetGridEntry {
   nodeId: string;
   gridIndex?: number;
   properties?: GridProperties;
   delete?: boolean;
 }
+// fixme: add doc
 export interface SetGridParams {
   entry?: SetGridEntry;
   entries?: SetGridEntry[];
 }
+// fixme: add doc
 export interface GetGridParams {
   nodeId?: string;
   nodeIds?: string[];
@@ -43,10 +46,12 @@ export interface GuideEntry {
   offset: number;
   delete?: boolean;
 }
+// fixme: add doc
 export interface SetGuideParams {
   guide?: GuideEntry;
   guides?: GuideEntry[];
 }
+// fixme: add doc
 export interface GetGuideParams {} // No params
 
 /**
@@ -57,12 +62,14 @@ export interface ConstraintEntry {
   horizontal: "left" | "right" | "center" | "scale" | "stretch";
   vertical: "top" | "bottom" | "center" | "scale" | "stretch";
 }
+// fixme: add doc
 export interface SetConstraintsParams {
   constraint?: ConstraintEntry;
   constraints?: ConstraintEntry[];
   applyToChildren?: boolean;
   maintainAspectRatio?: boolean;
 }
+// fixme: add doc
 export interface GetConstraintsParams {
   nodeId?: string;
   nodeIds?: string[];
@@ -95,10 +102,12 @@ export interface VariantOp {
   propertiesList?: { [key: string]: string }[];
   organizeBy?: string[];
 }
+// fixme: add doc
 export interface SetVariantParams {
   variant?: VariantOp;
   variants?: VariantOp[];
 }
+// fixme: add doc
 export interface GetVariantParams {
   componentSetId?: string;
   componentSetIds?: string[];
@@ -210,9 +219,9 @@ export const MCP_COMMANDS = {
   GET_ANNOTATION: "get_annotation", // Retrieve annotations for one or more nodes
   SET_ANNOTATION: "set_annotation" // Set, update, or delete annotations for one or more nodes
 } as const;
-
+// fixme: add doc
 export type McpCommand = typeof MCP_COMMANDS[keyof typeof MCP_COMMANDS];
-
+// fixme: add doc
 export type FigmaCommand = typeof MCP_COMMANDS[keyof typeof MCP_COMMANDS];
 
 /**
