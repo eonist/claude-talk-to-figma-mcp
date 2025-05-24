@@ -159,7 +159,7 @@ async function main() {
   });
 
   // Define the sequence of scenes
-  const sequence = [shapeScene, textScene];
+  const sequence = [/*shapeScene, */textScene];
   const results = [];
   for (const scene of sequence) {
     await scene(results);
