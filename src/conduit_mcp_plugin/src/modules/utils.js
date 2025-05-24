@@ -49,17 +49,7 @@ export async function subscribeEventUnified(params) {
   return await sendCommand("subscribe_event", params);
 }
 
-/**
- * Unified handler for AI_RENAME_LAYERS plugin command.
- * @async
- * @function aiRenameLayersUnified
- * @param {object} params
- * @returns {Promise<any>}
- */
-export async function aiRenameLayersUnified(params) {
-  if (typeof sendCommand !== "function") throw new Error("sendCommand is not defined in this context.");
-  return await sendCommand("ai_rename_layers", params);
-}
+
 
 // Namespace object for all utils
 export const utilsOperations = {
@@ -73,6 +63,5 @@ export const utilsOperations = {
   setCharacters,
   canAcceptChildren,
   customBase64Encode,
-  subscribeEventUnified,
-  aiRenameLayersUnified
+  subscribeEventUnified
 };

@@ -13,7 +13,6 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  * These commands handle operations for renaming elements in Figma, including:
  * - Renaming a single layer
  * - Batch renaming multiple layers
- * - AI-assisted renaming
  * - Targeted renaming of multiple elements with individual names
  * 
  * @param {McpServer} server - The MCP server instance

@@ -367,7 +367,6 @@ export interface CommandParamsMap {
 
   // --- Misc ---
   rename_layer: any;
-  ai_rename_layer: any;
   set_variant: any;
   get_variant: any;
   subscribe_event: any;

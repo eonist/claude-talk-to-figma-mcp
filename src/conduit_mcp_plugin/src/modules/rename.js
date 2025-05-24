@@ -59,55 +59,6 @@ export async function rename_layer(params) {
   return results.length === 1 ? results[0] : { success: true, results };
 }
 
-/**
- * Rename Multiple Figma Layers Using AI Assistance
- * @async
- * @function ai_rename_layers
- *
- * Leverages Figma's AI capabilities to intelligently rename layers based on their content
- * and context. Useful for batch renaming layers to follow naming conventions or improve clarity.
- *
- * @param {object} params - Parameters for AI-assisted renaming
- * @param {string[]} params.layer_ids - Array of Figma layer IDs to rename
- * @param {string} params.context_prompt - Instructions for AI renaming. Can include:
- *   - Naming conventions to follow
- *   - Style guidelines
- *   - Specific terminology preferences
- *
- * @returns {Promise<object>} Object containing:
- *   - success: boolean indicating if operation succeeded
- *   - names: array of new names (if successful)
- *   - error: error message (if failed)
- *
- * @example Using specific naming conventions:
- * await ai_rename_layers({
- *   layer_ids: ['nodeId1', 'nodeId2'],
- *   context_prompt: "Rename components using atomic design principles (atoms, molecules, organisms)"
- * });
- *
- * @example Improving descriptiveness:
- * await ai_rename_layers({
- *   layer_ids: ['nodeId1', 'nodeId2'],
- *   context_prompt: "Make layer names more descriptive based on their visual appearance and function"
- * });
- */
-export async function ai_rename_layers(params) {
-  const { layer_ids, context_prompt } = params || {};
-  
-  const nodes = await Promise.all(
-    layer_ids.map(id => figma.getNodeByIdAsync(id))
-  );
-  
-  const result = await figma.ai.renameLayersAsync(nodes, {
-    context: context_prompt
-  });
-  
-  if (result.status === 'SUCCESS') {
-    return { success: true, names: result.names };
-  } else {
-    return { success: false, error: result.error };
-  }
-}
 
 /**
  * Rename a Single Figma Layer
@@ -164,9 +115,7 @@ export async function rename_layer(params) {
  *
  * @namespace renameOperations
  * @property {Function} rename_layer - Rename a single layer with optional auto-rename for text.
- * @property {Function} ai_rename_layers - AI-assisted batch renaming of layers.
  */
 export const renameOperations = {
-  rename_layer,
-  ai_rename_layers
+  rename_layer
 };

@@ -106,7 +106,6 @@ export const PLUGIN_COMMANDS = {
 
   // --- Misc ---
   RENAME_LAYER: "rename_layer",
-  AI_RENAME_LAYER: "ai_rename_layer",
   SET_VARIANT: "set_variant",
   GET_VARIANT: "get_variant",
   GET_ANNOTATION: "get_annotation",
@@ -257,7 +256,6 @@ export function initializeCommands() {
 
   // --- Misc ---
   registerCommand(PLUGIN_COMMANDS.RENAME_LAYER, renameOperations.rename_layer);
-  registerCommand(PLUGIN_COMMANDS.AI_RENAME_LAYER, utilsOperations.aiRenameLayersUnified);
   registerCommand(PLUGIN_COMMANDS.SET_VARIANT, setVariant);
   registerCommand(PLUGIN_COMMANDS.GET_VARIANT, getVariant);
   registerCommand(PLUGIN_COMMANDS.GET_ANNOTATION, getAnnotationUnified);

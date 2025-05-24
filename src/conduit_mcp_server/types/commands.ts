@@ -204,7 +204,6 @@ export const MCP_COMMANDS = {
 
   // --- Misc ---
   RENAME_LAYER: "rename_layer", // Rename one or more nodes, each with its own new name
-  AI_RENAME_LAYER: "ai_rename_layer", // AI-powered renaming of nodes
   SET_VARIANT: "set_variant", // Create, add, rename, delete, organize, or batch create variants/properties in a component set
   GET_VARIANT: "get_variant", // Retrieve information about variants/properties for one or more component sets
   SUBSCRIBE_EVENT: "subscribe_event", // Subscribe or unsubscribe to Figma events (e.g., selection_change, document_change)
