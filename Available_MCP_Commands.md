@@ -45,7 +45,6 @@
 - [get_components](#get_components): Get components from the current document, a team library, or remote team libraries (unified)
 - [create_components_from_node](#create_components_from_node): Convert nodes to components
 - [create_component_instance](#create_component_instance): Create component instances
-- [create_button](#create_button): Create a complete button
 - [detach_instances](#detach_instances): Detach one or more component instances from their masters (single or batch)
 
 **Images and SVG:**
@@ -112,7 +111,7 @@
 - [subscribe_event](#subscribe_event): Subscribe to or unsubscribe from a Figma event (e.g., selection_change, document_change)
 - [get_annotation](#get_annotation): Get annotation(s) for one or more nodes
 - [set_annotation](#set_annotation): Set, update, or delete annotation(s) for one or more nodes
-
+- [create_button](#create_button): Create a complete button
 
 
 

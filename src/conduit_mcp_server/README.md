@@ -279,6 +279,33 @@ start the server this way:
 - Terminal: `cd conduit`
 - Terminal: `node dist/conduit_mcp_server/server.cjs`
 
+### Tests:
+- Run `bun run test` or `node scripts/test-integration.js`
+
+The `bun run test-local-images` (or `node scripts/test-local-images.js`) script is an **integration test for batch local image insertion via the WebSocket MCP server**.
+
+**What it does:**
+- It connects to your running MCP WebSocket server (default port 3055).
+- It expects one or more absolute file paths to local image files as command-line arguments.
+- It joins a randomly named channel on the server.
+- It sends a command (`insert_local_images`) to the MCP server, instructing it to insert the provided images at specific coordinates (x, y) in Figma (or whatever system is listening for the command).
+- It prints the response from the server (success or error) and then exits.
+
+**Usage example:**
+```sh
+bun run test-local-images /absolute/path/to/image1.png /absolute/path/to/image2.jpg
+```
+or
+```sh
+node scripts/test-local-images.js /absolute/path/to/image1.png /absolute/path/to/image2.jpg
+```
+
+**Purpose:**
+- To test that the MCP server can receive a batch image insertion command and process local image files correctly.
+- This is a CLI-driven integration test; it does not require the AI Agent, but it does require the MCP server to be running and able to process the `insert_local_images` command (and, for full effect, the Figma plugin should be connected and listening for such commands).
+
+**Summary:**  
+This script is for testing the server's ability to handle local image insertion commands via WebSocket, using real image files you provide as arguments.
 
 ## License
 
