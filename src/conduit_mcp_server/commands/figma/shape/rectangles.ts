@@ -162,7 +162,7 @@ Returns:
               text: `Created rectangle: ${r.result.id}`
             },
             {
-              type: "json",
+              type: "text",
               id: r.result.id,
               name: r.result.name || "Rectangle",
               x: r.result.x,
