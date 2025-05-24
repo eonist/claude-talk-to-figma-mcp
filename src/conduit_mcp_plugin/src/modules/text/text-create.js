@@ -37,7 +37,7 @@ export async function createText(params) {
       fontColor = { r: 0, g: 0, b: 0, a: 1 },
       name = "Text",
       parentId,
-    } = cfg || {};
+    } = (cfg.text && typeof cfg.text === "object") ? cfg.text : cfg || {};
     // Debug: log font properties
     console.log("fontSize:", fontSize, "fontWeight:", fontWeight, "fontColor:", fontColor);
     // Fix: if text is an object (from server), extract the "text" property
