@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { SetSelectionInputSchema } from "./schema/set-selection-schema.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js"; // /index
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
@@ -17,13 +17,7 @@ export function registerSelectionModifyTools(server: McpServer, figmaClient: Fig
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the selection result as JSON.
 `,
-      inputSchema: z.object({
-        nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." }).optional(),
-        nodeIds: z.array(z.string().refine(isValidNodeId)).optional()
-      }).refine(
-        (data) => data.nodeId || (Array.isArray(data.nodeIds) && data.nodeIds.length > 0),
-        { message: "You must provide 'nodeId' or 'nodeIds'." }
-      ),
+      inputSchema: SetSelectionInputSchema,
       usageExamples: JSON.stringify([
         { nodeId: "123:456" },
         { nodeIds: ["123:456", "789:101"] }

@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
+import { CreateComponentsFromNodeSchema } from "./schema/create-components-from-node-schema.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { handleToolError } from "../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
@@ -31,23 +31,7 @@ Returns:
       - type: "text"
       - text: JSON string with created component IDs and any errors.
 `,
-    {
-      entry: z
-        .object({
-          nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (e.g., '123:456')" }),
-          maintain_position: z.boolean().optional(),
-        })
-        .optional(),
-      entries: z
-        .array(
-          z.object({
-            nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (e.g., '123:456')" }),
-            maintain_position: z.boolean().optional(),
-          })
-        )
-        .optional(),
-      skip_errors: z.boolean().optional(),
-    },
+    CreateComponentsFromNodeSchema.shape,
     {
       title: "Create Components From Node(s)",
       idempotentHint: true,

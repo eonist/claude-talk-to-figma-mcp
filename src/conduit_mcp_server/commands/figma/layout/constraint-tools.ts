@@ -1,25 +1,7 @@
 import type { McpServer } from "../../../server.js";
 import type { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
+import { SetConstraintsSchema, GetConstraintsSchema } from "./schema/constraint-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
-
-// Constraint schema
-const ConstraintEntry = z.object({
-  nodeId: z.string(),
-  horizontal: z.enum(["left", "right", "center", "scale", "stretch"]),
-  vertical: z.enum(["top", "bottom", "center", "scale", "stretch"]),
-});
-const SetConstraintsSchema = z.object({
-  constraint: ConstraintEntry.optional(),
-  constraints: z.array(ConstraintEntry).optional(),
-  applyToChildren: z.boolean().optional(),
-  maintainAspectRatio: z.boolean().optional(),
-});
-const GetConstraintsSchema = z.object({
-  nodeId: z.string().optional(),
-  nodeIds: z.array(z.string()).optional(),
-  includeChildren: z.boolean().optional(),
-});
 
 export function registerConstraintCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_constraints: set constraints (single or batch)

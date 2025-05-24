@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
+import { DetachInstancesSchema } from "./schema/detach-instances-schema.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { InstanceIdSchema } from "./schema/instance-id-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
@@ -28,16 +28,7 @@ Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the detached instance's ID or error info.
 
 `,
-    {
-      instanceId: InstanceIdSchema.optional(),
-      instanceIds: z.array(InstanceIdSchema).optional(),
-      options: z
-        .object({
-          maintain_position: z.boolean().optional(),
-          skip_errors: z.boolean().optional(),
-        })
-        .optional(),
-    },
+    DetachInstancesSchema.shape,
     {
       title: "Detach Instances (Unified)",
       idempotentHint: true,

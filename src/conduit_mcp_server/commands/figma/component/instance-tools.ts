@@ -1,9 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
-//import { processBatch } from "../../../utils/batch-processor.js";
-//import { handleToolError } from "../../../utils/error-handling.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { CreateComponentInstanceSchema } from "./schema/create-component-instance-schema.js";
 
 /**
  * Registers component-creation-related commands on the MCP server.
@@ -28,18 +26,7 @@ export function registerCreateInstancesFromComponentsTools(server: McpServer, fi
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created instance IDs.
 `,
-    {
-      entry: z.object({
-        componentKey: z.string().min(1).max(100),
-        x: z.number().min(-10000).max(10000),
-        y: z.number().min(-10000).max(10000)
-      }).optional(),
-      entries: z.array(z.object({
-        componentKey: z.string().min(1).max(100),
-        x: z.number().min(-10000).max(10000),
-        y: z.number().min(-10000).max(10000)
-      })).optional()
-    },
+    CreateComponentInstanceSchema.shape,
     {
       title: "Create Instances from Components",
       idempotentHint: false,

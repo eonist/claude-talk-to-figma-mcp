@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";// /index.js
 import { MCP_COMMANDS } from "../../../types/commands.js";
-import { z } from "zod";
+import { GetComponentsSchema } from "./schema/get-components-schema.js";
 
 /**
  * Registers component info read commands:
@@ -15,12 +15,7 @@ export function registerComponentTools(server: McpServer, figmaClient: FigmaClie
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the components info as JSON.
 `,
-    {
-      source: z.enum(["local", "team", "remote"]),
-      team_id: z.string().optional(),
-      page_size: z.number().optional(),
-      after: z.union([z.string(), z.number()]).optional()
-    },
+    GetComponentsSchema.shape,
     {
       title: "Get Components (Unified)",
       idempotentHint: true,

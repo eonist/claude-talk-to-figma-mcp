@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
+import { CreateButtonSchema } from "./schema/button-schema.js";
 import { handleToolError } from "../../../utils/error-handling.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
@@ -28,56 +28,7 @@ export function registerButtonTools(server: McpServer, figmaClient: FigmaClient)
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created button's frame, background, and text node IDs.
 `,
-    {
-      // Single button params
-      x: z.number().min(-10000).max(10000).optional(),
-      y: z.number().min(-10000).max(10000).optional(),
-      width: z.number().min(1).max(2000).optional(),
-      height: z.number().min(1).max(2000).optional(),
-      text: z.string().min(1).max(200).optional(),
-      background: z.object({
-        r: z.number().min(0).max(1),
-        g: z.number().min(0).max(1),
-        b: z.number().min(0).max(1),
-        a: z.number().min(0).max(1).optional()
-      }).optional(),
-      textColor: z.object({
-        r: z.number().min(0).max(1),
-        g: z.number().min(0).max(1),
-        b: z.number().min(0).max(1),
-        a: z.number().min(0).max(1).optional()
-      }).optional(),
-      fontSize: z.number().min(1).max(200).optional(),
-      fontWeight: z.number().min(100).max(1000).optional(),
-      cornerRadius: z.number().min(0).max(100).optional(),
-      name: z.string().min(1).max(100).optional(),
-      parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
-      // Batch support
-      buttons: z.array(z.object({
-        x: z.number().min(-10000).max(10000),
-        y: z.number().min(-10000).max(10000),
-        width: z.number().min(1).max(2000).optional(),
-        height: z.number().min(1).max(2000).optional(),
-        text: z.string().min(1).max(200).optional(),
-        background: z.object({
-          r: z.number().min(0).max(1),
-          g: z.number().min(0).max(1),
-          b: z.number().min(0).max(1),
-          a: z.number().min(0).max(1).optional()
-        }).optional(),
-        textColor: z.object({
-          r: z.number().min(0).max(1),
-          g: z.number().min(0).max(1),
-          b: z.number().min(0).max(1),
-          a: z.number().min(0).max(1).optional()
-        }).optional(),
-        fontSize: z.number().min(1).max(200).optional(),
-        fontWeight: z.number().min(100).max(1000).optional(),
-        cornerRadius: z.number().min(0).max(100).optional(),
-        name: z.string().min(1).max(100).optional(),
-        parentId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" }).optional(),
-      })).optional()
-    },
+    CreateButtonSchema.shape,
     {
       title: "Create Button",
       idempotentHint: true,

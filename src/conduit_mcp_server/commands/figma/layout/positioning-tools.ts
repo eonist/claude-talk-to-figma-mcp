@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
+import { MoveNodeSchema } from "./schema/move-node-schema.js";
 //import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
@@ -21,36 +21,7 @@ export function registerPositioningCommands(server: McpServer, figmaClient: Figm
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the moved node ID(s) and new position(s).
 `,
-    {
-      move: z.object({
-        nodeId: z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("The unique Figma node ID to move. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-        x: z.number()
-          .min(-10000)
-          .max(10000)
-          .describe("New X position. Must be between -10,000 and 10,000."),
-        y: z.number()
-          .min(-10000)
-          .max(10000)
-          .describe("New Y position. Must be between -10,000 and 10,000."),
-      }).optional(),
-      moves: z.array(
-        z.object({
-          nodeId: z.string()
-            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-            .describe("The unique Figma node ID to move. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-          x: z.number()
-            .min(-10000)
-            .max(10000)
-            .describe("New X position. Must be between -10,000 and 10,000."),
-          y: z.number()
-            .min(-10000)
-            .max(10000)
-            .describe("New Y position. Must be between -10,000 and 10,000."),
-        })
-      ).optional()
-    },
+    MoveNodeSchema.shape,
     {
       title: "Move Node(s)",
       idempotentHint: true,
