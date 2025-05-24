@@ -21,14 +21,13 @@ function deepEqual(a, b) {
 /**
  * Assert that the response echoes the command and params as sent.
  */
-function assertEchoedCommand(expectedCommand, expectedParams) {
+function assertEchoedCommand(expectedCommand, expectedParams, paramKey) {
   return (response) => {
     if (!response) return { pass: false, reason: 'No response received' };
     if (response.command !== expectedCommand) {
       return { pass: false, reason: `Expected command "${expectedCommand}", got "${response.command}"` };
     }
-    // Check params (rectangle, ellipse, or text)
-    const actual = response.params && (response.params.rectangle || response.params.ellipse || response.params.text);
+    const actual = response.params && response.params[paramKey];
     if (expectedParams) {
       for (const key of Object.keys(expectedParams)) {
         if (typeof expectedParams[key] === "object" && expectedParams[key] !== null) {

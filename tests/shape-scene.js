@@ -7,7 +7,7 @@ function create_rectangle(params) {
     channel,
     command: 'create_rectangle',
     params: { rectangle: params },
-    assert: assertEchoedCommand('create_rectangle', params),
+    assert: assertEchoedCommand('create_rectangle', params, 'rectangle'),
     label: `create_rectangle (${params.name || ''})`
   });
 }
@@ -18,7 +18,7 @@ function create_ellipse(params) {
     channel,
     command: 'create_ellipse',
     params: { ellipse: params },
-    assert: assertEchoedCommand('create_ellipse', params),
+    assert: assertEchoedCommand('create_ellipse', params, 'ellipse'),
     label: `create_ellipse (${params.name || ''})`
   });
 }
@@ -29,7 +29,7 @@ function create_frame(params) {
     channel,
     command: 'create_frame',
     params: { frame: params },
-    assert: assertEchoedCommand('create_frame', params),
+    assert: assertEchoedCommand('create_frame', params, 'frame'),
     label: `create_frame (${params.name || ''})`
   });
 }
