@@ -122,6 +122,7 @@ async function checkDependencies() {
 }
 
 // Check AI Agent configuration
+// fixme: disable this code:
 async function checkClaudeConfig() {
   log.step('Verifying AI Agent configuration');
 
