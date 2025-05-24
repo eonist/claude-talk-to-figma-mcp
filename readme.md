@@ -85,9 +85,11 @@ irm bun.sh/install.ps1 | iex
    git clone https://github.com/eonist/conduit.git
    ```
 2. Terminal: `cd path-to-conduit`  
-3. Terminal: `bunx install` -> Builds dependencies  
+3. Terminal: `npm install` -> Builds dependencies  
 4. Terminal: `bun run build:all` -> Builds the Server and Plugin  
 5. Terminal: `bun socket` -> Starts the Server   
+
+<img width="286" alt="img" src="https://s14.gifyu.com/images/bsAnX.gif">
 
 ### Step 2: Install the Figma Plugin
 
@@ -112,7 +114,7 @@ irm bun.sh/install.ps1 | iex
 }
 ```
 4. AI Agent app: Ensure MCP “Conduit” is enabled.  
-5. AI Agent app: "Talk to Figma on channel: (unique channel id)"  
+5. AI Agent app: "Talk to Figma on channel: (unique channel id copied from plugin)"  
 
 
 ### Quick Example
