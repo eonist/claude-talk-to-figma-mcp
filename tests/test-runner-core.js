@@ -65,11 +65,12 @@ function runStep({ ws, channel, command, params, assert, label }) {
     const onMessage = (data) => {
       try {
         const packet = JSON.parse(data.toString());
-        if (packet.message && packet.message.id === id) {
+        // Only process messages with matching ID that have result or error (ignore echo messages)
+        if (packet.message && packet.message.id === id && (packet.message.result || packet.message.error)) {
           ws.off('message', onMessage);
           clearTimeout(timeout);
-          // Prefer result, then error, then raw
-          let resp = packet.message.result ?? packet.message.error ?? packet.message;
+          // Prefer result, then error
+          let resp = packet.message.result ?? packet.message.error;
           const assertion = assert ? assert(resp) : { pass: true };
           resolve({
             label,

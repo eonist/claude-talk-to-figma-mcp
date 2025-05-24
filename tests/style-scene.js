@@ -10,14 +10,13 @@ async function create_gradient(params) {
     command: "create_gradient_style",
     params: { gradients: params },
     assert: (response) => {
-      // Accept any response, we'll extract the style ID below
-      return { pass: !!(response && (response.id || (response.result && response.result.id))), response };
+      // Accept any response that has an id, we'll extract the style ID below
+      return { pass: !!(response && response.id), response };
     },
     label: `create_gradient (${params.name || ""})`
   });
-  // The style ID may be in result.response.id or result.response.result.id
-  const styleId = (result.response && result.response.id) ||
-                  (result.response && result.response.result && result.response.result.id);
+  // The style ID is in result.response.id from the actual result message
+  const styleId = (result.response && result.response.id);
   return { styleId, result };
 }
 
@@ -33,13 +32,13 @@ async function create_rectangle(params) {
     assert: (response) => {
       // Log the actual response for debugging
       console.log("create_rectangle response:", response);
-      return { pass: true, response };
+      // Accept any response that has ids array
+      return { pass: !!(response && response.ids && response.ids.length > 0), response };
     },
     label: `create_rectangle (${params.name || ""})`
   });
-  // The nodeId may be in result.response.nodeId or result.response.result.nodeId
-  const nodeId = (result.response && result.response.nodeId) ||
-                 (result.response && result.response.result && result.response.result.nodeId);
+  // The nodeId is in result.response.ids[0] based on server logs
+  const nodeId = (result.response && result.response.ids && result.response.ids[0]);
   return { nodeId, result };
 }
 
