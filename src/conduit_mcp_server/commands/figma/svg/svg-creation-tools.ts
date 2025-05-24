@@ -60,7 +60,7 @@ Returns:
           .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
           .optional()
           .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
-      }).optional(),
+      }).optional().describe("A single SVG vector configuration. Optional."),
       svgs: z.array(
         z.object({
           svg: z.string()
@@ -89,7 +89,7 @@ Returns:
             .optional()
             .describe("Optional. Figma node ID of the parent. If provided, must be a string in the format '123:456'."),
         })
-      ).optional(),
+      ).optional().describe("An array of SVG vector configurations for batch insertion. Optional."),
     },
     {
       title: "Insert SVG Vector(s)",

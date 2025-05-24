@@ -121,8 +121,8 @@ export function registerTextStyleTools(server: McpServer, figmaClient: FigmaClie
   server.tool(
     MCP_COMMANDS.GET_TEXT_STYLE,
     {
-      nodeId: z.string().optional(),
-      nodeIds: z.array(z.string()).optional()
+      nodeId: z.string().optional().describe("The ID of a single node to extract text style from. Optional."),
+      nodeIds: z.array(z.string()).optional().describe("An array of node IDs to extract text style from in batch. Optional.")
     },
     async ({ nodeId, nodeIds }) => {
       const ids: string[] = [];
