@@ -156,13 +156,10 @@ Returns:
         // results is an array of rectangle info objects
         const validResults = results.filter(r => r && r.result);
         return {
-          content: validResults.flatMap(r => [
-            {
-              type: "text",
-              text: `Created rectangle: ${r.result.id}`
-            },
-            {
-              type: "text",
+          content: validResults.map(r => ({
+            type: "text",
+            text: JSON.stringify({
+              message: `Created rectangle: ${r.result.id}`,
               id: r.result.id,
               name: r.result.name || "Rectangle",
               x: r.result.x,
@@ -171,8 +168,8 @@ Returns:
               height: r.result.height,
               fillColor: r.result.fillColor,
               cornerRadius: r.result.cornerRadius
-            }
-          ])
+            })
+          }))
         };
       } catch (err) {
         // Return a structured error response.
