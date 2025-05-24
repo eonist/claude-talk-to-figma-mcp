@@ -3,10 +3,13 @@
  * MCP/Figma Test Runner: Runs a sequence of scenes (each with steps) and checks responses.
  *
  * Usage:
- *   node scripts/test-runner.js run --channel mychannel
+ *   node scripts/test-runner.js run --channel 9c73ze4s
  */
 
 import WebSocket from 'ws';
+
+let ws;
+let channel;
 
 // --- CLI Argument Parsing ---
 function parseArgs() {
@@ -27,59 +30,76 @@ function parseArgs() {
 
 // --- Test Step/Scene/Sequence Definitions ---
 
-// Assertion helpers
-function assertEchoedCommand(expectedCommand) {
+/**
+ * Assert that the response's content[0].text (parsed as JSON) contains all properties in expectedProps.
+ * Ignores id/message fields.
+ */
+function assertProperties(expectedProps) {
   return (response) => {
-    if (!response) return { pass: false, reason: 'No response received' };
-    if (response.command !== expectedCommand) {
-      return { pass: false, reason: `Expected command "${expectedCommand}", got "${response.command}"` };
+    if (!response || !Array.isArray(response.content) || response.content.length === 0) {
+      return { pass: false, reason: 'No content array in response' };
+    }
+    const first = response.content[0];
+    if (first.type !== 'text' || !first.text) {
+      return { pass: false, reason: 'No text field in content' };
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(first.text);
+    } catch {
+      return { pass: false, reason: 'Text field is not valid JSON' };
+    }
+    for (const key of Object.keys(expectedProps)) {
+      if (parsed[key] !== expectedProps[key]) {
+        return { pass: false, reason: `Property "${key}" expected ${expectedProps[key]}, got ${parsed[key]}` };
+      }
     }
     return { pass: true };
   };
 }
 
-// Steps
-function create_rectangle(channel, ws, params) {
+// Steps (DRY: pass params once, used for both command and assertion)
+function create_rectangle(params) {
   return runStep({
     ws,
     channel,
     command: 'create_rectangle',
     params: { rectangle: params },
-    assert: assertEchoedCommand('create_rectangle'),
+    assert: assertProperties(params),
     label: `create_rectangle (${params.name || ''})`
   });
 }
 
-function create_ellipse(channel, ws, params) {
+function create_ellipse(params) {
   return runStep({
     ws,
     channel,
     command: 'create_ellipse',
     params: { ellipse: params },
-    assert: assertEchoedCommand('create_ellipse'),
+    assert: assertProperties(params),
     label: `create_ellipse (${params.name || ''})`
   });
 }
 
-function create_text(channel, ws, params) {
+function create_text(params) {
   return runStep({
     ws,
     channel,
     command: 'set_text',
     params: { text: params },
-    assert: assertEchoedCommand('set_text'),
+    assert: assertProperties(params),
     label: `set_text (${params.name || ''})`
   });
 }
 
 // Scenes
-async function shapeScene(channel, ws, results) {
-  results.push(await create_rectangle(channel, ws, { x: 0, y: 0, width: 200, height: 100, name: 'UnitTestRectangle' }));
-  results.push(await create_ellipse(channel, ws, { x: 50, y: 50, width: 100, height: 100, name: 'UnitTestEllipse' }));
+async function shapeScene(results) {
+  results.push(await create_rectangle({ x: 0, y: 0, width: 200, height: 100, name: 'UnitTestRectangle' }));
+  results.push(await create_ellipse({ x: 50, y: 50, width: 100, height: 100, name: 'UnitTestEllipse' }));
 }
 
-async function textScene(channel, ws, results) {
-  results.push(await create_text(channel, ws, { x: 100, y: 200, text: 'UnitTestText', name: 'UnitTestTextNode' }));
+async function textScene(results) {
+  results.push(await create_text({ x: 100, y: 200, text: 'UnitTestText', name: 'UnitTestTextNode' }));
 }
 
 // --- Step Runner ---
@@ -146,9 +166,9 @@ async function main() {
     process.exit(1);
   }
   const port = process.env.PORT || 3055;
-  const channel = opts.channel || Math.random().toString(36).slice(2, 10);
+  channel = opts.channel || Math.random().toString(36).slice(2, 10);
 
-  const ws = new WebSocket(`ws://localhost:${port}`);
+  ws = new WebSocket(`ws://localhost:${port}`);
 
   ws.on('error', (err) => {
     console.error('WebSocket error:', err);
@@ -159,7 +179,7 @@ async function main() {
     ws.on('open', () => {
       console.log(`Joined channel: ${channel}`);
       ws.send(JSON.stringify({ type: 'join', channel }));
-      setTimeout(resolve, 200); // Give time for join
+      setTimeout(resolve, 1000); // Increased delay to 1 second for join to process
     });
   });
 
@@ -167,7 +187,7 @@ async function main() {
   const sequence = [shapeScene, textScene];
   const results = [];
   for (const scene of sequence) {
-    await scene(channel, ws, results);
+    await scene(results);
   }
 
   ws.close();
