@@ -56,7 +56,7 @@ To test if the Figma plugin is correctly communicating with the Conduit MCP serv
 
 AI Agent should be able to communicate with Figma and return information about the document.
 
-### 4. Claude-MCP-Figma Integration Tests
+### 4. Integration Tests
 
 | Test case | Steps | Expected result |
 | -------------- | ----- | ------------------ |
