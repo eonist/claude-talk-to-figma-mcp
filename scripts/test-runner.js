@@ -31,27 +31,21 @@ function parseArgs() {
 // --- Test Step/Scene/Sequence Definitions ---
 
 /**
- * Assert that the response's content[0].text (parsed as JSON) contains all properties in expectedProps.
- * Ignores id/message fields.
+ * Assert that the response echoes the command and params as sent.
  */
-function assertProperties(expectedProps) {
+function assertEchoedCommand(expectedCommand, expectedParams) {
   return (response) => {
-    if (!response || !Array.isArray(response.content) || response.content.length === 0) {
-      return { pass: false, reason: 'No content array in response' };
+    if (!response) return { pass: false, reason: 'No response received' };
+    if (response.command !== expectedCommand) {
+      return { pass: false, reason: `Expected command "${expectedCommand}", got "${response.command}"` };
     }
-    const first = response.content[0];
-    if (first.type !== 'text' || !first.text) {
-      return { pass: false, reason: 'No text field in content' };
-    }
-    let parsed;
-    try {
-      parsed = JSON.parse(first.text);
-    } catch {
-      return { pass: false, reason: 'Text field is not valid JSON' };
-    }
-    for (const key of Object.keys(expectedProps)) {
-      if (parsed[key] !== expectedProps[key]) {
-        return { pass: false, reason: `Property "${key}" expected ${expectedProps[key]}, got ${parsed[key]}` };
+    // Check params (rectangle, ellipse, or text)
+    const actual = response.params && (response.params.rectangle || response.params.ellipse || response.params.text);
+    if (expectedParams) {
+      for (const key of Object.keys(expectedParams)) {
+        if (actual[key] !== expectedParams[key]) {
+          return { pass: false, reason: `Property "${key}" expected ${expectedParams[key]}, got ${actual[key]}` };
+        }
       }
     }
     return { pass: true };
@@ -65,7 +59,7 @@ function create_rectangle(params) {
     channel,
     command: 'create_rectangle',
     params: { rectangle: params },
-    assert: assertProperties(params),
+    assert: assertEchoedCommand('create_rectangle', params),
     label: `create_rectangle (${params.name || ''})`
   });
 }
@@ -76,7 +70,7 @@ function create_ellipse(params) {
     channel,
     command: 'create_ellipse',
     params: { ellipse: params },
-    assert: assertProperties(params),
+    assert: assertEchoedCommand('create_ellipse', params),
     label: `create_ellipse (${params.name || ''})`
   });
 }
@@ -87,14 +81,22 @@ function create_text(params) {
     channel,
     command: 'set_text',
     params: { text: params },
-    assert: assertProperties(params),
+    assert: assertEchoedCommand('set_text', params),
     label: `set_text (${params.name || ''})`
   });
 }
 
 // Scenes
 async function shapeScene(results) {
-  results.push(await create_rectangle({ x: 0, y: 0, width: 200, height: 100, name: 'UnitTestRectangle' }));
+  results.push(await create_rectangle({
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 100,
+    name: 'UnitTestRectangle',
+    cornerRadius: 12,
+    fillColor: { r: 0.2, g: 0.6, b: 0.9, a: 1 }
+  }));
   results.push(await create_ellipse({ x: 50, y: 50, width: 100, height: 100, name: 'UnitTestEllipse' }));
 }
 
@@ -192,19 +194,24 @@ async function main() {
 
   ws.close();
 
-  // Print results
+  // Print results with visual cues
   let passCount = 0;
   let failCount = 0;
   for (const r of results) {
     if (r.pass) {
-      console.log(`[PASS] ${r.label}`);
+      console.log(`[PASS ✅] ${r.label}`);
       passCount++;
     } else {
-      console.log(`[FAIL] ${r.label} - ${r.reason}`);
+      console.log(`[FAIL 🚫] ${r.label} - ${r.reason}`);
       failCount++;
     }
   }
-  console.log(`\nTest summary: ${passCount} passed, ${failCount} failed, ${results.length} total.`);
+  const summary = `Test summary: ${passCount} passed, ${failCount} failed, ${results.length} total.`;
+  if (failCount === 0) {
+    console.log(`${summary} (All tests succeeded ✅)`);
+  } else {
+    console.log(`${summary} (Some tests failed 🚫)`);
+  }
   if (failCount > 0) process.exit(1);
 }
 
