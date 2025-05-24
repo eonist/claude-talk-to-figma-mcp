@@ -6,7 +6,7 @@ function create_text(params) {
     ws,
     channel,
     command: 'set_text',
-    params: { text: params },
+    params: params,
     assert: assertEchoedCommand('set_text', params),
     label: `set_text (${params.name || ''})`
   });
