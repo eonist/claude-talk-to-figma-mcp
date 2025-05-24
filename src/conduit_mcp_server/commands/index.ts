@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../clients/figma-client/index.js";
 import { registerChannelCommand } from "./channel.js";
+import { CommandResult, MCP_COMMANDS } from "../types/commands.js";
 import { logger } from "../utils/logger.js";
 // register
 import { registerComponentCommands } from "./figma/component/index.js";
@@ -49,6 +50,7 @@ export function registerAllCommands(server: McpServer): void {
     registerSVGCommands(server, figmaClient);
     registerTextCommands(server, figmaClient);
     registerVectorCommands(server, figmaClient);
+    logger.info(MCP_COMMANDS.SET_CORNER_RADIUS);
     logger.info("All commands registered successfully");
   } catch (error) {
     logger.error(`Error registering commands: ${error instanceof Error ? error.message : String(error)}`);
