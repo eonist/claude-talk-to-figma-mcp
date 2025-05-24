@@ -9,7 +9,7 @@ export async function createGradientStyle(params) {
   const gradientList = Array.isArray(gradients) ? gradients : [gradients];
   const results = [];
   for (const gradient of gradientList) {
-    const { name, gradientType, stops } = gradient || {};
+    const { name, gradientType, stops, transformMatrix } = gradient || {};
     if (!name || !gradientType || !Array.isArray(stops)) {
       throw new Error("Missing or invalid parameters for create_gradient_style");
     }
@@ -21,9 +21,20 @@ export async function createGradientStyle(params) {
       ANGULAR: "GRADIENT_ANGULAR",
       DIAMOND: "GRADIENT_DIAMOND"
     };
+    
+    // Convert 2x2 transformMatrix to Figma's 3x2 gradientTransform format
+    let gradientTransform = [[1, 0, 0], [0, 1, 0]]; // Default identity matrix
+    if (transformMatrix && Array.isArray(transformMatrix) && transformMatrix.length === 2) {
+      // Convert 2x2 matrix [[a, b], [c, d]] to 3x2 matrix [[a, b, 0], [c, d, 0]]
+      gradientTransform = [
+        [transformMatrix[0][0] || 1, transformMatrix[0][1] || 0, 0],
+        [transformMatrix[1][0] || 0, transformMatrix[1][1] || 1, 0]
+      ];
+    }
+    
     paintStyle.paints = [{
       type: typeMap[gradientType],
-      gradientTransform: [[1, 0, 0], [0, 1, 0]],
+      gradientTransform: gradientTransform,
       gradientStops: stops.map(s => ({
         position: s.position,
         color: { r: s.color[0], g: s.color[1], b: s.color[2], a: s.color[3] }
