@@ -68,15 +68,15 @@ async function set_gradient({ nodeId, gradientStyleId }) {
 export async function styleScene(results) {
   // 1. Create the gradient style
   const gradientParams = {
-    name: "UnitTestGradient",
+    name: "UnitTestGradientStyle",
     gradientType: "LINEAR",
     stops: [
       { position: 0, color: [1, 0, 0, 1] }, // Red RGBA
       { position: 1, color: [0, 0, 1, 1] }  // Blue RGBA
     ],
     transformMatrix: [
-      [0, -1],  // 90-degree counterclockwise rotation
-      [1, 0]
+      [0, 1, 0],     // 90-degree rotation: cos(90°), sin(90°), x-translation
+      [-1, 0, 1]     // -sin(90°), cos(90°), y-translation
     ]
   };
   const { styleId, result: gradResult } = await create_gradient(gradientParams);
@@ -88,7 +88,7 @@ export async function styleScene(results) {
     y: 0,
     width: 100,
     height: 50,
-    name: "GradientRect"
+    name: "GradientRectTest"
   };
   const { nodeId, result: rectResult } = await create_rectangle(rectParams);
   results.push(rectResult);
