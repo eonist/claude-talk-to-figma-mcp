@@ -235,18 +235,34 @@ export interface SetTextCaseParams {
  * - entries: (array, optional) Batch of variable operations.
  * Each entry can be create (no id), update (id present), or delete (id + delete: true).
  */
+/**
+ * Represents a single Figma Variable operation (create, update, or delete).
+ */
 export interface VariableEntry {
-  id?: string; // If present, update or delete; if absent, create
-  name?: string; // Required for create/update
-  type?: string; // e.g., "FLOAT", "COLOR", etc.
-  value?: any;   // The value to set (type depends on variable type)
-  collection?: string; // Collection ID or name
-  mode?: string; // Optional: for multi-mode variables
-  delete?: boolean; // If true, delete the variable with this id
+  /** The unique ID of the variable. If present, this entry will update or delete the variable; if absent, a new variable will be created. */
+  id?: string;
+  /** The name of the variable. Required for create and update operations. */
+  name?: string;
+  /** The type of the variable (e.g., "FLOAT", "COLOR", "STRING", "BOOLEAN"). */
+  type?: string;
+  /** The value to set for the variable. The type depends on the variable type. */
+  value?: any;
+  /** The collection ID or name this variable belongs to. */
+  collection?: string;
+  /** The mode for multi-mode variables (e.g., "light", "dark"). Optional. */
+  mode?: string;
+  /** If true, this entry will delete the variable with the given ID. */
+  delete?: boolean;
   // ...other fields as needed
 }
+
+/**
+ * Parameters for the set_variable command (create, update, or delete Figma Variables).
+ */
 export interface SetVariableParams {
+  /** A single variable operation to perform (create, update, or delete). */
   entry?: VariableEntry;
+  /** An array of variable operations to perform in batch. */
   entries?: VariableEntry[];
 }
 
@@ -264,5 +280,127 @@ export interface SetNodePropParams {
     visible?: boolean;
     // Extendable for more node properties
     [key: string]: any;
+  };
+}
+
+/**
+ * Parameters for the get_variable command (query Figma Variables).
+ */
+export interface GetVariableParams {
+  /** The type of variable to query (e.g., "COLOR", "NUMBER", "STRING", "BOOLEAN"). Optional. */
+  type?: string;
+  /** The collection ID or name to filter variables by. Optional. */
+  collection?: string;
+  /** The mode to filter variables by (e.g., "light", "dark"). Optional. */
+  mode?: string;
+  /** An array of variable IDs to query. Optional. */
+  ids?: string[];
+}
+
+/**
+ * Parameters for the apply_variable_to_node command (apply a Figma Variable to a node property).
+ */
+export interface ApplyVariableToNodeParams {
+  /** The ID of the node to which the variable will be applied. */
+  nodeId: string;
+  /** The ID of the variable to apply. */
+  variableId: string;
+  /** The property of the node to set (e.g., "fill", "stroke", "opacity"). */
+  property: string;
+}
+
+/**
+ * Parameters for the switch_variable_mode command (switch the mode for a Figma Variable collection).
+ */
+export interface SwitchVariableModeParams {
+  /** The collection ID or name whose mode should be switched. */
+  collection: string;
+  /** The mode to switch to (e.g., "light", "dark"). */
+  mode: string;
+}
+
+/**
+ * Parameters for the get_annotation command (get annotation(s) for one or more Figma nodes).
+ */
+export interface GetAnnotationParams {
+  /** The ID of a single node to get annotations for. Optional. */
+  nodeId?: string;
+  /** An array of node IDs to get annotations for in batch. Optional. */
+  nodeIds?: string[];
+}
+
+/**
+ * Parameters for the set_annotation command (set, update, or delete annotation(s) for one or more Figma nodes).
+ */
+export interface SetAnnotationParams {
+  /** A single annotation operation to perform. Optional. */
+  entry?: {
+    /** The ID of the node to annotate. */
+    nodeId: string;
+    /** The annotation data to set or update. Optional. */
+    annotation?: {
+      /** The annotation label (plain text). Optional. */
+      label?: string;
+      /** The annotation label in Markdown format. Optional. */
+      labelMarkdown?: string;
+    };
+    /** If true, delete the annotation for this node. Optional. */
+    delete?: boolean;
+  };
+  /** An array of annotation operations to perform in batch. Optional. */
+  entries?: Array<{
+    /** The ID of the node to annotate. */
+    nodeId: string;
+    /** The annotation data to set or update. Optional. */
+    annotation?: {
+      /** The annotation label (plain text). Optional. */
+      label?: string;
+      /** The annotation label in Markdown format. Optional. */
+      labelMarkdown?: string;
+    };
+    /** If true, delete the annotation for this node. Optional. */
+    delete?: boolean;
+  }>;
+}
+
+/**
+ * Parameters for the boolean command (perform boolean operations on Figma nodes).
+ */
+export interface BooleanParams {
+  /** The boolean operation to perform: "union", "subtract", "intersect", or "exclude". */
+  operation: "union" | "subtract" | "intersect" | "exclude";
+  /** If true, perform the operation on the current selection. Optional. */
+  selection?: boolean;
+  /** The ID of a single node to include in the operation. Optional. */
+  nodeId?: string;
+  /** An array of node IDs to include in the operation. Must contain at least 1 and at most 100 items. Optional. */
+  nodeIds?: string[];
+}
+
+/**
+ * Parameters for the set_node command (set or insert one or more child nodes into parent nodes).
+ */
+export interface SetNodeParams {
+  /** The ID of the parent node. Required if not using 'operations'. */
+  parentId?: string;
+  /** The ID of the child node to insert. Required if not using 'operations'. */
+  childId?: string;
+  /** The index at which to insert the child node (0-based). Optional. */
+  index?: number;
+  /** An array of set/insert operations to perform in batch. Optional. */
+  operations?: Array<{
+    /** The ID of the parent node. */
+    parentId: string;
+    /** The ID of the child node to insert. */
+    childId: string;
+    /** The index at which to insert the child node (0-based). Optional. */
+    index?: number;
+    /** If true, maintain the child's absolute position. Optional. */
+    maintainPosition?: boolean;
+  }>;
+  /** Options for the operation (e.g., skipErrors). Optional. */
+  options?: {
+    /** If true, skip errors and continue processing remaining operations. Optional. */
+    skipErrors?: boolean;
   };
 }
