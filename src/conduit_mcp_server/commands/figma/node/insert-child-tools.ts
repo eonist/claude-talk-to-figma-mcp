@@ -53,8 +53,12 @@ Returns:
         maintainPosition: z.boolean().optional().describe("Maintain child's absolute position (default: false)")
       })).optional(),
       options: z.object({
-        skipErrors: z.boolean().optional()
-      }).optional()
+        skipErrors: z.boolean()
+          .optional()
+          .describe("If true, skip errors and continue processing remaining operations in batch mode.")
+      })
+      .optional()
+      .describe("Options for the operation (e.g., skipErrors). Optional.")
     },
     {
       title: "Insert Child Node(s)",
@@ -112,7 +116,15 @@ Returns:
           };
           return { content: [{ type: "text", text: JSON.stringify(response) }] };
         }
-        const results = [];
+        type InsertChildResult = {
+          parentId: string;
+          childId: string;
+          index?: number;
+          success: boolean;
+          error?: string;
+          meta?: any;
+        };
+        const results: InsertChildResult[] = [];
         await processBatch(
           operations,
           async (op: InsertChildOp) => {

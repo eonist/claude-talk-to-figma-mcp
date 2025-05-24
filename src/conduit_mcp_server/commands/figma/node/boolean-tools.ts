@@ -31,10 +31,21 @@ Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the result.
 `,
     {
-      operation: z.enum(["union", "subtract", "intersect", "exclude"]),
-      selection: z.boolean().optional(),
-      nodeId: z.string().refine(isValidNodeId, { message: "Must be a valid Figma node ID." }).optional(),
-      nodeIds: NodeIdsArraySchema(1, 100).optional(),
+      operation: z
+        .enum(["union", "subtract", "intersect", "exclude"])
+        .describe("The boolean operation to perform: 'union', 'subtract', 'intersect', or 'exclude'."),
+      selection: z
+        .boolean()
+        .optional()
+        .describe("If true, use the current Figma selection for the operation. If true, nodeId and nodeIds are ignored."),
+      nodeId: z
+        .string()
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID." })
+        .optional()
+        .describe("The ID of a single node to include in the operation. Must be a valid Figma node ID."),
+      nodeIds: NodeIdsArraySchema(1, 100)
+        .optional()
+        .describe("An array of node IDs to include in the operation. Must contain at least 1 and at most 100 items."),
     },
     {
       title: "Boolean Operation",
