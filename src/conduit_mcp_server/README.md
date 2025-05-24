@@ -274,6 +274,11 @@ Use bunx or npx for command.
 }
 ```
 
+### To get logger consol messages from server
+start the server this way:
+- Terminal: `cd conduit`
+- Terminal: `node dist/conduit_mcp_server/server.cjs`
+
 
 ## License
 
