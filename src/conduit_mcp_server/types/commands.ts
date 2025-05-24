@@ -23,6 +23,8 @@ import {
 // Example: add more param types as needed from command-params.js
 
 // Tuple of command definitions: name and paramType (for type safety)
+
+// These must match the MCP_COMMANDS names. So MCP_COMMANDS.GET_PAGE -> "get_page", getPage wont work. and will return undifned and cause client not to work
 export const COMMAND_DEFS = [
   { name: "join", paramType: {} as any },
   { name: "get_document_info", paramType: {} as any },
