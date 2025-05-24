@@ -158,8 +158,6 @@ export async function createBoundedText(params) {
   let textsArr;
   if (params.texts) {
     textsArr = params.texts;
-  } else if (params.text) {
-    textsArr = [params.text];
   } else {
     textsArr = [params];
   }
