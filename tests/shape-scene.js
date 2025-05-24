@@ -1,4 +1,26 @@
-import { create_rectangle, create_ellipse, randomColor } from "./test-runner.js";
+import { ws, channel, assertEchoedCommand, randomColor, runStep } from "./test-runner.js";
+
+function create_rectangle(params) {
+  return runStep({
+    ws,
+    channel,
+    command: 'create_rectangle',
+    params: { rectangle: params },
+    assert: assertEchoedCommand('create_rectangle', params),
+    label: `create_rectangle (${params.name || ''})`
+  });
+}
+
+function create_ellipse(params) {
+  return runStep({
+    ws,
+    channel,
+    command: 'create_ellipse',
+    params: { ellipse: params },
+    assert: assertEchoedCommand('create_ellipse', params),
+    label: `create_ellipse (${params.name || ''})`
+  });
+}
 
 export async function shapeScene(results) {
   results.push(await create_rectangle({
@@ -23,3 +45,5 @@ export async function shapeScene(results) {
     strokeWeight: Math.floor(Math.random() * 8) + 1
   }));
 }
+
+export { create_rectangle, create_ellipse };

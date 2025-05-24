@@ -86,39 +86,6 @@ function assertEchoedCommand(expectedCommand, expectedParams) {
   };
 }
 
-// Steps (DRY: pass params once, used for both command and assertion)
-function create_rectangle(params) {
-  return runStep({
-    ws,
-    channel,
-    command: 'create_rectangle',
-    params: { rectangle: params },
-    assert: assertEchoedCommand('create_rectangle', params),
-    label: `create_rectangle (${params.name || ''})`
-  });
-}
-
-function create_ellipse(params) {
-  return runStep({
-    ws,
-    channel,
-    command: 'create_ellipse',
-    params: { ellipse: params },
-    assert: assertEchoedCommand('create_ellipse', params),
-    label: `create_ellipse (${params.name || ''})`
-  });
-}
-
-function create_text(params) {
-  return runStep({
-    ws,
-    channel,
-    command: 'set_text',
-    params: { text: params },
-    assert: assertEchoedCommand('set_text', params),
-    label: `set_text (${params.name || ''})`
-  });
-}
 
 import { shapeScene } from "./shape-scene.js";
 import { textScene } from "./text-scene.js";
@@ -240,10 +207,11 @@ main().catch(err => {
 });
 
 export {
-  create_rectangle,
-  create_ellipse,
-  create_text,
+  runStep,
+  assertEchoedCommand,
   randomColor,
   randomFontSize,
-  randomFontWeight
+  randomFontWeight,
+  ws,
+  channel
 };
