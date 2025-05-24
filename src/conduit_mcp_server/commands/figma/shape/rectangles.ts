@@ -138,22 +138,41 @@ Returns:
             // logger.info(`💥 createRectangle params: ${JSON.stringify(params)}`);
             const result = await figmaClient.createRectangle(params);
             // Support both { id } and { ids: [...] } return shapes
+            let nodeId = null;
             if (result && typeof result.id === "string") {
-              return result.id;
+              nodeId = result.id;
             } else if (result && Array.isArray(result.ids) && result.ids.length > 0) {
-              return result.ids[0];
+              nodeId = result.ids[0];
             } else {
               throw new Error("Failed to create rectangle: missing node ID from figmaClient.createRectangle");
             }
+            // Return full rectangle info for json output
+            return {
+              id: nodeId,
+              ...cfg
+            };
           }
         );
-        const nodeIds = results.map(r => r.result).filter(Boolean);
+        // results is an array of rectangle info objects
+        const validResults = results.filter(r => r && r.result);
         return {
-          success: true,
-          message: nodeIds.length === 1
-            ? `Rectangle created successfully.`
-            : `Rectangles created successfully.`,
-          nodeIds
+          content: validResults.flatMap(r => [
+            {
+              type: "text",
+              text: `Created rectangle: ${r.result.id}`
+            },
+            {
+              type: "json",
+              id: r.result.id,
+              name: r.result.name || "Rectangle",
+              x: r.result.x,
+              y: r.result.y,
+              width: r.result.width,
+              height: r.result.height,
+              fillColor: r.result.fillColor,
+              cornerRadius: r.result.cornerRadius
+            }
+          ])
         };
       } catch (err) {
         // Return a structured error response.

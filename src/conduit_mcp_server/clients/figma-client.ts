@@ -30,7 +30,8 @@ import { sendCommandToFigma } from "../server/websocket.js";
  * - Layout operations
  */
 export class FigmaClient {
-  
+  // Methods are mixed in at runtime via Object.assign; explicit type declarations omitted for flexibility.
+
   /**
    * Executes a command on Figma
    * 
