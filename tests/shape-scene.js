@@ -23,6 +23,17 @@ function create_ellipse(params) {
   });
 }
 
+function create_frame(params) {
+  return runStep({
+    ws,
+    channel,
+    command: 'create_frame',
+    params: { frame: params },
+    assert: assertEchoedCommand('create_frame', params),
+    label: `create_frame (${params.name || ''})`
+  });
+}
+
 export async function shapeScene(results) {
   results.push(await create_rectangle({
     x: 0,
@@ -41,6 +52,16 @@ export async function shapeScene(results) {
     width: 100,
     height: 100,
     name: 'UnitTestEllipse',
+    fillColor: randomColor(),
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
+  }));
+  results.push(await create_frame({
+    x: 50,
+    y: 100,
+    width: 400,
+    height: 300,
+    name: 'Main Frame',
     fillColor: randomColor(),
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1

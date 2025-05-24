@@ -117,6 +117,45 @@
 
 # Examples:
 
+### set_text
+Creates one or more text elements in Figma. Accepts either a single text config (via the 'text' property) or an array of configs (via the 'texts' property). If 'width' and 'height' are provided, creates a bounded text box; otherwise, creates a regular text node.
+
+**Parameters:**
+- text (object, optional): A single text element configuration. Should include at least x, y, and text.
+- texts (array, optional): An array of text element configurations for batch creation.
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the created text node ID(s).
+
+**Example:**
+```json
+{
+  "command": "set_text",
+  "params": {
+    "text": {
+      "x": 100,
+      "y": 200,
+      "text": "Hello, Figma!",
+      "fontSize": 24,
+      "fontWeight": 700,
+      "fontColor": { "r": 0, "g": 0, "b": 0, "a": 1 },
+      "name": "Title"
+    }
+  }
+}
+```
+```json
+{
+  "command": "set_text",
+  "params": {
+    "texts": [
+      { "x": 10, "y": 20, "text": "First", "fontSize": 16 },
+      { "x": 120, "y": 20, "text": "Second", "fontWeight": 400 }
+    ]
+  }
+}
+```
+
 ### get_doc_pages
 Get information about all pages in the current Figma document.
 
