@@ -212,12 +212,22 @@ export async function createBoundedText(params) {
       };
       textNode.fills = [paintStyle];
 
+      // Set resizing logic based on width/height params:
+      // - Both width & height: Fixed size ("NONE")
+      // - Only width: Auto height ("HEIGHT")
+      // - Only height: Auto width ("WIDTH")
+      // - Neither: Auto width ("WIDTH")
       if (width !== undefined && height !== undefined) {
         textNode.textAutoResize = "NONE";
         textNode.resize(width, height);
       } else if (width !== undefined) {
         textNode.textAutoResize = "HEIGHT";
         textNode.resize(width, textNode.height);
+      } else if (height !== undefined) {
+        textNode.textAutoResize = "WIDTH";
+        textNode.resize(textNode.width, height);
+      } else {
+        textNode.textAutoResize = "WIDTH";
       }
 
       if (parentId) {
