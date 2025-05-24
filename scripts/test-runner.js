@@ -28,6 +28,15 @@ function parseArgs() {
   return opts;
 }
 
+function randomColor() {
+  return {
+    r: Math.random(),
+    g: Math.random(),
+    b: Math.random(),
+    a: 1
+  };
+}
+
 // --- Test Step/Scene/Sequence Definitions ---
 
 /**
@@ -113,7 +122,9 @@ async function shapeScene(results) {
     height: 100,
     name: 'UnitTestRectangle',
     cornerRadius: 12,
-    fillColor: { r: 0.2, g: 0.6, b: 0.9, a: 1 }
+    fillColor: randomColor(),
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
   }));
   results.push(await create_ellipse({
     x: 50,
@@ -121,9 +132,9 @@ async function shapeScene(results) {
     width: 100,
     height: 100,
     name: 'UnitTestEllipse',
-    fillColor: { r: 1, g: 0.8, b: 0.2, a: 1 },
-    strokeColor: { r: 0.1, g: 0.1, b: 0.1, a: 1 },
-    strokeWeight: 4
+    fillColor: randomColor(),
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
   }));
 }
 
