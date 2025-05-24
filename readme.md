@@ -60,10 +60,10 @@ Model Context Protocol (MCP) is the framework that allows an AI agent to communi
 
 ### Compatibility
 
-- VSCode w/ GitHub Copilot agent (Sonnet 3.7) (50 free Sonnet 3.5 requests per month)
-- VSCode w/ Cline (Multiple LLM's available)
-- Claude Desktop Application (Sonnet 3.7)
-- Cursor agent (Sonnet 3.7 / GPT 4.1)
+- VSCode w/ GitHub Copilot agent (Sonnet 4.0) (50 free Sonnet 3.5 requests per month)
+- VSCode w/ Cline (Multiple LLM's available, Gemini has $300 free credits)
+- Claude Desktop Application (Sonnet 4.0)
+- Cursor agent (Sonnet 4.0 / GPT 4.1 / Gemini 2.5 pro)
 
 ## Prerequisites
 
