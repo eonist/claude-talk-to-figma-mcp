@@ -73,6 +73,10 @@ export async function styleScene(results) {
     stops: [
       { position: 0, color: [1, 0, 0, 1] }, // Red RGBA
       { position: 1, color: [0, 0, 1, 1] }  // Blue RGBA
+    ],
+    transformMatrix: [
+      [0, -1],  // 90-degree counterclockwise rotation
+      [1, 0]
     ]
   };
   const { styleId, result: gradResult } = await create_gradient(gradientParams);
