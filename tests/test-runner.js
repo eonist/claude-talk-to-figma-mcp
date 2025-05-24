@@ -28,21 +28,8 @@ function parseArgs() {
   return opts;
 }
 
-function randomColor() {
-  return {
-    r: Math.random(),
-    g: Math.random(),
-    b: Math.random(),
-    a: 1
-  };
-}
-function randomFontSize() {
-  return Math.floor(Math.random() * 32) + 8; // 8 to 40 px
-}
-function randomFontWeight() {
-  const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
-  return weights[Math.floor(Math.random() * weights.length)];
-}
+// Import random helpers from helper.js
+import { randomColor, randomFontSize, randomFontWeight } from "./helper.js";
 
 // --- Test Step/Scene/Sequence Definitions ---
 
@@ -209,9 +196,6 @@ main().catch(err => {
 export {
   runStep,
   assertEchoedCommand,
-  randomColor,
-  randomFontSize,
-  randomFontWeight,
   ws,
   channel
 };

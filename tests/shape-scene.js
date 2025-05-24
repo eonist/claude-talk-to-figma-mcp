@@ -1,4 +1,5 @@
-import { ws, channel, assertEchoedCommand, randomColor, runStep } from "./test-runner.js";
+import { ws, channel, assertEchoedCommand, runStep } from "./test-runner.js";
+import { randomColor } from "./helper.js";
 
 function create_rectangle(params) {
   return runStep({
