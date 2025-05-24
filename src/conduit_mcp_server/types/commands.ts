@@ -20,19 +20,25 @@ export interface GridProperties {
   sectionSize?: number;
   offset?: number;
 }
-// fixme: add doc
+/**
+ * Parameters for setting, updating, or deleting a layout grid on a node.
+ */
 export interface SetGridEntry {
   nodeId: string;
   gridIndex?: number;
   properties?: GridProperties;
   delete?: boolean;
 }
-// fixme: add doc
+/**
+ * Parameters for the set_grid command, supporting single or batch grid operations.
+ */
 export interface SetGridParams {
   entry?: SetGridEntry;
   entries?: SetGridEntry[];
 }
-// fixme: add doc
+/**
+ * Parameters for the get_grid command, specifying one or more node IDs to query.
+ */
 export interface GetGridParams {
   nodeId?: string;
   nodeIds?: string[];
@@ -46,12 +52,17 @@ export interface GuideEntry {
   offset: number;
   delete?: boolean;
 }
-// fixme: add doc
+
+/**
+ * Parameters for the set_guide command, supporting single or batch guide operations.
+ */
 export interface SetGuideParams {
   guide?: GuideEntry;
   guides?: GuideEntry[];
 }
-// fixme: add doc
+/**
+ * Parameters for the get_guide command. No parameters required.
+ */
 export interface GetGuideParams {} // No params
 
 /**
@@ -62,14 +73,18 @@ export interface ConstraintEntry {
   horizontal: "left" | "right" | "center" | "scale" | "stretch";
   vertical: "top" | "bottom" | "center" | "scale" | "stretch";
 }
-// fixme: add doc
+/**
+ * Parameters for the set_constraint command, supporting single or batch constraint operations.
+ */
 export interface SetConstraintsParams {
   constraint?: ConstraintEntry;
   constraints?: ConstraintEntry[];
   applyToChildren?: boolean;
   maintainAspectRatio?: boolean;
 }
-// fixme: add doc
+/**
+ * Parameters for the get_constraint command, specifying node IDs and whether to include children.
+ */
 export interface GetConstraintsParams {
   nodeId?: string;
   nodeIds?: string[];
@@ -102,12 +117,16 @@ export interface VariantOp {
   propertiesList?: { [key: string]: string }[];
   organizeBy?: string[];
 }
-// fixme: add doc
+/**
+ * Parameters for the set_variant command, supporting single or batch variant operations.
+ */
 export interface SetVariantParams {
   variant?: VariantOp;
   variants?: VariantOp[];
 }
-// fixme: add doc
+/**
+ * Parameters for the get_variant command, specifying one or more component set IDs.
+ */
 export interface GetVariantParams {
   componentSetId?: string;
   componentSetIds?: string[];
@@ -219,9 +238,14 @@ export const MCP_COMMANDS = {
   GET_ANNOTATION: "get_annotation", // Retrieve annotations for one or more nodes
   SET_ANNOTATION: "set_annotation" // Set, update, or delete annotations for one or more nodes
 } as const;
-// fixme: add doc
+
+/**
+ * Union type of all available MCP command string literals.
+ */
 export type McpCommand = typeof MCP_COMMANDS[keyof typeof MCP_COMMANDS];
-// fixme: add doc
+/**
+ * Union type of all available Figma command string literals.
+ */
 export type FigmaCommand = typeof MCP_COMMANDS[keyof typeof MCP_COMMANDS];
 
 /**
