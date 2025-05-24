@@ -115,7 +115,16 @@ async function shapeScene(results) {
     cornerRadius: 12,
     fillColor: { r: 0.2, g: 0.6, b: 0.9, a: 1 }
   }));
-  results.push(await create_ellipse({ x: 50, y: 50, width: 100, height: 100, name: 'UnitTestEllipse' }));
+  results.push(await create_ellipse({
+    x: 50,
+    y: 50,
+    width: 100,
+    height: 100,
+    name: 'UnitTestEllipse',
+    fillColor: { r: 1, g: 0.8, b: 0.2, a: 1 },
+    strokeColor: { r: 0.1, g: 0.1, b: 0.1, a: 1 },
+    strokeWeight: 4
+  }));
 }
 
 async function textScene(results) {
