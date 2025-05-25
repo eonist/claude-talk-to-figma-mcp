@@ -20,6 +20,14 @@ export async function setTextStyle(params) {
     updates = params.entries;
   } else if (params.nodeId && params.styles && Object.keys(params.styles).length > 0) {
     updates = [{ nodeId: params.nodeId, styles: params.styles }];
+  } else if (params.nodeId) {
+    // Handle direct style parameters (server format)
+    const { nodeId, entries, ...styleProps } = params;
+    if (Object.keys(styleProps).length > 0) {
+      updates = [{ nodeId, styles: styleProps }];
+    } else {
+      throw new Error("setTextStyle: No style properties provided.");
+    }
   } else {
     throw new Error("setTextStyle: Provide either (nodeId + styles) or entries array.");
   }
