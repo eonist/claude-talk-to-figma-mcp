@@ -39,28 +39,28 @@ Model Context Protocol (MCP) is the framework that allows an AI agent to communi
 - [Authors](#authors)
 - [Acknowledgments](#acknowledgments)
 
-### Features: 
+### Features:
 
-- **Text manipulation** – Add, edit, and style text elements, including advanced controls for font, size, weight, case, decoration, spacing, and paragraph/line height.
-- **Gradient & color support** – Create and apply solid colors, gradients, and color variables (design tokens) to any element.
-- **Font support** – Access and apply a diverse range of fonts, including bulk font operations.
-- **AutoLayout** – Automatically create responsive and adaptive layouts, including hug/fill sizing and all Figma auto-layout properties.
-- **Batch operations** – Perform actions on multiple Figma elements simultaneously for efficient workflows.
-- **Geometric shapes** – Generate rectangles, circles, ellipses, polygons, lines, and star shapes.
-- **Vector & SVG support** – Create, insert, and manipulate vector shapes and SVG graphics.
-- **Image support** – Import, export, and manage raster images within Figma designs.
-- **Frame, Group, Component** – Structure designs with frames, groups, reusable components, and component instances.
-- **Component variants & properties** – Create, manage, and organize component variants and their properties.
-- **Rename layers** – Programmatically rename layers, including AI-powered renaming.
-- **Page management** – Create, duplicate, and set the current page in your Figma document.
-- **Node management** – Clone, delete, lock/unlock, show/hide, insert, flatten, reorder, move, and resize nodes.
-- **Boolean operations** – Union, subtract, intersect, and exclude shapes for complex vector editing.
-- **Grids, guides, and constraints** – Create and manage layout grids, guides, and responsive constraints.
-- **Effect styles** – Create, set, and apply effect styles (drop shadow, blur, etc.).
-- **Figma Variables (Design Tokens)** – Create, update, delete, and apply variables for color, number, string, and boolean; switch between variable modes (e.g., light/dark theme).
-- **Export & code generation** – Export nodes as images (PNG, JPG, SVG, PDF), generate HTML structure, and extract CSS from Figma nodes.
-- **Annotation support** – Get, set, update, and delete annotations on nodes.
-- **Event subscription** – Subscribe and unsubscribe to Figma events (e.g., selection change, document change). This essentially allows Turn by turn multi-agent collaboration.
+- ✍️ **Text manipulation** – Add, edit, and style text elements, including advanced controls for font, size, weight, case, decoration, spacing, and paragraph/line height.
+- 🎨 **Gradient & color support** – Create and apply solid colors, gradients, and color variables (design tokens) to any element.
+- 🔤 **Font support** – Access and apply a diverse range of fonts, including bulk font operations.
+- 📐 **AutoLayout** – Automatically create responsive and adaptive layouts, including hug/fill sizing and all Figma auto-layout properties.
+- ⚙️ **Batch operations** – Perform actions on multiple Figma elements simultaneously for efficient workflows.
+- 🔷 **Geometric shapes** – Generate rectangles, circles, ellipses, polygons, lines, and star shapes.
+- 🖊️ **Vector & SVG support** – Create, insert, and manipulate vector shapes and SVG graphics.
+- 🖼️ **Image support** – Import, export, and manage raster images within Figma designs.
+- 🗂️ **Frame, Group, Component** – Structure designs with frames, groups, reusable components, and component instances.
+- 🧩 **Component variants & properties** – Create, manage, and organize component variants and their properties.
+- 🏷️ **Rename layers** – Programmatically rename layers, including AI-powered renaming.
+- 📄 **Page management** – Create, duplicate, and set the current page in your Figma document.
+- 🔄 **Node management** – Clone, delete, lock/unlock, show/hide, insert, flatten, reorder, move, and resize nodes.
+- ➕➖ **Boolean operations** – Union, subtract, intersect, and exclude shapes for complex vector editing.
+- 📏 **Grids, guides, and constraints** – Create and manage layout grids, guides, and responsive constraints.
+- ✨ **Effect styles** – Create, set, and apply effect styles (drop shadow, blur, etc.).
+- 🔣 **Figma Variables (Design Tokens)** – Create, update, delete, and apply variables for color, number, string, and boolean; switch between variable modes (e.g., light/dark theme).
+- 💾 **Export & code generation** – Export nodes as images (PNG, JPG, SVG, PDF), generate HTML structure, and extract CSS from Figma nodes.
+- 📝 **Annotation support** – Get, set, update, and delete annotations on nodes.
+- 🔔 **Event subscription** – Subscribe and unsubscribe to Figma events (e.g., selection change, document change). This essentially allows turn-by-turn multi-agent collaboration.
 
 ### Compatibility
 
@@ -149,6 +149,9 @@ To run integration tests:
 bun run test
 ```
 See [TESTING.md](TESTING.md) for more details.
+
+> [!NOTE]
+> There is also Unit-tests in the `/tests/` path
 
 ## Contributions
 
