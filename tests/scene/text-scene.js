@@ -92,10 +92,11 @@ function create_text_block(frameId) {
     name: 'TextBlockNode',
     fontSize: 16, // Set a default font size
     fontWeight: randomFontWeight(),
-    fontColor: randomColor(), // Use a random color for the font
-    fontFamily: 'Inter', // Apply the Inter font family
+    fontColor: "#00AA00"/*randomColor()*/, // Use a random color for the font
+    fontFamily: 'Oswald', // Apply the Inter font family
     parentId: frameId // Set the frame ID as the parent
   };
+  console.log("create_text_block called with params:", params);
   return runStep({
     ws,
     channel,
@@ -106,28 +107,6 @@ function create_text_block(frameId) {
   });
 }
 
-/**
- * Helper to load the Roboto font asynchronously.
- * @returns {Promise<void>}
- */
-async function load_roboto_font() {
-  console.log('Attempting to load Roboto font');
-  try {
-    const result = await runStep({
-      ws,
-      channel,
-      command: 'load_font_async',
-      params: { family: 'Roboto', style: 'Bold' },
-      assert: () => ({ pass: true }),
-      label: 'load_font_async (Roboto)'
-    });
-    console.log('Font load result:', result);
-    return result;
-  } catch (error) {
-    console.error('Error loading font:', error);
-    throw error;
-  }
-}
 
 /**
  * Helper to create a hero title text node in Figma for text tests.
@@ -238,7 +217,10 @@ export async function textScene(results) {
   if (!frameId) {
     console.warn('Could not get frame ID for placing text inside frame');
   }
-  
+
+   // Create text block inside the frame
+  results.push(await create_text_block(frameId));
+
   // Create heading inside the frame
   //results.push(await create_heading(frameId));
   
@@ -246,11 +228,10 @@ export async function textScene(results) {
   //results.push(await create_text(frameId));
   //results.push(await create_text_area(frameId));
   
-  // Create text block inside the frame
-  //results.push(await create_text_block(frameId));
-  
   // Create hero title inside the frame
-  results.push(await create_hero_title(frameId));
+  //results.push(await create_hero_title(frameId));
+  
+ 
   
   // Apply autolayout to the frame
   results.push(await apply_autolayout(frameId));
