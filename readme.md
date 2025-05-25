@@ -22,12 +22,16 @@ Model Context Protocol (MCP) is the framework that allows an AI agent to communi
 ```
 
 ## Table of Contents
+
 - [Features](#features)
+- [Compatibility](#compatibility)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Architecture](#architecture)
-- [Changelog](#changelog)
+  - [Step 1: Install the server and plugin](#step-1-install-the-server-and-plugin)
+  - [Step 2: Install the Figma Plugin](#step-2-install-the-figma-plugin)
+  - [Step 3: Configure Agent](#step-3-configure-agent)
+- [Quick Example](#quick-example)
+- [Docs](#docs)
 - [Troubleshooting](#troubleshooting)
 - [Testing](#testing)
 - [Contributions](#contributions)
