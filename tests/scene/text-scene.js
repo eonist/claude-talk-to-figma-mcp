@@ -19,10 +19,10 @@ function create_text() {
     assert: (response) => {
       const expected = params;
       const actual = response && response.params && response.params.text;
-      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        if (JSON.stringify(actual) !== JSON.stringify(expected)) {
         return {
           pass: false,
-          message:
+          reason:
             "Response params.text does not match input params.\n" +
             "Expected: " + JSON.stringify(expected, null, 2) + "\n" +
             "Actual:   " + JSON.stringify(actual, null, 2)
@@ -57,7 +57,7 @@ function create_text_area() {
       if (JSON.stringify(actual) !== JSON.stringify(expected)) {
         return {
           pass: false,
-          message:
+          reason:
             "Response params.text does not match input params.\n" +
             "Expected: " + JSON.stringify(expected, null, 2) + "\n" +
             "Actual:   " + JSON.stringify(actual, null, 2)
