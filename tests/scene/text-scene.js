@@ -110,12 +110,18 @@ function create_text_block(frameId) {
  * Helper to load the Roboto font asynchronously.
  * @returns {Promise<void>}
  */
-import { loadFontAsyncWrapper } from '../../src/modules/font/font-load.js';
-
 async function load_roboto_font() {
   console.log('Attempting to load Roboto font');
+  // Since direct import failed, use runStep with the figma.loadFontAsync command if available
   try {
-    const result = await loadFontAsyncWrapper({ family: 'Roboto', style: 'Bold' });
+    const result = await runStep({
+      ws,
+      channel,
+      command: 'load_font',
+      params: { family: 'Roboto', style: 'Bold' },
+      assert: () => ({ pass: true }),
+      label: 'load_font (Roboto)'
+    });
     console.log('Font load result:', result);
     return result;
   } catch (error) {
