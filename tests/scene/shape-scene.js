@@ -190,11 +190,14 @@ function create_heart(parentId = null) {
  */
 /**
  * Helper to create a right-pointing arrow with curved tail.
+ * @param {string} parentId - Optional parent frame ID to place the arrow inside
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_arrow() {
+function create_arrow(parentId = null) {
   const params = {
-    x: 200, y: 100, width: 120, height: 60,
+    x: parentId ? 80 : 200, // Use relative coordinates if inside a parent
+    y: parentId ? 80 : 100,
+    width: 120, height: 60,
     name: 'UnitTestArrow',
     vectorPaths: [
       { windingRule: "EVENODD", data: "M 10 30 Q 10 10 50 10 L 50 0 L 110 30 L 50 60 L 50 50 Q 20 50 20 30 Z" }
@@ -203,6 +206,12 @@ function create_arrow() {
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_vector',
@@ -218,11 +227,14 @@ function create_arrow() {
 
 /**
  * Helper to create a lightning bolt icon using angular vector paths.
+ * @param {string} parentId - Optional parent frame ID to place the lightning bolt inside
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_lightning_bolt() {
+function create_lightning_bolt(parentId = null) {
   const params = {
-    x: 250, y: 150, width: 480, height: 720,
+    x: parentId ? 90 : 250, // Use relative coordinates if inside a parent
+    y: parentId ? 90 : 150,
+    width: 100, height: 120, // Made smaller to fit better in grid
     name: 'UnitTestLightningBolt',
     vectorPaths: [
       {
@@ -235,6 +247,12 @@ function create_lightning_bolt() {
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_vector',
@@ -346,13 +364,16 @@ export async function shapeScene(results) {
     console.warn('Could not get frame ID for placing shapes inside frame');
   }
   
-  // Create shapes inside the frame - adding more to trigger wrapping
+  // Create 9 shapes inside the frame for comprehensive grid demonstration
   results.push(await create_star(frameId));
   results.push(await create_rectangle(frameId));
   results.push(await create_ellipse(frameId));
   results.push(await create_hexagon(frameId));
   results.push(await create_speech_bubble(frameId));
   results.push(await create_bookmark(frameId));
+  results.push(await create_heart(frameId));
+  results.push(await create_arrow(frameId));
+  results.push(await create_lightning_bolt(frameId));
   
   // Apply autolayout to create horizontal flow with wrapping
   results.push(await apply_autolayout(frameId));
