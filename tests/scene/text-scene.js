@@ -54,6 +54,30 @@ function create_text_area(frameId) {
 }
 
 /**
+ * Helper to create a heading text node in Figma for text tests.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
+ */
+function create_heading() {
+  const params = {
+    x: 100,
+    y: 50, // Position for the heading
+    text: 'Welcome to Our Website',
+    name: 'HeadingTextNode',
+    fontSize: 32, // Set font size to 32px
+    fontWeight: randomFontWeight(),
+    fontColor: randomColor() // Use a random color for the font
+  };
+  return runStep({
+    ws,
+    channel,
+    command: 'set_text',
+    params: { text: params },
+    assert: () => ({ pass: true }),
+    label: `set_text (${params.name})`
+  });
+}
+
+/**
  * Helper to create a frame in Figma for text tests.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
@@ -122,6 +146,9 @@ export async function textScene(results) {
   if (!frameId) {
     console.warn('Could not get frame ID for placing text inside frame');
   }
+  
+  // Create heading inside the frame
+  results.push(await create_heading(frameId));
   
   // Create text items inside the frame
   results.push(await create_text(frameId));
