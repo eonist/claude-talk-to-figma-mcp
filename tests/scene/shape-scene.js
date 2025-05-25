@@ -1,6 +1,61 @@
 import { randomColor } from "../helper.js";
 import { channel, runStep, ws } from "../test-runner.js";
 
+
+/**
+ * Helper to apply autolayout to a frame with horizontal flow, wrapping, and specific gaps and padding.
+ * @param {string} frameId - The frame ID to apply autolayout to
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
+ */
+function apply_autolayout(frameId) {
+  const params = {
+    layout: {
+      nodeId: frameId,
+      mode: 'HORIZONTAL',
+      itemSpacing: 20, // Horizontal gap between items
+      counterAxisSpacing: 30, // Vertical gap between rows when wrapping
+      paddingLeft: 10, // Horizontal padding
+      paddingRight: 10, // Horizontal padding
+      paddingTop: 15, // Vertical padding
+      paddingBottom: 15, // Vertical padding
+      primaryAxisSizing: 'FIXED',
+      layoutWrap: 'WRAP'
+    }
+  };
+  return runStep({
+    ws, channel,
+    command: 'set_auto_layout',
+    params: params,
+    assert: (response) => ({ 
+      pass: response && response['0'] && response['0'].success === true && response['0'].nodeId === frameId,
+      response 
+    }),
+    label: `apply_autolayout to frame ${frameId}`
+  });
+}
+
+
+/**
+ * Helper to create a frame in Figma for shape tests.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
+ */
+function create_frame() {
+  const params = {
+    x: 50, y: 100, width: 400, height: 300,
+    name: 'Main Frame',
+    fillColor: randomColor(),
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
+  };
+  return runStep({
+    ws, channel,
+    command: 'create_frame',
+    params: { frame: params },
+    assert: (response) => ({ pass: Array.isArray(response.ids) && response.ids.length > 0, response }),
+    label: `create_frame (${params.name})`
+  });
+}
+
 /**
  * Helper to create a rectangle in Figma for shape tests.
  * @param {string} parentId - Optional parent frame ID to place the rectangle inside
@@ -59,27 +114,6 @@ function create_ellipse(parentId = null) {
     params: { ellipse: params },
     assert: (response) => ({ pass: Array.isArray(response.ids) && response.ids.length > 0, response }),
     label: `create_ellipse (${params.name})`
-  });
-}
-
-/**
- * Helper to create a frame in Figma for shape tests.
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
- */
-function create_frame() {
-  const params = {
-    x: 50, y: 100, width: 400, height: 300,
-    name: 'Main Frame',
-    fillColor: randomColor(),
-    strokeColor: randomColor(),
-    strokeWeight: Math.floor(Math.random() * 8) + 1
-  };
-  return runStep({
-    ws, channel,
-    command: 'create_frame',
-    params: { frame: params },
-    assert: (response) => ({ pass: Array.isArray(response.ids) && response.ids.length > 0, response }),
-    label: `create_frame (${params.name})`
   });
 }
 
@@ -283,33 +317,6 @@ function create_bookmark(parentId = null) {
       return { pass: ok, reason: ok ? undefined : `Expected non-empty ids, got ${ids}`, response };
     },
     label: `create_vector (${params.name})`
-  });
-}
-
-/**
- * Helper to apply autolayout to a frame with horizontal flow and wrapping.
- * @param {string} frameId - The frame ID to apply autolayout to
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
- */
-function apply_autolayout(frameId) {
-  const params = {
-    layout: {
-      nodeId: frameId,
-      mode: 'HORIZONTAL',
-      itemSpacing: 15,
-      primaryAxisSizing: 'FIXED',
-      layoutWrap: 'WRAP'
-    }
-  };
-  return runStep({
-    ws, channel,
-    command: 'set_auto_layout',
-    params: params,
-    assert: (response) => ({ 
-      pass: response && response['0'] && response['0'].success === true && response['0'].nodeId === frameId,
-      response 
-    }),
-    label: `apply_autolayout to frame ${frameId}`
   });
 }
 
