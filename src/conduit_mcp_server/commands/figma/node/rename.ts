@@ -5,6 +5,7 @@ import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 //import { NodeIdsArraySchema } from "./layer-management/node-ids-schema.js";
+import { RenameSchema } from "./schema/rename-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
@@ -28,30 +29,7 @@ export function registerRenameCommands(server: McpServer, figmaClient: FigmaClie
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the original and new name(s).
 `,
-    {
-      rename: z.object({
-        nodeId: z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("The unique Figma node ID to rename. Must be a string in the format '123:456'."),
-        newName: z.string()
-          .min(1)
-          .max(100)
-          .describe("The new name for the node. Must be a non-empty string up to 100 characters."),
-        setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename"),
-      }).optional().describe("A single rename configuration object. Optional."),
-      renames: z.array(
-        z.object({
-          nodeId: z.string()
-            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-            .describe("The unique Figma node ID to rename. Must be a string in the format '123:456'."),
-          newName: z.string()
-            .min(1)
-            .max(100)
-            .describe("The new name for the node. Must be a non-empty string up to 100 characters."),
-          setAutoRename: z.boolean().optional().describe("Whether to preserve TextNode autoRename"),
-        })
-      ).optional().describe("An array of rename configuration objects for batch renaming. Optional.")
-    },
+    RenameSchema.shape,
     {
       title: "Rename Layer(s)",
       idempotentHint: true,
