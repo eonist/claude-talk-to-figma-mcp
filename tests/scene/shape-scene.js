@@ -132,8 +132,9 @@ function create_heart() {
     command: 'create_vector',
     params: { vector: params },
     assert: (response) => {
-      const ok = Array.isArray(response.nodeIds) && response.nodeIds.length > 0;
-      return { pass: ok, reason: ok ? undefined : `Expected non-empty nodeIds, got ${response.nodeIds}`, response };
+      const ids = Array.isArray(response.nodeIds) ? response.nodeIds : response.ids;
+      const ok = Array.isArray(ids) && ids.length > 0;
+      return { pass: ok, reason: ok ? undefined : `Expected non-empty ids, got ${ids}`, response };
     },
     label: `create_vector (${params.name})`
   });
