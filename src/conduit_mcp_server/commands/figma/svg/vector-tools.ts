@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { getSvgVectorSchema } from "./schema/svg-vector-schema.js";
 
 /**
  * Registers get_svg_vector (single or batch) on the MCP server.
@@ -15,12 +16,8 @@ Returns:
   - Array of { nodeId, svg } objects, one per node.
 `,
     {
-      nodeId: z.string()
-        .optional()
-        .describe("The unique Figma node ID to extract SVG from. Provide either nodeId or nodeIds, not both."),
-      nodeIds: z.array(z.string())
-        .optional()
-        .describe("An array of Figma node IDs to extract SVG from. Provide either nodeId or nodeIds, not both.")
+      ...getSvgVectorSchema,
+      ...getSvgVectorSchema,
     },
     {
       title: "Get SVG Vector (Unified)",
