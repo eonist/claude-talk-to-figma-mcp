@@ -15,9 +15,13 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  */
 export function registerVectorCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch vector creation
-  server.tool(
+    server.tool(
     MCP_COMMANDS.CREATE_VECTOR,
-    `Creates one or more vector nodes in Figma. Accepts either a single vector config (via 'vector') or an array of configs (via 'vectors').
+    `Creates one or more vector nodes in Figma. Shape is defined via \`vectorPaths\`: an array of objects each containing:
+  - \`windingRule\`: "EVENODD" or "NONZERO"
+  - \`data\`: SVG path commands string.
+
+Accepts either a single vector config (via 'vector') or an array of configs (via 'vectors').
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created vector node ID(s).
@@ -55,9 +59,8 @@ Returns:
               .min(1)
               .max(10000)
               .describe("SVG path data string. Must be a non-empty string up to 10,000 characters."),
-            windingRule: z.string()
-              .optional()
-              .describe("Optional. Winding rule for the path (e.g., 'evenodd', 'nonzero').")
+            windingRule: z.enum(["EVENODD", "NONZERO"])
+              .describe("Winding rule for the path: \"EVENODD\" or \"NONZERO\".")
           })
         )
         .min(1)
@@ -104,9 +107,8 @@ Returns:
                 .min(1)
                 .max(10000)
                 .describe("SVG path data string. Must be a non-empty string up to 10,000 characters."),
-              windingRule: z.string()
-                .optional()
-                .describe("Optional. Winding rule for the path (e.g., 'evenodd', 'nonzero').")
+              windingRule: z.enum(["EVENODD", "NONZERO"])
+                .describe("Winding rule for the path: \"EVENODD\" or \"NONZERO\".")
             })
           )
           .min(1)
@@ -135,7 +137,7 @@ Returns:
             y: 20,
             width: 100,
             height: 100,
-            vectorPaths: [{ data: "M0 0L10 10" }]
+            vectorPaths: [{ windingRule: "EVENODD", data: "M0 0L10 10" }]
           }
         },
         {
@@ -145,7 +147,7 @@ Returns:
               y: 20,
               width: 100,
               height: 100,
-              vectorPaths: [{ data: "M0 0L10 10" }]
+              vectorPaths: [{ windingRule: "EVENODD", data: "M0 0L10 10" }]
             }
           ]
         }
@@ -170,14 +172,14 @@ Returns:
         const results = await processBatch(
           vectorsArr,
           async (cfg) => {
-            const result = await figmaClient.createVector(cfg);
+            const result = await figmaClient.executeCommand(MCP_COMMANDS.CREATE_VECTOR, cfg);
             // Always extract all IDs from { ids: [...] }
             if (result && Array.isArray(result.ids) && result.ids.length > 0) {
               return result.ids;
             } else if (result && typeof result.id === "string") {
               return [result.id];
             } else {
-              throw new Error("Failed to create vector: missing node ID from figmaClient.createVector");
+              throw new Error("Failed to create vector: missing node ID from figmaClient.executeCommand");
             }
           }
         );
