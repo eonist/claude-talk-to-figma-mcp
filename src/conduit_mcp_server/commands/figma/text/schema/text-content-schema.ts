@@ -70,51 +70,76 @@ export const ColorSchema = z.object({
 }).describe("RGBA color object");
 
 /**
- * Comprehensive schema for text style properties
+ * Schema for text style properties - based on Figma Plugin API support analysis
+ * See: https://github.com/eonist/conduit/issues/360#issue-3089255265
+ * 
+ * ✅ SUPPORTED: Properties confirmed to work with Figma Plugin API
+ * ❌ REMOVED: textTruncation, maxLines (UI only, no Plugin API support)
  */
 export const TextStylePropertiesSchema = z.object({
+  // ✅ SUPPORTED: Direct assignment to node.fontSize
   fontSize: z.number()
     .min(1)
     .max(200)
     .optional()
     .describe("Font size in pixels. Must be between 1 and 200."),
+    
+  // ✅ SUPPORTED: Via font family mapping (TODO: implement weight→style mapping)
   fontWeight: z.number()
     .min(100)
     .max(1000)
     .optional()
     .describe("Font weight. Must be between 100 and 1000."),
+    
+  // ✅ SUPPORTED: With string→object conversion
   fontName: z.union([
     z.string().min(1).max(100),
     FontNameSchema
   ]).optional().describe("Font name as string (family name) or object with family and style"),
+  
+  // ✅ SUPPORTED: Direct assignment to node.letterSpacing
   letterSpacing: LetterSpacingSchema.optional(),
+  
+  // ✅ SUPPORTED: With MULTIPLIER→PERCENT conversion
   lineHeight: LineHeightSchema.optional(),
+  
+  // ✅ SUPPORTED: Direct assignment to node.paragraphSpacing
   paragraphSpacing: z.number()
     .min(0)
     .max(1000)
     .optional()
     .describe("Paragraph spacing in pixels. Must be between 0 and 1000."),
+    
+  // ✅ SUPPORTED: Direct assignment to node.textCase
   textCase: TextCaseSchema.optional(),
+  
+  // ✅ SUPPORTED: Direct assignment to node.textDecoration
   textDecoration: TextDecorationSchema.optional(),
-  fontColor: ColorSchema.optional().describe("Font color as RGBA object"),
-  fills: z.array(z.any()).optional().describe("Array of fill objects"),
+  
+  // ✅ SUPPORTED: Via node.fills property (Plugin API confirmed)
+  fontColor: ColorSchema.optional().describe("Font color as RGBA object - implemented via fills property"),
+  
+  // ✅ SUPPORTED: Direct assignment to node.fills (Plugin API confirmed)
+  fills: z.array(z.any()).optional().describe("Array of fill objects - fully supported by Plugin API"),
+  
+  // ✅ SUPPORTED: Direct assignment to node.textAlignHorizontal (Plugin API confirmed)
   textAlignHorizontal: z.enum(["LEFT", "CENTER", "RIGHT", "JUSTIFIED"])
     .optional()
-    .describe("Horizontal text alignment"),
+    .describe("Horizontal text alignment - Plugin API supported"),
+    
+  // ✅ SUPPORTED: Direct assignment to node.textAlignVertical (Plugin API confirmed)
   textAlignVertical: z.enum(["TOP", "CENTER", "BOTTOM"])
     .optional()
-    .describe("Vertical text alignment"),
+    .describe("Vertical text alignment - Plugin API supported"),
+    
+  // ✅ SUPPORTED: Direct assignment to node.textAutoResize (Plugin API confirmed)
   textAutoResize: z.enum(["NONE", "WIDTH_AND_HEIGHT", "HEIGHT"])
     .optional()
-    .describe("Text auto-resize behavior"),
-  textTruncation: z.enum(["DISABLED", "ENDING"])
-    .optional()
-    .describe("Text truncation behavior"),
-  maxLines: z.number()
-    .min(1)
-    .optional()
-    .describe("Maximum number of lines for text truncation")
-}).describe("Text style properties object");
+    .describe("Text auto-resize behavior - Plugin API supported")
+    
+  // ❌ REMOVED: textTruncation, maxLines - UI only, no Plugin API support
+  // See GitHub issue analysis for details
+}).describe("Text style properties object - includes all Figma Plugin API supported properties");
 
 /**
  * Schema for a single text style update entry

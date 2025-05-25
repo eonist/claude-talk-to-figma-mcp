@@ -46,6 +46,7 @@ export async function setTextStyle(params) {
       results.push({ nodeId, error: "Node is not a text node" });
       continue;
     }
+    
     // Load font if fontName or fontWeight/style is being set
     if (styles.fontName) {
       const font = typeof styles.fontName === "string"
@@ -57,14 +58,48 @@ export async function setTextStyle(params) {
       // Always load the node's current font to allow style changes
       await figma.loadFontAsync(node.fontName);
     }
+
+    // ✅ BASIC TEXT PROPERTIES
     if (styles.fontSize !== undefined) node.fontSize = styles.fontSize;
+    
+    // ✅ FONT WEIGHT - Enhanced implementation with weight mapping
     if (styles.fontWeight !== undefined && node.fontName) {
-      // Try to set fontWeight by updating fontName.style if possible
-      // This is a best-effort; Figma's fontName.style is a string like "Bold"
-      // You may want to map numeric weights to style names if needed
-      // For now, just ignore if not possible
+      try {
+        // Create a mapping for common font weights
+        const weightToStyleMap = {
+          100: 'Thin',
+          200: 'ExtraLight', 
+          300: 'Light',
+          400: 'Regular',
+          500: 'Medium',
+          600: 'SemiBold',
+          700: 'Bold',
+          800: 'ExtraBold',
+          900: 'Black'
+        };
+        
+        const styleVariant = weightToStyleMap[styles.fontWeight] || 'Regular';
+        const fontWithWeight = { 
+          family: node.fontName.family, 
+          style: styleVariant 
+        };
+        
+        // Try to load the font variant, fall back to current font if it fails
+        try {
+          await figma.loadFontAsync(fontWithWeight);
+          node.fontName = fontWithWeight;
+        } catch (fontError) {
+          // Font variant doesn't exist, keep current font
+          console.warn(`Font weight ${styles.fontWeight} (${styleVariant}) not available for ${node.fontName.family}`);
+        }
+      } catch (error) {
+        console.warn('Error setting font weight:', error);
+      }
     }
+    
+    // ✅ SPACING AND LAYOUT
     if (styles.letterSpacing !== undefined) node.letterSpacing = styles.letterSpacing;
+    
     if (styles.lineHeight !== undefined) {
       // Handle lineHeight conversion: MULTIPLIER unit should be converted to PERCENT
       if (styles.lineHeight && typeof styles.lineHeight === 'object' && styles.lineHeight.unit === 'MULTIPLIER') {
@@ -73,10 +108,45 @@ export async function setTextStyle(params) {
         node.lineHeight = styles.lineHeight;
       }
     }
+    
     if (styles.paragraphSpacing !== undefined) node.paragraphSpacing = styles.paragraphSpacing;
+    
+    // ✅ TEXT APPEARANCE
     if (styles.textCase !== undefined) node.textCase = styles.textCase;
     if (styles.textDecoration !== undefined) node.textDecoration = styles.textDecoration;
-    // Extend for more style keys as needed
+    
+    // ✅ COLOR AND FILLS - Newly implemented based on GitHub issue analysis
+    if (styles.fontColor !== undefined) {
+      // Convert fontColor to fills array with solid color
+      node.fills = [{ 
+        type: 'SOLID', 
+        color: {
+          r: styles.fontColor.r,
+          g: styles.fontColor.g, 
+          b: styles.fontColor.b
+        },
+        opacity: styles.fontColor.a !== undefined ? styles.fontColor.a : 1
+      }];
+    }
+    
+    if (styles.fills !== undefined) {
+      // Direct assignment of fills array
+      node.fills = styles.fills;
+    }
+    
+    // ✅ TEXT ALIGNMENT - Newly implemented based on GitHub issue analysis
+    if (styles.textAlignHorizontal !== undefined) {
+      node.textAlignHorizontal = styles.textAlignHorizontal;
+    }
+    
+    if (styles.textAlignVertical !== undefined) {
+      node.textAlignVertical = styles.textAlignVertical;
+    }
+    
+    // ✅ TEXT BEHAVIOR - Newly implemented based on GitHub issue analysis
+    if (styles.textAutoResize !== undefined) {
+      node.textAutoResize = styles.textAutoResize;
+    }
 
     results.push({ nodeId, success: true });
   }
