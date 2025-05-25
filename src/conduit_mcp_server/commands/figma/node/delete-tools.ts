@@ -3,8 +3,8 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./schema/node-ids-schema.js";
+import { DeleteNodeSchema } from "./schema/delete-schema.js";
 
 /**
  * Registers delete node commands on the MCP server.
@@ -30,31 +30,7 @@ export function registerDeleteTools(server: McpServer, figmaClient: FigmaClient)
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the deleted node's ID(s).
 `,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to delete. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
-        .optional(),
-      nodeIds: NodeIdsArraySchema(1, 100).optional(),
-    },
-    {
-      title: "Delete Nodes (Unified)",
-      idempotentHint: true,
-      destructiveHint: true,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456" },
-        { nodeIds: ["123:456", "789:101"] }
-      ]),
-      edgeCaseWarnings: [
-        "Deleting nodes is irreversible.",
-        "All nodeIds must be valid to avoid partial failures.",
-        "Deleting parent nodes will remove their children.",
-        "You must provide either 'nodeId' or 'nodeIds'."
-      ],
-      extraInfo: "Delete with care to avoid unintended data loss."
-    },
+    DeleteNodeSchema.shape,
     async ({ nodeId, nodeIds }) => {
       let ids = [];
       if (Array.isArray(nodeIds) && nodeIds.length > 0) {

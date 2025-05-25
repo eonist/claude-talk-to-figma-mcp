@@ -2,8 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { CloneNodeSchema } from "./schema/clone-node-schema.js";
 
 /**
  * Registers clone node commands on the MCP server.
@@ -29,55 +29,7 @@ export function registerCloneNodeTools(server: McpServer, figmaClient: FigmaClie
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the new node ID(s).
 `,
-    {
-      node: z.object({
-        nodeId: z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-          .describe("ID of the node to clone."),
-        position: z.object({
-          x: z.number().describe("X coordinate for the new node's position."),
-          y: z.number().describe("Y coordinate for the new node's position.")
-        }).optional().describe("Optional absolute position for the cloned node."),
-        offsetX: z.number().optional().describe("Optional X offset to apply to the cloned node's position."),
-        offsetY: z.number().optional().describe("Optional Y offset to apply to the cloned node's position."),
-        parentId: z.string().optional().describe("Optional parent node ID to attach the cloned node to.")
-      }).optional().describe("A single node clone configuration. Optional."),
-      nodes: z.array(
-        z.object({
-          nodeId: z.string()
-            .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-            .describe("ID of the node to clone."),
-          position: z.object({
-            x: z.number().describe("X coordinate for the new node's position."),
-            y: z.number().describe("Y coordinate for the new node's position.")
-          }).optional().describe("Optional absolute position for the cloned node."),
-          offsetX: z.number().optional().describe("Optional X offset to apply to the cloned node's position."),
-          offsetY: z.number().optional().describe("Optional Y offset to apply to the cloned node's position."),
-          parentId: z.string().optional().describe("Optional parent node ID to attach the cloned node to.")
-        })
-      ).optional().describe("An array of node clone configurations for batch cloning. Optional.")
-    },
-    {
-      title: "Clone Node(s)",
-      idempotentHint: false,
-      destructiveHint: false,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { node: { nodeId: "123:456" } },
-        { nodes: [
-          { nodeId: "123:456", offsetX: 100, offsetY: 0 },
-          { nodeId: "789:101", position: { x: 200, y: 300 } }
-        ]}
-      ]),
-      edgeCaseWarnings: [
-        "Cloning a node duplicates all its children.",
-        "Cloned nodes may overlap with originals if no position/offset is specified.",
-        "Ensure nodeId is valid to avoid errors.",
-        "Batch cloning large numbers of nodes may impact performance."
-      ],
-      extraInfo: "Cloning is useful for duplicating components or layouts. Use offsets or positions for layout control."
-    },
+    CloneNodeSchema.shape,
     async (args) => {
       let nodesArr;
       if (args.nodes) {
