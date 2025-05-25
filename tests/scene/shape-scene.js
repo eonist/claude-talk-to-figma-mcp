@@ -298,7 +298,9 @@ function apply_autolayout(frameId) {
     layout: {
       nodeId: frameId,
       mode: 'HORIZONTAL',
-      itemSpacing: 15
+      itemSpacing: 15,
+      primaryAxisSizing: 'FIXED',
+      layoutWrap: 'WRAP'
     }
   };
   return runStep({
