@@ -10,7 +10,7 @@ function create_rectangle(parentId = null) {
   const params = {
     x: parentId ? 20 : 0, // Use relative coordinates if inside a parent
     y: parentId ? 20 : 0,
-    width: 200, height: 100,
+    width: 120, height: 80,
     name: 'UnitTestRectangle',
     cornerRadius: 12,
     fillColor: randomColor(),
@@ -68,7 +68,7 @@ function create_ellipse(parentId = null) {
  */
 function create_frame() {
   const params = {
-    x: 50, y: 100, width: 400, height: 300,
+    x: 50, y: 100, width: 500, height: 300,
     name: 'Main Frame',
     fillColor: randomColor(),
     strokeColor: randomColor(),
@@ -92,7 +92,7 @@ function create_hexagon(parentId = null) {
   const params = {
     x: parentId ? 40 : 100, // Use relative coordinates if inside a parent
     y: parentId ? 40 : 100,
-    width: 160, height: 160,
+    width: 100, height: 100,
     sides: 6,
     name: 'UnitTestHexagon',
     fillColor: { r:1, g:0.6470588, b:0, a:1 },
