@@ -2,8 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { InsertChildOperation } from "./schema/insert-child-schema.js";
 
 /**
  * Registers the set_node command on the MCP server to enable setting or inserting a child node into a parent node in Figma.
@@ -28,40 +28,7 @@ export function registerInsertChildTools(server: McpServer, figmaClient: FigmaCl
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the parentId, childId, index, success status, and any error message.
 `,
-    {
-      parentId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("ID of the parent node")
-        .optional(),
-      childId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("ID of the child node to insert")
-        .optional(),
-      index: z.number()
-        .int()
-        .min(0)
-        .optional()
-        .describe("Optional insertion index (0-based)"),
-      operations: z.array(z.object({
-        parentId: z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID" })
-          .describe("ID of the parent node"),
-        childId: z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID" })
-          .describe("ID of the child node to insert"),
-        index: z.number().int().min(0).optional().describe("Optional insertion index (0-based)"),
-        maintainPosition: z.boolean().optional().describe("Maintain child's absolute position (default: false)")
-      }))
-      .optional()
-      .describe("An array of set/insert operations to perform in batch. Optional."),
-      options: z.object({
-        skipErrors: z.boolean()
-          .optional()
-          .describe("If true, skip errors and continue processing remaining operations in batch mode.")
-      })
-      .optional()
-      .describe("Options for the operation (e.g., skipErrors). Optional.")
-    },
+    InsertChildOperation.shape,
     {
       title: "Insert Child Node(s)",
       idempotentHint: false,
