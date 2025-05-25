@@ -112,15 +112,14 @@ function create_text_block(frameId) {
  */
 async function load_roboto_font() {
   console.log('Attempting to load Roboto font');
-  // Since direct import failed, use runStep with the figma.loadFontAsync command if available
   try {
     const result = await runStep({
       ws,
       channel,
-      command: 'load_font',
+      command: 'load_font_async',
       params: { family: 'Roboto', style: 'Bold' },
       assert: () => ({ pass: true }),
-      label: 'load_font (Roboto)'
+      label: 'load_font_async (Roboto)'
     });
     console.log('Font load result:', result);
     return result;
@@ -136,7 +135,15 @@ async function load_roboto_font() {
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
  */
 async function create_hero_title(frameId) {
-  await load_roboto_font();
+  // Load the Roboto font using MCP server command
+  await runStep({
+    ws,
+    channel,
+    command: 'load_font_async',
+    params: { family: 'Roboto', style: 'Bold' },
+    assert: () => ({ pass: true }),
+    label: 'load_font_async (Roboto)'
+  });
   console.log('Roboto font loaded');
   const params = {
     x: 100,
