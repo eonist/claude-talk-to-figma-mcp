@@ -1,5 +1,5 @@
-import { ws, channel, assertEchoedCommand, runStep } from "./test-runner.js";
-import { randomFontSize, randomFontWeight, randomColor } from "./helper.js";
+import { ws, channel, assertEchoedCommand, runStep } from "../test-runner.js";
+import { randomFontSize, randomFontWeight, randomColor } from "../helper.js";
 
 function create_text() {
   const params = {

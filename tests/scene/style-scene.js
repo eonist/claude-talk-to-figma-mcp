@@ -1,4 +1,4 @@
-import { ws, channel, runStep, assertEchoedCommand } from "./test-runner.js";
+import { ws, channel, runStep, assertEchoedCommand } from "../test-runner.js";
 
 /**
  * Helper to create a gradient style and return the style ID.

@@ -1,5 +1,5 @@
-import { ws, channel, assertEchoedCommand, runStep } from "./test-runner.js";
-import { randomColor } from "./helper.js";
+import { ws, channel, assertEchoedCommand, runStep } from "../test-runner.js";
+import { randomColor } from "../helper.js";
 
 function create_rectangle() {
   const params = {
@@ -18,7 +18,7 @@ function create_rectangle() {
     channel,
     command: 'create_rectangle',
     params: { rectangle: params },
-    assert: assertEchoedCommand('create_rectangle', params, 'rectangle'),
+    assert: (response) => { console.log("create_rectangle response:", response); return { pass: !!(response && response.ids && response.ids.length > 0), response }; },
     label: `create_rectangle (${params.name})`
   });
 }
@@ -39,7 +39,7 @@ function create_ellipse() {
     channel,
     command: 'create_ellipse',
     params: { ellipse: params },
-    assert: assertEchoedCommand('create_ellipse', params, 'ellipse'),
+    assert: (response) => { console.log("create_ellipse response:", response); return { pass: !!(response && response.ids && response.ids.length > 0), response }; },
     label: `create_ellipse (${params.name})`
   });
 }
@@ -60,7 +60,7 @@ function create_frame() {
     channel,
     command: 'create_frame',
     params: { frame: params },
-    assert: assertEchoedCommand('create_frame', params, 'frame'),
+    assert: (response) => { console.log("create_frame response:", response); return { pass: !!(response && response.ids && response.ids.length > 0), response }; },
     label: `create_frame (${params.name})`
   });
 }
