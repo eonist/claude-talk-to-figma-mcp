@@ -107,12 +107,41 @@ function create_text_block(frameId) {
 }
 
 /**
+ * Helper to create a hero title text node in Figma for text tests.
+ * @param {string} frameId - The frame ID to place the hero title inside.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
+ */
+function create_hero_title(frameId) {
+  const params = {
+    x: 100,
+    y: 450, // Position for the hero title
+    text: 'Hero Title',
+    name: 'HeroTitleNode',
+    fontSize: 48,
+    fontWeight: 700, // Bold weight
+    letterSpacing: -1,
+    textAlignHorizontal: 'CENTER',
+    fontFamily: 'Roboto',
+    fontColor: randomColor(),
+    parentId: frameId
+  };
+  return runStep({
+    ws,
+    channel,
+    command: 'set_text',
+    params: { text: params },
+    assert: () => ({ pass: true }),
+    label: `set_text (${params.name})`
+  });
+}
+
+/**
  * Helper to create a frame in Figma for text tests.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
 function create_frame() {
   const params = {
-    x: 50, y: 100, width: 600, height: 400,
+    x: 50, y: 100, width: 400, height: 300,
     name: 'Text Frame',
     fillColor: randomColor(),
     strokeColor: randomColor(),
@@ -185,6 +214,9 @@ export async function textScene(results) {
   
   // Create text block inside the frame
   results.push(await create_text_block(frameId));
+  
+  // Create hero title inside the frame
+  results.push(await create_hero_title(frameId));
   
   // Apply autolayout to the frame
   results.push(await apply_autolayout(frameId));
