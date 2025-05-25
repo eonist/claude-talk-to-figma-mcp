@@ -116,3 +116,27 @@ export async function createVectors(params) {
   }
   return { ids };
 }
+
+export async function getVector({ nodeId }) {
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node || node.type !== "VECTOR") throw new Error(`Node not found or not a VectorNode: ${nodeId}`);
+  const { x, y, width, height, vectorPaths } = node;
+  return {
+    id: node.id,
+    x, y,
+    width, height,
+    vectorPaths
+  };
+}
+
+/**
+ * Batch retrieve multiple vector nodes.
+ */
+export async function getVectors({ nodeIds }) {
+  const results = [];
+  for (const id of nodeIds) {
+    const vec = await getVector({ nodeId: id });
+    results.push(vec);
+  }
+  return { vectors: results };
+}

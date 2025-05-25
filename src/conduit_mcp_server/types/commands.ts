@@ -42,6 +42,8 @@ export const COMMAND_DEFS = [
   { name: "create_polygon", paramType: {} as any },
   { name: "create_star", paramType: {} as any },
   { name: "create_vector", paramType: {} as any },
+  { name: "get_vector", paramType: {} as any },
+  { name: "get_vectors", paramType: {} as any },
   { name: "set_text", paramType: {} as any },
   { name: "set_text_content", paramType: {} as any },
   { name: "get_styled_text_segments", paramType: {} as any },

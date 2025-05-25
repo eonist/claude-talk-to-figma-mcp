@@ -36,7 +36,9 @@ export {
   createStar,
   createVector,
   createVectors,
-  createLine
+  createLine,
+  getVector,
+  getVectors
 };
 
 /**
@@ -79,6 +81,8 @@ export const shapeOperations = {
   createVector,
   createVectors,
   createLine,
+  getVector,
+  getVectors,
   boolean: boolean_operation,
   resizeNodeUnified,
 

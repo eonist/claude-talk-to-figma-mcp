@@ -204,4 +204,54 @@ Returns:
       }
     }
   );
+
+  // Get single vector
+  server.tool(
+    MCP_COMMANDS.GET_VECTOR,
+    `Retrieves a single vector node by ID.`,
+    {
+      nodeId: z.string()
+        .refine(isValidNodeId, { message: "Must be a valid Figma node ID." })
+        .describe("Figma vector node ID to retrieve.")
+    },
+    {
+      title: "Get Vector",
+      idempotentHint: true,
+      usageExamples: JSON.stringify([{ nodeId: "123:456" }]),
+      extraInfo: "Returns vector properties (position, size, and paths)."
+    },
+    async (args): Promise<any> => {
+      try {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_VECTOR, { nodeId: args.nodeId });
+        return { vector: result };
+      } catch (err) {
+        return { success: false, error: { message: err instanceof Error ? err.message : String(err) } };
+      }
+    }
+  );
+
+  // Get multiple vectors
+  server.tool(
+    MCP_COMMANDS.GET_VECTORS,
+    `Retrieves multiple vector nodes by their IDs.`,
+    {
+      nodeIds: z.array(z.string()
+        .refine(isValidNodeId, { message: "Must be valid Figma node IDs." })
+      ).min(1).describe("Array of vector node IDs to retrieve.")
+    },
+    {
+      title: "Get Vectors",
+      idempotentHint: true,
+      usageExamples: JSON.stringify([{ nodeIds: ["123:456", "789:012"] }]),
+      extraInfo: "Returns an array of vector objects."
+    },
+    async (args): Promise<any> => {
+      try {
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_VECTORS, { nodeIds: args.nodeIds });
+        return { vectors: result.vectors || [] };
+      } catch (err) {
+        return { success: false, error: { message: err instanceof Error ? err.message : String(err) } };
+      }
+    }
+  );
 }

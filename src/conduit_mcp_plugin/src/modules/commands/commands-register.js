@@ -180,6 +180,8 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.CREATE_POLYGON, shapeOperations.createPolygon);
   registerCommand(PLUGIN_COMMANDS.CREATE_STAR, shapeOperations.createStar);
   registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, shapeOperations.createVectorUnified);
+  registerCommand(PLUGIN_COMMANDS.GET_VECTOR, shapeOperations.getVector);
+  registerCommand(PLUGIN_COMMANDS.GET_VECTORS, shapeOperations.getVectors);
 
   // --- Text ---
   registerCommand(PLUGIN_COMMANDS.SET_TEXT, textOperations.createTextUnified);
