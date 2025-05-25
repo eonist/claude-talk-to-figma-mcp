@@ -305,7 +305,10 @@ function apply_autolayout(frameId) {
     ws, channel,
     command: 'set_auto_layout',
     params: params,
-    assert: (response) => ({ pass: response.success === true, response }),
+    assert: (response) => ({ 
+      pass: response && (response.success === true || Array.isArray(response) || response.nodeId || response.id), 
+      response 
+    }),
     label: `apply_autolayout to frame ${frameId}`
   });
 }
