@@ -107,11 +107,27 @@ function create_text_block(frameId) {
 }
 
 /**
+ * Helper to load the Roboto font asynchronously.
+ * @returns {Promise<void>}
+ */
+async function load_roboto_font() {
+  return runStep({
+    ws,
+    channel,
+    command: 'load_font_async',
+    params: { family: 'Roboto' },
+    assert: () => ({ pass: true }),
+    label: 'load_font_async (Roboto)'
+  });
+}
+
+/**
  * Helper to create a hero title text node in Figma for text tests.
  * @param {string} frameId - The frame ID to place the hero title inside.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
  */
-function create_hero_title(frameId) {
+async function create_hero_title(frameId) {
+  await load_roboto_font();
   const params = {
     x: 100,
     y: 450, // Position for the hero title
