@@ -182,49 +182,7 @@ function create_heart(parentId = null) {
     label: `create_vector (${params.name})`
   });
 }
-
-/**
- * Shape scene: creates rectangle, ellipse, frame, hexagon, star, and heart in sequence.
- * @param {Array} results - Collector array for test step results.
- * @returns {Promise<void>}
- */
-/**
- * Helper to create a right-pointing arrow with curved tail.
- * @param {string} parentId - Optional parent frame ID to place the arrow inside
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
- */
-function create_arrow(parentId = null) {
-  const params = {
-    x: parentId ? 80 : 200, // Use relative coordinates if inside a parent
-    y: parentId ? 80 : 100,
-    width: 120, height: 60,
-    name: 'UnitTestArrow',
-    vectorPaths: [
-      { windingRule: "EVENODD", data: "M 10 30 Q 10 10 50 10 L 50 0 L 110 30 L 50 60 L 50 50 Q 20 50 20 30 Z" }
-    ],
-    fillColor: randomColor(),
-    strokeColor: randomColor(),
-    strokeWeight: Math.floor(Math.random() * 8) + 1
-  };
-  
-  // Add parentId if provided
-  if (parentId) {
-    params.parentId = parentId;
-  }
-  
-  return runStep({
-    ws, channel,
-    command: 'create_vector',
-    params: { vector: params },
-    assert: (response) => {
-      const ids = Array.isArray(response.nodeIds) ? response.nodeIds : response.ids;
-      const ok = Array.isArray(ids) && ids.length > 0;
-      return { pass: ok, reason: ok ? undefined : `Expected non-empty ids, got ${ids}`, response };
-    },
-    label: `create_vector (${params.name})`
-  });
-}
-
+ 
 /**
  * Helper to create a lightning bolt icon using angular vector paths.
  * @param {string} parentId - Optional parent frame ID to place the lightning bolt inside
@@ -372,7 +330,6 @@ export async function shapeScene(results) {
   results.push(await create_speech_bubble(frameId));
   results.push(await create_bookmark(frameId));
   results.push(await create_heart(frameId));
-  results.push(await create_arrow(frameId));
   results.push(await create_lightning_bolt(frameId));
   
   // Apply autolayout to create horizontal flow with wrapping
