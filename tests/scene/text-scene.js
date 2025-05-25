@@ -156,6 +156,9 @@ export async function textScene(results) {
   results.push(await create_text(frameId));
   results.push(await create_text_area(frameId));
   
+  // Create text block inside the frame
+  results.push(await create_text_block(frameId));
+  
   // Apply autolayout to the frame
   results.push(await apply_autolayout(frameId));
 }
