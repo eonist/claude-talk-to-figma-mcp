@@ -90,6 +90,7 @@ export interface SetAutoLayoutParams {
     primaryAxisSizing?: "FIXED" | "AUTO";
     counterAxisSizing?: "FIXED" | "AUTO";
     itemSpacing?: number;
+    layoutWrap?: "NO_WRAP" | "WRAP";
     padding?: {
       top?: number;
       right?: number;
@@ -104,6 +105,7 @@ export interface SetAutoLayoutParams {
     primaryAxisSizing?: "FIXED" | "AUTO";
     counterAxisSizing?: "FIXED" | "AUTO";
     itemSpacing?: number;
+    layoutWrap?: "NO_WRAP" | "WRAP";
     padding?: {
       top?: number;
       right?: number;

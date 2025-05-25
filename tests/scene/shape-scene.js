@@ -298,6 +298,7 @@ function apply_autolayout(frameId) {
     layout: {
       nodeId: frameId,
       mode: 'HORIZONTAL',
+      layoutWrap: 'WRAP',
       itemSpacing: 15,
       padding: {
         top: 20,
