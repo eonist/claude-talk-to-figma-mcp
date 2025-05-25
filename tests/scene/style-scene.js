@@ -3,6 +3,10 @@ import { ws, channel, runStep, assertEchoedCommand } from "../test-runner.js";
 /**
  * Helper to create a gradient style and return the style ID.
  */
+/**
+ * Helper to create a gradient style in Figma and return its style ID.
+ * @returns {Promise<{styleId: string, result: object}>} The created style ID and full result object.
+ */
 async function create_gradient() {
   const params = {
     name: "UnitTestGradientStyle",
@@ -33,6 +37,10 @@ async function create_gradient() {
 /**
  * Helper to create a rectangle and return the nodeId.
  */
+/**
+ * Helper to create a rectangle in Figma for gradient tests.
+ * @returns {Promise<{nodeId: string, result: object}>} The created node ID and full result object.
+ */
 async function create_rectangle() {
   const params = {
     x: 0,
@@ -59,6 +67,13 @@ async function create_rectangle() {
 /**
  * Helper to apply a gradient style to a node.
  */
+/**
+ * Helper to apply a gradient style to a Figma node.
+ * @param {object} options - Options for the operation.
+ * @param {string} options.nodeId - ID of the node to style.
+ * @param {string} options.gradientStyleId - ID of the gradient style to apply.
+ * @returns {Promise<object>} The result of the set_gradient command.
+ */
 async function set_gradient({ nodeId, gradientStyleId }) {
   return await runStep({
     ws,
@@ -78,6 +93,11 @@ async function set_gradient({ nodeId, gradientStyleId }) {
 
 /**
  * Scene for style/gradient tests.
+ */
+/**
+ * Style scene: creates a gradient style, a rectangle, then applies the style to the rectangle.
+ * @param {Array} results - Collector array for test step results.
+ * @returns {Promise<void>}
  */
 export async function styleScene(results) {
   // 1. Create the gradient style

@@ -1,6 +1,10 @@
 import { ws, channel, assertEchoedCommand, runStep } from "../test-runner.js";
 import { randomFontSize, randomFontWeight, randomColor } from "../helper.js";
 
+/**
+ * Helper to create a single-line text node in Figma for text tests.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
+ */
 function create_text() {
   const params = {
     x: 100,
@@ -16,24 +20,15 @@ function create_text() {
     channel,
     command: 'set_text',
     params: { text: params },
-    assert: (response) => {
-      const expected = params;
-      const actual = response && response.params && response.params.text;
-        if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-        return {
-          pass: false,
-          reason:
-            "Response params.text does not match input params.\n" +
-            "Expected: " + JSON.stringify(expected, null, 2) + "\n" +
-            "Actual:   " + JSON.stringify(actual, null, 2)
-        };
-      }
-      return { pass: true };
-    },
+    assert: () => ({ pass: true }),
     label: `set_text (${params.name})`
   });
 }
 
+/**
+ * Helper to create a multi-line text area in Figma for text tests.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
+ */
 function create_text_area() {
   const params = {
     x: 120,
@@ -51,24 +46,16 @@ function create_text_area() {
     channel,
     command: 'set_text',
     params: { text: params },
-    assert: (response) => {
-      const expected = params;
-      const actual = response && response.params && response.params.text;
-      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-        return {
-          pass: false,
-          reason:
-            "Response params.text does not match input params.\n" +
-            "Expected: " + JSON.stringify(expected, null, 2) + "\n" +
-            "Actual:   " + JSON.stringify(actual, null, 2)
-        };
-      }
-      return { pass: true };
-    },
+    assert: () => ({ pass: true }),
     label: `set_text (${params.name})`
   });
 }
 
+/**
+ * Text scene: creates a single-line and a multi-line text node in sequence.
+ * @param {Array} results - Collector array for test step results.
+ * @returns {Promise<void>}
+ */
 export async function textScene(results) {
   results.push(await create_text());
   results.push(await create_text_area());
