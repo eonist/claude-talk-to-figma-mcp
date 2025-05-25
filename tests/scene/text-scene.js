@@ -128,6 +128,7 @@ async function load_roboto_font() {
  */
 async function create_hero_title(frameId) {
   await load_roboto_font();
+  console.log('Roboto font loaded');
   const params = {
     x: 100,
     y: 450, // Position for the hero title
@@ -141,6 +142,7 @@ async function create_hero_title(frameId) {
     fontColor: randomColor(),
     parentId: frameId
   };
+  console.log('Creating hero title with params:', params);
   return runStep({
     ws,
     channel,
