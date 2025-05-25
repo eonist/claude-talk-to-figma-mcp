@@ -35,6 +35,7 @@ export async function createText(params) {
       fontSize = 14,
       fontWeight = 400,
       fontColor = { r: 0, g: 0, b: 0, a: 1 },
+      fontFamily = "Inter",
       name = "Text",
       parentId,
     } = (cfg.text && typeof cfg.text === "object") ? cfg.text : cfg || {};
@@ -73,10 +74,10 @@ export async function createText(params) {
 
       try {
         await figma.loadFontAsync({
-          family: "Inter",
+          family: fontFamily,
           style: getFontStyle(fontWeight),
         });
-        textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
+        textNode.fontName = { family: fontFamily, style: getFontStyle(fontWeight) };
         textNode.fontSize = fontSize;
       } catch (error) {
         console.error("Error setting font", error);
@@ -173,6 +174,7 @@ export async function createBoundedText(params) {
       fontSize = 14,
       fontWeight = 400,
       fontColor = { r: 0, g: 0, b: 0, a: 1 },
+      fontFamily = "Inter",
       name = "Text",
       parentId,
     } = cfg || {};
@@ -198,8 +200,8 @@ export async function createBoundedText(params) {
       textNode.y = y;
       textNode.name = name;
 
-      await figma.loadFontAsync({ family: "Inter", style: getFontStyle(fontWeight) });
-      textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
+      await figma.loadFontAsync({ family: fontFamily, style: getFontStyle(fontWeight) });
+      textNode.fontName = { family: fontFamily, style: getFontStyle(fontWeight) };
       textNode.fontSize = fontSize;
 
       await setCharacters(textNode, text);
