@@ -5,6 +5,14 @@ import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 import { BatchTextUpdateArraySchema } from "./schema/batch-text-schema.js";
+import { 
+  NodeIdSchema,
+  TextContentSchema,
+  TextStylePropertiesSchema,
+  BatchTextStyleEntriesSchema,
+  SetTextContentParamsSchema,
+  SetTextStyleParamsSchema
+} from "./schema/text-content-schema.js";
 
 /**
  * Registers the unified "set_text_content" tool on the MCP server.
@@ -18,15 +26,8 @@ Returns:
 
 `,
     {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'.")
-        .optional(),
-      text: z.string()
-        .min(1)
-        .max(10000)
-        .describe("The new text content to set for the node. Must be a non-empty string. Maximum length 10,000 characters.")
-        .optional(),
+      nodeId: NodeIdSchema.optional(),
+      text: TextContentSchema.optional(),
       texts: BatchTextUpdateArraySchema.optional(),
     },
     {
@@ -123,17 +124,9 @@ Returns:
 
 `,
     {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma text node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .optional(),
-      styles: z.record(z.any()).optional(),
-      entries: z.array(
-        z.object({
-          nodeId: z.string()
-            .refine(isValidNodeId, { message: "Must be a valid Figma text node ID." }),
-          styles: z.record(z.any())
-        })
-      ).optional(),
+      nodeId: NodeIdSchema.optional(),
+      styles: TextStylePropertiesSchema.optional(),
+      entries: BatchTextStyleEntriesSchema.optional(),
     },
     {
       title: "Set Text Style (Unified)",
