@@ -148,11 +148,13 @@ function create_star(parentId = null) {
 
 /**
  * Helper to create a heart shape in Figma using vector paths and bezier curves.
+ * @param {string} parentId - Optional parent frame ID to place the heart inside
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_heart() {
+function create_heart(parentId = null) {
   const params = {
-    x: 150, y: 150,
+    x: parentId ? 70 : 150, // Use relative coordinates if inside a parent
+    y: parentId ? 70 : 150,
     width: 100, height: 90,
     name: 'UnitTestHeart',
     vectorPaths: [
@@ -162,6 +164,12 @@ function create_heart() {
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_vector',
