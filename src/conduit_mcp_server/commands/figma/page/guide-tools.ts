@@ -3,17 +3,7 @@ import type { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
-// Guide schema
-const GuideEntry = z.object({
-  axis: z.enum(["X", "Y"]),
-  offset: z.number(),
-  delete: z.boolean().optional(),
-});
-const SetGuideSchema = z.object({
-  guide: GuideEntry.optional(),
-  guides: z.array(GuideEntry).optional(),
-});
-const GetGuideSchema = z.object({}); // No params
+import { GuideEntry, SetGuideSchema, GetGuideSchema } from "./schema/guide-schema.js";
 
 export function registerGuideCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_guide: add/delete guides (single or batch)
@@ -22,15 +12,14 @@ export function registerGuideCommands(server: McpServer, figmaClient: FigmaClien
     `Add or delete one or more guides on the current Figma page.
 
 Returns: Array of result objects for each operation.`,
-    SetGuideSchema,
+    SetGuideSchema.shape,
     async (params) => {
       const ops = params.guide ? [params.guide] : (params.guides || []);
       const results = [];
       let anySuccess = false;
       for (const op of ops) {
         try {
-          const result = await figmaClient.setGuide(op);
-          // If plugin returns an array, flatten it
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_GUIDE, op);
           if (Array.isArray(result)) {
             for (const r of result) {
               results.push({ ...r, axis: op.axis, offset: op.offset, success: !r.error });
@@ -45,14 +34,10 @@ Returns: Array of result objects for each operation.`,
         }
       }
       if (anySuccess) {
-        return { success: true, results };
+        return { content: [{ type: "text", text: JSON.stringify({ success: true, results }) }] };
       } else {
         return {
-          success: false,
-          error: {
-            message: "All guide operations failed",
-            results
-          }
+          content: [{ type: "text", text: JSON.stringify({ success: false, error: { message: "All guide operations failed", results } }) }]
         };
       }
     }
@@ -64,9 +49,10 @@ Returns: Array of result objects for each operation.`,
     `Get all guides on the current Figma page.
 
 Returns: Array of guides, each with { axis, offset }`,
-    GetGuideSchema,
+    GetGuideSchema.shape,
     async () => {
-      return await figmaClient.getGuide();
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_GUIDE, {});
+      return { content: [{ type: "text", text: JSON.stringify(result) }] };
     }
   );
 }
