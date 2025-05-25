@@ -1,29 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { z } from "zod";
-import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
-import { CornerRadiusSchema } from "./schema/corner-radius-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { CornerRadiusSchema } from "./schema/corner-radius-schema.js";
+import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 
-/**
- * Registers corner radius command on the MCP server.
- *
- * This function adds a tool named "set_corner_radius" to the MCP server,
- * enabling setting the corner radius of a node in Figma, optionally specifying which corners.
- * It validates input, executes the corresponding Figma command, and returns the result.
- *
- * @param {McpServer} server - The MCP server instance to register the tool on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tool asynchronously.
- *
- * @example
- * registerCornerRadiusTools(server, figmaClient);
- */
 export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaClient) {
-  console.log("ENTERED registerCornerRadiusTools");
-  // Set Corner Radius
   server.tool(
     MCP_COMMANDS.SET_CORNER_RADIUS,
     `Sets the corner radius of a node in Figma.
@@ -31,12 +12,7 @@ export function registerCornerRadiusTools(server: McpServer, figmaClient: FigmaC
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the updated node's ID.
 `,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to update. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      ...CornerRadiusSchema.shape,
-    },
+    CornerRadiusSchema.shape,
     {
       title: "Set Corner Radius",
       idempotentHint: true,
@@ -53,13 +29,13 @@ Returns:
       ],
       extraInfo: "Use this command to set the corner radius of a node, optionally specifying which corners."
     },
-    async ({ nodeId, radius, corners }) => {
+    async (args: any) => {
       try {
-        const id = ensureNodeIdIsString(nodeId);
-        await figmaClient.executeCommand(MCP_COMMANDS.SET_CORNER_RADIUS, { nodeId: id, radius, corners });
-        const response = { success: true, results: [{ nodeId: id, radius, corners, updated: true }] };
+        const id = ensureNodeIdIsString(args.nodeId);
+        await figmaClient.executeCommand(MCP_COMMANDS.SET_CORNER_RADIUS, { nodeId: id, radius: args.radius, corners: args.corners });
+        const response = { success: true, results: [{ nodeId: id, radius: args.radius, corners: args.corners, updated: true }] };
         return { content: [{ type: "text", text: JSON.stringify(response) }] };
-      } catch (error) {
+      } catch (error: any) {
         const response = {
           success: false,
           error: {
@@ -67,7 +43,7 @@ Returns:
             results: [],
             meta: {
               operation: "set_corner_radius",
-              params: { nodeId, radius, corners }
+              params: args
             }
           }
         };
