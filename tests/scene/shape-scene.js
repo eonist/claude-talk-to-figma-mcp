@@ -34,16 +34,25 @@ function create_rectangle(parentId = null) {
 
 /**
  * Helper to create an ellipse in Figma for shape tests.
+ * @param {string} parentId - Optional parent frame ID to place the ellipse inside
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_ellipse() {
+function create_ellipse(parentId = null) {
   const params = {
-    x: 50, y: 50, width: 100, height: 100,
+    x: parentId ? 30 : 50, // Use relative coordinates if inside a parent
+    y: parentId ? 30 : 50,
+    width: 100, height: 100,
     name: 'UnitTestEllipse',
     fillColor: randomColor(),
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_ellipse',
