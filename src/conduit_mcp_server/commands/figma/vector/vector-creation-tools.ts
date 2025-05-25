@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
+import { vectorSchema, vectorsSchema } from "./schema/vector-schema.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
@@ -17,36 +18,8 @@ export function registerVectorTools(server: McpServer, figmaClient: FigmaClient)
     MCP_COMMANDS.CREATE_VECTOR,
     `Creates one or more vector nodes in Figma. Use 'vector' for single or 'vectors' for batch.`,
     {
-      vector: z.object({
-        x: z.number().default(0),
-        y: z.number().default(0),
-        width: z.number().default(100),
-        height: z.number().default(100),
-        name: z.string().optional(),
-        parentId: z.string().optional().describe("Optional parent node ID."),
-        vectorPaths: z.array(
-          z.object({
-            windingRule: z.enum(["EVENODD", "NONZERO"]),
-            data: z.string()
-          })
-        ).min(1)
-      }).optional(),
-      vectors: z.array(
-        z.object({
-          x: z.number().default(0),
-          y: z.number().default(0),
-          width: z.number().default(100),
-          height: z.number().default(100),
-          name: z.string().optional(),
-          parentId: z.string().optional().describe("Optional parent node ID."),
-          vectorPaths: z.array(
-            z.object({
-              windingRule: z.enum(["EVENODD", "NONZERO"]),
-              data: z.string()
-            })
-          ).min(1)
-        })
-      ).optional()
+      vector: vectorSchema.optional(),
+      vectors: vectorsSchema
     },
     {
       title: "Create Vector(s)",

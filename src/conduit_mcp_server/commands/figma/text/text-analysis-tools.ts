@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { getStyledTextSegmentsSchema, scanTextNodesSchema } from "./schema/text-analysis-schema.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 import { logger } from "../../../utils/logger.js";
@@ -21,21 +22,7 @@ Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the styled text segments as JSON.
 `,
     {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma text node ID to analyze. Must be a string in the format '123:456'."),
-      property: z.enum([
-        "fillStyleId", 
-        "fontName", 
-        "fontSize", 
-        "textCase", 
-        "textDecoration", 
-        "textStyleId", 
-        "fills", 
-        "letterSpacing", 
-        "lineHeight", 
-        "fontWeight"
-      ]).describe("The style property to analyze segments by. Must be one of the allowed style property names."),
+      ...getStyledTextSegmentsSchema,
     },
     {
       title: "Get Styled Text Segments",
@@ -104,9 +91,7 @@ Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the scan status and results.
 `,
     {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to scan. Must be a string in the format '123:456'."),
+      ...scanTextNodesSchema,
     },
     {
       title: "Scan Text Nodes",
