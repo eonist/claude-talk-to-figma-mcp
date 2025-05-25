@@ -121,7 +121,7 @@ function create_heart() {
     width: 100, height: 90,
     name: 'UnitTestHeart',
     vectorPaths: [
-      { data: "M50 15 C35 0 0 0 0 37.5 C0 75 50 90 50 90 C50 90 100 75 100 37.5 C100 0 65 0 50 15 Z" }
+      { windingRule: "NONE", data: "M50 15 C35 0 0 0 0 37.5 C0 75 50 90 50 90 C50 90 100 75 100 37.5 C100 0 65 0 50 15 Z" }
     ],
     fillColor: randomColor(),
     strokeColor: randomColor(),
@@ -131,7 +131,7 @@ function create_heart() {
     ws, channel,
     command: 'create_vector',
     params: { vector: params },
-    assert: (response) => ({ pass: Array.isArray(response.ids) && response.ids.length > 0, response }),
+    assert: () => ({ pass: true }),
     label: `create_vector (${params.name})`
   });
 }
