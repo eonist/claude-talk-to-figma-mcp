@@ -240,9 +240,10 @@ function create_lightning_bolt() {
   });
 }
 
-function create_speech_bubble() {
+function create_speech_bubble(parentId = null) {
   const params = {
-    x: 70, y: 60, width: 100, height: 80,
+    x: parentId ? 50 : 70, y: parentId ? 50 : 60, 
+    width: 100, height: 80,
     name: 'UnitTestSpeechBubble',
     vectorPaths: [
       { windingRule: "EVENODD", data: "M 20 30 Q 20 20 30 20 L 80 20 Q 90 20 90 30 L 90 60 Q 90 70 80 70 L 40 70 L 30 80 L 32 70 Q 20 70 20 60 Z" }
@@ -251,6 +252,12 @@ function create_speech_bubble() {
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_vector',
@@ -264,9 +271,10 @@ function create_speech_bubble() {
   });
 }
  
-function create_bookmark() {
+function create_bookmark(parentId = null) {
   const params = {
-    x: 130, y: 120, width: 80, height: 100,
+    x: parentId ? 60 : 130, y: parentId ? 60 : 120, 
+    width: 80, height: 100,
     name: 'UnitTestBookmark',
     vectorPaths: [
       { windingRule: "EVENODD", data: "M 30 20 L 70 20 Q 75 20 75 25 L 75 85 L 50 70 L 25 85 L 25 25 Q 25 20 30 20 Z" }
@@ -275,6 +283,12 @@ function create_bookmark() {
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_vector',
@@ -324,18 +338,14 @@ export async function shapeScene(results) {
     console.warn('Could not get frame ID for placing shapes inside frame');
   }
   
-  // Create 4 shapes inside the frame
+  // Create shapes inside the frame - adding more to trigger wrapping
   results.push(await create_star(frameId));
   results.push(await create_rectangle(frameId));
   results.push(await create_ellipse(frameId));
   results.push(await create_hexagon(frameId));
+  results.push(await create_speech_bubble(frameId));
+  results.push(await create_bookmark(frameId));
   
   // Apply autolayout to create horizontal flow with wrapping
   results.push(await apply_autolayout(frameId));
-  
-  // Other shapes (commented out for now until we test autolayout works)
-  // results.push(await create_speech_bubble());
-  // results.push(await create_bookmark());
-  // results.push(await create_heart());
-  // results.push(await create_lightning_bolt());
 }
