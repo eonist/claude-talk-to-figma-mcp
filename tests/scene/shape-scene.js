@@ -306,8 +306,7 @@ function apply_autolayout(frameId) {
     command: 'set_auto_layout',
     params: params,
     assert: (response) => ({ 
-      pass: response !== undefined && response !== null,
-      reason: response ? undefined : `Got response: ${JSON.stringify(response)}`,
+      pass: response && response['0'] && response['0'].success === true && response['0'].nodeId === frameId,
       response 
     }),
     label: `apply_autolayout to frame ${frameId}`
@@ -326,7 +325,7 @@ export async function shapeScene(results) {
     console.warn('Could not get frame ID for placing shapes inside frame');
   }
   
-  // Create 9 shapes inside the frame for comprehensive grid demonstration
+  // Create 8 shapes inside the frame for comprehensive grid demonstration
   results.push(await create_star(frameId));
   results.push(await create_rectangle(frameId));
   results.push(await create_ellipse(frameId));
