@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { ReorderSchema } from "./schema/reorder-layer-schema.js";
 
 /**
  * Registers reorder layer commands on the MCP server.
@@ -24,37 +25,7 @@ export function registerReorderLayerTools(server: McpServer, figmaClient: FigmaC
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the results and any errors.
 `,
-    {
-      reorder: z.object({
-        nodeId: z.string().describe("The ID of the node to reorder."),
-        direction: z.enum(["up", "down", "front", "back"])
-          .optional()
-          .describe("The direction to move the node: 'up', 'down', 'front', or 'back'. Optional."),
-        index: z.number().int()
-          .optional()
-          .describe("The new index to move the node to (0-based). Optional."),
-      })
-        .describe("A single reorder configuration object. Each object should include nodeId and optional direction or index.")
-        .optional(),
-      reorders: z.array(z.object({
-        nodeId: z.string().describe("The ID of the node to reorder."),
-        direction: z.enum(["up", "down", "front", "back"])
-          .optional()
-          .describe("The direction to move the node: 'up', 'down', 'front', or 'back'. Optional."),
-        index: z.number().int()
-          .optional()
-          .describe("The new index to move the node to (0-based). Optional."),
-      }))
-        .describe("An array of reorder configuration objects. Each object should include nodeId and optional direction or index.")
-        .optional(),
-      options: z.object({
-        skip_errors: z.boolean()
-          .optional()
-          .describe("If true, skip errors and continue processing remaining operations in batch mode.")
-      })
-      .optional()
-      .describe("Options for the operation (e.g., skip_errors). Optional.")
-    },
+    ReorderSchema.shape,
     {
       title: "Reorder Nodes",
       idempotentHint: false,
@@ -98,7 +69,7 @@ Returns:
           reorders: reordersArr,
           options: args.options
         });
-        const results = [];
+        const results: Array<{ nodeId: string; success: boolean; error?: any; meta?: any; newIndex?: number }> = [];
         if (result && Array.isArray(result.results)) {
           for (let i = 0; i < reordersArr.length; i++) {
             const r = result.results[i];
