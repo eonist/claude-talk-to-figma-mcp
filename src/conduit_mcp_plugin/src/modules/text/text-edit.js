@@ -143,9 +143,19 @@ export async function setTextStyle(params) {
       node.textAlignVertical = styles.textAlignVertical;
     }
     
-    // ✅ TEXT BEHAVIOR - Newly implemented based on GitHub issue analysis
+    // ✅ TEXT BEHAVIOR - Enhanced with all supported options
     if (styles.textAutoResize !== undefined) {
       node.textAutoResize = styles.textAutoResize;
+    }
+    
+    // ✅ TEXT TRUNCATION - Newly added based on updated GitHub issue analysis
+    if (styles.textTruncation !== undefined) {
+      node.textTruncation = styles.textTruncation;
+    }
+    
+    // ✅ MAX LINES - Newly added based on updated GitHub issue analysis
+    if (styles.maxLines !== undefined) {
+      node.maxLines = styles.maxLines;
     }
 
     results.push({ nodeId, success: true });

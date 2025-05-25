@@ -70,11 +70,11 @@ export const ColorSchema = z.object({
 }).describe("RGBA color object");
 
 /**
- * Schema for text style properties - based on Figma Plugin API support analysis
- * See: https://github.com/eonist/conduit/issues/360#issue-3089255265
+ * Schema for text style properties - based on UPDATED Figma Plugin API support analysis
+ * See: https://github.com/eonist/conduit/issues/360#issuecomment-2907791917
  * 
  * ✅ SUPPORTED: Properties confirmed to work with Figma Plugin API
- * ❌ REMOVED: textTruncation, maxLines (UI only, no Plugin API support)
+ * Updates based on detailed Perplexity analysis correcting previous assumptions
  */
 export const TextStylePropertiesSchema = z.object({
   // ✅ SUPPORTED: Direct assignment to node.fontSize
@@ -84,7 +84,7 @@ export const TextStylePropertiesSchema = z.object({
     .optional()
     .describe("Font size in pixels. Must be between 1 and 200."),
     
-  // ✅ SUPPORTED: Via font family mapping (TODO: implement weight→style mapping)
+  // ✅ SUPPORTED: Via font family mapping (implemented with weight→style mapping)
   fontWeight: z.number()
     .min(100)
     .max(1000)
@@ -132,14 +132,22 @@ export const TextStylePropertiesSchema = z.object({
     .optional()
     .describe("Vertical text alignment - Plugin API supported"),
     
-  // ✅ SUPPORTED: Direct assignment to node.textAutoResize (Plugin API confirmed)
-  textAutoResize: z.enum(["NONE", "WIDTH_AND_HEIGHT", "HEIGHT"])
+  // ✅ SUPPORTED: Direct assignment to node.textAutoResize (Plugin API confirmed) - UPDATED with TRUNCATE
+  textAutoResize: z.enum(["NONE", "WIDTH_AND_HEIGHT", "HEIGHT", "TRUNCATE"])
     .optional()
-    .describe("Text auto-resize behavior - Plugin API supported")
+    .describe("Text auto-resize behavior - Plugin API supported with 4 options"),
     
-  // ❌ REMOVED: textTruncation, maxLines - UI only, no Plugin API support
-  // See GitHub issue analysis for details
-}).describe("Text style properties object - includes all Figma Plugin API supported properties");
+  // ✅ SUPPORTED: Direct assignment to node.textTruncation (Plugin API confirmed) - RESTORED
+  textTruncation: z.enum(["DISABLED", "ENDING"])
+    .optional()
+    .describe("Text truncation behavior - Plugin API supported"),
+    
+  // ✅ SUPPORTED: Direct assignment to node.maxLines (Plugin API confirmed) - RESTORED
+  maxLines: z.number()
+    .min(1)
+    .optional()
+    .describe("Maximum number of lines for text truncation - only works when textTruncation is 'ENDING'")
+}).describe("Text style properties object - includes all Figma Plugin API supported properties (updated with corrected truncation support)");
 
 /**
  * Schema for a single text style update entry
