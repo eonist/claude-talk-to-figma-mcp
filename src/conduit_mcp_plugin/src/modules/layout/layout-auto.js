@@ -100,7 +100,22 @@ export async function setAutoLayoutUnified(params) {
 
   const results = [];
   for (const config of configs) {
-    const { nodeId, mode, primaryAxisSizing, counterAxisSizing, itemSpacing, layoutWrap, padding, alignItems } = config;
+    const { 
+      nodeId, 
+      mode, 
+      primaryAxisSizing, 
+      counterAxisSizing, 
+      itemSpacing,
+      counterAxisSpacing, // NEW: Added support for vertical gap between wrapped rows
+      layoutWrap, 
+      padding, 
+      paddingLeft, // NEW: Added individual padding support
+      paddingRight, // NEW: Added individual padding support
+      paddingTop, // NEW: Added individual padding support
+      paddingBottom, // NEW: Added individual padding support
+      alignItems 
+    } = config;
+    
     try {
       const node = await figma.getNodeByIdAsync(nodeId);
       if (!node) {
@@ -133,15 +148,25 @@ export async function setAutoLayoutUnified(params) {
       // Set spacing and padding
       if (typeof itemSpacing === "number") node.itemSpacing = itemSpacing;
       
-      // Set layout wrap (NEW: added missing layoutWrap support)
+      // NEW: Set counter axis spacing (vertical gap between rows when wrapping)
+      if (typeof counterAxisSpacing === "number") node.counterAxisSpacing = counterAxisSpacing;
+      
+      // Set layout wrap
       if (layoutWrap !== undefined) node.layoutWrap = layoutWrap;
       
+      // Handle padding - support both object format and individual properties
       if (padding) {
         if (typeof padding.top === "number") node.paddingTop = padding.top;
         if (typeof padding.right === "number") node.paddingRight = padding.right;
         if (typeof padding.bottom === "number") node.paddingBottom = padding.bottom;
         if (typeof padding.left === "number") node.paddingLeft = padding.left;
       }
+      
+      // NEW: Handle individual padding properties
+      if (typeof paddingTop === "number") node.paddingTop = paddingTop;
+      if (typeof paddingRight === "number") node.paddingRight = paddingRight;
+      if (typeof paddingBottom === "number") node.paddingBottom = paddingBottom;
+      if (typeof paddingLeft === "number") node.paddingLeft = paddingLeft;
 
       // Set alignment
       if (alignItems) node.primaryAxisAlignItems = alignItems;
