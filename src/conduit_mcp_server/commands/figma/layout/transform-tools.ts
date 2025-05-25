@@ -1,23 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
-//import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { ResizeNodeSchema } from "./schema/transform-schema.js";
 
-/**
- * Registers transformation-related modify commands:
- * - resize_node
- * - resize_nodes
- * - (future: rotation, scaling, flipping)
- */
 export function registerTransformCommands(server: McpServer, figmaClient: FigmaClient) {
-  console.log("ENTERED registerTransformCommands");
-  // Debug MCP_COMMANDS
-  console.log("MCP_COMMANDS at runtime:", MCP_COMMANDS);
-  // Resize Node Tool
-  console.log("REGISTERING RESIZE_NODE:", MCP_COMMANDS.RESIZE_NODE);
   server.tool(
     MCP_COMMANDS.RESIZE_NODE,
     `Resize a node in Figma.
@@ -25,22 +13,7 @@ export function registerTransformCommands(server: McpServer, figmaClient: FigmaC
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the resized node's ID and new size.
 `,
-    {
-      // Validate nodeId as simple or complex Figma node ID, preserving original description
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to resize. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-      // Enforce positive width, reasonable upper bound
-      width: z.number()
-        .min(1)
-        .max(10000)
-        .describe("The new width for the node, in pixels. Must be a positive number between 1 and 10,000."),
-      // Enforce positive height, reasonable upper bound
-      height: z.number()
-        .min(1)
-        .max(10000)
-        .describe("The new height for the node, in pixels. Must be a positive number between 1 and 10,000."),
-    },
+    ResizeNodeSchema.shape,
     {
       title: "Resize Node",
       idempotentHint: true,
@@ -48,7 +21,7 @@ Returns:
       readOnlyHint: false,
       openWorldHint: false
     },
-    async ({ nodeId, width, height }) => {
+    async ({ nodeId, width, height }: { nodeId: string; width: number; height: number }) => {
       const id = ensureNodeIdIsString(nodeId);
       try {
         await figmaClient.executeCommand(MCP_COMMANDS.RESIZE_NODE, { nodeId: id, width, height });
@@ -99,5 +72,4 @@ Returns:
       }
     }
   );
-
 }
