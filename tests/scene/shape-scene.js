@@ -295,14 +295,16 @@ function create_bookmark() {
  */
 function apply_autolayout(frameId) {
   const params = {
-    nodeId: frameId,
-    layoutMode: 'HORIZONTAL',
-    layoutWrap: 'WRAP',
-    itemSpacing: 15,
-    paddingTop: 20,
-    paddingRight: 20,
-    paddingBottom: 20,
-    paddingLeft: 20
+    layout: {
+      nodeId: frameId,
+      layoutMode: 'HORIZONTAL',
+      layoutWrap: 'WRAP',
+      itemSpacing: 15,
+      paddingTop: 20,
+      paddingRight: 20,
+      paddingBottom: 20,
+      paddingLeft: 20
+    }
   };
   return runStep({
     ws, channel,
