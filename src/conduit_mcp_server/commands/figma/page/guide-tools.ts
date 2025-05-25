@@ -19,7 +19,7 @@ Returns: Array of result objects for each operation.`,
       let anySuccess = false;
       for (const op of ops) {
         try {
-          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_GUIDE, op);
+          const result = await figmaClient.setGuide(op);
           if (Array.isArray(result)) {
             for (const r of result) {
               results.push({ ...r, axis: op.axis, offset: op.offset, success: !r.error });
