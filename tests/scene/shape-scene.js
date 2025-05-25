@@ -204,13 +204,59 @@ function create_lightning_bolt() {
     label: `create_vector (${params.name})`
   });
 }
+
+function create_speech_bubble() {
+  const params = {
+    x: 70, y: 60, width: 100, height: 80,
+    name: 'UnitTestSpeechBubble',
+    vectorPaths: [
+      { windingRule: "EVENODD", data: "M 20 30 Q 20 20 30 20 L 80 20 Q 90 20 90 30 L 90 60 Q 90 70 80 70 L 40 70 L 30 80 L 32 70 Q 20 70 20 60 Z" }
+    ],
+    fillColor: randomColor(),
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
+  };
+  return runStep({
+    ws, channel,
+    command: 'create_vector',
+    params: { vector: params },
+    assert: (response) => {
+      const ids = Array.isArray(response.nodeIds) ? response.nodeIds : response.ids;
+      const ok = Array.isArray(ids) && ids.length > 0;
+      return { pass: ok, reason: ok ? undefined : `Expected non-empty ids, got ${ids}`, response };
+    },
+    label: `create_vector (${params.name})`
+  });
+}
  
+function create_bookmark() {
+  const params = {
+    x: 130, y: 120, width: 80, height: 100,
+    name: 'UnitTestBookmark',
+    vectorPaths: [
+      { windingRule: "EVENODD", data: "M 30 20 L 70 20 Q 75 20 75 25 L 75 85 L 50 70 L 25 85 L 25 25 Q 25 20 30 20 Z" }
+    ],
+    fillColor: randomColor(),
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
+  };
+  return runStep({
+    ws, channel,
+    command: 'create_vector',
+    params: { vector: params },
+    assert: (response) => {
+      const ids = Array.isArray(response.nodeIds) ? response.nodeIds : response.ids;
+      const ok = Array.isArray(ids) && ids.length > 0;
+      return { pass: ok, reason: ok ? undefined : `Expected non-empty ids, got ${ids}`, response };
+    },
+    label: `create_vector (${params.name})`
+  });
+}
+
 export async function shapeScene(results) {
-  // results.push(await create_rectangle());
-  // results.push(await create_ellipse());
-  // results.push(await create_frame());
-  // results.push(await create_hexagon());
-  // results.push(await create_star());
+  results.push(await create_speech_bubble());
+  results.push(await create_cloud());
+  results.push(await create_bookmark());
   results.push(await create_heart());
   results.push(await create_lightning_bolt());
 }
