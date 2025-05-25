@@ -3,42 +3,56 @@ import { ws, channel, runStep, assertEchoedCommand } from "./test-runner.js";
 /**
  * Helper to create a gradient style and return the style ID.
  */
-async function create_gradient(params) {
+async function create_gradient() {
+  const params = {
+    name: "UnitTestGradientStyle",
+    gradientType: "LINEAR",
+    stops: [
+      { position: 0, color: [1, 0, 0, 1] }, // Red RGBA
+      { position: 1, color: [0, 0, 1, 1] }  // Blue RGBA
+    ],
+    transformMatrix: [
+      [0, 1, 0],     // 90-degree rotation: cos(90°), sin(90°), x-translation
+      [-1, 0, 1]     // -sin(90°), cos(90°), y-translation
+    ]
+  };
   const result = await runStep({
     ws,
     channel,
     command: "create_gradient_style",
     params: { gradients: params },
     assert: (response) => {
-      // Accept any response that has an id, we'll extract the style ID below
       return { pass: !!(response && response.id), response };
     },
-    label: `create_gradient (${params.name || ""})`
+    label: `create_gradient (${params.name})`
   });
-  // The style ID is in result.response.id from the actual result message
-  const styleId = (result.response && result.response.id);
+  const styleId = result.response && result.response.id;
   return { styleId, result };
 }
 
 /**
  * Helper to create a rectangle and return the nodeId.
  */
-async function create_rectangle(params) {
+async function create_rectangle() {
+  const params = {
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 50,
+    name: "GradientRectTest"
+  };
   const result = await runStep({
     ws,
     channel,
     command: "create_rectangle",
     params: { rectangle: params },
     assert: (response) => {
-      // Log the actual response for debugging
       console.log("create_rectangle response:", response);
-      // Accept any response that has ids array
       return { pass: !!(response && response.ids && response.ids.length > 0), response };
     },
-    label: `create_rectangle (${params.name || ""})`
+    label: `create_rectangle (${params.name})`
   });
-  // The nodeId is in result.response.ids[0] based on server logs
-  const nodeId = (result.response && result.response.ids && result.response.ids[0]);
+  const nodeId = result.response && result.response.ids && result.response.ids[0];
   return { nodeId, result };
 }
 
@@ -67,30 +81,11 @@ async function set_gradient({ nodeId, gradientStyleId }) {
  */
 export async function styleScene(results) {
   // 1. Create the gradient style
-  const gradientParams = {
-    name: "UnitTestGradientStyle",
-    gradientType: "LINEAR",
-    stops: [
-      { position: 0, color: [1, 0, 0, 1] }, // Red RGBA
-      { position: 1, color: [0, 0, 1, 1] }  // Blue RGBA
-    ],
-    transformMatrix: [
-      [0, 1, 0],     // 90-degree rotation: cos(90°), sin(90°), x-translation
-      [-1, 0, 1]     // -sin(90°), cos(90°), y-translation
-    ]
-  };
-  const { styleId, result: gradResult } = await create_gradient(gradientParams);
+  const { styleId, result: gradResult } = await create_gradient();
   results.push(gradResult);
 
   // 2. Create the rectangle
-  const rectParams = {
-    x: 0,
-    y: 0,
-    width: 100,
-    height: 50,
-    name: "GradientRectTest"
-  };
-  const { nodeId, result: rectResult } = await create_rectangle(rectParams);
+  const { nodeId, result: rectResult } = await create_rectangle();
   results.push(rectResult);
 
   // 3. Apply the gradient style to the rectangle

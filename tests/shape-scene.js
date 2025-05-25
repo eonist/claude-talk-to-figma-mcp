@@ -1,41 +1,8 @@
 import { ws, channel, assertEchoedCommand, runStep } from "./test-runner.js";
 import { randomColor } from "./helper.js";
 
-function create_rectangle(params) {
-  return runStep({
-    ws,
-    channel,
-    command: 'create_rectangle',
-    params: { rectangle: params },
-    assert: assertEchoedCommand('create_rectangle', params, 'rectangle'),
-    label: `create_rectangle (${params.name || ''})`
-  });
-}
-
-function create_ellipse(params) {
-  return runStep({
-    ws,
-    channel,
-    command: 'create_ellipse',
-    params: { ellipse: params },
-    assert: assertEchoedCommand('create_ellipse', params, 'ellipse'),
-    label: `create_ellipse (${params.name || ''})`
-  });
-}
-
-function create_frame(params) {
-  return runStep({
-    ws,
-    channel,
-    command: 'create_frame',
-    params: { frame: params },
-    assert: assertEchoedCommand('create_frame', params, 'frame'),
-    label: `create_frame (${params.name || ''})`
-  });
-}
-
-export async function shapeScene(results) {
-  results.push(await create_rectangle({
+function create_rectangle() {
+  const params = {
     x: 0,
     y: 0,
     width: 200,
@@ -45,8 +12,19 @@ export async function shapeScene(results) {
     fillColor: randomColor(),
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
-  }));
-  results.push(await create_ellipse({
+  };
+  return runStep({
+    ws,
+    channel,
+    command: 'create_rectangle',
+    params: { rectangle: params },
+    assert: assertEchoedCommand('create_rectangle', params, 'rectangle'),
+    label: `create_rectangle (${params.name})`
+  });
+}
+
+function create_ellipse() {
+  const params = {
     x: 50,
     y: 50,
     width: 100,
@@ -55,8 +33,19 @@ export async function shapeScene(results) {
     fillColor: randomColor(),
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
-  }));
-  results.push(await create_frame({
+  };
+  return runStep({
+    ws,
+    channel,
+    command: 'create_ellipse',
+    params: { ellipse: params },
+    assert: assertEchoedCommand('create_ellipse', params, 'ellipse'),
+    label: `create_ellipse (${params.name})`
+  });
+}
+
+function create_frame() {
+  const params = {
     x: 50,
     y: 100,
     width: 400,
@@ -65,7 +54,21 @@ export async function shapeScene(results) {
     fillColor: randomColor(),
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
-  }));
+  };
+  return runStep({
+    ws,
+    channel,
+    command: 'create_frame',
+    params: { frame: params },
+    assert: assertEchoedCommand('create_frame', params, 'frame'),
+    label: `create_frame (${params.name})`
+  });
+}
+
+export async function shapeScene(results) {
+  results.push(await create_rectangle());
+  results.push(await create_ellipse());
+  results.push(await create_frame());
 }
 
 //export { create_rectangle, create_ellipse };
