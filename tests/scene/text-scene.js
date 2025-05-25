@@ -110,15 +110,18 @@ function create_text_block(frameId) {
  * Helper to load the Roboto font asynchronously.
  * @returns {Promise<void>}
  */
+import { loadFontAsyncWrapper } from '../../src/modules/font/font-load.js';
+
 async function load_roboto_font() {
-  return runStep({
-    ws,
-    channel,
-    command: 'load_font_async',
-    params: { family: 'Roboto' },
-    assert: () => ({ pass: true }),
-    label: 'load_font_async (Roboto)'
-  });
+  console.log('Attempting to load Roboto font');
+  try {
+    const result = await loadFontAsyncWrapper({ family: 'Roboto', style: 'Bold' });
+    console.log('Font load result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error loading font:', error);
+    throw error;
+  }
 }
 
 /**
