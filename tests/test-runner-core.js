@@ -5,6 +5,9 @@
 
 /**
  * Deep equality check for objects and primitives.
+ * @param {*} a - First value to compare.
+ * @param {*} b - Second value to compare.
+ * @returns {boolean} True if values are deeply equal.
  */
 function deepEqual(a, b) {
   if (a === b) return true;
@@ -19,7 +22,11 @@ function deepEqual(a, b) {
 }
 
 /**
- * Assert that the response echoes the command and params as sent.
+ * Generate an assertion function to verify the command echoed.
+ * @param {string} expectedCommand - The expected command name.
+ * @param {object} expectedParams - The expected parameters object.
+ * @param {string} paramKey - The key within params to check.
+ * @returns {function} Assertion function which validates the response and returns { pass, reason }.
  */
 function assertEchoedCommand(expectedCommand, expectedParams, paramKey) {
   return (response) => {
@@ -46,7 +53,15 @@ function assertEchoedCommand(expectedCommand, expectedParams, paramKey) {
 }
 
 /**
- * Runs a single test step, sending a command and awaiting a response.
+ * Sends a command over WebSocket and awaits a matching response, then applies an assertion.
+ * @param {object} options - Configuration for the test step.
+ * @param {WebSocket} options.ws - WebSocket instance to send/receive messages.
+ * @param {string} options.channel - Channel identifier.
+ * @param {string} options.command - Command name to send.
+ * @param {object} options.params - Parameters object for the command.
+ * @param {function} options.assert - Assertion function returning { pass, reason } based on response.
+ * @param {string} options.label - Label for this test step in results.
+ * @returns {Promise<{label: string, pass: boolean, reason?: string, response: any}>}
  */
 function runStep({ ws, channel, command, params, assert, label }) {
   return new Promise((resolve) => {

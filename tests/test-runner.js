@@ -12,6 +12,10 @@ let ws;
 let channel;
 
 // --- CLI Argument Parsing ---
+/**
+ * Parse command-line arguments into an options object.
+ * @returns {{_: Array<string>, [key: string]: string|boolean}} Parsed options with flags and positional arguments.
+ */
 function parseArgs() {
   const args = process.argv.slice(2);
   const opts = { _: [] };
@@ -40,6 +44,10 @@ import { textScene } from "./text-scene.js";
 import { styleScene } from "./style-scene.js";
 
 // --- Main Runner ---
+/**
+ * Main entry point: initializes WebSocket, joins the channel, executes test scenes, and outputs results.
+ * @returns {Promise<void>}
+ */
 async function main() {
   const opts = parseArgs();
   if (opts._[0] !== 'run') {
