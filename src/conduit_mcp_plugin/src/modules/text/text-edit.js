@@ -21,8 +21,15 @@ export async function setTextStyle(params) {
   } else if (params.nodeId && params.styles && Object.keys(params.styles).length > 0) {
     updates = [{ nodeId: params.nodeId, styles: params.styles }];
   } else if (params.nodeId) {
-    // Handle direct style parameters (server format)
-    const { nodeId, entries, ...styleProps } = params;
+    // Handle direct style parameters (server format) - compatible with Figma plugin environment
+    const nodeId = params.nodeId;
+    const styleProps = {};
+    const excludedKeys = ['nodeId', 'entries'];
+    for (const key in params) {
+      if (params.hasOwnProperty(key) && !excludedKeys.includes(key)) {
+        styleProps[key] = params[key];
+      }
+    }
     if (Object.keys(styleProps).length > 0) {
       updates = [{ nodeId, styles: styleProps }];
     } else {
@@ -62,7 +69,14 @@ export async function setTextStyle(params) {
       // For now, just ignore if not possible
     }
     if (styles.letterSpacing !== undefined) node.letterSpacing = styles.letterSpacing;
-    if (styles.lineHeight !== undefined) node.lineHeight = styles.lineHeight;
+    if (styles.lineHeight !== undefined) {
+      // Handle lineHeight conversion: MULTIPLIER unit should be just a number
+      if (styles.lineHeight && typeof styles.lineHeight === 'object' && styles.lineHeight.unit === 'MULTIPLIER') {
+        node.lineHeight = styles.lineHeight.value;
+      } else {
+        node.lineHeight = styles.lineHeight;
+      }
+    }
     if (styles.paragraphSpacing !== undefined) node.paragraphSpacing = styles.paragraphSpacing;
     if (styles.textCase !== undefined) node.textCase = styles.textCase;
     if (styles.textDecoration !== undefined) node.textDecoration = styles.textDecoration;
