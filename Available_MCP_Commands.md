@@ -31,6 +31,8 @@
 - [create_polygon](#create_polygon): Create one or more polygons
 - [create_star](#create_star): Create one or more star shapes
 - [create_vector](#create_vector): Create one or more vectors
+- [get_vector](#get_vector): Retrieve a single vector node’s properties by ID
+- [get_vectors](#get_vectors): Retrieve multiple vector nodes’ properties by IDs
 
 **Text:**
 - [set_text](#set_text): Set or create one or more text elements

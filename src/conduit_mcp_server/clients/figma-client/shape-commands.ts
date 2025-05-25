@@ -246,5 +246,27 @@ export const shapeCommands = {
       name: params.name || "SVG Vector",
       parentId: parentIdString
     });
+  },
+
+  /**
+   * Retrieves a single vector node by ID.
+   */
+  async getVector(
+    this: FigmaClient,
+    params: { nodeId: string }
+  ): Promise<any> {
+    const nodeIdString = ensureNodeIdIsString(params.nodeId);
+    return this.executeCommand(MCP_COMMANDS.GET_VECTOR, { nodeId: nodeIdString });
+  },
+
+  /**
+   * Retrieves multiple vector nodes by their IDs.
+   */
+  async getVectors(
+    this: FigmaClient,
+    params: { nodeIds: string[] }
+  ): Promise<any> {
+    const ids = params.nodeIds.map(ensureNodeIdIsString);
+    return this.executeCommand(MCP_COMMANDS.GET_VECTORS, { nodeIds: ids });
   }
 };
