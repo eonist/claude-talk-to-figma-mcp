@@ -1,24 +1,9 @@
 import { z } from "zod";
+import { MCP_COMMANDS } from "../../../types/commands.js";
+import { GenerateHtmlSchema } from "./schema/html-schema.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
-//import { MCP_COMMANDS } from "../types/commands.js";
-import { MCP_COMMANDS } from "../../../types/commands.js";
 
-/**
- * Registers HTML generation commands on the MCP server to generate HTML structure from Figma nodes.
- *
- * This function adds a tool named "generate_html" to the MCP server, which accepts parameters for the Figma node ID,
- * output format, and CSS handling mode. It executes the corresponding Figma command to generate HTML markup.
- *
- * @param {McpServer} server - The MCP server instance to register the tool on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tool asynchronously.
- *
- * @example
- * registerHtmlCommands(server, figmaClient);
- */
 export function registerHtmlCommands(server: McpServer, figmaClient: FigmaClient): void {
   server.tool(
     MCP_COMMANDS.GET_HTML,
@@ -27,22 +12,7 @@ export function registerHtmlCommands(server: McpServer, figmaClient: FigmaClient
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the generated HTML string.
 `,
-    {
-      // Enforce Figma node ID format (e.g., "123:456") for validation and LLM clarity
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("The unique Figma node ID to generate HTML from. Must be a string in the format '123:456'."),
-      // Restrict format to allowed HTML output types
-      format: z
-        .enum(["semantic", "div-based", "webcomponent"])
-        .default("semantic")
-        .describe('Optional. The HTML output format: "semantic", "div-based", or "webcomponent". Defaults to "semantic".'),
-      // Restrict cssMode to allowed CSS handling modes
-      cssMode: z
-        .enum(["inline", "classes", "external"])
-        .default("classes")
-        .describe('Optional. The CSS handling mode: "inline", "classes", or "external". Defaults to "classes".'),
-    },
+    GenerateHtmlSchema.shape,
     {
       title: "Generate HTML",
       idempotentHint: true,
@@ -50,12 +20,12 @@ Returns:
       readOnlyHint: true,
       openWorldHint: false
     },
-    async ({ nodeId, format, cssMode }) => {
+    async (args: any) => {
       try {
         const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_HTML, {
-          nodeId,
-          format,
-          cssMode,
+          nodeId: args.nodeId,
+          format: args.format,
+          cssMode: args.cssMode,
         });
         const response = { success: true, results: [{ html: result }] };
         return {
@@ -66,7 +36,7 @@ Returns:
             },
           ],
         };
-      } catch (error) {
+      } catch (error: any) {
         const response = {
           success: false,
           error: {
@@ -74,7 +44,7 @@ Returns:
             results: [],
             meta: {
               operation: "get_html",
-              params: { nodeId, format, cssMode }
+              params: args
             }
           }
         };
