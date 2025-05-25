@@ -2,9 +2,9 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { NodeIdsArraySchema } from "./schema/node-ids-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { GroupSchema } from "./schema/group-schema.js";
 
 /**
  * Registers group and ungroup commands on the MCP server.
@@ -30,19 +30,7 @@ export function registerGroupTools(server: McpServer, figmaClient: FigmaClient) 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the result.
 `,
-    {
-      group: z.boolean().describe("If true, group nodes; if false, ungroup a group node."),
-      nodeIds: NodeIdsArraySchema(2, 100).optional(),
-      name: z.string()
-        .min(1)
-        .max(100)
-        .optional()
-        .describe("Optional. Name for the group. If provided, must be a non-empty string up to 100 characters."),
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .optional()
-        .describe("The unique Figma group node ID to ungroup. Must be a string in the format '123:456' or a complex instance ID like 'I422:10713;1082:2236'."),
-    },
+    GroupSchema.shape,
     {
       title: "Group or Ungroup Nodes",
       idempotentHint: true,
