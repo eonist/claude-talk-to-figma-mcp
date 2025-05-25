@@ -5,18 +5,19 @@ import { randomFontSize, randomFontWeight, randomColor } from "../helper.js";
  * Helper to create a single-line text node in Figma for text tests.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
  */
-function create_text(frameId) {
+async function create_text(frameId) {
   const params = {
     x: 100,
     y: 200,
-    text: 'UnitTestText',
-    name: 'UnitTestTextNode',
+    text: 'Something to say',
+    name: 'text',
     fontSize: randomFontSize(),
     fontWeight: randomFontWeight(),
     fontColor: randomColor(),
     parentId: frameId // Add the frame ID as the parent
   };
-  return runStep({
+  // Create the text node
+  const textResult = await runStep({
     ws,
     channel,
     command: 'set_text',
@@ -24,6 +25,23 @@ function create_text(frameId) {
     assert: () => ({ pass: true }),
     label: `set_text (${params.name})`
   });
+  // Apply line height and letter spacing using set_text_style
+  const nodeId = textResult.response?.id;
+  if (nodeId) {
+    await runStep({
+      ws,
+      channel,
+      command: 'set_text_style',
+      params: {
+        nodeId,
+        lineHeight: { value: 1.6, unit: "MULTIPLIER" },
+        letterSpacing: { value: 0.5, unit: "PIXELS" }
+      },
+      assert: () => ({ pass: true }),
+      label: `set_text_style (${params.name})`
+    });
+  }
+  return textResult;
 }
 
 /**
@@ -51,9 +69,12 @@ async function create_text_area(frameId) {
     //fontWeight: randomFontWeight(),
     fontColor: randomColor(),
     fontFamily: 'Roboto Mono',
+    lineHeight: 1.6,
+    letterSpacing: 0.5,
     parentId: frameId // Add the frame ID as the parent
   };
-  return runStep({
+  // Create the text node
+  const textResult = await runStep({
     ws,
     channel,
     command: 'set_text',
@@ -61,6 +82,23 @@ async function create_text_area(frameId) {
     assert: () => ({ pass: true }),
     label: `set_text (${params.name})`
   });
+  // Apply line height and letter spacing using set_text_style
+  const nodeId = textResult.response?.id;
+  if (nodeId) {
+    await runStep({
+      ws,
+      channel,
+      command: 'set_text_style',
+      params: {
+        nodeId,
+        lineHeight: { value: 1.6, unit: "MULTIPLIER" },
+        letterSpacing: { value: 0.5, unit: "PIXELS" }
+      },
+      assert: () => ({ pass: true }),
+      label: `set_text_style (${params.name})`
+    });
+  }
+  return textResult;
 }
 
 /**
