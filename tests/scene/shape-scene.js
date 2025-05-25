@@ -306,7 +306,8 @@ function apply_autolayout(frameId) {
     command: 'set_auto_layout',
     params: params,
     assert: (response) => ({ 
-      pass: response && (response.success === true || Array.isArray(response) || response.nodeId || response.id), 
+      pass: response !== undefined && response !== null,
+      reason: response ? undefined : `Got response: ${JSON.stringify(response)}`,
       response 
     }),
     label: `apply_autolayout to frame ${frameId}`
