@@ -80,12 +80,39 @@ function create_heading(frameId) {
 }
 
 /**
+ * Helper to create a text block in Figma for text tests.
+ * @param {string} frameId - The frame ID to place the text block inside.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
+ */
+function create_text_block(frameId) {
+  const params = {
+    x: 100,
+    y: 400, // Position for the text block
+    text: 'Lorem ipsum dolor sit amet',
+    name: 'TextBlockNode',
+    fontSize: 16, // Set a default font size
+    fontWeight: randomFontWeight(),
+    fontColor: randomColor(), // Use a random color for the font
+    fontFamily: 'Inter', // Apply the Inter font family
+    parentId: frameId // Set the frame ID as the parent
+  };
+  return runStep({
+    ws,
+    channel,
+    command: 'set_text',
+    params: { text: params },
+    assert: () => ({ pass: true }),
+    label: `set_text (${params.name})`
+  });
+}
+
+/**
  * Helper to create a frame in Figma for text tests.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
 function create_frame() {
   const params = {
-    x: 50, y: 100, width: 400, height: 300,
+    x: 50, y: 100, width: 600, height: 400,
     name: 'Text Frame',
     fillColor: randomColor(),
     strokeColor: randomColor(),
