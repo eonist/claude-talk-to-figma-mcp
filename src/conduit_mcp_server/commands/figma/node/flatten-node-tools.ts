@@ -2,8 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
-import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { FlattenNodeSchema } from "./schema/flatten-node-schema.js";
 
 /**
  * Registers flatten node commands on the MCP server.
@@ -28,42 +28,7 @@ export function registerFlattenNodeTools(server: McpServer, figmaClient: FigmaCl
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the results for each node.
 `,
-    {
-      nodeId: z.string()
-        .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-        .describe("ID of the node to flatten. Must be a Frame, Group, or node that supports flattening.")
-        .optional(),
-      nodeIds: z.array(
-        z.string()
-          .refine(isValidNodeId, { message: "Must be a valid Figma node ID (simple or complex format, e.g., '123:456' or 'I422:10713;1082:2236')" })
-      )
-      .min(1)
-      .max(100)
-      .describe("Array of Figma node IDs to flatten. Must contain 1 to 100 items.")
-      .optional(),
-      selection: z.boolean()
-        .optional()
-        .describe("If true, use the current Figma selection for the operation. If true, nodeId and nodeIds are ignored.")
-    },
-    {
-      title: "Flatten Nodes (Unified)",
-      idempotentHint: false,
-      destructiveHint: true,
-      readOnlyHint: false,
-      openWorldHint: false,
-      usageExamples: JSON.stringify([
-        { nodeId: "123:456" },
-        { nodeIds: ["123:456", "789:101"] },
-        { selection: true }
-      ]),
-      edgeCaseWarnings: [
-        "Flattening is destructive and cannot be undone.",
-        "All child layers are merged into a single vector.",
-        "Only nodes that support flattening (Frame, Group, etc.) are valid.",
-        "If 'selection' is true, nodeId/nodeIds are ignored."
-      ],
-      extraInfo: "Flattening is useful for export, performance, and simplification."
-    },
+    FlattenNodeSchema.shape,
     async (args, extra) => {
       let ids = [];
       if (args.selection) {
