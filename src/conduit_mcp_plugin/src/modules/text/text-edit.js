@@ -1,9 +1,5 @@
 import { setCharacters } from "../utils.js";
 
-// DEBUG: Confirm text-edit.js module is loaded
-if (typeof console !== "undefined" && console.log) {
-  console.log("text-edit.js module loaded");
-}
 
 /**
  * Unified handler for set_text_style (single or batch).
@@ -311,10 +307,6 @@ export async function setTextCaseUnified(params) {
 export async function setTextDecorationUnified(params) {
   if (!params) {
     throw new Error("setTextDecorationUnified: params is undefined/null");
-  }
-  // Debug log for troubleshooting
-  if (typeof console !== "undefined" && console.log) {
-    console.log("setTextDecorationUnified called with params:", JSON.stringify(params));
   }
   let ops = [];
   if (Array.isArray(params.operations) && params.operations.length > 0) {
