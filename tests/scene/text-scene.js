@@ -157,7 +157,7 @@ async function create_hero_title(frameId) {
  */
 function create_frame() {
   const params = {
-    x: 50, y: 100, width: 400, height: 300,
+    x: 50, y: 100, width: 600, height: 400,
     name: 'Text Frame',
     fillColor: randomColor(),
     strokeColor: randomColor(),
@@ -222,14 +222,14 @@ export async function textScene(results) {
   }
   
   // Create heading inside the frame
-  results.push(await create_heading(frameId));
+  //results.push(await create_heading(frameId));
   
   // Create text items inside the frame
-  results.push(await create_text(frameId));
-  results.push(await create_text_area(frameId));
+  //results.push(await create_text(frameId));
+  //results.push(await create_text_area(frameId));
   
   // Create text block inside the frame
-  results.push(await create_text_block(frameId));
+  //results.push(await create_text_block(frameId));
   
   // Create hero title inside the frame
   results.push(await create_hero_title(frameId));
