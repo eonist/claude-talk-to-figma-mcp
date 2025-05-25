@@ -39,9 +39,9 @@ import { randomColor, randomFontSize, randomFontWeight } from "./helper.js";
 
 import { deepEqual, assertEchoedCommand, runStep } from "./test-runner-core.js";
 
-import { shapeScene } from "./shape-scene.js";
-import { textScene } from "./text-scene.js";
-import { styleScene } from "./style-scene.js";
+import { shapeScene } from "./scene/shape-scene.js";
+import { textScene } from "./scene/text-scene.js";
+import { styleScene } from "./scene/style-scene.js";
 
 // --- Main Runner ---
 /**
