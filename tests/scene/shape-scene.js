@@ -297,13 +297,14 @@ function apply_autolayout(frameId) {
   const params = {
     layout: {
       nodeId: frameId,
-      layoutMode: 'HORIZONTAL',
-      layoutWrap: 'WRAP',
+      mode: 'HORIZONTAL',
       itemSpacing: 15,
-      paddingTop: 20,
-      paddingRight: 20,
-      paddingBottom: 20,
-      paddingLeft: 20
+      padding: {
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20
+      }
     }
   };
   return runStep({
