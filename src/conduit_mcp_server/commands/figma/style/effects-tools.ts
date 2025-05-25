@@ -5,6 +5,7 @@ import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 //import { EffectsArraySchema } from "./schema/effect-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { EffectSchema } from "./schema/effect-schema.js";
 
 /**
  * Registers effect-related commands on the MCP server.
