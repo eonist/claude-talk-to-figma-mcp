@@ -3,16 +3,21 @@ import { setFill, setStroke } from "./shapes-helpers.js";
 /**
  * Creates one or more vector nodes in the Figma document.
  *
+ * A vector’s shape is defined via its `vectorPaths` property: an array of path objects.
+ * Each path object must include:
+ *   - `windingRule`: "EVENODD" or "NONZERO" (fill rule, like SVG).
+ *   - `data`: SVG path commands string (e.g. "M 0 100 L 100 100 L 50 0 Z").
+ *
  * @async
  * @function
  * @param {Object} params - Configuration parameters.
- * @param {Object} [params.vector] - Single vector config (see below).
- * @param {Array<Object>} [params.vectors] - Array of vector configs (see below).
+ * @param {Object} [params.vector] - Single vector config.
+ * @param {Array<Object>} [params.vectors] - Array of vector configs.
  * @param {number} [params.vector.x=0] - X position.
  * @param {number} [params.vector.y=0] - Y position.
  * @param {number} [params.vector.width=100] - Width of the vector.
  * @param {number} [params.vector.height=100] - Height of the vector.
- * @param {Array<Object>} [params.vector.vectorPaths=[]] - Array of vector path objects.
+ * @param {Array<{windingRule: string, data: string}>} [params.vector.vectorPaths=[]] - Vector path definitions.
  * @param {string} [params.vector.name="Vector"] - Name of the vector node.
  * @param {string} [params.vector.parentId] - Optional parent node ID to append the vector.
  * @param {object} [params.vector.fillColor] - Optional RGBA fill color.
@@ -20,9 +25,28 @@ import { setFill, setStroke } from "./shapes-helpers.js";
  * @param {number} [params.vector.strokeWeight] - Optional stroke weight.
  * @returns {Promise<{ ids: Array<string> }>} Object with array of created vector node IDs.
  * @throws {Error} If parent is not found.
- * @example
- * const vecRes = await createVector({ vector: { vectorPaths: [{ data: 'M0,0 L10,10' }] } });
- * const batchRes = await createVector({ vectors: [{ vectorPaths: [...] }, { vectorPaths: [...] }] });
+ *
+ * // Example: single vector
+ * const node = figma.createVector();
+ * node.vectorPaths = [{
+ *   windingRule: "EVENODD", // or "NONZERO"
+ *   data: "M 0 100 L 100 100 L 50 0 Z"
+ * }];
+ *
+ * // Example: batch creation
+ * const { ids } = await createVector({
+ *   vectors: [{
+ *     vectorPaths: [{
+ *       windingRule: "NONZERO",
+ *       data: "M0,0 L10,10 Z"
+ *     }]
+ *   }, {
+ *     vectorPaths: [{
+ *       windingRule: "EVENODD",
+ *       data: "M10,10 L20,20 Z"
+ *     }]
+ *   }]
+ * });
  */
 export async function createVector(params) {
   // Single vector creation (legacy signature)

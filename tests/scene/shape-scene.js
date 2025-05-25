@@ -147,13 +147,14 @@ function create_heart() {
  */
 /**
  * Helper to create a right-pointing arrow with curved tail.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
 function create_arrow() {
   const params = {
     x: 200, y: 100, width: 120, height: 60,
     name: 'UnitTestArrow',
     vectorPaths: [
-      { windingRule: "NONE", data: "M0 20 C0 0 40 0 40 20 L60 20 L60 10 L100 30 L60 50 L60 40 L40 40 C40 60 0 60 0 20 Z" }
+      { windingRule: "NONE", data: "M 0 20 C 0 0 40 0 40 20 L 60 20 L 60 10 L 100 30 L 60 50 L 60 40 L 40 40 C 40 60 0 60 0 20 Z" }
     ],
     fillColor: randomColor(),
     strokeColor: randomColor(),
@@ -174,13 +175,14 @@ function create_arrow() {
 
 /**
  * Helper to create a lightning bolt icon using angular vector paths.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
 function create_lightning_bolt() {
   const params = {
     x: 250, y: 150, width: 80, height: 120,
     name: 'UnitTestLightningBolt',
     vectorPaths: [
-      { windingRule: "NONE", data: "M40 0 L60 0 L20 70 L50 70 L10 140 L30 140 L65 80 L35 80 Z" }
+      { windingRule: "NONE", data: "M 40 0 L 60 0 L 20 70 L 50 70 L 10 140 L 30 140 L 65 80 L 35 80 Z" }
     ],
     fillColor: randomColor(),
     strokeColor: randomColor(),
@@ -201,13 +203,14 @@ function create_lightning_bolt() {
 
 /**
  * Helper to create a leaf shape with organic curves and natural flow.
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
 function create_leaf() {
   const params = {
     x: 300, y: 100, width: 100, height: 140,
     name: 'UnitTestLeaf',
     vectorPaths: [
-      { windingRule: "NONE", data: "M50 0 C20 20 0 60 50 140 C100 60 80 20 50 0 Z" }
+      { windingRule: "NONE", data: "M 50 0 C 20 20 0 60 50 140 C 100 60 80 20 50 0 Z" }
     ],
     fillColor: randomColor(),
     strokeColor: randomColor(),
