@@ -30,17 +30,27 @@ function create_text(frameId) {
  * Helper to create a multi-line text area in Figma for text tests.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
  */
-function create_text_area(frameId) {
+async function create_text_area(frameId) {
+  // Load the monospace font Roboto Mono before creating the text area
+  await runStep({
+    ws,
+    channel,
+    command: 'load_font_async',
+    params: { family: 'Roboto Mono', style: 'Regular' },
+    assert: () => ({ pass: true }),
+    label: 'load_font_async (Roboto Mono)'
+  });
   const params = {
     x: 120,
     y: 300,
     text: 'This is a longer text\nwith multiple lines.\nLine 3.\nLine 4.',
-    name: 'UnitTestTextArea',
+    name: 'textArea',
     width: 250,
     height: 100,
     fontSize: randomFontSize(),
-    fontWeight: randomFontWeight(),
+    //fontWeight: randomFontWeight(),
     fontColor: randomColor(),
+    fontFamily: 'Roboto Mono',
     parentId: frameId // Add the frame ID as the parent
   };
   return runStep({
@@ -58,15 +68,27 @@ function create_text_area(frameId) {
  * @param {string} frameId - The frame ID to place the heading inside.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
  */
-function create_heading(frameId) {
+async function create_heading(frameId) {
+  const headingFonts = ['Poppins', 'Montserrat', 'Source Code Pro', 'Playfair Display'];
+  const randomFont = headingFonts[Math.floor(Math.random() * headingFonts.length)];
+  // Load the randomly selected font before creating the heading
+  await runStep({
+    ws,
+    channel,
+    command: 'load_font_async',
+    params: { family: randomFont, style: 'Regular' },
+    assert: () => ({ pass: true }),
+    label: `load_font_async (${randomFont})`
+  });
   const params = {
     x: 100,
     y: 50, // Position for the heading
     text: 'Welcome to Our Website',
-    name: 'HeadingTextNode',
+    name: 'headingText',
     fontSize: 32, // Set font size to 32px
     fontWeight: randomFontWeight(),
     fontColor: randomColor(), // Use a random color for the font
+    fontFamily: randomFont,
     parentId: frameId // Set the frame ID as the parent
   };
   return runStep({
@@ -89,11 +111,11 @@ function create_text_block(frameId) {
     x: 100,
     y: 400, // Position for the text block
     text: 'Lorem ipsum dolor sit amet',
-    name: 'TextBlockNode',
+    name: 'textBlock',
     fontSize: 16, // Set a default font size
-    fontWeight: randomFontWeight(),
-    fontColor: "#00AA00"/*randomColor()*/, // Use a random color for the font
-    fontFamily: 'Oswald', // Apply the Inter font family
+    //fontWeight: randomFontWeight(),
+    fontColor: { r: 0, g: 0.666, b: 0, a: 1 }, // Use a valid color object
+    fontFamily: 'Oswald', // Apply the Oswald font family
     parentId: frameId // Set the frame ID as the parent
   };
   console.log("create_text_block called with params:", params);
@@ -128,7 +150,7 @@ async function create_hero_title(frameId) {
     x: 100,
     y: 450, // Position for the hero title
     text: 'Hero Title',
-    name: 'HeroTitleNode',
+    name: 'heroTitleText',
     fontSize: 48,
     fontWeight: 700, // Bold weight
     letterSpacing: -1,
@@ -222,16 +244,14 @@ export async function textScene(results) {
   results.push(await create_text_block(frameId));
 
   // Create heading inside the frame
-  //results.push(await create_heading(frameId));
+  results.push(await create_heading(frameId));
   
   // Create text items inside the frame
-  //results.push(await create_text(frameId));
-  //results.push(await create_text_area(frameId));
+  results.push(await create_text(frameId));
+  results.push(await create_text_area(frameId));
   
   // Create hero title inside the frame
-  //results.push(await create_hero_title(frameId));
-  
- 
+  results.push(await create_hero_title(frameId));
   
   // Apply autolayout to the frame
   results.push(await apply_autolayout(frameId));
