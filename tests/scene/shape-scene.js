@@ -179,13 +179,13 @@ function create_arrow() {
  */
 function create_lightning_bolt() {
   const params = {
-    x: 250, y: 150, width: 80, height: 120,
+    x: 250, y: 150, width: 160, height: 240,
     name: 'UnitTestLightningBolt',
     vectorPaths: [
       {
         windingRule: "EVENODD",
         // Lightning bolt (based on SVG polygon points, scaled to fit a 16x16 grid)
-        data: "M 9.25 1.75 L 2.75 9.25 L 7.25 9.75 L 6.75 14.25 L 13.25 6.75 L 8.75 6.25 Z"
+        data: "M 18.5 3.5 L 5.5 18.5 L 14.5 19.5 L 13.5 28.5 L 26.5 13.5 L 17.5 12.5 Z"
       }
     ],
     fillColor: randomColor(),
@@ -255,7 +255,6 @@ function create_bookmark() {
 
 export async function shapeScene(results) {
   results.push(await create_speech_bubble());
-  results.push(await create_cloud());
   results.push(await create_bookmark());
   results.push(await create_heart());
   results.push(await create_lightning_bolt());
