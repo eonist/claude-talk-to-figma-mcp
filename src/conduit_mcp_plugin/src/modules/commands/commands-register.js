@@ -1,5 +1,29 @@
+// All imports moved to the top to prevent temporal dead zone issues
 import * as documentOperations from '../document.js';
 import { setNodePropUnified } from '../node/node-modify.js';
+import * as shapeOperations from '../shapes.js';
+import * as imageOperations from '../image.js';
+import * as textOperations from '../text.js';
+import { setParagraphSpacingUnified, setLineHeightUnified, setLetterSpacingUnified, setTextCaseUnified, setTextDecorationUnified } from '../text/text-edit.js';
+import * as styleOperations from '../styles.js';
+import { getFillAndStroke } from '../styles/styles-get.js';
+import * as componentOperations from '../components.js';
+import * as layoutOperations from '../layout.js';
+import { setAutoLayoutUnified } from '../layout/layout-auto.js';
+import { setGrid, getGrid } from '../layout/layout-grid-unified.js';
+import { setGuide, getGuide } from '../layout/layout-guide.js';
+import { setConstraints, getConstraints } from '../layout/layout-constraint.js';
+import { setPage, getPage } from '../document/document-page.js';
+import { setVariant, getVariant } from '../components/component-variant.js';
+import * as renameOperations from '../rename.js';
+import { setNodeLocked, setNodeVisible, reorderNodes } from '../node/node-modify.js';
+import { generateHtmlUnified } from '../html-generator.js';
+import { insertSvgVector } from '../svg.js';
+import { createButton } from './commands-button.js';
+import { duplicatePageUnified } from '../document/document-duplicate.js';
+import { getNodeStyles, getFillAndStroke, getImage, getTextStyle, deleteNode, deleteNodeUnified, getSvgVector, getAnnotationUnified, setAnnotationUnified } from '../node/node-edit.js';
+import { utilsOperations } from '../utils.js';
+import * as variableOperations from '../variables.js';
 
 /**
  * Centralized list of all plugin command names.
@@ -113,29 +137,6 @@ export const PLUGIN_COMMANDS = {
   SET_ANNOTATION: "set_annotation",
   SUBSCRIBE_EVENT: "subscribe_event"
 };
-import * as shapeOperations from '../shapes.js';
-import * as imageOperations from '../image.js';
-import * as textOperations from '../text.js';
-import { setParagraphSpacingUnified, setLineHeightUnified, setLetterSpacingUnified, setTextCaseUnified, setTextDecorationUnified } from '../text/text-edit.js';
-import * as styleOperations from '../styles.js';
-import { getFillAndStroke } from '../styles/styles-get.js';
-import * as componentOperations from '../components.js';
-import * as layoutOperations from '../layout.js';
-import { setAutoLayoutUnified } from '../layout/layout-auto.js';
-import { setGrid, getGrid } from '../layout/layout-grid-unified.js';
-import { setGuide, getGuide } from '../layout/layout-guide.js';
-import { setConstraints, getConstraints } from '../layout/layout-constraint.js';
-import { setPage, getPage } from '../document/document-page.js';
-import { setVariant, getVariant } from '../components/component-variant.js';
-import * as renameOperations from '../rename.js';
-import { setNodeLocked, setNodeVisible, reorderNodes } from '../node/node-modify.js';
-import { generateHtmlUnified } from '../html-generator.js';
-import { insertSvgVector } from '../svg.js';
-import { createButton } from './commands-button.js';
-import { duplicatePageUnified } from '../document/document-duplicate.js';
-import { getNodeStyles, getFillAndStroke, getImage, getTextStyle, deleteNode, deleteNodeUnified, getSvgVector, getAnnotationUnified, setAnnotationUnified } from '../node/node-edit.js';
-import { utilsOperations } from '../utils.js';
-import * as variableOperations from '../variables.js';
 
 /**
  * Internal registry to store command handler functions by name.
