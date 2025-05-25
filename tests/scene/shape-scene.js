@@ -3,17 +3,26 @@ import { channel, runStep, ws } from "../test-runner.js";
 
 /**
  * Helper to create a rectangle in Figma for shape tests.
+ * @param {string} parentId - Optional parent frame ID to place the rectangle inside
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_rectangle() {
+function create_rectangle(parentId = null) {
   const params = {
-    x: 0, y: 0, width: 200, height: 100,
+    x: parentId ? 20 : 0, // Use relative coordinates if inside a parent
+    y: parentId ? 20 : 0,
+    width: 200, height: 100,
     name: 'UnitTestRectangle',
     cornerRadius: 12,
     fillColor: randomColor(),
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_rectangle',
@@ -89,11 +98,13 @@ function create_hexagon() {
 
 /**
  * Helper to create an 8-pointed star in Figma for shape tests.
+ * @param {string} parentId - Optional parent frame ID to place the star inside
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_star() {
+function create_star(parentId = null) {
   const params = {
-    x: 200, y: 200,
+    x: parentId ? 10 : 200, // Use relative coordinates if inside a parent
+    y: parentId ? 10 : 200,
     points: 8,
     innerRadius: 0.5,
     outerRadius: 1,
@@ -102,6 +113,12 @@ function create_star() {
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_star',
@@ -254,9 +271,22 @@ function create_bookmark() {
 }
 
 export async function shapeScene(results) {
-  results.push(await create_frame());
-  results.push(await create_star());
-  // results.push(await create_rectangle());
+  // Create frame first and store its ID
+  const frameResult = await create_frame();
+  results.push(frameResult);
+  
+  // Extract frame ID from the response
+  const frameId = frameResult.response?.ids?.[0];
+  
+  if (!frameId) {
+    console.warn('Could not get frame ID for placing shapes inside frame');
+  }
+  
+  // Create shapes - testing with star and rectangle inside frame
+  results.push(await create_star(frameId));
+  results.push(await create_rectangle(frameId));
+  
+  // Other shapes (commented out for now until we test two shapes work)
   // results.push(await create_ellipse());
   // results.push(await create_hexagon());
   // results.push(await create_speech_bubble());
