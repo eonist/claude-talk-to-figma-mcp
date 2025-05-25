@@ -23,6 +23,7 @@
 import { createText, createBoundedText, createTexts } from './text/text-create.js';
 import { setTextContent, setMultipleTextContents } from './text/text-edit.js';
 import { scanTextNodes, getStyledTextSegments } from './text/text-scan.js';
+import { loadFontAsyncWrapper } from './font/font-load.js';
 
 /**
  * Collection of text operation functions for Figma.
@@ -81,5 +82,6 @@ export const textOperations = {
   scanTextNodes,
   setMultipleTextContents,
   getStyledTextSegments,
-  createTextUnified
+  createTextUnified,
+  loadFontAsyncWrapper
 };
