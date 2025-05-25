@@ -100,7 +100,7 @@ export async function setAutoLayoutUnified(params) {
 
   const results = [];
   for (const config of configs) {
-    const { nodeId, mode, primaryAxisSizing, counterAxisSizing, itemSpacing, padding, alignItems } = config;
+    const { nodeId, mode, primaryAxisSizing, counterAxisSizing, itemSpacing, layoutWrap, padding, alignItems } = config;
     try {
       const node = await figma.getNodeByIdAsync(nodeId);
       if (!node) {
@@ -132,6 +132,10 @@ export async function setAutoLayoutUnified(params) {
 
       // Set spacing and padding
       if (typeof itemSpacing === "number") node.itemSpacing = itemSpacing;
+      
+      // Set layout wrap (NEW: added missing layoutWrap support)
+      if (layoutWrap !== undefined) node.layoutWrap = layoutWrap;
+      
       if (padding) {
         if (typeof padding.top === "number") node.paddingTop = padding.top;
         if (typeof padding.right === "number") node.paddingRight = padding.right;
