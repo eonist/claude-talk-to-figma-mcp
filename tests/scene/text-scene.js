@@ -279,17 +279,17 @@ export async function textScene(results) {
   }
 
    // Create text block inside the frame
-  //results.push(await create_text_block(frameId));
+  results.push(await create_text_block(frameId));
 
   // Create heading inside the frame
-  //results.push(await create_heading(frameId));
+  results.push(await create_heading(frameId));
   
   // Create text items inside the frame
   results.push(await create_text(frameId));
-  //results.push(await create_text_area(frameId));
+  results.push(await create_text_area(frameId));
   
   // Create hero title inside the frame
-  //results.push(await create_hero_title(frameId));
+  results.push(await create_hero_title(frameId));
   
   // Apply autolayout to the frame
   results.push(await apply_autolayout(frameId));
