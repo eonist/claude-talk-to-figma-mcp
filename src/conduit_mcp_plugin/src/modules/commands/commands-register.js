@@ -132,8 +132,9 @@ import { generateHtmlUnified } from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePageUnified } from '../document/document-duplicate.js';
-import { getNodeStyles, getFillAndStroke, getImage, getTextStyle, deleteNode, deleteNodeUnified } from '../node/node-edit.js';
+import { getNodeStyles, getFillAndStroke, getImage, getTextStyle, deleteNode, deleteNodeUnified, getSvgVector, getAnnotationUnified, setAnnotationUnified } from '../node/node-edit.js';
 import { utilsOperations } from '../utils.js';
+import * as variableOperations from '../variables.js';
 
 /**
  * Internal registry to store command handler functions by name.
@@ -180,8 +181,6 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.CREATE_POLYGON, shapeOperations.createPolygon);
   registerCommand(PLUGIN_COMMANDS.CREATE_STAR, shapeOperations.createStar);
   registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, shapeOperations.createVectorUnified);
-  registerCommand(PLUGIN_COMMANDS.GET_VECTOR, shapeOperations.getVector);
-  registerCommand(PLUGIN_COMMANDS.GET_VECTORS, shapeOperations.getVectors);
 
   // --- Text ---
   registerCommand(PLUGIN_COMMANDS.SET_TEXT, textOperations.createTextUnified);
