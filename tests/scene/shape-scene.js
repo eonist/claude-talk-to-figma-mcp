@@ -74,7 +74,9 @@ function create_hexagon() {
     x: 100, y: 100, width: 160, height: 160,
     sides: 6,
     name: 'UnitTestHexagon',
-    fillColor: { r:1, g:0.6470588, b:0, a:1 }
+    fillColor: { r:1, g:0.6470588, b:0, a:1 },
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
   };
   return runStep({
     ws, channel,
@@ -96,7 +98,9 @@ function create_star() {
     innerRadius: 0.5,
     outerRadius: 1,
     name: 'UnitTestStar',
-    fillColor: { r:1, g:0.8431373, b:0, a:1 }
+    fillColor: { r:1, g:0.8431373, b:0, a:1 },
+    strokeColor: randomColor(),
+    strokeWeight: Math.floor(Math.random() * 8) + 1
   };
   return runStep({
     ws, channel,
