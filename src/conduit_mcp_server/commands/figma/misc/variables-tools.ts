@@ -4,6 +4,7 @@ import { FigmaClient } from "../../../clients/figma-client.js";
 import type { FigmaClient as FigmaClientType } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { VariableTypeEnum, VariableDefSchema, VariableOpShape, VariableOpSchema, GetVariablesParamsSchema } from "./schema/variables-schema.js";
 
 /**
  * Registers Figma Variables (Design Tokens) commands:
@@ -16,42 +17,6 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  * - batch operations
  */
 export function registerVariableTools(server: McpServer, figmaClient: FigmaClient) {
-  // Variable Types
-  const VariableTypeEnum = z.enum(["COLOR", "NUMBER", "STRING", "BOOLEAN"]);
-
-  // Variable Definition Schema
-  const VariableDefSchema = z.object({
-    name: z.string().min(1).max(100),
-    type: VariableTypeEnum,
-    value: z.any(), // Will be validated per type in handler
-    collection: z.string().optional(),
-    mode: z.string().optional(),
-    description: z.string().optional(),
-  });
-
-  // Unified Variable Operation Schema
-  const VariableOpShape = {
-    variables: z
-      .union([
-        VariableDefSchema,
-        VariableDefSchema.extend({ id: z.string().min(1) }),
-        z.array(VariableDefSchema).min(1).max(50),
-        z.array(VariableDefSchema.extend({ id: z.string().min(1) })).min(1).max(50)
-      ])
-      .optional()
-      .describe("One or more variable definitions to create or update. Can be a single object or an array."),
-    ids: z
-      .union([
-        z.string().min(1),
-        z.array(z.string().min(1)).min(1).max(50)
-      ])
-      .optional()
-      .describe("One or more variable IDs to delete. Can be a single string or an array of strings.")
-  };
-  const VariableOpSchema = z.object(VariableOpShape).refine(
-    (data) => !!data.variables || !!data.ids,
-    { message: "Either 'variables' or 'ids' must be provided." }
-  );
 
   server.tool(
     MCP_COMMANDS.SET_VARIABLE,
