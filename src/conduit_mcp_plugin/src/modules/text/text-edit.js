@@ -70,9 +70,9 @@ export async function setTextStyle(params) {
     }
     if (styles.letterSpacing !== undefined) node.letterSpacing = styles.letterSpacing;
     if (styles.lineHeight !== undefined) {
-      // Handle lineHeight conversion: MULTIPLIER unit should be just a number
+      // Handle lineHeight conversion: MULTIPLIER unit should be converted to PERCENT
       if (styles.lineHeight && typeof styles.lineHeight === 'object' && styles.lineHeight.unit === 'MULTIPLIER') {
-        node.lineHeight = styles.lineHeight.value;
+        node.lineHeight = { value: styles.lineHeight.value * 100, unit: 'PERCENT' };
       } else {
         node.lineHeight = styles.lineHeight;
       }
