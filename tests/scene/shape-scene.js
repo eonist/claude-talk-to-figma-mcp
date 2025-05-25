@@ -300,12 +300,12 @@ function apply_autolayout(frameId) {
       mode: 'HORIZONTAL',
       layoutWrap: 'WRAP',
       itemSpacing: 15,
-      padding: {
-        top: 20,
-        right: 20,
-        bottom: 20,
-        left: 20
-      }
+      paddingTop: 20,
+      paddingRight: 20,
+      paddingBottom: 20,
+      paddingLeft: 20,
+      primaryAxisSizing: 'FIXED',
+      counterAxisSizing: 'AUTO'
     }
   };
   return runStep({
