@@ -1,6 +1,7 @@
 import { GetTextStyleParams } from "../../../types/command-params.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { getTextStyleSchema } from "./schema/text-style-schema.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
