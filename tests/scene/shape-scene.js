@@ -85,17 +85,26 @@ function create_frame() {
 
 /**
  * Helper to create a hexagon in Figma for shape tests.
+ * @param {string} parentId - Optional parent frame ID to place the hexagon inside
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_hexagon() {
+function create_hexagon(parentId = null) {
   const params = {
-    x: 100, y: 100, width: 160, height: 160,
+    x: parentId ? 40 : 100, // Use relative coordinates if inside a parent
+    y: parentId ? 40 : 100,
+    width: 160, height: 160,
     sides: 6,
     name: 'UnitTestHexagon',
     fillColor: { r:1, g:0.6470588, b:0, a:1 },
     strokeColor: randomColor(),
     strokeWeight: Math.floor(Math.random() * 8) + 1
   };
+  
+  // Add parentId if provided
+  if (parentId) {
+    params.parentId = parentId;
+  }
+  
   return runStep({
     ws, channel,
     command: 'create_polygon',
@@ -279,6 +288,31 @@ function create_bookmark() {
   });
 }
 
+/**
+ * Helper to apply autolayout to a frame with horizontal flow and wrapping.
+ * @param {string} frameId - The frame ID to apply autolayout to
+ * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
+ */
+function apply_autolayout(frameId) {
+  const params = {
+    nodeId: frameId,
+    layoutMode: 'HORIZONTAL',
+    layoutWrap: 'WRAP',
+    itemSpacing: 15,
+    paddingTop: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    paddingLeft: 20
+  };
+  return runStep({
+    ws, channel,
+    command: 'set_auto_layout',
+    params: params,
+    assert: (response) => ({ pass: response.success === true, response }),
+    label: `apply_autolayout to frame ${frameId}`
+  });
+}
+
 export async function shapeScene(results) {
   // Create frame first and store its ID
   const frameResult = await create_frame();
@@ -291,13 +325,16 @@ export async function shapeScene(results) {
     console.warn('Could not get frame ID for placing shapes inside frame');
   }
   
-  // Create shapes - testing with star and rectangle inside frame
+  // Create 4 shapes inside the frame
   results.push(await create_star(frameId));
   results.push(await create_rectangle(frameId));
+  results.push(await create_ellipse(frameId));
+  results.push(await create_hexagon(frameId));
   
-  // Other shapes (commented out for now until we test two shapes work)
-  // results.push(await create_ellipse());
-  // results.push(await create_hexagon());
+  // Apply autolayout to create horizontal flow with wrapping
+  results.push(await apply_autolayout(frameId));
+  
+  // Other shapes (commented out for now until we test autolayout works)
   // results.push(await create_speech_bubble());
   // results.push(await create_bookmark());
   // results.push(await create_heart());
