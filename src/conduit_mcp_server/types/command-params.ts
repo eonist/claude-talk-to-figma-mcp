@@ -90,6 +90,7 @@ export interface SetAutoLayoutParams {
     primaryAxisSizing?: "FIXED" | "AUTO";
     counterAxisSizing?: "FIXED" | "AUTO";
     itemSpacing?: number;
+    counterAxisSpacing?: number; // NEW: Vertical gap between wrapped rows
     layoutWrap?: "NO_WRAP" | "WRAP";
     padding?: {
       top?: number;
@@ -97,6 +98,11 @@ export interface SetAutoLayoutParams {
       bottom?: number;
       left?: number;
     };
+    // NEW: Individual padding properties
+    paddingTop?: number;
+    paddingRight?: number;
+    paddingBottom?: number;
+    paddingLeft?: number;
     alignItems?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
   };
   layouts?: Array<{
@@ -105,6 +111,7 @@ export interface SetAutoLayoutParams {
     primaryAxisSizing?: "FIXED" | "AUTO";
     counterAxisSizing?: "FIXED" | "AUTO";
     itemSpacing?: number;
+    counterAxisSpacing?: number; // NEW: Vertical gap between wrapped rows
     layoutWrap?: "NO_WRAP" | "WRAP";
     padding?: {
       top?: number;
@@ -112,6 +119,11 @@ export interface SetAutoLayoutParams {
       bottom?: number;
       left?: number;
     };
+    // NEW: Individual padding properties
+    paddingTop?: number;
+    paddingRight?: number;
+    paddingBottom?: number;
+    paddingLeft?: number;
     alignItems?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
   }>;
   options?: {
