@@ -298,14 +298,7 @@ function apply_autolayout(frameId) {
     layout: {
       nodeId: frameId,
       mode: 'HORIZONTAL',
-      layoutWrap: 'WRAP',
-      itemSpacing: 15,
-      paddingTop: 20,
-      paddingRight: 20,
-      paddingBottom: 20,
-      paddingLeft: 20,
-      primaryAxisSizing: 'FIXED',
-      counterAxisSizing: 'AUTO'
+      itemSpacing: 15
     }
   };
   return runStep({
