@@ -1,6 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client/index.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { getTextStyleSchema } from "./schema/text-style-schema.js";
+import { getDocStyleSchema, getNodeStyleSchema } from "./schema/style-schema.js";
 
 /**
  * Registers style info read command on the MCP server.
