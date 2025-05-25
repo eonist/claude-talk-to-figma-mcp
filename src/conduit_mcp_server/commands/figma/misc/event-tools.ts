@@ -2,13 +2,7 @@ import { McpServer } from "../../../server.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
-
-const UnifiedEventSchema = z.object({
-  eventType: z.string(),
-  filter: z.any().optional(),
-  subscribe: z.boolean(),
-  subscriptionId: z.string().optional()
-});
+import { UnifiedEventSchema } from "./schema/event-schema.js";
 
 export function registerEventCommands(server: McpServer, figmaClient: FigmaClient) {
   // In-memory subscription registry: { [subscriptionId]: { eventType, filter, client } }
@@ -20,11 +14,11 @@ export function registerEventCommands(server: McpServer, figmaClient: FigmaClien
     `Subscribe or unsubscribe to a Figma event (e.g., selection_change, document_change).
 
 Returns: { subscriptionId } for subscribe, { success: true } for unsubscribe`,
-    UnifiedEventSchema,
-    async (params, context) => {
+    UnifiedEventSchema.shape,
+    async (params: any, context: any) => {
       if (params.subscribe) {
         const subscriptionId = "sub-" + Math.random().toString(36).slice(2, 10);
-        subscriptions[subscriptionId] = {
+        (subscriptions as Record<string, any>)[subscriptionId] = {
           eventType: params.eventType,
           filter: params.filter,
           client: context.client // context.client is the WebSocket or session
@@ -35,8 +29,8 @@ Returns: { subscriptionId } for subscribe, { success: true } for unsubscribe`,
         };
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       } else {
-        if (params.subscriptionId && subscriptions[params.subscriptionId]) {
-          delete subscriptions[params.subscriptionId];
+        if (params.subscriptionId && (subscriptions as Record<string, any>)[params.subscriptionId]) {
+          delete (subscriptions as Record<string, any>)[params.subscriptionId];
           const result = {
             success: true,
             results: [{ subscriptionId: params.subscriptionId, unsubscribed: true }]
@@ -61,9 +55,9 @@ Returns: { subscriptionId } for subscribe, { success: true } for unsubscribe`,
   );
 
   // Internal: handle event messages from plugin and forward to subscribers
-  figmaClient.onEvent = function(eventType, payload) {
+  (figmaClient as any).onEvent = function(eventType: any, payload: any) {
     Object.keys(subscriptions).forEach((subId) => {
-      const sub = subscriptions[subId];
+      const sub = (subscriptions as Record<string, any>)[subId];
       if (sub.eventType === eventType) {
         // Optionally filter payload here
         sub.client.send(JSON.stringify({

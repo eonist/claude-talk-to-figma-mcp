@@ -1,12 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
-import { GetAnnotationParams, SetAnnotationParams, SetAnnotationEntry, AnnotationInput } from "../../types/command-params.js";
+import { GetAnnotationParams, SetAnnotationParams } from "../../../types/command-params.js";
 import { z } from "zod";
 import { MCP_COMMANDS } from "../../../types/commands.js";
+import { GetAnnotationParamsSchema, SetAnnotationParamsSchema } from "./schema/annotation-schema.js";
 
-/**
- * Registers annotation commands with the MCP server.
- */
 export function registerAnnotationCommands(server: McpServer, figmaClient: FigmaClient) {
   // get_annotation
   server.tool(
@@ -17,10 +15,7 @@ Returns:
   - For single: { nodeId, annotations }
   - For batch: Array<{ nodeId, annotations }>
 `,
-    {
-      nodeId: z.string().optional().describe("The ID of a single node to get annotations for. Optional."),
-      nodeIds: z.array(z.string()).optional().describe("An array of node IDs to get annotations for in batch. Optional.")
-    },
+    GetAnnotationParamsSchema.shape,
     {
       title: "Get Annotation(s)",
       idempotentHint: true,
@@ -37,7 +32,7 @@ Returns:
       ],
       extraInfo: "Use to retrieve annotation(s) for one or more nodes."
     },
-    async (args) => {
+    async (args: any) => {
       try {
         const result = await handleGetAnnotation(figmaClient, args);
         const resultsArr = Array.isArray(result) ? result : [result];
@@ -83,36 +78,7 @@ Returns:
   - For single: { nodeId, updated/deleted }
   - For batch: Array<{ nodeId, updated/deleted }>
 `,
-    {
-      entry: z
-        .object({
-          nodeId: z.string(),
-          annotation: z
-            .object({
-              label: z.string().optional(),
-              labelMarkdown: z.string().optional()
-            })
-            .optional(),
-          delete: z.boolean().optional()
-        })
-        .optional()
-        .describe("A single annotation operation to perform. Optional."),
-      entries: z
-        .array(
-          z.object({
-            nodeId: z.string(),
-            annotation: z
-              .object({
-                label: z.string().optional(),
-                labelMarkdown: z.string().optional()
-              })
-              .optional(),
-            delete: z.boolean().optional()
-          })
-        )
-        .optional()
-        .describe("An array of annotation operations to perform in batch. Optional.")
-    },
+    SetAnnotationParamsSchema.shape,
     {
       title: "Set Annotation(s)",
       idempotentHint: false,
@@ -132,7 +98,7 @@ Returns:
       ],
       extraInfo: "Use to set, update, or delete annotation(s) for one or more nodes."
     },
-    async (args) => {
+    async (args: any) => {
       try {
         const result = await handleSetAnnotation(figmaClient, args);
         const resultsArr = Array.isArray(result) ? result : [result];
@@ -204,7 +170,7 @@ export async function handleGetAnnotation(figmaClient: any, args: any) {
  */
 export async function handleSetAnnotation(figmaClient: any, args: any) {
   // Helper to set or delete annotation for a node
-  async function setOrDelete(entry: SetAnnotationEntry) {
+  async function setOrDelete(entry: any) {
     const node = await figmaClient.getNodeById(entry.nodeId);
     if (!node) return { nodeId: entry.nodeId, success: false, error: "Node not found" };
     if (entry.delete) {
