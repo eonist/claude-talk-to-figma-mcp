@@ -55,9 +55,10 @@ function create_text_area(frameId) {
 
 /**
  * Helper to create a heading text node in Figma for text tests.
+ * @param {string} frameId - The frame ID to place the heading inside.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>} Test result object.
  */
-function create_heading() {
+function create_heading(frameId) {
   const params = {
     x: 100,
     y: 50, // Position for the heading
@@ -65,7 +66,8 @@ function create_heading() {
     name: 'HeadingTextNode',
     fontSize: 32, // Set font size to 32px
     fontWeight: randomFontWeight(),
-    fontColor: randomColor() // Use a random color for the font
+    fontColor: randomColor(), // Use a random color for the font
+    parentId: frameId // Set the frame ID as the parent
   };
   return runStep({
     ws,
