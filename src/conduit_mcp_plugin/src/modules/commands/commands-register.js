@@ -1,7 +1,7 @@
 // All imports moved to the top to prevent temporal dead zone issues
 import * as documentOperations from '../document.js';
 import { setNodePropUnified } from '../node/node-modify.js';
-import * as nodeOperations from '../node.js';
+import { setMatrixTransform } from '../node/node-modify.js';
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
@@ -241,7 +241,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.DUPLICATE_NODE, layoutOperations.cloneNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE, layoutOperations.setNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE_PROP, setNodePropUnified);
-  registerCommand(PLUGIN_COMMANDS.SET_MATRIX_TRANSFORM, nodeOperations.setMatrixTransform);
+  registerCommand(PLUGIN_COMMANDS.SET_MATRIX_TRANSFORM, setMatrixTransform);
 
   // --- Grids, Guides, and Constraints ---
   registerCommand(PLUGIN_COMMANDS.SET_GRID, setGrid);
