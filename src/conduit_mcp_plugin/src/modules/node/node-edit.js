@@ -430,7 +430,7 @@ export async function getTextStyle(params) {
 export async function getAnnotationUnified(params) {
   // Single node
   if (params.nodeId) {
-    const node = figma.getNodeById(params.nodeId);
+    const node = await figma.getNodeByIdAsync(params.nodeId);
     return {
       nodeId: params.nodeId,
       annotations: node && node.annotations ? node.annotations : []
@@ -438,13 +438,14 @@ export async function getAnnotationUnified(params) {
   }
   // Batch
   if (Array.isArray(params.nodeIds)) {
-    return params.nodeIds.map(nodeId => {
-      const node = figma.getNodeById(nodeId);
+    const results = await Promise.all(params.nodeIds.map(async nodeId => {
+      const node = await figma.getNodeByIdAsync(nodeId);
       return {
         nodeId,
         annotations: node && node.annotations ? node.annotations : []
       };
-    });
+    }));
+    return results;
   }
   throw new Error("Must provide nodeId or nodeIds");
 }
@@ -460,7 +461,7 @@ export async function getAnnotationUnified(params) {
 export async function setAnnotationUnified(params) {
   // Helper to set or delete annotation for a node
   async function setOrDelete(entry) {
-    const node = figma.getNodeById(entry.nodeId);
+    const node = await figma.getNodeByIdAsync(entry.nodeId);
     if (!node) return { nodeId: entry.nodeId, success: false, error: "Node not found" };
     if (entry.delete) {
       node.annotations = [];

@@ -45,16 +45,8 @@ export async function setSelection(params) {
     throw new Error("You must provide 'nodeId' or 'nodeIds'");
   }
 
-  // Retrieve nodes asynchronously (supporting both sync and async getNodeById)
-  const nodePromises = nodeIds.map(id => {
-    if (typeof figma.getNodeByIdAsync === "function") {
-      return figma.getNodeByIdAsync(id);
-    } else {
-      // fallback for sync API
-      return Promise.resolve(figma.getNodeById(id));
-    }
-  });
-  const nodes = await Promise.all(nodePromises);
+  // Retrieve nodes asynchronously (always use async API)
+  const nodes = await Promise.all(nodeIds.map(id => figma.getNodeByIdAsync(id)));
   const validNodes = nodes.filter(node => node && node.type !== "DOCUMENT" && node.type !== "PAGE" && node.parent && node.parent.type === "PAGE");
   const notFound = nodeIds.filter((_, i) => !validNodes.includes(nodes[i]));
 
