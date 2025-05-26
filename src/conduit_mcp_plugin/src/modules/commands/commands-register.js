@@ -101,6 +101,7 @@ export const PLUGIN_COMMANDS = {
   REORDER_NODE: "reorder_node",
   RESIZE_NODE: "resize_node",
   FLATTEN_NODE: "flatten_node",
+  ROTATE_NODE: "rotate_node",
   // we call these from boolean in server, we will fix that later
   BOOLEAN: "boolean", // not in use yet
 
@@ -234,6 +235,7 @@ export function initializeCommands() {
   // TODO: Fix rotate_node and flatten_node if they are also miswired
   registerCommand(PLUGIN_COMMANDS.ROTATE_NODE, shapeOperations.rotateNodeUnified);
   registerCommand(PLUGIN_COMMANDS.FLATTEN_NODE, layoutOperations.flatten_nodes);
+  registerCommand(PLUGIN_COMMANDS.ROTATE_NODE, shapeOperations.rotateNodeUnified);
   registerCommand(PLUGIN_COMMANDS.BOOLEAN, shapeOperations.boolean);
 
   // --- Node Management ---

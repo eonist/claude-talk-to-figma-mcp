@@ -155,7 +155,7 @@ export const shapeOperations = {
    */
   async rotateNodeUnified(params) {
     const { nodeId, angle, pivot = "center", pivotPoint } = params;
-    const node = figma.getNodeById(nodeId);
+    const node = await figma.getNodeByIdAsync(nodeId);
     if (!node) {
       throw new Error(`Node not found: ${nodeId}`);
     }
