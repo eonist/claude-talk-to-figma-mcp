@@ -38,11 +38,13 @@ function create_rectangle(fillColor, width, height) {
 function set_position(nodeId, x, y) {
   return runStep({
     ws, channel,
-    command: 'move_node',
+    command: 'moveNode',
     params: { move: { nodeId, x, y } },
     assert: (response) => {
-      const ok = Array.isArray(response.ids) && response.ids.includes(nodeId);
-      return { pass: ok, reason: ok ? undefined : `Expected ids to include ${nodeId}`, response };
+      const ok =
+        Array.isArray(response.results) &&
+        response.results.some(r => r.nodeId === nodeId && r.success === true);
+      return { pass: ok, reason: ok ? undefined : `Expected results to include success for ${nodeId}`, response };
     },
     label: `set_position (${x},${y}) for ${nodeId}`
   });

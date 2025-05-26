@@ -1126,6 +1126,7 @@ Load a font asynchronously in Figma.
 ```json
 { "family": "Roboto", "style": "Bold" }
 ```
+
 ### move_node
 Move one or more nodes (single or batch) to new positions in Figma.
 
