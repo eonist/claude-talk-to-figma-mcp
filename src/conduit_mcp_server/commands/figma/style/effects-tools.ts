@@ -23,6 +23,8 @@ import { EffectSchema } from "./schema/effect-schema.js";
  * registerEffectsTools(server, figmaClient);
  */
 export function registerEffectsTools(server: McpServer, figmaClient: FigmaClient) {
+  // LOG: Registering apply_effect_style
+  console.log("💥 [registerEffectsTools] Registering command:", MCP_COMMANDS.APPLY_EFFECT_STYLE);
   // Set Effect Style ID
   server.tool(
     MCP_COMMANDS.APPLY_EFFECT_STYLE,
