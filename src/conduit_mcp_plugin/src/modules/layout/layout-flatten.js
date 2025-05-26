@@ -37,31 +37,14 @@ export async function flatten_nodes(params) {
       if (!node) throw new Error(`Node not found: ${id}`);
       nodes.push(node);
     }
-    // Debug: log node info before flattening
-    // eslint-disable-next-line no-console
-    const parentIds = nodes.map(n => n.parent && n.parent.id);
-    const parentTypes = nodes.map(n => n.parent && n.parent.type);
-    const pageId = figma.currentPage.id;
-    console.log("[flatten_nodes] nodeIds:", nodeIds,
-      "types:", nodes.map(n => n.type),
-      "parents:", parentIds,
-      "parentTypes:", parentTypes,
-      "locked:", nodes.map(n => n.locked),
-      "removed:", nodes.map(n => n.removed),
-      "names:", nodes.map(n => n.name),
-      "currentPageId:", pageId
-    );
+    // Prepare nodes: detach instances, skip locked/removed, clone if possible
     // Detach instances, skip locked/removed nodes, clone if possible
     const prepared = [];
     for (let n of nodes) {
       if (n.locked || n.removed) {
-        // eslint-disable-next-line no-console
-        console.warn("[flatten_nodes] Skipping locked or removed node:", n.id, n.name, n.type);
         continue;
       }
       if (n.type === "INSTANCE" && typeof n.detachInstance === "function") {
-        // eslint-disable-next-line no-console
-        console.log("[flatten_nodes] Detaching instance:", n.id, n.name);
         n = n.detachInstance();
       }
       if (n.clone) n = n.clone();
@@ -79,15 +62,10 @@ export async function flatten_nodes(params) {
       for (const orig of nodes) {
         try {
           if (orig.remove) orig.remove();
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.warn("[flatten_nodes] Failed to remove original node:", orig.id, orig.name, e && e.message);
-        }
+        } catch (e) {}
       }
       return { success: true, nodeId: flattened.id, ids: [flattened.id] };
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("[flatten_nodes] Flatten failed:", error && error.message, error);
       throw error;
     }
   }
