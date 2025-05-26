@@ -4,7 +4,9 @@
  */
 
 /**
- * Flattens a node.
+ * @deprecated
+ * This flattenNode implementation is deprecated and not used by the plugin's flatten_node command.
+ * Use layout-flatten.js:flatten_nodes instead.
  *
  * @async
  * @function

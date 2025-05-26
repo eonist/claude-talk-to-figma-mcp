@@ -13,7 +13,7 @@ import {
   convertRectangleToFrame
 } from './node/node-edit.js';
 import {
-  flattenNode,
+  // flattenNode, // deprecated, use layout-flatten.js:flatten_nodes instead
   union_selection,
   subtract_selection,
   intersect_selection,
