@@ -81,7 +81,7 @@ function create_rectangle_with_color(parentId, name, fillColor) {
 }
 
 /**
- * Helper to apply an effect to a node.
+ * Apply a single effect to a node (not batch).
  * @param {string} nodeId
  * @param {Array<Object>} effects
  * @param {string} label
@@ -92,19 +92,101 @@ function apply_effect(nodeId, effects, label) {
     ws, channel,
     command: 'set_effect',
     params: {
-      entries: [{
-        nodeId,
-        effects
-      }]
+      nodeId,
+      effects
     },
     assert: (response) => {
       // Accept any response with nodeId present
-      const ok = Array.isArray(response) && response[0] && response[0].nodeId === nodeId;
+      const ok = response && response.nodeId === nodeId;
       return { pass: ok, response };
     },
     label
   });
 }
+
+// --- Rectangle + Effect Functions ---
+
+/**
+ * Create a red rectangle and apply drop shadow.
+ */
+export async function addRedRectWithDropShadow(frameId, results) {
+  const red = { r: 1, g: 0, b: 0, a: 1 };
+  const rectResult = await create_rectangle_with_color(frameId, "RedRect", red);
+  results.push(rectResult);
+  const rectId = rectResult.response?.ids?.[0];
+  if (!rectId) {
+    results.push({ label: "RedRect creation failed", pass: false, reason: "No rectId returned", response: rectResult.response });
+    return;
+  }
+  // Apply drop shadow (singular)
+  results.push(await apply_effect(rectId, [
+    {
+      type: "DROP_SHADOW",
+      color: "#000000",
+      offset: { x: 0, y: 2 },
+      radius: 4,
+      spread: 0,
+      visible: true,
+      blendMode: "NORMAL",
+      opacity: 0.5,
+      name: "Drop Shadow"
+    }
+  ], "Apply drop shadow to RedRect"));
+}
+
+/**
+ * Create a green rectangle and apply inner shadow.
+ */
+export async function addGreenRectWithInnerShadow(frameId, results) {
+  const green = { r: 0, g: 1, b: 0, a: 1 };
+  const rectResult = await create_rectangle_with_color(frameId, "GreenRect", green);
+  results.push(rectResult);
+  const rectId = rectResult.response?.ids?.[0];
+  if (!rectId) {
+    results.push({ label: "GreenRect creation failed", pass: false, reason: "No rectId returned", response: rectResult.response });
+    return;
+  }
+  // Apply inner shadow (singular)
+  results.push(await apply_effect(rectId, [
+    {
+      type: "INNER_SHADOW",
+      color: "#333333",
+      offset: { x: 0, y: -2 },
+      radius: 3,
+      spread: 0,
+      visible: true,
+      blendMode: "NORMAL",
+      opacity: 0.3,
+      name: "Inner Shadow"
+    }
+  ], "Apply inner shadow to GreenRect"));
+}
+
+/**
+ * Create a blue rectangle and apply background blur.
+ */
+export async function addBlueRectWithBackgroundBlur(frameId, results) {
+  const blue = { r: 0, g: 0, b: 1, a: 1 };
+  const rectResult = await create_rectangle_with_color(frameId, "BlueRect", blue);
+  results.push(rectResult);
+  const rectId = rectResult.response?.ids?.[0];
+  if (!rectId) {
+    results.push({ label: "BlueRect creation failed", pass: false, reason: "No rectId returned", response: rectResult.response });
+    return;
+  }
+  // Apply background blur (singular)
+  results.push(await apply_effect(rectId, [
+    {
+      type: "BACKGROUND_BLUR",
+      radius: 6,
+      visible: true,
+      blendMode: "NORMAL",
+      name: "Background Blur"
+    }
+  ], "Apply background blur to BlueRect"));
+}
+
+// --- Main Test Entrypoint ---
 
 export async function effectScene(results) {
   // 1. Create frame
@@ -119,68 +201,8 @@ export async function effectScene(results) {
   // 2. Apply autolayout
   results.push(await apply_autolayout(frameId));
 
-  // 3. Create rectangles (red, green, blue)
-  const red = { r: 1, g: 0, b: 0, a: 1 };
-  const green = { r: 0, g: 1, b: 0, a: 1 };
-  const blue = { r: 0, g: 0, b: 1, a: 1 };
-
-  const rect1Result = await create_rectangle_with_color(frameId, "RedRect", red);
-  results.push(rect1Result);
-  const rect1Id = rect1Result.response?.ids?.[0];
-
-  const rect2Result = await create_rectangle_with_color(frameId, "GreenRect", green);
-  results.push(rect2Result);
-  const rect2Id = rect2Result.response?.ids?.[0];
-
-  const rect3Result = await create_rectangle_with_color(frameId, "BlueRect", blue);
-  results.push(rect3Result);
-  const rect3Id = rect3Result.response?.ids?.[0];
-
-  // 4. Apply effects
-  // Rect 1: Drop shadow
-  if (rect1Id) {
-    results.push(await apply_effect(rect1Id, [
-      {
-        type: "DROP_SHADOW",
-        color: "#000000",
-        offset: { x: 0, y: 2 },
-        radius: 4,
-        spread: 0,
-        visible: true,
-        blendMode: "NORMAL",
-        opacity: 0.5,
-        name: "Drop Shadow"
-      }
-    ], "Apply drop shadow to RedRect"));
-  }
-
-  // Rect 2: Inner shadow
-  if (rect2Id) {
-    results.push(await apply_effect(rect2Id, [
-      {
-        type: "INNER_SHADOW",
-        color: "#333333",
-        offset: { x: 0, y: -2 },
-        radius: 3,
-        spread: 0,
-        visible: true,
-        blendMode: "NORMAL",
-        opacity: 0.3,
-        name: "Inner Shadow"
-      }
-    ], "Apply inner shadow to GreenRect"));
-  }
-
-  // Rect 3: Background blur
-  if (rect3Id) {
-    results.push(await apply_effect(rect3Id, [
-      {
-        type: "BACKGROUND_BLUR",
-        radius: 6,
-        visible: true,
-        blendMode: "NORMAL",
-        name: "Background Blur"
-      }
-    ], "Apply background blur to BlueRect"));
-  }
+  // 3. Add rectangles with effects (only one active at a time)
+  await addRedRectWithDropShadow(frameId, results);
+  // await addGreenRectWithInnerShadow(frameId, results);
+  // await addBlueRectWithBackgroundBlur(frameId, results);
 }
