@@ -49,8 +49,8 @@ export const effectCommands = {
     this: FigmaClient,
     params: { nodeId: string, effectStyleId: string }
   ): Promise<any> {
-    // SET_EFFECT_STYLE_ID is deprecated; use CREATE_EFFECT_STYLE_VARIABLE
-    return this.executeCommand(MCP_COMMANDS.CREATE_EFFECT_STYLE_VARIABLE, params);
+    // Correctly forward to plugin as APPLY_EFFECT_STYLE
+    return this.executeCommand(MCP_COMMANDS.APPLY_EFFECT_STYLE, params);
   },
 
 
