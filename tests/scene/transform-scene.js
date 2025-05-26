@@ -38,7 +38,7 @@ function create_rectangle(fillColor, width, height) {
 function set_position(nodeId, x, y) {
   return runStep({
     ws, channel,
-    command: 'moveNode',
+    command: 'move_node',
     params: { move: { nodeId, x, y } },
     assert: (response) => {
       const ok =
@@ -87,7 +87,7 @@ export async function transformScene(results) {
 
   // Rectangle 2: Green, 150x100, at (100,0)
   const green = { r: 0, g: 1, b: 0, a: 1 };
-  const res2 = await create_rectangle(green, 150, 100);
+  const res2 = await create_rectangle(green, 100, 100);
   results.push(res2);
   const rect2Id = res2.response?.ids?.[0];
   if (rect2Id) {
@@ -97,7 +97,7 @@ export async function transformScene(results) {
 
   // Rectangle 3: Blue, 100x150, at (250,0)
   const blue = { r: 0, g: 0, b: 1, a: 1 };
-  const res3 = await create_rectangle(blue, 100, 150);
+  const res3 = await create_rectangle(blue, 100, 100);
   results.push(res3);
   const rect3Id = res3.response?.ids?.[0];
   if (rect3Id) {
