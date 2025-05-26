@@ -24,12 +24,45 @@ export async function flattenNode(params) {
       nodes.push(node);
     }
     if (nodes.length < 2) throw new Error("Need at least 2 nodes to flatten");
-    // Ensure all nodes are siblings (same parent)
-    const parent = nodes[0].parent;
+    // Debug: log node info before flattening
+    // eslint-disable-next-line no-console
+    console.log("[flattenNode] nodeIds:", params.nodeIds,
+      "types:", nodes.map(n => n.type),
+      "parents:", nodes.map(n => n.parent && n.parent.id),
+      "locked:", nodes.map(n => n.locked),
+      "removed:", nodes.map(n => n.removed),
+      "names:", nodes.map(n => n.name)
+    );
+    // Detach instances, skip locked/removed nodes, clone if possible
+    const prepared = [];
+    for (let n of nodes) {
+      if (n.locked || n.removed) {
+        // eslint-disable-next-line no-console
+        console.warn("[flattenNode] Skipping locked or removed node:", n.id, n.name, n.type);
+        continue;
+      }
+      if (n.type === "INSTANCE" && typeof n.detachInstance === "function") {
+        // eslint-disable-next-line no-console
+        console.log("[flattenNode] Detaching instance:", n.id, n.name);
+        n = n.detachInstance();
+      }
+      if (n.clone) n = n.clone();
+      prepared.push(n);
+    }
+    if (prepared.length < 2) throw new Error("Need at least 2 eligible nodes to flatten");
+    // Ensure all are siblings (same parent)
+    const parent = prepared[0].parent;
     if (!parent) throw new Error("Nodes must have a parent");
-    if (!nodes.every(n => n.parent === parent)) throw new Error("All nodes to flatten must have the same parent");
-    const flattened = figma.flatten(nodes, parent);
-    return { success: true, nodeId: flattened.id, ids: [flattened.id] };
+    if (!prepared.every(n => n.parent === parent)) throw new Error("All nodes to flatten must have the same parent");
+    // Try flatten, catch and log errors
+    try {
+      const flattened = figma.flatten(prepared, parent);
+      return { success: true, nodeId: flattened.id, ids: [flattened.id] };
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("[flattenNode] Flatten failed:", error && error.message, error);
+      throw error;
+    }
   } else if (params.nodeId) {
     // Flatten a single node (legacy)
     const node = await figma.getNodeByIdAsync(params.nodeId);
