@@ -56,7 +56,17 @@ export async function insertChild(params) {
  * @throws {Error} If operations is missing/invalid, or if an error occurs and skipErrors is not set.
  */
 export async function insertChildren(params) {
-  const { operations, options } = params || {};
+  // Support both single and batch forms
+  let operations, options;
+  if (Array.isArray(params?.operations)) {
+    operations = params.operations;
+    options = params.options;
+  } else if (params && params.parentId && params.childId) {
+    operations = [params];
+    options = params.options;
+  } else {
+    throw new Error("Must provide an array of operations for insertChildren or single parentId/childId");
+  }
   if (!operations || !Array.isArray(operations) || operations.length === 0) {
     throw new Error("Must provide an array of operations for insertChildren");
   }
