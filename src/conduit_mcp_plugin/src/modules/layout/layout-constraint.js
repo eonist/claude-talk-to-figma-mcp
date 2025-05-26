@@ -48,7 +48,7 @@ export async function setConstraints(params) {
   var results = [];
   for (var i = 0; i < ops.length; ++i) {
     var op = ops[i];
-    var node = figma.getNodeById(op.nodeId);
+    var node = await figma.getNodeByIdAsync(op.nodeId);
     if (!node) {
       results.push({
         nodeId: op.nodeId,
@@ -123,7 +123,7 @@ export async function getConstraints(params) {
   var nodes = [];
   if (ids.length > 0) {
     for (var i = 0; i < ids.length; ++i) {
-      var node = figma.getNodeById(ids[i]);
+      var node = await figma.getNodeByIdAsync(ids[i]);
       if (node) nodes.push(node);
     }
   } else {

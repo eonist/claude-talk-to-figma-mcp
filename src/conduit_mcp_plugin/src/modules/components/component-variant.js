@@ -4,9 +4,11 @@
  * getVariant: get info for one, many, or all component sets
  */
 
-// Helper: find component set by id
-function findComponentSet(id) {
-  var node = figma.getNodeById(id);
+/**
+ * Helper: find component set by id (async)
+ */
+async function findComponentSet(id) {
+  var node = await figma.getNodeByIdAsync(id);
   return node && node.type === "COMPONENT_SET" ? node : null;
 }
 
@@ -25,7 +27,7 @@ export async function setVariant(params) {
   for (var i = 0; i < ops.length; ++i) {
     var op = ops[i];
     try {
-      var set = findComponentSet(op.componentSetId);
+      var set = await findComponentSet(op.componentSetId);
       if (!set) {
         results.push({ componentSetId: op.componentSetId, error: "Component set not found" });
         continue;
@@ -49,7 +51,7 @@ export async function setVariant(params) {
       }
       // Batch create variants from template
       if (op.action === "batch_create" && op.templateComponentId && op.propertiesList) {
-        var template = figma.getNodeById(op.templateComponentId);
+        var template = await figma.getNodeByIdAsync(op.templateComponentId);
         if (!template || template.type !== "COMPONENT") {
           results.push({ error: "Template component not found" });
           continue;
@@ -147,7 +149,7 @@ export async function getVariant(params) {
   var results = [];
   if (ids.length > 0) {
     for (var i = 0; i < ids.length; ++i) {
-      var set = findComponentSet(ids[i]);
+      var set = await findComponentSet(ids[i]);
       if (set) {
         var variants = [];
         for (var j = 0; j < set.children.length; ++j) {

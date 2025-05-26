@@ -40,7 +40,7 @@ function createLayoutGrid(gridType, options) {
 }
 
 export async function createGrid({ frameId, gridType, gridOptions }) {
-  const frame = figma.getNodeById(frameId);
+  const frame = await figma.getNodeByIdAsync(frameId);
   if (!frame || frame.type !== "FRAME") {
     return { status: "error", message: "Invalid frame ID or node is not a frame" };
   }
@@ -53,7 +53,7 @@ export async function createGrid({ frameId, gridType, gridOptions }) {
 }
 
 export async function updateGrid({ frameId, gridIndex, gridOptions }) {
-  const frame = figma.getNodeById(frameId);
+  const frame = await figma.getNodeByIdAsync(frameId);
   if (!frame || frame.type !== "FRAME") {
     return { status: "error", message: "Invalid frame ID or node is not a frame" };
   }
@@ -67,7 +67,7 @@ export async function updateGrid({ frameId, gridIndex, gridOptions }) {
 }
 
 export async function removeGrid({ frameId, gridIndex }) {
-  const frame = figma.getNodeById(frameId);
+  const frame = await figma.getNodeByIdAsync(frameId);
   if (!frame || frame.type !== "FRAME") {
     return { status: "error", message: "Invalid frame ID or node is not a frame" };
   }

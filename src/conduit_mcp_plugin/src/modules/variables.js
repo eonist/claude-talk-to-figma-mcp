@@ -87,7 +87,7 @@ async function getVariables({ type, collection, mode, ids }) {
 }
 
 async function applyVariableToNode({ nodeId, variableId, property }) {
-  const node = figma.getNodeById(nodeId);
+  const node = await figma.getNodeByIdAsync(nodeId);
   if (!node || !node.boundVariables) throw new Error("Node does not support variable binding");
   node.boundVariables[property] = { type: "VARIABLE", id: variableId };
   return { success: true };

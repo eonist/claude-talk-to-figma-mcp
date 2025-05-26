@@ -171,7 +171,7 @@ export async function createComponentsFromNodes(params) {
     try {
       const { nodeId, maintain_position } = nodeCfg;
       if (!nodeId) throw new Error("Missing nodeId");
-      const node = figma.getNodeById(nodeId);
+      const node = await figma.getNodeByIdAsync(nodeId);
       if (!node) throw new Error(`Node not found: ${nodeId}`);
       // Store original position if needed
       const originalX = node.x;
@@ -292,7 +292,7 @@ export async function detachInstances(params) {
 
   for (const instanceId of instanceIds) {
     try {
-      const node = figma.getNodeById(instanceId);
+      const node = await figma.getNodeByIdAsync(instanceId);
       if (!node) {
         throw new Error(`No node found with ID: ${instanceId}`);
       }
@@ -336,7 +336,7 @@ export async function detachInstances(params) {
   }
 
   // Optionally, select and zoom to detached nodes if any
-  const detachedNodes = results.filter(r => r.id).map(r => figma.getNodeById(r.id)).filter(Boolean);
+  const detachedNodes = (await Promise.all(results.filter(r => r.id).map(async r => await figma.getNodeByIdAsync(r.id)))).filter(Boolean);
   if (detachedNodes.length > 0) {
     figma.currentPage.selection = detachedNodes;
     figma.viewport.scrollAndZoomIntoView(detachedNodes);

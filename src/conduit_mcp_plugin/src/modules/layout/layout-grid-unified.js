@@ -4,9 +4,9 @@
  * getGrid: get all grids for one or more nodes
  */
 
-// Helper: get node and check type
-function getFrameLikeNode(nodeId) {
-  var node = figma.getNodeById(nodeId);
+// Helper: get node and check type (async)
+async function getFrameLikeNode(nodeId) {
+  var node = await figma.getNodeByIdAsync(nodeId);
   if (!node) return null;
   if (node.type === "FRAME" || node.type === "COMPONENT" || node.type === "INSTANCE") return node;
   return null;
@@ -33,7 +33,7 @@ function buildLayoutGrid(properties) {
 
 // setGrid: create, update, delete (single op)
 async function setGridOp(op) {
-  var node = getFrameLikeNode(op.nodeId);
+  var node = await getFrameLikeNode(op.nodeId);
   if (!node) return { error: "Node not found or not a frame/component/instance", nodeId: op.nodeId };
   var grids = node.layoutGrids && node.layoutGrids.length ? node.layoutGrids.slice() : [];
   // Delete
@@ -92,7 +92,7 @@ export async function getGrid(params) {
   var ids = params.nodeId ? [params.nodeId] : (params.nodeIds || []);
   var results = [];
   for (var i = 0; i < ids.length; ++i) {
-    var node = getFrameLikeNode(ids[i]);
+    var node = await getFrameLikeNode(ids[i]);
     if (node) {
       results.push({ nodeId: ids[i], grids: node.layoutGrids || [] });
     } else {
