@@ -103,4 +103,112 @@ Returns:
     }
   );
 
+  // Set Matrix Transform (single or batch)
+  server.tool(
+    MCP_COMMANDS.SET_MATRIX_TRANSFORM,
+    `Set a transformation matrix on one or more Figma nodes (single or batch).
+
+Parameters:
+  - entry: { nodeId: string, matrix: number[] } (optional, for single)
+  - entries: Array<{ nodeId: string, matrix: number[] }> (optional, for batch)
+  - options: { skipErrors?: boolean } (optional)
+
+Returns:
+  - content: Array of objects. Each object contains a type: "text" and a text field with the result for each node.
+`,
+    {
+      entry: z
+        .object({
+          nodeId: z.string(),
+          matrix: z.array(z.number()).length(6)
+        })
+        .optional(),
+      entries: z
+        .array(
+          z.object({
+            nodeId: z.string(),
+            matrix: z.array(z.number()).length(6)
+          })
+        )
+        .optional(),
+      options: z
+        .object({
+          skipErrors: z.boolean().optional()
+        })
+        .optional()
+    },
+    {
+      title: "Set Matrix Transform (Single or Batch)",
+      idempotentHint: false,
+      destructiveHint: true,
+      readOnlyHint: false,
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { entry: { nodeId: "123:456", matrix: [1, 0, 0, 1, 100, 200] } },
+        {
+          entries: [
+            { nodeId: "123:456", matrix: [1, 0, 0, 1, 100, 200] },
+            { nodeId: "789:101", matrix: [0.5, 0, 0, 0.5, 0, 0] }
+          ],
+          options: { skipErrors: true }
+        }
+      ]),
+      edgeCaseWarnings: [
+        "Returns an error if any nodeId is invalid or not found (unless skipErrors is true).",
+        "Result is an array of result objects (even for single)."
+      ],
+      extraInfo: "Supports both single and batch matrix transforms. Matrix must be a 6-element array."
+    },
+    async (args: { entry?: { nodeId: string; matrix: number[] }; entries?: Array<{ nodeId: string; matrix: number[] }>; options?: { skipErrors?: boolean } }) => {
+      const results = [];
+      const skipErrors = args.options?.skipErrors === true;
+      const entries =
+        Array.isArray(args.entries) && args.entries.length > 0
+          ? args.entries
+          : args.entry
+          ? [args.entry]
+          : [];
+      if (entries.length === 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "You must provide either 'entry' or 'entries'."
+            }
+          ]
+        };
+      }
+      for (const { nodeId, matrix } of entries) {
+        try {
+          const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_MATRIX_TRANSFORM, { nodeId, matrix });
+          results.push({ nodeId, success: true, result });
+        } catch (error) {
+          if (skipErrors) {
+            results.push({
+              nodeId,
+              success: false,
+              error: error instanceof Error ? error.message : String(error)
+            });
+            continue;
+          }
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Error setting matrix for node ${nodeId}: ${error instanceof Error ? error.message : String(error)}`
+              }
+            ]
+          };
+        }
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(results)
+          }
+        ]
+      };
+    }
+  );
 }

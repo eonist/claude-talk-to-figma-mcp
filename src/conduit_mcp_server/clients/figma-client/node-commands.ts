@@ -166,5 +166,17 @@ export const nodeCommands = {
   ): Promise<any> {
     const id = ensureNodeIdIsString(params.nodeId);
     return this.executeCommand(MCP_COMMANDS.RESIZE_NODE, { nodeId: id, width: params.width, height: params.height });
+  },
+
+  /**
+   * Sets a transformation matrix on a node.
+   * @param params - { nodeId: string, matrix: number[] }
+   * @returns The result of the matrix transform operation.
+   */
+  async setMatrixTransform(
+    this: FigmaClient,
+    params: { nodeId: string; matrix: number[] }
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_MATRIX_TRANSFORM, params);
   }
 };

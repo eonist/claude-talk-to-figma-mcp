@@ -399,3 +399,47 @@ export async function reorderNodes(params) {
     errors: errors.length > 0 ? errors : undefined
   };
 }
+
+/**
+ * Sets a transformation matrix on one or more nodes (single or batch).
+ * @async
+ * @function
+ * @param {Object} params - Parameters for matrix transform.
+ * @param {Object} [params.entry] - Single entry: { nodeId, matrix }
+ * @param {Array<Object>} [params.entries] - Batch entries: [{ nodeId, matrix }]
+ * @param {Object} [params.options] - Optional options: { skipErrors }
+ * @returns {Promise<{results: Array<Object>, errors?: Array<string>}>}
+ */
+export async function setMatrixTransform(params) {
+  const { entry, entries, options = {} } = params;
+  const skipErrors = options.skipErrors === true;
+  const entryList = Array.isArray(entries) && entries.length > 0
+    ? entries
+    : entry
+    ? [entry]
+    : [];
+  if (entryList.length === 0) {
+    throw new Error("You must provide either 'entry' or 'entries'.");
+  }
+  const results = [];
+  const errors = [];
+  for (const { nodeId, matrix } of entryList) {
+    try {
+      const node = await figma.getNodeByIdAsync(nodeId);
+      if (!node) throw new Error(`Node not found: ${nodeId}`);
+      node.relativeTransform = matrix;
+      results.push({ nodeId, success: true });
+    } catch (error) {
+      if (skipErrors) {
+        errors.push(`Failed on node ${nodeId}: ${error && error.message ? error.message : String(error)}`);
+        results.push({ nodeId, success: false, error: error && error.message ? error.message : String(error) });
+        continue;
+      }
+      throw error;
+    }
+  }
+  return {
+    results,
+    errors: errors.length > 0 ? errors : undefined
+  };
+}

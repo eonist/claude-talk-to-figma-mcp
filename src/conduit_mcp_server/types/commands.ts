@@ -84,6 +84,7 @@ export const COMMAND_DEFS = [
   { name: "duplicate_node", paramType: {} as any },
   { name: "set_node", paramType: {} as any },
   { name: "set_node_prop", paramType: {} as SetNodePropParams },
+  { name: "set_matrix_transform", paramType: {} as import("./command-params.js").SetMatrixTransformParams },
   { name: "set_grid", paramType: {} as any },
   { name: "get_grid", paramType: {} as any },
   { name: "set_guide", paramType: {} as any },

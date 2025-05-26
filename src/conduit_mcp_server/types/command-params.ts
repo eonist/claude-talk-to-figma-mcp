@@ -392,6 +392,27 @@ export interface BooleanParams {
 }
 
 /**
+ * Parameters for set_matrix_transform (single or batch).
+ * - entry: (object, optional) Single matrix transform config.
+ * - entries: (array of objects, optional) Batch of matrix transform configs.
+ * - options: (object, optional) { skipErrors?: boolean }
+ * At least one of entry or entries is required.
+ */
+export interface SetMatrixTransformParams {
+  entry?: {
+    nodeId: string;
+    matrix: number[];
+  };
+  entries?: Array<{
+    nodeId: string;
+    matrix: number[];
+  }>;
+  options?: {
+    skipErrors?: boolean;
+  };
+}
+
+/**
  * Parameters for the set_node command (set or insert one or more child nodes into parent nodes).
  */
 export interface SetNodeParams {

@@ -67,7 +67,8 @@ export const nodeOperations = {
   intersect_selection,
   exclude_selection,
   clone_node,
-  boolean: boolean_operation
+  boolean: boolean_operation,
+  setMatrixTransform
 };
 
 export default nodeOperations;

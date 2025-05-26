@@ -1,6 +1,7 @@
 // All imports moved to the top to prevent temporal dead zone issues
 import * as documentOperations from '../document.js';
 import { setNodePropUnified } from '../node/node-modify.js';
+import * as nodeOperations from '../node.js';
 import * as shapeOperations from '../shapes.js';
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
@@ -109,6 +110,7 @@ export const PLUGIN_COMMANDS = {
   DUPLICATE_NODE: "duplicate_node",
   SET_NODE: "set_node",
   SET_NODE_PROP: "set_node_prop",
+  SET_MATRIX_TRANSFORM: "set_matrix_transform",
 
   // --- Grids, Guides, and Constraints ---
   SET_GRID: "set_grid",
@@ -239,6 +241,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.DUPLICATE_NODE, layoutOperations.cloneNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE, layoutOperations.setNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE_PROP, setNodePropUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_MATRIX_TRANSFORM, nodeOperations.setMatrixTransform);
 
   // --- Grids, Guides, and Constraints ---
   registerCommand(PLUGIN_COMMANDS.SET_GRID, setGrid);
