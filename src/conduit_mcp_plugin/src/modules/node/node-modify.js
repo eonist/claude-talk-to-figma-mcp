@@ -355,7 +355,7 @@ export async function reorderNodes(params) {
   }
   const results = [];
   const errors = [];
-  for (const config of reorders) {
+  for (const config of reordersArr) {
     try {
       const { nodeId, direction, index } = config;
       const node = await figma.getNodeByIdAsync(nodeId);
@@ -427,7 +427,15 @@ export async function setMatrixTransform(params) {
     try {
       const node = await figma.getNodeByIdAsync(nodeId);
       if (!node) throw new Error(`Node not found: ${nodeId}`);
-      node.relativeTransform = matrix;
+      // Convert flat [a, b, c, d, e, f] to [[a, c, e], [b, d, f]]
+      let relMatrix = matrix;
+      if (Array.isArray(matrix) && matrix.length === 6) {
+        relMatrix = [
+          [matrix[0], matrix[2], matrix[4]],
+          [matrix[1], matrix[3], matrix[5]]
+        ];
+      }
+      node.relativeTransform = relMatrix;
       results.push({ nodeId, success: true });
     } catch (error) {
       if (skipErrors) {

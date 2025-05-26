@@ -97,16 +97,16 @@ function set_autolayout(frameId) {
   });
 }
 
-function reorder_z(nodeIds, order) {
-  // order: array of nodeIds in desired z-order (front to back)
-  // We'll move each node to the front in order
+function reorder_z(parentId, nodeIds, order) {
+  // order: array of nodeIds in desired z-order (index 0 = back, last = front)
+  // We'll set each node's index in the parent's children array
   return Promise.all(order.map((nodeId, idx) =>
     runStep({
       ws, channel,
       command: 'reorder_node',
-      params: { reorder: { nodeId, direction: 'front' } },
+      params: { reorder: { nodeId, index: idx } },
       assert: (response) => ({ pass: response && response.success === true, response }),
-      label: `reorder_node (${nodeId}) to front`
+      label: `reorder_node (${nodeId}) to index ${idx}`
     })
   ));
 }
@@ -190,7 +190,8 @@ export async function transformScene(results) {
 
   // Reorder z position: blue, green, red (rectC, rectB, rectA)
   if (rectAId && rectBId && rectCId) {
-    const reorderResults = await reorder_z([rectAId, rectBId, rectCId], [rectCId, rectBId, rectAId]);
+    // Desired order: blue (rectC), green (rectB), red (rectA)
+    const reorderResults = await reorder_z(frame2Id, [rectAId, rectBId, rectCId], [rectCId, rectBId, rectAId]);
     reorderResults.forEach(r => results.push(r));
   }
 
