@@ -14,12 +14,41 @@
  * @throws {Error} If nodeId is missing or node cannot be found.
  */
 export async function flattenNode(params) {
-  const { nodeId } = params;
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) throw new Error(`Node not found: ${nodeId}`);
-  figma.currentPage.selection = [node];
-  const flattened = figma.flatten();
-  return { success: true, nodeId: flattened.id };
+  // Support flattening by nodeIds array, nodeId, or selection
+  if (Array.isArray(params.nodeIds)) {
+    // Flatten multiple nodes by nodeIds
+    const nodes = [];
+    for (const id of params.nodeIds) {
+      const node = await figma.getNodeByIdAsync(id);
+      if (!node) throw new Error(`Node not found: ${id}`);
+      nodes.push(node);
+    }
+    if (nodes.length < 2) throw new Error("Need at least 2 nodes to flatten");
+    // Ensure all nodes are siblings (same parent)
+    const parent = nodes[0].parent;
+    if (!parent) throw new Error("Nodes must have a parent");
+    if (!nodes.every(n => n.parent === parent)) throw new Error("All nodes to flatten must have the same parent");
+    const flattened = figma.flatten(nodes, parent);
+    return { success: true, nodeId: flattened.id, ids: [flattened.id] };
+  } else if (params.nodeId) {
+    // Flatten a single node (legacy)
+    const node = await figma.getNodeByIdAsync(params.nodeId);
+    if (!node) throw new Error(`Node not found: ${params.nodeId}`);
+    figma.currentPage.selection = [node];
+    const flattened = figma.flatten();
+    return { success: true, nodeId: flattened.id, ids: [flattened.id] };
+  } else if (params.selection) {
+    // Flatten current selection
+    const sel = figma.currentPage.selection;
+    if (!sel || sel.length < 2) throw new Error("No nodes selected to flatten");
+    const parent = sel[0].parent;
+    if (!parent) throw new Error("Selected nodes must have a parent");
+    if (!sel.every(n => n.parent === parent)) throw new Error("All selected nodes must have the same parent");
+    const flattened = figma.flatten(sel, parent);
+    return { success: true, nodeId: flattened.id, ids: [flattened.id] };
+  } else {
+    throw new Error("Must provide nodeIds, nodeId, or selection for flattenNode");
+  }
 }
 
 /**
