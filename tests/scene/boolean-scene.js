@@ -102,7 +102,24 @@ export async function booleanScene(results) {
     return;
   }
 
-  // 5. Flatten the result
+  // 5. Ensure boolean result is parented to the frame
+  const setNodeParams = {
+    parentId: frameId,
+    childId: booleanId
+  };
+  const setNodeResult = await runStep({
+    ws, channel,
+    command: "set_node",
+    params: setNodeParams,
+    assert: (response) => ({
+      pass: response && response[0] && response[0].success === true,
+      response
+    }),
+    label: "set_node (add boolean result to frame)"
+  });
+  results.push(setNodeResult);
+
+  // 6. Flatten the result
   const flattenParams = {
     nodeId: booleanId
   };
