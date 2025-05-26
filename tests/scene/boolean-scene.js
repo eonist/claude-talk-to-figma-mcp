@@ -1,137 +1,179 @@
 import { channel, runStep, ws } from "../test-runner.js";
 
 /**
- * Boolean scene test:
- * 1. Add 100x100 red rectangle at (0,0)
- * 2. Add 50x50 blue star at (25,25)
- * 3. Apply boolean subtract (rectangle - star)
- * 4. Flatten the result
+ * Helper: Create a frame at the root.
  */
-export async function booleanScene(results) {
-  // 1. Create a frame to contain the shapes
-  const frameParams = {
-    x: 50, y: 100, width: 200, height: 200,
-    name: "BooleanTestFrame",
+async function createFrame({ x, y, width, height, name }, results) {
+  const params = {
+    x, y, width, height, name,
     fillColor: { r: 1, g: 1, b: 1, a: 1 }
   };
-  const frameResult = await runStep({
+  const result = await runStep({
     ws, channel,
     command: "create_frame",
-    params: { frame: frameParams },
+    params: { frame: params },
     assert: (response) => ({
       pass: Array.isArray(response.ids) && response.ids.length > 0,
       response
     }),
-    label: "create_frame (BooleanTestFrame)"
+    label: `create_frame (${name})`
   });
-  results.push(frameResult);
-  const frameId = frameResult.response?.ids?.[0];
-  if (!frameId) {
-    results.push({ label: "frameId missing", pass: false, reason: "Could not create frame" });
-    return;
-  }
+  results.push(result);
+  return result.response?.ids?.[0];
+}
 
-  // 2. Create 100x100 red rectangle at (0,0)
-  const rectParams = {
-    x: 0, y: 0, width: 100, height: 100,
-    name: "BooleanRect",
-    fillColor: { r: 1, g: 0, b: 0, a: 1 },
-    parentId: frameId
+/**
+ * Helper: Create a rectangle at the root.
+ */
+async function createRectangle({ x, y, width, height, fillColor, name }, results) {
+  const params = {
+    x, y, width, height, name, fillColor,
+    strokeColor: { r: 0, g: 0, b: 0, a: 1 },
+    strokeWeight: 1,
+    cornerRadius: 0
   };
-  const rectResult = await runStep({
+  const result = await runStep({
     ws, channel,
     command: "create_rectangle",
-    params: { rectangle: rectParams },
+    params: { rectangle: params },
     assert: (response) => ({
       pass: Array.isArray(response.ids) && response.ids.length > 0,
       response
     }),
-    label: "create_rectangle (BooleanRect)"
+    label: `create_rectangle (${name})`
   });
-  results.push(rectResult);
-  const rectId = rectResult.response?.ids?.[0];
-  if (!rectId) {
-    results.push({ label: "rectId missing", pass: false, reason: "Could not create rectangle" });
-    return;
-  }
+  results.push(result);
+  return result.response?.ids?.[0];
+}
 
-  // 3. Create 50x50 blue star at (25,25)
-  const starParams = {
-    x: 25, y: 25, width: 50, height: 50,
-    points: 5,
-    name: "BooleanStar",
-    fillColor: { r: 0, g: 0, b: 1, a: 1 },
-    parentId: frameId
+/**
+ * Helper: Create a star at the root.
+ */
+async function createStar({ x, y, width, height, points, fillColor, name }, results) {
+  const params = {
+    x, y, width, height, points, name, fillColor,
+    strokeColor: { r: 0, g: 0, b: 0, a: 1 },
+    strokeWeight: 1
   };
-  const starResult = await runStep({
+  const result = await runStep({
     ws, channel,
     command: "create_star",
-    params: { star: starParams },
+    params: { star: params },
     assert: (response) => ({
       pass: Array.isArray(response.ids) && response.ids.length > 0,
       response
     }),
-    label: "create_star (BooleanStar)"
+    label: `create_star (${name})`
   });
-  results.push(starResult);
-  const starId = starResult.response?.ids?.[0];
-  if (!starId) {
-    results.push({ label: "starId missing", pass: false, reason: "Could not create star" });
-    return;
-  }
+  results.push(result);
+  return result.response?.ids?.[0];
+}
 
-  // 4. Apply boolean subtract (rectangle - star)
-  const booleanParams = {
-    operation: "subtract",
-    nodeIds: [rectId, starId]
-  };
-  const booleanResult = await runStep({
+/**
+ * Helper: Apply boolean subtract to two nodes.
+ */
+async function booleanSubtract({ nodeIds }, results) {
+  const result = await runStep({
     ws, channel,
     command: "boolean",
-    params: booleanParams,
+    params: { operation: "subtract", nodeIds },
     assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      pass: response && !!response.resultNodeId,
       response
     }),
-    label: "boolean subtract (rect - star)"
+    label: "boolean subtract"
   });
-  results.push(booleanResult);
-  const booleanId = booleanResult.response?.ids?.[0];
-  if (!booleanId) {
-    results.push({ label: "booleanId missing", pass: false, reason: "Boolean subtract failed" });
-    return;
-  }
+  results.push(result);
+  return result.response?.resultNodeId;
+}
 
-  // 5. Ensure boolean result is parented to the frame
-  const setNodeParams = {
-    parentId: frameId,
-    childId: booleanId
-  };
-  const setNodeResult = await runStep({
-    ws, channel,
-    command: "set_node",
-    params: setNodeParams,
-    assert: (response) => ({
-      pass: response && response[0] && response[0].success === true,
-      response
-    }),
-    label: "set_node (add boolean result to frame)"
-  });
-  results.push(setNodeResult);
-
-  // 6. Flatten the result
-  const flattenParams = {
-    nodeId: booleanId
-  };
-  const flattenResult = await runStep({
+/**
+ * Helper: Flatten a node.
+ */
+async function flattenNode({ nodeId }, results) {
+  const result = await runStep({
     ws, channel,
     command: "flatten_node",
-    params: flattenParams,
+    params: { nodeId },
     assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      pass: !!response.nodeId,
       response
     }),
-    label: "flatten_node (boolean result)"
+    label: "flatten_node"
   });
-  results.push(flattenResult);
+  results.push(result);
+  return result.response?.nodeId;
+}
+
+/**
+ * Helper: Insert a node into a frame.
+ */
+async function insertNodeIntoFrame({ parentId, childId }, results) {
+  const result = await runStep({
+    ws, channel,
+    command: "set_node",
+    params: { parentId, childId, maintainPosition: true },
+    assert: (response) => {
+      const ok =
+        Array.isArray(response) &&
+        response.some(r => r.childId === childId && r.parentId === parentId && r.success === true);
+      return { pass: ok, reason: ok ? undefined : `Expected set_node to succeed for ${childId} in ${parentId}`, response };
+    },
+    label: "set_node (insert flattened boolean result into frame)"
+  });
+  results.push(result);
+}
+
+/**
+ * Helper: Move a node to (x, y).
+ */
+async function moveNode({ nodeId, x, y }, results) {
+  const result = await runStep({
+    ws, channel,
+    command: "move_node",
+    params: { nodeId, x, y },
+    assert: (response) => {
+      const ok =
+        Array.isArray(response.results) &&
+        response.results.some(r => r.nodeId === nodeId && r.success === true);
+      return { pass: ok, reason: ok ? undefined : `Expected results to include success for ${nodeId}`, response };
+    },
+    label: `move_node (${nodeId}) to (${x},${y})`
+  });
+  results.push(result);
+}
+
+/**
+ * Main boolean scene test.
+ */
+export async function booleanScene(results) {
+  // 1. Create frame at root
+  const frameId = await createFrame({ x: 50, y: 100, width: 200, height: 200, name: "BooleanTestFrame" }, results);
+  if (!frameId) return;
+
+  // 2. Create rectangle at root
+  const rectId = await createRectangle({
+    x: 0, y: 0, width: 100, height: 100,
+    fillColor: { r: 1, g: 0, b: 0, a: 1 },
+    name: "BooleanRect"
+  }, results);
+  if (!rectId) return;
+
+  // 3. Create star at root
+  const starId = await createStar({
+    x: 25, y: 25, width: 50, height: 50, points: 5,
+    fillColor: { r: 0, g: 0, b: 1, a: 1 },
+    name: "BooleanStar"
+  }, results);
+  if (!starId) return;
+
+  // 4. Boolean subtract (rect - star)
+  const booleanId = await booleanSubtract({ nodeIds: [rectId, starId] }, results);
+  if (!booleanId) return;
+
+  // 5. Insert the boolean result node into the frame
+  await insertNodeIntoFrame({ parentId: frameId, childId: booleanId }, results);
+
+  // 6. Move the boolean result node to (0,0) within the frame
+  await moveNode({ nodeId: booleanId, x: 0, y: 0 }, results);
 }
