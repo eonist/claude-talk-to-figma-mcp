@@ -56,9 +56,9 @@ export async function insertChild(params) {
  * @throws {Error} If operations is missing/invalid, or if an error occurs and skipErrors is not set.
  */
 export async function insertChildren(params) {
-  // Support both single and batch forms
+  // Support both single and batch forms (ES2017 compatible)
   let operations, options;
-  if (Array.isArray(params?.operations)) {
+  if (params && Array.isArray(params.operations)) {
     operations = params.operations;
     options = params.options;
   } else if (params && params.parentId && params.childId) {
