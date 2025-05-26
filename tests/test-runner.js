@@ -43,6 +43,7 @@ import { shapeScene } from "./scene/shape-scene.js";
 import { textScene } from "./scene/text-scene.js";
 import { styleScene } from "./scene/style-scene.js";
 import { transformScene } from "./scene/transform-scene.js";
+import { booleanScene } from './scene/boolean-scene.js';
 
 // --- Main Runner ---
 /**
@@ -78,7 +79,8 @@ async function main() {
     // shapeScene, 
     // textScene, 
     // styleScene,
-    transformScene
+    //transformScene,
+    booleanScene
   ];
   const results = [];
   for (const scene of sequence) {
