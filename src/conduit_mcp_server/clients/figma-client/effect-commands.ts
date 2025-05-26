@@ -49,6 +49,7 @@ export const effectCommands = {
     this: FigmaClient,
     params: { nodeId: string, effectStyleId: string }
   ): Promise<any> {
+    console.log("💥 setEffectStyleId");
     // Correctly forward to plugin as APPLY_EFFECT_STYLE
     return this.executeCommand(MCP_COMMANDS.APPLY_EFFECT_STYLE, params);
   },

@@ -136,7 +136,7 @@ async function addGreenRectWithInnerShadow(frameId) {
   }
 
   // Add a delay to ensure the style is registered before applying
-  await new Promise(res => setTimeout(res, 300));
+  //await new Promise(res => setTimeout(res, 300));
 
   // 2. Apply the effect style to the green rectangle
   try {
@@ -195,7 +195,7 @@ export async function effectScene() {
   if (!frameId) return;
   await applyAutolayout(frameId);
 
-  await addRedRectWithDropShadow(frameId);
+  //await addRedRectWithDropShadow(frameId);
   await addGreenRectWithInnerShadow(frameId);
-  await addBlueRectWithBackgroundBlur(frameId);
+  //await addBlueRectWithBackgroundBlur(frameId);
 }

@@ -7,7 +7,7 @@ import { moveNode, resizeNode, moveNodes, resizeNodes } from '../node/node-modif
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
 import { setParagraphSpacingUnified, setLineHeightUnified, setLetterSpacingUnified, setTextCaseUnified, setTextDecorationUnified } from '../text/text-edit.js';
-import * as styleOperations from '../styles.js';
+import { styleOperations } from '../styles.js';
 import { getFillAndStroke } from '../styles/styles-get.js';
 import * as componentOperations from '../components.js';
 import * as layoutOperations from '../layout.js';
