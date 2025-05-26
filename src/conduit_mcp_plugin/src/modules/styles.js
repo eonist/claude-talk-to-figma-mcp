@@ -35,10 +35,14 @@ import { setStyle } from './styles/styles-set.js';
  * @returns {Promise<any>}
  */
 async function setEffectUnified(params) {
-  if (params && params.entries) {
+  if (params && Array.isArray(params.entries)) {
+    // Batch: return array of results
+    return Promise.all(params.entries.map(entry => setEffects(entry)));
+  } else if (params && params.nodeId && params.effects) {
+    // Singular: call directly
     return setEffects(params);
   } else {
-    return setEffects({ entries: [params] });
+    throw new Error("Invalid parameters for set_effect");
   }
 }
 
