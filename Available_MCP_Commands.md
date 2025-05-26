@@ -1587,6 +1587,7 @@ Set node properties (locked, visible, etc.) for one or more nodes in Figma.
   }
 }
 ```
+
 ### set_style
 Set style or styles on one or more nodes.
 
