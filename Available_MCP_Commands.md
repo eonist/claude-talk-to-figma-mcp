@@ -75,7 +75,9 @@
 - [move_node](#move_node): Move one or more nodes (single or batch)
 - [reorder_node](#reorder_node): Reorder one or more nodes in their parents' children arrays (single or batch)
 - [resize_node](#resize_node): Resize a node (single or batch)
+- [rotate_node](#rotate_node): Rotate a node around a specified pivot (center, corner, or custom)
 - [flatten_node](#flatten_node): Flatten a single node (or batch) or selection
+- [set_matrix_transform](#set_matrix_transform): Set a transformation matrix on one or more nodes (single or batch)
 - [boolean](#boolean): Perform union, subtract, intersect, or exclude on nodes or selection
 
 **Node Management:**
@@ -1207,6 +1209,48 @@ Resize a node in Figma.
   "nodeId": "123:456",
   "width": 200,
   "height": 100
+}
+```
+
+### rotate_node
+Rotate a node in Figma around a specified pivot point.
+
+**Parameters:**
+- nodeId (string): The unique Figma node ID to rotate.
+- angle (number): The rotation angle in degrees (positive is clockwise).
+- pivot (string, optional): The pivot point for rotation. One of "center" (default), "top-left", "top-right", "bottom-left", "bottom-right", or "custom".
+- pivotPoint (object, optional): Required if pivot is "custom". An object with x and y coordinates (absolute).
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the rotated node's ID, angle, and pivot info.
+
+**Example:**
+```json
+{
+  "nodeId": "123:456",
+  "angle": 45
+}
+```
+```json
+{
+  "nodeId": "123:456",
+  "angle": 90,
+  "pivot": "top-left"
+}
+```
+```json
+{
+  "nodeId": "123:456",
+  "angle": 180,
+  "pivot": "bottom-right"
+}
+```
+```json
+{
+  "nodeId": "123:456",
+  "angle": 30,
+  "pivot": "custom",
+  "pivotPoint": { "x": 500, "y": 200 }
 }
 ```
 ### scan_text_nodes

@@ -42,6 +42,7 @@ import { deepEqual, assertEchoedCommand, runStep } from "./test-runner-core.js";
 import { shapeScene } from "./scene/shape-scene.js";
 import { textScene } from "./scene/text-scene.js";
 import { styleScene } from "./scene/style-scene.js";
+import { transformScene } from "./scene/transform-scene.js";
 
 // --- Main Runner ---
 /**
@@ -74,9 +75,10 @@ async function main() {
 
   // Define the sequence of scenes
   const sequence = [
-    shapeScene, 
-    textScene, 
-    styleScene
+    // shapeScene, 
+    // textScene, 
+    // styleScene,
+    transformScene
   ];
   const results = [];
   for (const scene of sequence) {
