@@ -1,15 +1,38 @@
 import { channel, runStep, ws } from "../test-runner.js";
 
 /**
- * Helper: Create a rectangle at the root.
+ * Helper: Create a frame at the root.
  */
-async function createRectangle({ x, y, width, height, name }, results) {
+async function createFrame({ x, y, width, height, name }, results) {
+  const params = {
+    x, y, width, height, name,
+    fillColor: { r: 1, g: 1, b: 1, a: 1 }
+  };
+  const result = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: `create_frame (${name})`
+  });
+  results.push(result);
+  return result.response?.ids?.[0];
+}
+
+/**
+ * Helper: Create a rectangle.
+ */
+async function createRectangle({ x, y, width, height, name, parentId }, results) {
   const params = {
     x, y, width, height, name,
     fillColor: { r: 0.2, g: 0.6, b: 1, a: 1 },
     strokeColor: { r: 0, g: 0, b: 0, a: 1 },
     strokeWeight: 1
   };
+  if (parentId) params.parentId = parentId;
   const result = await runStep({
     ws, channel,
     command: "create_rectangle",
@@ -47,20 +70,21 @@ async function flattenNodes({ nodeIds }, results) {
  * Main flatten scene test.
  */
 export async function flattenScene(results) {
-  // 1. Create first rectangle at root
+  // 1. Create frame at root
+  const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "FlattenTestFrame" }, results);
+  if (!frameId) return;
+
+  // 2. Create first rectangle in frame
   const rect1Id = await createRectangle({
-    x: 20, y: 40, width: 80, height: 60, name: "FlattenRect1"
+    x: 20, y: 40, width: 80, height: 60, name: "FlattenRect1", parentId: frameId
   }, results);
   if (!rect1Id) return;
 
-  // 2. Create second rectangle at root
+  // 3. Create second rectangle in frame
   const rect2Id = await createRectangle({
-    x: 60, y: 80, width: 70, height: 70, name: "FlattenRect2"
+    x: 60, y: 80, width: 70, height: 70, name: "FlattenRect2", parentId: frameId
   }, results);
   if (!rect2Id) return;
-
-  // 3. Wait before flattening to ensure nodes are registered
-  await new Promise(resolve => setTimeout(resolve, 300));
 
   // 4. Flatten both rectangles by nodeIds
   await flattenNodes({ nodeIds: [rect1Id, rect2Id] }, results);

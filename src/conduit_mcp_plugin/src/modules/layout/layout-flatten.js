@@ -14,6 +14,7 @@
  * @throws {Error} If nodeIds is missing/invalid, or nodes cannot be found or flattened.
  */
 export async function flatten_nodes(params) {
+  
   // Support flattening an array of sibling nodes, a single node, or selection
   let nodeIds = [];
   if (params && params.selection) {
@@ -51,21 +52,44 @@ export async function flatten_nodes(params) {
       prepared.push(n);
     }
     if (prepared.length < 2) throw new Error("Need at least 2 eligible nodes to flatten");
-    // Ensure all are siblings (same parent)
-    const parent = prepared[0].parent;
-    if (!parent) throw new Error("Nodes must have a parent");
-    if (!prepared.every(n => n.parent === parent)) throw new Error("All nodes to flatten must have the same parent");
-    // Try flatten, catch and log errors
+    // Use a temporary frame as a child of the intended parent
+    const origParentId = nodes[0].parent && nodes[0].parent.id;
+    let origParent = null;
+    if (origParentId) {
+      try {
+        origParent = await figma.getNodeByIdAsync(origParentId);
+      } catch (e) {
+        origParent = null;
+      }
+    }
+    const tempFrame = figma.createFrame();
+    tempFrame.x = prepared[0].x;
+    tempFrame.y = prepared[0].y;
+    tempFrame.resizeWithoutConstraints(1000, 1000); // Large enough to fit
+    if (origParent && origParent.type !== "PAGE" && !origParent.removed) {
+      origParent.appendChild(tempFrame);
+    } else {
+      figma.currentPage.appendChild(tempFrame);
+    }
+    for (const n of prepared) tempFrame.appendChild(n);
     try {
-      const flattened = figma.flatten(prepared, parent);
+      const flattened = figma.flatten(tempFrame.children, tempFrame);
       // Remove the original nodes (not the clones)
       for (const orig of nodes) {
         try {
           if (orig.remove) orig.remove();
         } catch (e) {}
       }
+      // Move the flattened node to the original parent (the frame), before removing the temp frame
+      if (origParent && origParent.type !== "PAGE" && !origParent.removed) {
+        origParent.appendChild(flattened);
+      } else {
+        figma.currentPage.appendChild(flattened);
+      }
+      tempFrame.remove();
       return { success: true, nodeId: flattened.id, ids: [flattened.id] };
     } catch (error) {
+      tempFrame.remove();
       throw error;
     }
   }
