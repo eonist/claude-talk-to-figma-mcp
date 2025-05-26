@@ -286,7 +286,6 @@ export function initializeCommands() {
  * @throws {Error} If the command is not registered.
  */
 export async function handleCommand(command, params) {
-  console.log("💥 [PLUGIN] Handling command:", command, params);
   if (!commandRegistry[command]) {
     throw new Error(`Unknown command: ${command}`);
   }

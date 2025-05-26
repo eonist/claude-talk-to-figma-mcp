@@ -156,20 +156,6 @@ async function addGreenRectWithInnerShadow(frameId) {
     console.error("Error applying effect style to GreenRect", err);
   }
 
-  // Old direct effect code (commented out)
-  // await applyEffect(rectId, [
-  //   {
-  //     type: "INNER_SHADOW",
-  //     color: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
-  //     offset: { x: 0, y: -2 },
-  //     radius: 3,
-  //     spread: 0,
-  //     visible: true,
-  //     blendMode: "NORMAL",
-  //     opacity: 0.3,
-  //     name: "Inner Shadow"
-  //   }
-  // ], "Apply inner shadow to GreenRect");
 }
 
 // Blue rectangle with background blur
@@ -195,7 +181,7 @@ export async function effectScene() {
   if (!frameId) return;
   await applyAutolayout(frameId);
 
-  //await addRedRectWithDropShadow(frameId);
+  await addRedRectWithDropShadow(frameId);
   await addGreenRectWithInnerShadow(frameId);
-  //await addBlueRectWithBackgroundBlur(frameId);
+  await addBlueRectWithBackgroundBlur(frameId);
 }
