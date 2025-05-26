@@ -132,25 +132,6 @@ async function insertNodeIntoFrame({ parentId, childId }, results) {
 }
 
 /**
- * Helper: Move a node to (x, y).
- */
-async function moveNode({ nodeId, x, y }, results) {
-  const result = await runStep({
-    ws, channel,
-    command: "move_node",
-    params: { nodeId, x, y },
-    assert: (response) => {
-      const ok =
-        Array.isArray(response.results) &&
-        response.results.some(r => r.nodeId === nodeId && r.success === true);
-      return { pass: ok, reason: ok ? undefined : `Expected results to include success for ${nodeId}`, response };
-    },
-    label: `move_node (${nodeId}) to (${x},${y})`
-  });
-  results.push(result);
-}
-
-/**
  * Main boolean scene test.
  */
 export async function booleanScene(results) {
@@ -183,6 +164,4 @@ export async function booleanScene(results) {
   // 5. Insert the boolean result node into the frame
   await insertNodeIntoFrame({ parentId: frameId, childId: booleanId }, results);
 
-  // 6. Move the boolean result node to (0,0) within the frame
-  //await moveNode({ nodeId: booleanId, x: 0, y: 0 }, results);
 }
