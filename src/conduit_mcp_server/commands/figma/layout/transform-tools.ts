@@ -20,7 +20,11 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", width: 200, height: 100 },
+        { nodeId: "789:101", width: 400, height: 300 }
+      ])
     },
     async ({ nodeId, width, height }: { nodeId: string; width: number; height: number }) => {
       const id = ensureNodeIdIsString(nodeId);
@@ -88,7 +92,13 @@ Returns:
       idempotentHint: true,
       destructiveHint: false,
       readOnlyHint: false,
-      openWorldHint: false
+      openWorldHint: false,
+      usageExamples: JSON.stringify([
+        { nodeId: "123:456", angle: 45 },
+        { nodeId: "123:456", angle: 90, pivot: "top-left" },
+        { nodeId: "123:456", angle: 180, pivot: "bottom-right" },
+        { nodeId: "123:456", angle: 30, pivot: "custom", pivotPoint: { x: 500, y: 200 } }
+      ])
     },
     async ({
       nodeId,
