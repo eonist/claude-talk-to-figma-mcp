@@ -77,29 +77,11 @@ async function fetch_svg(url) {
 }
 
 /**
- * Helper to inject fill color into SVG markup.
- * @param {string} svgText
- * @param {string} fillColor - CSS color string (e.g. "#ff0000" or "rgb(255,0,0)")
- * @returns {string}
- */
-function inject_fill(svgText, fillColor) {
-  let replaced = svgText.replace(/fill="[^"]*"/gi, `fill="${fillColor}"`);
-  replaced = replaced.replace(/<svg([^>]*)>/i, (m, attrs) => {
-    if (/fill=/.test(attrs)) return `<svg${attrs}>`;
-    return `<svg${attrs} fill="${fillColor}">`;
-  });
-  replaced = replaced.replace(/<path([^>]*)>/gi, (m, attrs) => {
-    if (/fill=/.test(attrs)) return `<path${attrs}>`;
-    return `<path${attrs} fill="${fillColor}">`;
-  });
-  return replaced;
-}
-
-/**
- * Helper to create an SVG node from raw SVG markup.
+ * Helper to create an SVG node from raw SVG markup and return its nodeId.
  * @param {string} parentId
  * @param {string} svgText
  * @param {string} name
+ * @returns {Promise<string>} nodeId
  */
 async function create_svg_from_raw(parentId, svgText, name) {
   let svgWithSize = svgText.replace(
@@ -111,7 +93,7 @@ async function create_svg_from_raw(parentId, svgText, name) {
       return `<svg${newAttrs} width="50" height="50">`;
     }
   );
-  await runStep({
+  const res = await runStep({
     ws,
     channel,
     command: "set_svg_vector",
@@ -129,6 +111,44 @@ async function create_svg_from_raw(parentId, svgText, name) {
       return Array.isArray(ids) && ids.length > 0;
     },
     label: `create_svg_from_raw (${name})`
+  });
+  // Return the nodeId of the created SVG node
+  const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
+  return ids && ids.length > 0 ? ids[0] : null;
+}
+
+/**
+ * Helper to set the fill color on a node by nodeId.
+ * @param {string} nodeId
+ * @param {string} color - CSS color string (e.g. "#ff0000")
+ */
+async function set_fill_color(nodeId, color) {
+  // Convert hex to Figma RGBA
+  function hexToRgba(hex) {
+    let c = hex.replace("#", "");
+    if (c.length === 3) c = c.split("").map((x) => x + x).join("");
+    const num = parseInt(c, 16);
+    return {
+      r: ((num >> 16) & 255) / 255,
+      g: ((num >> 8) & 255) / 255,
+      b: (num & 255) / 255,
+      a: 1
+    };
+  }
+  const rgba = hexToRgba(color);
+  await runStep({
+    ws,
+    channel,
+    command: "set_fill_and_stroke",
+    params: {
+      nodeId,
+      fill: {
+        type: "SOLID",
+        color: rgba
+      }
+    },
+    assert: (response) => true,
+    label: `set_fill_color (${nodeId})`
   });
 }
 
@@ -154,8 +174,8 @@ export async function createLogoSVG1(frameId) {
     console.warn(`fetch_svg (${name}): ${e.message}`);
     return;
   }
-  const coloredSvg = inject_fill(svgText, color);
-  await create_svg_from_raw(frameId, coloredSvg, name);
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  if (nodeId) await set_fill_color(nodeId, color);
 }
 
 export async function createLogoSVG2(frameId) {
@@ -169,8 +189,8 @@ export async function createLogoSVG2(frameId) {
     console.warn(`fetch_svg (${name}): ${e.message}`);
     return;
   }
-  const coloredSvg = inject_fill(svgText, color);
-  await create_svg_from_raw(frameId, coloredSvg, name);
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  if (nodeId) await set_fill_color(nodeId, color);
 }
 
 export async function createLogoSVG3(frameId) {
@@ -184,8 +204,8 @@ export async function createLogoSVG3(frameId) {
     console.warn(`fetch_svg (${name}): ${e.message}`);
     return;
   }
-  const coloredSvg = inject_fill(svgText, color);
-  await create_svg_from_raw(frameId, coloredSvg, name);
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  if (nodeId) await set_fill_color(nodeId, color);
 }
 
 // --- Icon SVGs (Airplay, Alert Circle, Anchor) ---
@@ -200,8 +220,8 @@ export async function createIconSVG1(frameId) {
     console.warn(`fetch_svg (${name}): ${e.message}`);
     return;
   }
-  const coloredSvg = inject_fill(svgText, color);
-  await create_svg_from_raw(frameId, coloredSvg, name);
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  if (nodeId) await set_fill_color(nodeId, color);
 }
 
 export async function createIconSVG2(frameId) {
@@ -215,8 +235,8 @@ export async function createIconSVG2(frameId) {
     console.warn(`fetch_svg (${name}): ${e.message}`);
     return;
   }
-  const coloredSvg = inject_fill(svgText, color);
-  await create_svg_from_raw(frameId, coloredSvg, name);
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  if (nodeId) await set_fill_color(nodeId, color);
 }
 
 export async function createIconSVG3(frameId) {
@@ -230,8 +250,8 @@ export async function createIconSVG3(frameId) {
     console.warn(`fetch_svg (${name}): ${e.message}`);
     return;
   }
-  const coloredSvg = inject_fill(svgText, color);
-  await create_svg_from_raw(frameId, coloredSvg, name);
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  if (nodeId) await set_fill_color(nodeId, color);
 }
 
 /**
