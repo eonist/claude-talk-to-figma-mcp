@@ -144,6 +144,76 @@ export const shapeOperations = {
     } else {
       return shapeOperations.createRectangle({ rectangle: params });
     }
+  },
+
+  /**
+   * Unified handler for ROTATE_NODE plugin command.
+   * Rotates a node around a specified pivot.
+   * @function rotateNodeUnified
+   * @param {object} params - { nodeId, angle, pivot, pivotPoint }
+   * @returns {Promise<any>}
+   */
+  async rotateNodeUnified(params) {
+    const { nodeId, angle, pivot = "center", pivotPoint } = params;
+    const node = figma.getNodeById(nodeId);
+    if (!node) {
+      throw new Error(`Node not found: ${nodeId}`);
+    }
+    if (typeof node.rotation !== "number" || typeof node.x !== "number" || typeof node.y !== "number") {
+      throw new Error("Node does not support rotation or positioning");
+    }
+
+    // Helper to resolve pivot coordinates
+    function getPivotCoords(node, pivot, pivotPoint) {
+      switch (pivot) {
+        case "center":
+          return { x: node.x + (node.width || 0) / 2, y: node.y + (node.height || 0) / 2 };
+        case "top-left":
+          return { x: node.x, y: node.y };
+        case "top-right":
+          return { x: node.x + (node.width || 0), y: node.y };
+        case "bottom-left":
+          return { x: node.x, y: node.y + (node.height || 0) };
+        case "bottom-right":
+          return { x: node.x + (node.width || 0), y: node.y + (node.height || 0) };
+        case "custom":
+          if (!pivotPoint) throw new Error("pivotPoint required for custom pivot");
+          return pivotPoint;
+        default:
+          return { x: node.x + (node.width || 0) / 2, y: node.y + (node.height || 0) / 2 };
+      }
+    }
+
+    // 1. Get pivot coordinates
+    const pivotCoords = getPivotCoords(node, pivot, pivotPoint);
+
+    // 2. Calculate offset from pivot to node's top-left
+    const dx = node.x - pivotCoords.x;
+    const dy = node.y - pivotCoords.y;
+
+    // 3. Rotate the offset
+    const rad = (angle - (node.rotation || 0)) * Math.PI / 180;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const rotatedDx = dx * cos - dy * sin;
+    const rotatedDy = dx * sin + dy * cos;
+
+    // 4. Compute new node position so pivot stays fixed
+    node.x = pivotCoords.x + rotatedDx;
+    node.y = pivotCoords.y + rotatedDy;
+
+    // 5. Set rotation
+    node.rotation = angle;
+
+    return {
+      nodeId,
+      angle,
+      pivot,
+      pivotPoint,
+      x: node.x,
+      y: node.y,
+      success: true
+    };
   }
   // Note: If any legacy batch/single functions remain, remove them.
 };

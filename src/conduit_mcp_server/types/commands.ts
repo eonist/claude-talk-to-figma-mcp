@@ -75,6 +75,7 @@ export const COMMAND_DEFS = [
   { name: "move_node", paramType: {} as any },
   { name: "reorder_node", paramType: {} as any },
   { name: "resize_node", paramType: {} as any },
+  { name: "rotate_node", paramType: {} as any },
   { name: "flatten_node", paramType: {} as any },
   { name: "boolean", paramType: {} as any },
   { name: "group_node", paramType: {} as any },

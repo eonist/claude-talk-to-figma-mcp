@@ -228,6 +228,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.MOVE_NODE, shapeOperations.moveNode);
   registerCommand(PLUGIN_COMMANDS.REORDER_NODE, reorderNodes);
   registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, shapeOperations.resizeNodeUnified);
+  registerCommand(PLUGIN_COMMANDS.ROTATE_NODE, shapeOperations.rotateNodeUnified);
   registerCommand(PLUGIN_COMMANDS.FLATTEN_NODE, layoutOperations.flatten_nodes);
   registerCommand(PLUGIN_COMMANDS.BOOLEAN, shapeOperations.boolean);
 
