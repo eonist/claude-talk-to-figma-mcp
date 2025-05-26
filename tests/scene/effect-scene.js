@@ -107,19 +107,69 @@ async function addGreenRectWithInnerShadow(frameId) {
   const green = { r: 0, g: 1, b: 0, a: 1 };
   const rectId = await createRect(frameId, "GreenRect", green);
   if (!rectId) return;
-  await applyEffect(rectId, [
-    {
-      type: "INNER_SHADOW",
-      color: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
-      offset: { x: 0, y: -2 },
-      radius: 3,
-      spread: 0,
-      visible: true,
-      blendMode: "NORMAL",
-      opacity: 0.3,
-      name: "Inner Shadow"
-    }
-  ], "Apply inner shadow to GreenRect");
+
+  // 1. Create the effect style variable for inner shadow
+  const styleResult = await runStep({
+    ws, channel,
+    command: "create_effect_style_variable",
+    params: {
+      name: "Inner Shadow",
+      effects: [
+        {
+          type: "INNER_SHADOW",
+          color: { r: 0.2, g: 0.2, b: 0.2, a: 0.3 },
+          offset: { x: 0, y: -2 },
+          radius: 3,
+          spread: 0,
+          visible: true,
+          blendMode: "NORMAL"
+        }
+      ]
+    },
+    assert: r => Array.isArray(r.ids) && r.ids.length > 0,
+    label: "create_effect_style_variable (Inner Shadow)"
+  });
+  const effectStyleId = styleResult?.response?.ids?.[0];
+  if (!effectStyleId) {
+    console.error("No effectStyleId returned from create_effect_style_variable");
+    return;
+  }
+
+  // Add a delay to ensure the style is registered before applying
+  await new Promise(res => setTimeout(res, 300));
+
+  // 2. Apply the effect style to the green rectangle
+  try {
+    console.log("Applying effect style to GreenRect", { nodeId: rectId, effectStyleId });
+    await runStep({
+      ws, channel,
+      command: "apply_effect_style",
+      params: {
+        nodeId: rectId,
+        effectStyleId
+      },
+      assert: r => r && r.nodeId === rectId,
+      label: "apply_effect_style to GreenRect"
+    });
+    console.log("Applied effect style to GreenRect", { nodeId: rectId, effectStyleId });
+  } catch (err) {
+    console.error("Error applying effect style to GreenRect", err);
+  }
+
+  // Old direct effect code (commented out)
+  // await applyEffect(rectId, [
+  //   {
+  //     type: "INNER_SHADOW",
+  //     color: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
+  //     offset: { x: 0, y: -2 },
+  //     radius: 3,
+  //     spread: 0,
+  //     visible: true,
+  //     blendMode: "NORMAL",
+  //     opacity: 0.3,
+  //     name: "Inner Shadow"
+  //   }
+  // ], "Apply inner shadow to GreenRect");
 }
 
 // Blue rectangle with background blur

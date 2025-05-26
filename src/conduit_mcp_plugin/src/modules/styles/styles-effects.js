@@ -68,13 +68,14 @@ export async function setEffects(params) {
  * @throws {Error} If parameters are missing, node cannot be found, node does not support effect styles, or style is not found.
  */
 export async function setEffectStyleId(params) {
+  console.log("💥 setEffectStyleId", params);
   const { nodeId, effectStyleId } = params || {};
   if (!nodeId) throw new Error("Missing nodeId parameter");
   if (!effectStyleId) throw new Error("Missing effectStyleId parameter");
 
   const node = await figma.getNodeByIdAsync(nodeId);
   if (!node) throw new Error(`Node not found: ${nodeId}`);
-  if (!("effectStyleId" in node)) throw new Error(`Node does not support effect styles: ${nodeId}`);
+  // if (!("effectStyleId" in node)) throw new Error(`Node does not support effect styles: ${nodeId}`);
 
   const effectStyles = await figma.getLocalEffectStylesAsync();
   const style = effectStyles.find(s => s.id === effectStyleId);
