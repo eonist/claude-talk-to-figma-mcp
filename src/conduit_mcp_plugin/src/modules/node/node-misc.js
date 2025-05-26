@@ -14,6 +14,7 @@
  * @throws {Error} If nodeId is missing or node cannot be found.
  */
 export async function flattenNode(params) {
+   console.log("🚨 flattenNode")
   // Support flattening by nodeIds array, nodeId, or selection
   if (Array.isArray(params.nodeIds)) {
     // Flatten multiple nodes by nodeIds
@@ -26,12 +27,17 @@ export async function flattenNode(params) {
     if (nodes.length < 2) throw new Error("Need at least 2 nodes to flatten");
     // Debug: log node info before flattening
     // eslint-disable-next-line no-console
+    const parentIds = nodes.map(n => n.parent && n.parent.id);
+    const parentTypes = nodes.map(n => n.parent && n.parent.type);
+    const pageId = figma.currentPage.id;
     console.log("[flattenNode] nodeIds:", params.nodeIds,
       "types:", nodes.map(n => n.type),
-      "parents:", nodes.map(n => n.parent && n.parent.id),
+      "parents:", parentIds,
+      "parentTypes:", parentTypes,
       "locked:", nodes.map(n => n.locked),
       "removed:", nodes.map(n => n.removed),
-      "names:", nodes.map(n => n.name)
+      "names:", nodes.map(n => n.name),
+      "currentPageId:", pageId
     );
     // Detach instances, skip locked/removed nodes, clone if possible
     const prepared = [];
