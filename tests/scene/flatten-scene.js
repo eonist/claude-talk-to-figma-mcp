@@ -73,21 +73,32 @@ async function createTriangle({ x, y, width, height, name, parentId }, results) 
 }
 
 /**
- * Helper: Flatten two nodes into one.
+ * Helper: Flatten two nodes together by selection.
  */
-async function flattenNodes({ nodeIds }, results) {
+async function flattenNodesBySelection({ nodeIds }, results) {
+  // Set selection to both nodes
+  const selResult = await runStep({
+    ws, channel,
+    command: "set_selection",
+    params: { nodeIds },
+    assert: (response) => response && response.success !== false,
+    label: "set_selection (ellipse + triangle)"
+  });
+  results.push(selResult);
+
+  // Flatten the selection
   const result = await runStep({
     ws, channel,
     command: "flatten_node",
-    params: { nodeIds },
-    assert: (response) => ({
-      pass: Array.isArray(response.nodeIds) || Array.isArray(response.ids),
-      response
-    }),
-    label: "flatten_node (ellipse + triangle)"
+    params: { selection: true },
+    assert: (response) => {
+      const ids = response.nodeIds || response.ids;
+      const ok = Array.isArray(ids) && ids.length === 1;
+      return { pass: ok, reason: ok ? undefined : "Expected a single flattened node", response };
+    },
+    label: "flatten_node (selection: ellipse + triangle)"
   });
   results.push(result);
-  // Return the new nodeId(s) if available
   return result.response?.nodeIds?.[0] || result.response?.ids?.[0];
 }
 
@@ -111,6 +122,6 @@ export async function flattenScene(results) {
   }, results);
   if (!triangleId) return;
 
-  // 4. Flatten both shapes
-  await flattenNodes({ nodeIds: [ellipseId, triangleId] }, results);
+  // 4. Flatten both shapes by selection
+  await flattenNodesBySelection({ nodeIds: [ellipseId, triangleId] }, results);
 }
