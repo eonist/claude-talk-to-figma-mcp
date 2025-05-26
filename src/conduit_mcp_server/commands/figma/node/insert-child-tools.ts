@@ -63,7 +63,7 @@ Returns:
     async (params) => {
       // Batch mode
       if ("operations" in params) {
-        // Forward the entire batch to the plugin in one call
+        // Loop through each operation and send as a single command to the plugin
         const { operations, options } = params;
         if (!operations || !Array.isArray(operations) || operations.length === 0) {
           const response = {
@@ -79,12 +79,43 @@ Returns:
           };
           return { content: [{ type: "text", text: JSON.stringify(response) }] };
         }
-        // Call the plugin once with the full batch
-        const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, { operations, options });
-        // The plugin returns { results: [...] }
+        const results = [];
+        for (const op of operations) {
+          try {
+            const parent = ensureNodeIdIsString(op.parentId);
+            const child = ensureNodeIdIsString(op.childId);
+            const cmdParams: any = { parentId: parent, childId: child };
+            if (op.index !== undefined) cmdParams.index = op.index;
+            if (op.maintainPosition !== undefined) cmdParams.maintainPosition = op.maintainPosition;
+            const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, cmdParams);
+            results.push({
+              parentId: parent,
+              childId: child,
+              index: result.index ?? op.index,
+              success: true
+            });
+          } catch (error: any) {
+            if (options?.skipErrors) {
+              results.push({
+                parentId: op.parentId,
+                childId: op.childId,
+                index: op.index,
+                success: false,
+                error: error.message || String(error),
+                meta: {
+                  operation: "set_node",
+                  params: op
+                }
+              });
+              continue;
+            }
+            throw error;
+          }
+        }
+        const anySuccess = results.some(r => r.success);
         const response = {
-          success: Array.isArray(result.results) && result.results.some(r => r.success),
-          results: result.results || [],
+          success: anySuccess,
+          results
         };
         return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
