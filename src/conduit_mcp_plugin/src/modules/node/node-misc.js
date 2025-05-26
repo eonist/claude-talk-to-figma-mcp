@@ -23,56 +23,43 @@ export async function flattenNode(params) {
 }
 
 /**
- * Perform a boolean operation (union, subtract, intersect, exclude) on nodes or selection.
+ * Perform a boolean operation (union, subtract, intersect, exclude) on an explicit array of nodes.
  * 
  * @param {object} params
  * @param {"union"|"subtract"|"intersect"|"exclude"} params.operation - The boolean operation to perform.
- * @param {boolean} [params.selection] - If true, use the current selection.
- * @param {string} [params.nodeId] - Single node ID.
- * @param {string[]} [params.nodeIds] - Array of node IDs.
+ * @param {string[]} params.nodeIds - Array of node IDs (required, at least 2).
  * @returns {Promise<{success: boolean, resultNodeId?: string}>}
  */
 export async function boolean_operation(params) {
-  const { operation, selection, nodeId, nodeIds } = params;
-  let nodes = [];
-
-  // 1. Gather nodes
-  if (selection) {
-    nodes = figma.currentPage.selection;
-  } else {
-    if (nodeIds && nodeIds.length) {
-      for (const id of nodeIds) {
-        const node = await figma.getNodeByIdAsync(id);
-        if (node) nodes.push(node);
-      }
-    }
-    if (nodeId) {
-      const node = await figma.getNodeByIdAsync(nodeId);
-      if (node) nodes.push(node);
-    }
+  const { operation, nodeIds } = params;
+  if (!Array.isArray(nodeIds) || nodeIds.length < 2) {
+    throw new Error("Need at least 2 nodeIds for boolean operation");
   }
 
+  // Gather nodes
+  const nodes = [];
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (node) nodes.push(node);
+  }
   if (nodes.length < 2) {
-    throw new Error("Need at least 2 nodes for boolean operation");
+    throw new Error("Could not find at least 2 valid nodes for boolean operation");
   }
 
-  // 2. Set selection
-  figma.currentPage.selection = nodes;
-
-  // 3. Perform the operation
+  // Perform the operation with explicit array and parent
   let resultNode;
   switch (operation) {
     case "union":
-      resultNode = figma.union();
+      resultNode = figma.union(nodes, figma.currentPage);
       break;
     case "subtract":
-      resultNode = figma.subtract();
+      resultNode = figma.subtract(nodes, figma.currentPage);
       break;
     case "intersect":
-      resultNode = figma.intersect();
+      resultNode = figma.intersect(nodes, figma.currentPage);
       break;
     case "exclude":
-      resultNode = figma.exclude();
+      resultNode = figma.exclude(nodes, figma.currentPage);
       break;
     default:
       throw new Error("Invalid boolean operation: " + operation);

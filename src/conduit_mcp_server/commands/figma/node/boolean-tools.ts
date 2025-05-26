@@ -38,37 +38,29 @@ Returns:
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
-        { operation: "union", selection: true },
+        { operation: "union", nodeIds: ["123:456", "789:101"] },
         { operation: "subtract", nodeIds: ["123:456", "789:101"] },
-        { operation: "intersect", nodeId: "123:456", nodeIds: ["789:101"] }
+        { operation: "intersect", nodeIds: ["123:456", "789:101"] }
       ]),
       edgeCaseWarnings: [
-        "If 'selection' is true, the current Figma selection is used and nodeId/nodeIds are ignored.",
-        "At least two nodes are required for boolean operations.",
+        "At least two nodeIds are required for boolean operations.",
         "All nodeIds must be valid and belong to the same parent.",
         "Boolean operations change z-order and shape.",
         "Only nodes that support boolean operations are valid."
       ],
       extraInfo: "Boolean operations are useful for combining or subtracting shapes in vector editing."
     },
-    async ({ operation, selection, nodeId, nodeIds }) => {
-      let ids = [];
-      if (selection) {
-        const sel = await figmaClient.executeCommand(MCP_COMMANDS.GET_SELECTION, {});
-        ids = sel.nodeIds || [];
-      } else {
-        if (nodeIds && nodeIds.length) ids = nodeIds.map(ensureNodeIdIsString);
-        if (nodeId) ids.push(ensureNodeIdIsString(nodeId));
-      }
+    async ({ operation, nodeIds }) => {
+      const ids = (nodeIds && nodeIds.length) ? nodeIds.map(ensureNodeIdIsString) : [];
       if (ids.length < 2) {
         const response = {
           success: false,
           error: {
-            message: "At least two node IDs are required for boolean operations.",
+            message: "At least two nodeIds are required for boolean operations.",
             results: [],
             meta: {
               operation: "boolean",
-              params: { operation, selection, nodeId, nodeIds }
+              params: { operation, nodeIds }
             }
           }
         };
@@ -97,12 +89,12 @@ Returns:
               error: error instanceof Error ? error.message : String(error),
               meta: {
                 operation: "boolean",
-                params: { operation, selection, nodeId, nodeIds }
+                params: { operation, nodeIds }
               }
             }],
             meta: {
               operation: "boolean",
-              params: { operation, selection, nodeId, nodeIds }
+              params: { operation, nodeIds }
             }
           }
         };
