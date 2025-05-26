@@ -25,13 +25,16 @@ async function createFrame({ x, y, width, height, name }, results) {
 /**
  * Helper: Create a rectangle at the root.
  */
-async function createRectangle({ x, y, width, height, fillColor, name }, results) {
+async function createRectangle({ x, y, width, height, fillColor, name, parentId }, results) {
   const params = {
     x, y, width, height, name, fillColor,
     strokeColor: { r: 0, g: 0, b: 0, a: 1 },
     strokeWeight: 1,
     cornerRadius: 0
   };
+  if (parentId) {
+    params.parentId = parentId;
+  }
   const result = await runStep({
     ws, channel,
     command: "create_rectangle",
@@ -49,12 +52,15 @@ async function createRectangle({ x, y, width, height, fillColor, name }, results
 /**
  * Helper: Create a star at the root.
  */
-async function createStar({ x, y, width, height, points, fillColor, name }, results) {
+async function createStar({ x, y, width, height, points, fillColor, name, parentId }, results) {
   const params = {
     x, y, width, height, points, name, fillColor,
     strokeColor: { r: 0, g: 0, b: 0, a: 1 },
     strokeWeight: 1
   };
+  if (parentId) {
+    params.parentId = parentId;
+  }
   const result = await runStep({
     ws, channel,
     command: "create_star",
@@ -112,14 +118,18 @@ async function insertNodeIntoFrame({ parentId, childId }, results) {
   const result = await runStep({
     ws, channel,
     command: "set_node",
-    params: { parentId, childId, maintainPosition: true },
+    params: {
+      operations: [
+        { parentId, childId, maintainPosition: true }
+      ]
+    },
     assert: (response) => {
       const ok =
         Array.isArray(response) &&
         response.some(r => r.childId === childId && r.parentId === parentId && r.success === true);
       return { pass: ok, reason: ok ? undefined : `Expected set_node to succeed for ${childId} in ${parentId}`, response };
     },
-    label: "set_node (insert flattened boolean result into frame)"
+    label: "set_node (insert boolean result into frame)"
   });
   results.push(result);
 }
@@ -148,22 +158,24 @@ async function moveNode({ nodeId, x, y }, results) {
  */
 export async function booleanScene(results) {
   // 1. Create frame at root
-  const frameId = await createFrame({ x: 50, y: 100, width: 200, height: 200, name: "BooleanTestFrame" }, results);
+  const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "BooleanTestFrame" }, results);
   if (!frameId) return;
 
-  // 2. Create rectangle at root
+  // 2. Create rectangle inside the frame
   const rectId = await createRectangle({
     x: 0, y: 0, width: 100, height: 100,
     fillColor: { r: 1, g: 0, b: 0, a: 1 },
-    name: "BooleanRect"
+    name: "BooleanRect",
+    parentId: frameId
   }, results);
   if (!rectId) return;
 
-  // 3. Create star at root
+  // 3. Create star inside the frame
   const starId = await createStar({
     x: 25, y: 25, width: 50, height: 50, points: 5,
     fillColor: { r: 0, g: 0, b: 1, a: 1 },
-    name: "BooleanStar"
+    name: "BooleanStar",
+    parentId: frameId
   }, results);
   if (!starId) return;
 
@@ -175,5 +187,5 @@ export async function booleanScene(results) {
   await insertNodeIntoFrame({ parentId: frameId, childId: booleanId }, results);
 
   // 6. Move the boolean result node to (0,0) within the frame
-  await moveNode({ nodeId: booleanId, x: 0, y: 0 }, results);
+  //await moveNode({ nodeId: booleanId, x: 0, y: 0 }, results);
 }
