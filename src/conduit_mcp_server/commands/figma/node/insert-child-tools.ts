@@ -63,13 +63,7 @@ Returns:
     async (params) => {
       // Batch mode
       if ("operations" in params) {
-        const { processBatch } = await import("../../../utils/batch-processor.js");
-        type InsertChildOp = {
-          parentId: string;
-          childId: string;
-          index?: number;
-          maintainPosition?: boolean;
-        };
+        // Forward the entire batch to the plugin in one call
         const { operations, options } = params;
         if (!operations || !Array.isArray(operations) || operations.length === 0) {
           const response = {
@@ -85,71 +79,13 @@ Returns:
           };
           return { content: [{ type: "text", text: JSON.stringify(response) }] };
         }
-        type InsertChildResult = {
-          parentId: string;
-          childId: string;
-          index?: number;
-          success: boolean;
-          error?: string;
-          meta?: any;
+        // Call the plugin once with the full batch
+        const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, { operations, options });
+        // The plugin returns { results: [...] }
+        const response = {
+          success: Array.isArray(result.results) && result.results.some(r => r.success),
+          results: result.results || [],
         };
-        const results: InsertChildResult[] = [];
-        await processBatch(
-          operations,
-          async (op: InsertChildOp) => {
-            try {
-              const parent = ensureNodeIdIsString(op.parentId);
-              const child = ensureNodeIdIsString(op.childId);
-              const cmdParams: any = { parentId: parent, childId: child };
-              if (op.index !== undefined) cmdParams.index = op.index;
-              if (op.maintainPosition !== undefined) cmdParams.maintainPosition = op.maintainPosition;
-              const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_NODE, cmdParams);
-              results.push({
-                parentId: parent,
-                childId: child,
-                index: result.index ?? op.index,
-                success: true
-              });
-            } catch (error: any) {
-              if (options?.skipErrors) {
-                results.push({
-                  parentId: op.parentId,
-                  childId: op.childId,
-                  index: op.index,
-                  success: false,
-                  error: error.message || String(error),
-                  meta: {
-                    operation: "set_node",
-                    params: op
-                  }
-                });
-                return;
-              }
-              throw error;
-            }
-          },
-          {
-            chunkSize: 20,
-            concurrency: 5
-          }
-        );
-        const anySuccess = results.some(r => r.success);
-        let response;
-        if (anySuccess) {
-          response = { success: true, results };
-        } else {
-          response = {
-            success: false,
-            error: {
-              message: "All set_node operations failed",
-              results,
-              meta: {
-                operation: "set_node",
-                params
-              }
-            }
-          };
-        }
         return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
       // Single mode

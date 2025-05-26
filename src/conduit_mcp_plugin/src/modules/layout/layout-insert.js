@@ -56,6 +56,10 @@ export async function insertChild(params) {
  * @throws {Error} If operations is missing/invalid, or if an error occurs and skipErrors is not set.
  */
 export async function insertChildren(params) {
+  // Debug: log the received params for troubleshooting
+  // eslint-disable-next-line no-console
+  console.log("[insertChildren] received params:", JSON.stringify(params));
+
   // Support both single and batch forms (ES2017 compatible)
   let operations, options;
   if (params && Array.isArray(params.operations)) {
