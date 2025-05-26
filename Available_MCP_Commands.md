@@ -783,6 +783,57 @@ Flatten a single node (or batch) or selection in Figma, merging all child vector
 ```json
 { "selection": true }
 ```
+
+### set_matrix_transform
+Set a transformation matrix on one or more Figma nodes (single or batch). Supports translation, scale, rotation, skew, and rotation around a point.
+
+**Parameters:**
+- entry (object, optional): Single matrix transform config: { nodeId: string, matrix: number[6] }
+- entries (array, optional): Batch of matrix transform configs: [{ nodeId: string, matrix: number[6] }]
+- options (object, optional): { skipErrors?: boolean }
+
+**Returns:**
+- content: Array of objects. Each object contains a type: "text" and a text field with the result for each node.
+
+**Example (single):**
+```json
+{
+  "command": "set_matrix_transform",
+  "params": {
+    "entry": {
+      "nodeId": "123:456",
+      "matrix": [0.7071, 0.7071, -0.7071, 0.7071, 170.71, -12.13]
+    }
+  }
+}
+```
+**Example (batch):**
+```json
+{
+  "command": "set_matrix_transform",
+  "params": {
+    "entries": [
+      { "nodeId": "123:456", "matrix": [1, 0, 0, 1, 100, 0] },
+      { "nodeId": "789:101", "matrix": [0.5, 0, 0, 0.5, 0, 0] },
+      { "nodeId": "111:222", "matrix": [0.866, 0.5, -0.5, 0.866, 0, 0] }
+    ],
+    "options": { "skipErrors": true }
+  }
+}
+```
+**Matrix format:** `[a, b, c, d, e, f]` corresponds to the 2D affine transform:
+```
+| a c e |
+| b d f |
+| 0 0 1 |
+```
+- Translation: [1, 0, 0, 1, x, y]
+- Scale: [sx, 0, 0, sy, 0, 0]
+- Rotation θ: [cosθ, sinθ, -sinθ, cosθ, 0, 0]
+- Skew X by θ: [1, 0, tanθ, 1, 0, 0]
+- Skew Y by φ: [1, tanφ, 0, 1, 0, 0]
+- Rotation around (cx, cy): [cosθ, sinθ, -sinθ, cosθ, cx - cx*cosθ + cy*sinθ, cy - cx*sinθ - cy*cosθ]
+
 ### get_annotation
 Get annotation(s) for one or more Figma nodes.
 
