@@ -112,21 +112,18 @@ async function flattenNode({ nodeId }, results) {
 }
 
 /**
- * Helper: Insert a node into a frame.
+ * Helper: Insert a node into a frame (single operation).
  */
 async function insertNodeIntoFrame({ parentId, childId }, results) {
   const result = await runStep({
     ws, channel,
     command: "set_node",
-    params: {
-      operations: [
-        { parentId, childId, maintainPosition: true }
-      ]
-    },
+    params: { parentId, childId, maintainPosition: true },
     assert: (response) => {
       const ok =
-        Array.isArray(response) &&
-        response.some(r => r.childId === childId && r.parentId === parentId && r.success === true);
+        response &&
+        response.results &&
+        response.results.some(r => r.childId === childId && r.parentId === parentId && r.success === true);
       return { pass: ok, reason: ok ? undefined : `Expected set_node to succeed for ${childId} in ${parentId}`, response };
     },
     label: "set_node (insert boolean result into frame)"
