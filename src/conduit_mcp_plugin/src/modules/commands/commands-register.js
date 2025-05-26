@@ -3,6 +3,7 @@ import * as documentOperations from '../document.js';
 import { setNodePropUnified } from '../node/node-modify.js';
 import { setMatrixTransform } from '../node/node-modify.js';
 import * as shapeOperations from '../shapes.js';
+import { moveNode, resizeNode, moveNodes, resizeNodes } from '../node/node-modify.js';
 import * as imageOperations from '../image.js';
 import * as textOperations from '../text.js';
 import { setParagraphSpacingUnified, setLineHeightUnified, setLetterSpacingUnified, setTextCaseUnified, setTextDecorationUnified } from '../text/text-edit.js';
@@ -227,9 +228,10 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.SET_CORNER_RADIUS, shapeOperations.setCornerRadiusUnified);
 
   // --- Positioning & Sizing & Boolean Operations ---
-  registerCommand(PLUGIN_COMMANDS.MOVE_NODE, shapeOperations.moveNode);
+  registerCommand(PLUGIN_COMMANDS.MOVE_NODE, moveNode);
   registerCommand(PLUGIN_COMMANDS.REORDER_NODE, reorderNodes);
-  registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, shapeOperations.resizeNodeUnified);
+  registerCommand(PLUGIN_COMMANDS.RESIZE_NODE, resizeNode);
+  // TODO: Fix rotate_node and flatten_node if they are also miswired
   registerCommand(PLUGIN_COMMANDS.ROTATE_NODE, shapeOperations.rotateNodeUnified);
   registerCommand(PLUGIN_COMMANDS.FLATTEN_NODE, layoutOperations.flatten_nodes);
   registerCommand(PLUGIN_COMMANDS.BOOLEAN, shapeOperations.boolean);
