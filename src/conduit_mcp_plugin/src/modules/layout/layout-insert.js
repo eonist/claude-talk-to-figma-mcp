@@ -56,15 +56,10 @@ export async function insertChild(params) {
  * @throws {Error} If operations is missing/invalid, or if an error occurs and skipErrors is not set.
  */
 export async function insertChildren(params) {
-  // Debug: log the received params for troubleshooting
-  // eslint-disable-next-line no-console
-  console.log("[insertChildren] received params:", JSON.stringify(params));
-
   // Workaround: unwrap if params are wrapped in a children array (due to MCP SDK or dispatcher)
+  // Remove this if/when upstream stops wrapping set_node params in children[]
   if (params && Array.isArray(params.children) && params.children.length === 1) {
     params = params.children[0];
-    // eslint-disable-next-line no-console
-    console.log("[insertChildren] unwrapped children, new params:", JSON.stringify(params));
   }
 
   // Support both single and batch forms (ES2017 compatible)
