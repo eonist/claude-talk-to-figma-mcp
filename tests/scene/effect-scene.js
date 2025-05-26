@@ -90,7 +90,7 @@ async function addRedRectWithDropShadow(frameId) {
   await applyEffect(rectId, [
     {
       type: "DROP_SHADOW",
-      color: "#000000",
+      color: { r: 0, g: 0, b: 0, a: 1 },
       offset: { x: 0, y: 2 },
       radius: 4,
       spread: 0,
@@ -110,7 +110,7 @@ async function addGreenRectWithInnerShadow(frameId) {
   await applyEffect(rectId, [
     {
       type: "INNER_SHADOW",
-      color: "#333333",
+      color: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
       offset: { x: 0, y: -2 },
       radius: 3,
       spread: 0,
@@ -146,6 +146,6 @@ export async function effectScene() {
   await applyAutolayout(frameId);
 
   await addRedRectWithDropShadow(frameId);
-  // await addGreenRectWithInnerShadow(frameId);
-  // await addBlueRectWithBackgroundBlur(frameId);
+  await addGreenRectWithInnerShadow(frameId);
+  await addBlueRectWithBackgroundBlur(frameId);
 }

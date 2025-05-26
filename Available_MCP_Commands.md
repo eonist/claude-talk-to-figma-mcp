@@ -424,7 +424,7 @@ Creates one or more effect style variables in Figma.
 {
   "effects": {
     "type": "DROP_SHADOW",
-    "color": "#000000",
+    "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
     "offset": { "x": 0, "y": 2 },
     "radius": 4,
     "spread": 0,
@@ -440,7 +440,7 @@ Creates one or more effect style variables in Figma.
   "effects": [
     {
       "type": "DROP_SHADOW",
-      "color": "#000000",
+      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
       "offset": { "x": 0, "y": 2 },
       "radius": 4,
       "spread": 0,
@@ -451,7 +451,7 @@ Creates one or more effect style variables in Figma.
     },
     {
       "type": "INNER_SHADOW",
-      "color": "#333333",
+      "color": { "r": 0.2, "g": 0.2, "b": 0.2, "a": 1 },
       "offset": { "x": 0, "y": -2 },
       "radius": 3,
       "spread": 0,
@@ -1374,7 +1374,7 @@ Set effect(s) directly or by style variable on one or more nodes in Figma.
     "effects": [
       {
         "type": "DROP_SHADOW",
-        "color": "#000000",
+        "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
         "offset": { "x": 0, "y": 2 },
         "radius": 4,
         "spread": 0,

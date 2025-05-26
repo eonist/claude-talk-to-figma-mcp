@@ -65,9 +65,9 @@ Returns:
       readOnlyHint: false,
       openWorldHint: false,
       usageExamples: JSON.stringify([
-        { entries: { nodeId: "123:456", effects: { type: "DROP_SHADOW", color: "#000", radius: 4 } } },
+        { entries: { nodeId: "123:456", effects: { type: "DROP_SHADOW", color: { r: 0, g: 0, b: 0, a: 1 }, radius: 4 } } },
         { entries: [
-          { nodeId: "123:456", effects: [{ type: "DROP_SHADOW", color: "#000", radius: 4 }] },
+          { nodeId: "123:456", effects: [{ type: "DROP_SHADOW", color: { r: 0, g: 0, b: 0, a: 1 }, radius: 4 }] },
           { nodeId: "789:101", effectStyleId: "S:effect123" }
         ]}
       ]),
