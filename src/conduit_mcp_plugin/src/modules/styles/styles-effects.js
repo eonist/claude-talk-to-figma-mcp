@@ -81,7 +81,7 @@ export async function setEffectStyleId(params) {
   const style = effectStyles.find(s => s.id === effectStyleId);
   if (!style) throw new Error(`Effect style not found: ${effectStyleId}`);
 
-  node.effectStyleId = effectStyleId;
+  await node.setEffectStyleIdAsync(effectStyleId);
   return {
     id: node.id,
     name: node.name,

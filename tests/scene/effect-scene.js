@@ -126,10 +126,10 @@ async function addGreenRectWithInnerShadow(frameId) {
         }
       ]
     },
-    assert: r => Array.isArray(r.ids) && r.ids.length > 0,
+    assert: r => r && r.id,
     label: "create_effect_style_variable (Inner Shadow)"
   });
-  const effectStyleId = styleResult?.response?.ids?.[0];
+  const effectStyleId = styleResult?.response?.id;
   if (!effectStyleId) {
     console.error("No effectStyleId returned from create_effect_style_variable");
     return;
