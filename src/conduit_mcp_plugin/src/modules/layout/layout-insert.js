@@ -60,6 +60,13 @@ export async function insertChildren(params) {
   // eslint-disable-next-line no-console
   console.log("[insertChildren] received params:", JSON.stringify(params));
 
+  // Workaround: unwrap if params are wrapped in a children array (due to MCP SDK or dispatcher)
+  if (params && Array.isArray(params.children) && params.children.length === 1) {
+    params = params.children[0];
+    // eslint-disable-next-line no-console
+    console.log("[insertChildren] unwrapped children, new params:", JSON.stringify(params));
+  }
+
   // Support both single and batch forms (ES2017 compatible)
   let operations, options;
   if (params && Array.isArray(params.operations)) {
