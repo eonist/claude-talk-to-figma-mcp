@@ -47,9 +47,9 @@ export async function getStyles() {
 }
 
 /**
- * Gets fill and/or stroke color(s) for one or more nodes.
+ * Gets fill and/or stroke color(s) and stroke weight for one or more nodes.
  * @param {Object} params - { nodeId } or { nodeIds }
- * @returns {Promise<Array<{ nodeId: string, fills: Array, strokes: Array, error?: string }>>}
+ * @returns {Promise<Array<{ nodeId: string, fills: Array, strokes: Array, strokeWeight?: number, error?: string }>>}
  */
 export async function getFillAndStroke(params) {
   let ids = [];
@@ -70,7 +70,8 @@ export async function getFillAndStroke(params) {
     results.push({
       nodeId,
       fills: "fills" in node ? node.fills : [],
-      strokes: "strokes" in node ? node.strokes : []
+      strokes: "strokes" in node ? node.strokes : [],
+      strokeWeight: "strokeWeight" in node ? node.strokeWeight : undefined
     });
   }
   return results;

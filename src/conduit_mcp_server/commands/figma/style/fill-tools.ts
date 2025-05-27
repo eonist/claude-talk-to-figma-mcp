@@ -48,37 +48,15 @@ export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
       }
       const ids = params.nodeIds || (params.nodeId ? [params.nodeId] : []);
       if (!ids.length) throw new Error("No node IDs provided");
-      const results = [];
+      
+      // Validate node IDs
       for (const id of ids) {
         if (!isValidNodeId(id)) throw new Error(`Invalid node ID: ${id}`);
-        // Use executeCommand to fetch node info
-        const nodeInfoResult = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId: id });
-        let node = null;
-        if (
-          nodeInfoResult &&
-          Array.isArray(nodeInfoResult.content) &&
-          nodeInfoResult.content.length > 0 &&
-          nodeInfoResult.content[0].type === "text"
-        ) {
-          try {
-            const arr = JSON.parse(nodeInfoResult.content[0].text);
-            node = arr && arr.length > 0 ? arr[0] : null;
-          } catch (e) {
-            node = null;
-          }
-        }
-        if (!node) {
-          results.push({ nodeId: id, error: "Node not found" });
-          continue;
-        }
-        results.push({
-          nodeId: id,
-          fills: "fills" in node ? node.fills : [],
-          strokes: "strokes" in node ? node.strokes : [],
-          strokeWeight: "strokeWeight" in node ? node.strokeWeight : undefined
-        });
       }
-      return { content: [{ type: "text", text: JSON.stringify(results) }] };
+      
+      // Forward to plugin via executeCommand - plugin's getFillAndStroke now includes strokeWeight
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.GET_FILL_AND_STROKE, params);
+      return result;
     }
   );
 }
