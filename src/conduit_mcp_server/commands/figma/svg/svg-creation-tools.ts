@@ -6,6 +6,7 @@ import { setSvgVectorSchema } from "./schema/svg-creation-schema.js";
 import { processBatch } from "../../../utils/batch-processor.js";
 // import { handleToolError } from "../../../utils/error-handling.js";
 import { logger } from "../../../utils/logger.js";
+import { fetchTextResource } from "../../../utils/fetch-resource.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
@@ -138,7 +139,15 @@ Returns:
         const results = await processBatch(
           svgsArr,
           async (cfg) => {
-            const content = cfg.svg;
+            let content = cfg.svg;
+            // If content looks like a URL, fetch it server-side
+            if (typeof content === "string" && /^https?:\/\//i.test(content)) {
+              try {
+                content = await fetchTextResource(content);
+              } catch (fetchErr) {
+                throw new Error(`Failed to fetch SVG from URL (${cfg.svg}): ${fetchErr.message}`);
+              }
+            }
             const result = await (figmaClient as any).insertSvgVector({
               svg: content,
               x: cfg.x,
