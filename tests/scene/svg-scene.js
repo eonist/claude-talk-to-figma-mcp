@@ -81,25 +81,18 @@ async function fetch_svg(url) {
  * @param {string} parentId
  * @param {string} svgText
  * @param {string} name
+ * @param {number} [width=50] - Desired width of the SVG node
+ * @param {number} [height=50] - Desired height of the SVG node
  * @returns {Promise<string>} nodeId
  */
-async function create_svg_from_raw(parentId, svgText, name) {
-  let svgWithSize = svgText.replace(
-    /<svg([^>]*)>/i,
-    (m, attrs) => {
-      let newAttrs = attrs
-        .replace(/\swidth="[^"]*"/i, "")
-        .replace(/\sheight="[^"]*"/i, "");
-      return `<svg${newAttrs} width="50" height="50">`;
-    }
-  );
+async function create_svg_from_raw(parentId, svgText, name, width = 50, height = 50) {
   const res = await runStep({
     ws,
     channel,
     command: "set_svg_vector",
     params: {
       svg: {
-        svg: svgWithSize,
+        svg: svgText,
         x: 0,
         y: 0,
         name,
@@ -112,9 +105,25 @@ async function create_svg_from_raw(parentId, svgText, name) {
     },
     label: `create_svg_from_raw (${name})`
   });
-  // Return the nodeId of the created SVG node
+  // Get the nodeId of the created SVG node
   const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
-  return ids && ids.length > 0 ? ids[0] : null;
+  const nodeId = ids && ids.length > 0 ? ids[0] : null;
+  if (nodeId) {
+    // Resize the node after creation using MCP
+    await runStep({
+      ws,
+      channel,
+      command: "resize_node",
+      params: { nodeId, width, height },
+      assert: (response) =>
+        response &&
+        response["0"] &&
+        response["0"].success === true &&
+        response["0"].nodeId === nodeId,
+      label: `resize_svg_node (${name})`
+    });
+  }
+  return nodeId;
 }
 
 /**
