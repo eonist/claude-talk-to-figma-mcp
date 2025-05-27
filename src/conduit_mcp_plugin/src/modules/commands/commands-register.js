@@ -207,6 +207,7 @@ export function initializeCommands() {
 
   // --- Images and SVG ---
   registerCommand(PLUGIN_COMMANDS.GET_IMAGE, getImage);
+  console.log('💥 typeof imageOperations.insertImage:', typeof imageOperations.insertImage);
   registerCommand(PLUGIN_COMMANDS.SET_IMAGE, imageOperations.insertImage);
   registerCommand(PLUGIN_COMMANDS.SET_SVG_VECTOR, insertSvgVector);
   registerCommand(PLUGIN_COMMANDS.GET_SVG_VECTOR, getSvgVector);

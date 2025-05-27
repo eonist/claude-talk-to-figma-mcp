@@ -53,26 +53,34 @@ export async function insertImage(params) {
   for (const cfg of imagesArr) {
     const { url, imageData, x = 0, y = 0, width, height, name = "Image", parentId } = cfg || {};
     let imageBytes;
+    console.log("🟠 insertImage: cfg =", cfg);
     if (url) {
       // Fetch image data from URL
+      console.log("🟠 insertImage: fetching from url", url);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Failed to fetch image at ${url}: ${response.statusText}`);
       }
       const buffer = await response.arrayBuffer();
       imageBytes = new Uint8Array(buffer);
+      console.log("🟠 insertImage: fetched imageBytes length", imageBytes.length);
     } else if (imageData) {
       // Decode base64 data URI
       let base64 = imageData;
+      console.log("🟠 insertImage: decoding imageData, startsWith data:", imageData.startsWith("data:"));
       if (imageData.startsWith("data:")) {
         base64 = imageData.split(",")[1];
       }
       imageBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+      console.log("🟠 insertImage: decoded imageBytes length", imageBytes.length);
     } else {
       throw new Error("Must provide either 'url' or 'imageData' for each image.");
     }
     // Create Figma image and a rectangle to hold it
+    console.log("🟠 insertImage: creating Figma image...");
     const image = figma.createImage(imageBytes);
+    console.log("🟠 insertImage: created image hash", image.hash);
+    console.log("🟠 insertImage: creating rectangle...");
     const rect = figma.createRectangle();
     rect.x = x;
     rect.y = y;
@@ -80,6 +88,7 @@ export async function insertImage(params) {
       // Use provided dimensions or square fallback
       const h = height !== undefined ? height : width;
       rect.resize(width, h);
+      console.log("🟠 insertImage: resized rectangle to", width, h);
     }
     rect.name = name;
     rect.fills = [{
@@ -88,14 +97,18 @@ export async function insertImage(params) {
       imageHash: image.hash
     }];
     // Append to specified parent or current page
+    console.log("🟠 insertImage: looking up parent", parentId);
     const parent = parentId
       ? await figma.getNodeByIdAsync(parentId)
       : figma.currentPage;
+    console.log("🟠 insertImage: parent is", parent);
     if (parentId && !parent) {
       throw new Error(`Parent not found: ${parentId}`);
     }
+    console.log("🟠 insertImage: appending child...");
     parent.appendChild(rect);
     ids.push(rect.id);
+    console.log("🟠 insertImage: appended rect id", rect.id);
   }
   return { ids };
 }
