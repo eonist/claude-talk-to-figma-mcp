@@ -67,11 +67,14 @@ export async function insertImage(params) {
     } else if (imageData) {
       // Decode base64 data URI
       let base64 = imageData;
+      console.log("🟠 insertImage: imageData length", imageData.length);
       console.log("🟠 insertImage: decoding imageData, startsWith data:", imageData.startsWith("data:"));
       if (imageData.startsWith("data:")) {
         base64 = imageData.split(",")[1];
       }
       // Figma plugin environment may not support Uint8Array.from with a mapping function
+      console.log("🟠 typeof atob:", typeof atob);
+      console.log("🟠 typeof Uint8Array:", typeof Uint8Array);
       const binaryStr = atob(base64);
       const len = binaryStr.length;
       imageBytes = new Uint8Array(len);

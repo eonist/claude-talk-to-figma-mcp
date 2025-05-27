@@ -176,6 +176,7 @@ export async function create_img1(frameId) {
     console.warn(`fetch_image_base64 (${name}): ${e.message}`);
     return;
   }
+  console.log("image-scene: base64Data length", base64Data.length);
   await create_image_from_base64(frameId, base64Data, name);
 }
 
@@ -189,6 +190,7 @@ export async function create_img2(frameId) {
     console.warn(`fetch_image_base64 (${name}): ${e.message}`);
     return;
   }
+  console.log("image-scene: base64Data length", base64Data.length);
   await create_image_from_base64(frameId, base64Data, name);
 }
 
@@ -202,6 +204,7 @@ export async function create_img3(frameId) {
     console.warn(`fetch_image_base64 (${name}): ${e.message}`);
     return;
   }
+  console.log("image-scene: base64Data length", base64Data.length);
   await create_image_from_base64(frameId, base64Data, name);
 }
 
