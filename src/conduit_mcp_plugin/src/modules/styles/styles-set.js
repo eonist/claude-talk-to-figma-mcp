@@ -10,6 +10,7 @@
  * @returns {Promise<object>} Result: { styleId, styleType, action, success, [error] }
  */
 export async function setStyle(entry) {
+  console.log("💥 styles-set setStyle", entry);
   const { styleId, styleType, properties, delete: del } = entry || {};
   let style = null;
   let action = null;

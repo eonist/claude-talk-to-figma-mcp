@@ -106,6 +106,7 @@ export async function setStrokeColor(params) {
  * @throws {Error} If parameters are missing, node cannot be found, or color arrays are invalid.
  */
 export async function setStyle(params) {
+  console.log("💥 styles-coloe setStyle", entry);
   if (!params) throw new Error("Missing parameters for setStyle");
   const { nodeId, fillProps, strokeProps } = params;
   if (!nodeId) throw new Error("Missing nodeId parameter");

@@ -76,6 +76,41 @@ async function fetch_svg(url) {
   return await res.text();
 }
 
+/**
+ * Helper to scale stroke weight for all children recursively
+ * @param {object} nodeInfo - Node info response
+ * @param {number} scale - Scale factor to apply
+ */
+async function scale_stroke_weights(nodeInfo, scale) {
+  if (nodeInfo.document && nodeInfo.document.children) {
+    for (const child of nodeInfo.document.children) {
+      // If child has stroke weight, scale it
+      if (child.strokeWeight && child.strokeWeight > 0) {
+        const originalWeight = child.strokeWeight;
+        const newWeight = Math.max(0.1, originalWeight * scale); // Minimum 0.1
+        console.log(`Scaling stroke weight for ${child.id}: ${originalWeight} → ${newWeight.toFixed(2)}`);
+        
+        await runStep({
+          ws,
+          channel,
+          command: "set_fill_and_stroke",
+          params: {
+            nodeId: child.id,
+            strokeWeight: newWeight
+          },
+          assert: (response) => true,
+          label: `scale_stroke_weight (${child.id})`
+        });
+      }
+      
+      // Recursively handle grandchildren
+      if (child.children && child.children.length > 0) {
+        await scale_stroke_weights({ document: child }, scale);
+      }
+    }
+  }
+}
+
 // Helper to create an SVG node from raw SVG markup and return its nodeId (tests raw SVG support)
 async function create_svg_from_raw(parentId, svgText, name, targetSize = 50) {
   const res = await runStep({
@@ -125,6 +160,9 @@ async function create_svg_from_raw(parentId, svgText, name, targetSize = 50) {
       
       console.log(`Scale factor: ${scale.toFixed(3)}`);
       console.log(`New dimensions for ${name}: ${newWidth.toFixed(1)}x${newHeight.toFixed(1)}`);
+      
+      // Scale stroke weights BEFORE resizing (using original nodeInfo)
+      await scale_stroke_weights(nodeInfo, scale);
       
       // Resize with proper aspect ratio
       await runStep({
@@ -189,7 +227,8 @@ async function create_svg_from_url(parentId, url, name, width = 50, height = 50)
 }
 
 /**
- * Helper to set the fill color ONLY on children nodes (as requested).
+ * Helper to intelligently set fill and stroke on children nodes.
+ * Only replaces existing fills/strokes, doesn't add new ones.
  * @param {string} nodeId
  * @param {string} color - CSS color string (e.g. "#ff0000")
  */
@@ -221,25 +260,49 @@ async function set_fill_color(nodeId, color) {
   const nodeInfo = nodeInfoRes.response;
   console.log(`Node structure for ${nodeId}:`, JSON.stringify(nodeInfo, null, 2));
   
-  // Apply fill ONLY to children (NOT to main node as specifically requested)
+  // Apply smart fill/stroke ONLY to children (NOT to main node as specifically requested)
   if (nodeInfo && nodeInfo.document && nodeInfo.document.children && nodeInfo.document.children.length > 0) {
-    console.log(`Found ${nodeInfo.document.children.length} children, applying fill to all`);
+    console.log(`Found ${nodeInfo.document.children.length} children, checking for existing fills/strokes`);
     for (const child of nodeInfo.document.children) {
-      console.log(`Applying fill to child: ${child.id} (type: ${child.type})`);
-      await runStep({
-        ws,
-        channel,
-        command: "set_fill_and_stroke",
-        params: {
-          nodeId: child.id,
-          fillColor: rgba
-        },
-        assert: (response) => true,
-        label: `set_fill_color child (${child.id})`
-      });
+      const hasFill = child.fills && Array.isArray(child.fills) && child.fills.length > 0;
+      const hasStroke = child.strokes && Array.isArray(child.strokes) && child.strokes.length > 0;
+      
+      console.log(`Child ${child.id} (${child.type}): hasFill=${hasFill}, hasStroke=${hasStroke}`);
+      
+      const params = { nodeId: child.id };
+      
+      // Only set fill if child already has a fill
+      if (hasFill) {
+        params.fillColor = rgba;
+        console.log(`Replacing existing fill with ${color}`);
+      } else {
+        console.log(`No existing fill, skipping fill replacement`);
+      }
+      
+      // Only set stroke if child already has a stroke
+      if (hasStroke) {
+        params.strokeColor = rgba;
+        console.log(`Replacing existing stroke with ${color}`);
+      } else {
+        console.log(`No existing stroke, skipping stroke replacement`);
+      }
+      
+      // Only make API call if we have something to update
+      if (params.fillColor || params.strokeColor) {
+        await runStep({
+          ws,
+          channel,
+          command: "set_fill_and_stroke",
+          params,
+          assert: (response) => true,
+          label: `smart_fill_stroke (${child.id})`
+        });
+      } else {
+        console.log(`No fills or strokes to replace for ${child.id}`);
+      }
     }
   } else {
-    console.warn(`No children found for ${nodeId}, cannot apply fill (main node fill was explicitly not requested)`);
+    console.warn(`No children found for ${nodeId}, cannot apply fill/stroke`);
   }
 }
 
