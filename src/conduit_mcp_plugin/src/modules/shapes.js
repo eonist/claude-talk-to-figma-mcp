@@ -119,42 +119,12 @@ async function setMask(params) {
         continue;
       }
 
-      // Clone nodes and check extensibility
-      let clonedTarget, clonedMask;
-      try {
-        clonedTarget = targetNode.clone();
-        clonedMask = maskNode.clone();
-      } catch (cloneError) {
-        console.log("setMask: Clone failed for " + targetNode.type + " or " + maskNode.type + ":", cloneError && cloneError.message ? cloneError.message : cloneError);
-        results.push({
-          success: false,
-          error: `Clone operation failed: ${cloneError.message}`,
-          targetNodeId,
-          maskNodeId
-        });
-        continue;
-      }
+      // Move original nodes instead of cloning
+      const originalTargetParent = targetNode.parent;
+      const originalMaskParent = maskNode.parent;
+      const targetIndex = originalTargetParent.children.indexOf(targetNode);
 
-      // Check if cloned nodes are extensible
-      const targetExtensible = Object.isExtensible(clonedTarget);
-      const maskExtensible = Object.isExtensible(clonedMask);
-      console.log(`setMask: Target clone extensible: ${targetExtensible}, type: ${clonedTarget.type}`);
-      console.log(`setMask: Mask clone extensible: ${maskExtensible}, type: ${clonedMask.type}`);
-
-      if (!targetExtensible || !maskExtensible) {
-        const nonExtensibleTypes = [];
-        if (!targetExtensible) nonExtensibleTypes.push(clonedTarget.type);
-        if (!maskExtensible) nonExtensibleTypes.push(clonedMask.type);
-        console.log(`setMask: Skipping mask operation - non-extensible node types: ${nonExtensibleTypes.join(', ')}`);
-        results.push({
-          success: false,
-          error: `Cannot apply mask - node types not extensible: ${nonExtensibleTypes.join(', ')}`,
-          targetNodeId,
-          maskNodeId,
-          nonExtensibleTypes
-        });
-        continue;
-      }
+      console.log(`setMask: Moving original nodes - Target: ${targetNode.type}, Mask: ${maskNode.type}`);
 
       // Create frame with clipping enabled
       const maskFrame = figma.createFrame();
@@ -162,27 +132,59 @@ async function setMask(params) {
       maskFrame.x = targetNode.x;
       maskFrame.y = targetNode.y;
       maskFrame.resize(targetNode.width, targetNode.height);
-      maskFrame.clipContent = true; // Essential for masking
+      maskFrame.clipContent = true;
 
-      // Position and configure nodes (only if extensible)
+      // Calculate relative positions for nodes within the frame
+      const maskRelativeX = maskNode.x - targetNode.x;
+      const maskRelativeY = maskNode.y - targetNode.y;
+      console.log(`setMask: Calculated relative positions - Mask: (${maskRelativeX}, ${maskRelativeY})`);
+
+      // Set mask properties on original nodes BEFORE moving them
       try {
-        // Position mask relative to frame
-        clonedMask.x = maskNode.x - targetNode.x;
-        clonedMask.y = maskNode.y - targetNode.y;
-        clonedMask.isMask = true;
+        maskNode.isMask = true;
+        targetNode.isMask = false;
+        console.log(`setMask: Set isMask properties successfully`);
+      } catch (maskPropertyError) {
+        console.log(`setMask: Error setting isMask properties:`, maskPropertyError && maskPropertyError.message ? maskPropertyError.message : maskPropertyError);
+        results.push({
+          success: false,
+          error: `Failed to set mask properties: ${maskPropertyError && maskPropertyError.message ? maskPropertyError.message : maskPropertyError}`,
+          targetNodeId,
+          maskNodeId
+        });
+        continue;
+      }
 
-        // Position target
-        clonedTarget.x = 0;
-        clonedTarget.y = 0;
-        clonedTarget.isMask = false;
+      // Move nodes into the frame (mask first, then target)
+      try {
+        // Move mask node first
+        maskFrame.appendChild(maskNode);
+        maskNode.x = maskRelativeX;
+        maskNode.y = maskRelativeY;
+        console.log(`setMask: Moved mask node to frame`);
 
-        // Add mask first, then content
-        maskFrame.appendChild(clonedMask);
-        maskFrame.appendChild(clonedTarget);
+        // Move target node
+        maskFrame.appendChild(targetNode);
+        targetNode.x = 0;
+        targetNode.y = 0;
+        console.log(`setMask: Moved target node to frame`);
 
-        // Insert the masked frame
-        const parent = targetNode.parent;
-        if (!parent) {
+      } catch (moveError) {
+        console.log(`setMask: Error moving nodes:`, moveError && moveError.message ? moveError.message : moveError);
+        // Clean up the frame if move failed
+        maskFrame.remove();
+        results.push({
+          success: false,
+          error: `Failed to move nodes: ${moveError && moveError.message ? moveError.message : moveError}`,
+          targetNodeId,
+          maskNodeId
+        });
+        continue;
+      }
+
+      // Insert the masked frame at the original target position
+      try {
+        if (!originalTargetParent) {
           console.log("setMask: Target node has no parent", { targetNodeId, maskNodeId });
           results.push({
             success: false,
@@ -192,32 +194,25 @@ async function setMask(params) {
           });
           continue;
         }
-
-        const targetIndex = parent.children.indexOf(targetNode);
-        parent.insertChild(targetIndex, maskFrame);
-
-        // Remove original nodes
-        targetNode.remove();
-        maskNode.remove();
+        originalTargetParent.insertChild(targetIndex, maskFrame);
+        console.log(`setMask: Inserted masked frame into parent`);
 
         // Select the new masked group
         figma.currentPage.selection = [maskFrame];
 
         results.push({
           success: true,
-          message: "Mask applied successfully",
+          message: "Mask applied successfully using original nodes",
           nodeId: maskFrame.id,
           targetNodeId,
           maskNodeId
         });
 
-      } catch (maskError) {
-        console.log("setMask: Error setting mask properties:", maskError && maskError.message ? maskError.message : maskError);
-        // Clean up the frame if mask application failed
-        maskFrame.remove();
+      } catch (insertError) {
+        console.log(`setMask: Error inserting frame:`, insertError && insertError.message ? insertError.message : insertError);
         results.push({
           success: false,
-          error: `Failed to apply mask properties: ${maskError.message}`,
+          error: `Failed to insert masked frame: ${insertError && insertError.message ? insertError.message : insertError}`,
           targetNodeId,
           maskNodeId
         });
