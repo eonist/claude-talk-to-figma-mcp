@@ -11,41 +11,36 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
  * - set_fill_color
  */
 export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
-  // Unified set_fill_and_stroke (fill, stroke, or both)
+  // Unified set_fill_and_stroke (fill, stroke, strokeWeight)
   server.tool(
     MCP_COMMANDS.SET_FILL_AND_STROKE,
-    "Sets fill and/or stroke color(s) for one or more nodes.",
+    "Sets fill and/or stroke color(s) and/or stroke weight for one or more nodes.",
     setFillAndStrokeSchema,
-    async (params: { nodeId?: string; nodeIds?: string[]; fill?: any; stroke?: any }) => {
+    async (params: { nodeId?: string; nodeIds?: string[]; fillColor?: any; strokeColor?: any; strokeWeight?: number }) => {
       if (!!params.nodeId === !!params.nodeIds) {
         throw new Error("Provide either nodeId or nodeIds, not both.");
       }
-      if (!("fill" in params) && !("stroke" in params)) {
-        throw new Error("At least one of fill or stroke must be provided.");
+      if (!("fillColor" in params) && !("strokeColor" in params) && !("strokeWeight" in params)) {
+        throw new Error("At least one of fillColor, strokeColor, or strokeWeight must be provided.");
       }
       const ids = params.nodeIds || (params.nodeId ? [params.nodeId] : []);
       if (!ids.length) throw new Error("No node IDs provided");
-      const results = [];
+      
+      // Validate node IDs
       for (const id of ids) {
         if (!isValidNodeId(id)) throw new Error(`Invalid node ID: ${id}`);
-        const node = await figmaClient.getNodeById(id);
-        if (!node) throw new Error(`Node not found: ${id}`);
-        if ("fill" in params) node.fills = Array.isArray(params.fill) ? params.fill : [params.fill];
-        if ("stroke" in params) node.strokes = Array.isArray(params.stroke) ? params.stroke : [params.stroke];
-        results.push({
-          id,
-          ...( "fill" in params ? { fill: node.fills } : {} ),
-          ...( "stroke" in params ? { stroke: node.strokes } : {} )
-        });
       }
-      return { content: [{ type: "text", text: JSON.stringify(results) }] };
+      
+      // Forward to plugin via executeCommand
+      const result = await figmaClient.executeCommand(MCP_COMMANDS.SET_FILL_AND_STROKE, params);
+      return result;
     }
   );
 
-  // Unified get_fill_and_stroke (fill, stroke, or both)
+  // Unified get_fill_and_stroke (fill, stroke, strokeWeight)
   server.tool(
     MCP_COMMANDS.GET_FILL_AND_STROKE,
-    "Gets fill and/or stroke color(s) for one or more nodes.",
+    "Gets fill and/or stroke color(s) and stroke weight for one or more nodes.",
     getFillAndStrokeSchema,
     async (params: { nodeId?: string; nodeIds?: string[] }) => {
       if (!!params.nodeId === !!params.nodeIds) {
@@ -79,7 +74,8 @@ export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
         results.push({
           nodeId: id,
           fills: "fills" in node ? node.fills : [],
-          strokes: "strokes" in node ? node.strokes : []
+          strokes: "strokes" in node ? node.strokes : [],
+          strokeWeight: "strokeWeight" in node ? node.strokeWeight : undefined
         });
       }
       return { content: [{ type: "text", text: JSON.stringify(results) }] };
