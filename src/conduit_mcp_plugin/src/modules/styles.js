@@ -44,11 +44,10 @@ async function setFillAndStrokeUnified(params) {
     if (!node) throw new Error(`Node not found: ${id}`);
     if ("fill" in params) node.fills = Array.isArray(fill) ? fill : [fill];
     if ("stroke" in params) node.strokes = Array.isArray(stroke) ? stroke : [stroke];
-    results.push({
-      id,
-      ...( "fill" in params ? { fill: node.fills } : {} ),
-      ...( "stroke" in params ? { stroke: node.strokes } : {} )
-    });
+    const result = { id };
+    if ("fill" in params) result.fill = node.fills;
+    if ("stroke" in params) result.stroke = node.strokes;
+    results.push(result);
   }
   return { results };
 }
