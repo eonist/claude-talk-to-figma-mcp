@@ -267,7 +267,7 @@ export async function imageScene() {
   await create_img1(frameId);
   await create_img2(frameId);
   await create_img3(frameId);
-  await create_img4(frameId);
+  //await create_img4(frameId);
   
   // Add delay for large image processing
   console.log("[TEST] Waiting for large image processing to complete...");
