@@ -215,6 +215,6 @@ export async function create_img3(frameId) {
 export async function imageScene() {
   const frameId = await create_image_frame(100, "Image Frame");
   await create_img1(frameId);
-  //await create_img2(frameId);
-  //await create_img3(frameId);
+  await create_img2(frameId);
+  await create_img3(frameId);
 }
