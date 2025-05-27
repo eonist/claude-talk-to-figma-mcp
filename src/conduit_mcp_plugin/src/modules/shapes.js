@@ -125,7 +125,7 @@ async function setMask(params) {
         clonedTarget = targetNode.clone();
         clonedMask = maskNode.clone();
       } catch (cloneError) {
-        console.log(`setMask: Clone failed for ${targetNode.type} or ${maskNode.type}:`, cloneError.message);
+        console.log("setMask: Clone failed for " + targetNode.type + " or " + maskNode.type + ":", cloneError && cloneError.message ? cloneError.message : cloneError);
         results.push({
           success: false,
           error: `Clone operation failed: ${cloneError.message}`,
@@ -212,7 +212,7 @@ async function setMask(params) {
         });
 
       } catch (maskError) {
-        console.log(`setMask: Error setting mask properties:`, maskError.message);
+        console.log("setMask: Error setting mask properties:", maskError && maskError.message ? maskError.message : maskError);
         // Clean up the frame if mask application failed
         maskFrame.remove();
         results.push({
@@ -224,10 +224,10 @@ async function setMask(params) {
       }
 
     } catch (error) {
-      console.log(`setMask: Unexpected error:`, error?.message || error);
+      console.log("setMask: Unexpected error:", error && error.message ? error.message : error);
       results.push({
         success: false,
-        error: error?.message || String(error),
+        error: error && error.message ? error.message : String(error),
         targetNodeId: op.targetNodeId,
         maskNodeId: op.maskNodeId
       });
