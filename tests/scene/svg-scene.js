@@ -101,19 +101,47 @@ async function create_svg_from_raw(parentId, svgText, name, targetSize = 50) {
   const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
   const nodeId = ids && ids.length > 0 ? ids[0] : null;
   if (nodeId) {
-    // Simple resize to targetSize x targetSize (we'll fix aspect ratio later)
-    await runStep({
+    // Get current node dimensions to calculate proper aspect ratio
+    const nodeInfoRes = await runStep({
       ws,
       channel,
-      command: "resize_node",
-      params: { nodeId, width: targetSize, height: targetSize },
-      assert: (response) =>
-        response &&
-        response["0"] &&
-        response["0"].success === true &&
-        response["0"].nodeId === nodeId,
-      label: `resize_svg_node (${name}) to ${targetSize}x${targetSize}`
+      command: "get_node_info",
+      params: { nodeId },
+      assert: (response) => response && response.id === nodeId,
+      label: `get_node_info for resize (${nodeId})`
     });
+    
+    const nodeInfo = nodeInfoRes.response;
+    if (nodeInfo && nodeInfo.width && nodeInfo.height) {
+      const currentWidth = nodeInfo.width;
+      const currentHeight = nodeInfo.height;
+      
+      console.log(`Original dimensions for ${name}: ${currentWidth}x${currentHeight}`);
+      
+      // Calculate scale to fit within targetSize x targetSize box without stretching
+      const scale = Math.min(targetSize / currentWidth, targetSize / currentHeight);
+      const newWidth = currentWidth * scale;
+      const newHeight = currentHeight * scale;
+      
+      console.log(`Scale factor: ${scale.toFixed(3)}`);
+      console.log(`New dimensions for ${name}: ${newWidth.toFixed(1)}x${newHeight.toFixed(1)}`);
+      
+      // Resize with proper aspect ratio
+      await runStep({
+        ws,
+        channel,
+        command: "resize_node",
+        params: { nodeId, width: newWidth, height: newHeight },
+        assert: (response) =>
+          response &&
+          response["0"] &&
+          response["0"].success === true &&
+          response["0"].nodeId === nodeId,
+        label: `resize_svg_node (${name}) to ${newWidth.toFixed(1)}x${newHeight.toFixed(1)}`
+      });
+    } else {
+      console.warn(`Could not get dimensions for ${name}, skipping resize`);
+    }
   }
   return nodeId;
 }
@@ -161,7 +189,7 @@ async function create_svg_from_url(parentId, url, name, width = 50, height = 50)
 }
 
 /**
- * Helper to set the fill color on a node (simplified version).
+ * Helper to set the fill color ONLY on children nodes (as requested).
  * @param {string} nodeId
  * @param {string} color - CSS color string (e.g. "#ff0000")
  */
@@ -180,7 +208,7 @@ async function set_fill_color(nodeId, color) {
   }
   const rgba = hexToRgbaObj(color);
   
-  // First try to get node info to see the structure
+  // Get node info to see the structure
   const nodeInfoRes = await runStep({
     ws,
     channel,
@@ -190,37 +218,28 @@ async function set_fill_color(nodeId, color) {
     label: `get_node_info for fill (${nodeId})`
   });
   
-  console.log(`Node structure for ${nodeId}:`, JSON.stringify(nodeInfoRes.response, null, 2));
-  
-  // Try applying fill to the main node first
-  await runStep({
-    ws,
-    channel,
-    command: "set_fill_and_stroke",
-    params: {
-      nodeId,
-      fillColor: rgba
-    },
-    assert: (response) => true,
-    label: `set_fill_color main (${nodeId})`
-  });
-  
-  // If it has children, try applying to first child as well
   const nodeInfo = nodeInfoRes.response;
+  console.log(`Node structure for ${nodeId}:`, JSON.stringify(nodeInfo, null, 2));
+  
+  // Apply fill ONLY to children (NOT to main node as specifically requested)
   if (nodeInfo && nodeInfo.children && nodeInfo.children.length > 0) {
-    const firstChild = nodeInfo.children[0];
-    console.log(`Applying fill to first child: ${firstChild.id} (type: ${firstChild.type})`);
-    await runStep({
-      ws,
-      channel,
-      command: "set_fill_and_stroke",
-      params: {
-        nodeId: firstChild.id,
-        fillColor: rgba
-      },
-      assert: (response) => true,
-      label: `set_fill_color child (${firstChild.id})`
-    });
+    console.log(`Found ${nodeInfo.children.length} children, applying fill to all`);
+    for (const child of nodeInfo.children) {
+      console.log(`Applying fill to child: ${child.id} (type: ${child.type})`);
+      await runStep({
+        ws,
+        channel,
+        command: "set_fill_and_stroke",
+        params: {
+          nodeId: child.id,
+          fillColor: rgba
+        },
+        assert: (response) => true,
+        label: `set_fill_color child (${child.id})`
+      });
+    }
+  } else {
+    console.warn(`No children found for ${nodeId}, cannot apply fill (main node fill was explicitly not requested)`);
   }
 }
 
