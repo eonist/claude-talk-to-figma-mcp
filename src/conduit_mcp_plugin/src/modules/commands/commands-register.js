@@ -56,6 +56,7 @@ export const PLUGIN_COMMANDS = {
   CREATE_STAR: "create_star",
   CREATE_VECTOR: "create_vector",
   GET_VECTOR: "get_vector",
+  SET_MASK: "set_mask",
 
   // --- Text ---
   SET_TEXT: "set_text",
@@ -188,6 +189,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.CREATE_STAR, shapeOperations.createStar);
   registerCommand(PLUGIN_COMMANDS.CREATE_VECTOR, shapeOperations.createVectorUnified);
   registerCommand(PLUGIN_COMMANDS.GET_VECTOR, shapeOperations.getVector);
+  registerCommand(PLUGIN_COMMANDS.SET_MASK, shapeOperations.setMask);
 
   // --- Text ---
   registerCommand(PLUGIN_COMMANDS.SET_TEXT, textOperations.createTextUnified);

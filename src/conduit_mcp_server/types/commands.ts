@@ -104,6 +104,7 @@ export const COMMAND_DEFS = [
   { name: "subscribe_event", paramType: {} as any },
   { name: "get_annotation", paramType: {} as any },
   { name: "set_annotation", paramType: {} as any },
+  { name: "set_mask", paramType: {} as any },
 ] as const;
 
 // Generate MCP_COMMANDS: UPPERCASE keys mapping to string command names

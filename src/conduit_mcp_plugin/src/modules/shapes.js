@@ -41,35 +41,94 @@ export {
   getVectors
 };
 
-/**
- * Collection of shape operation functions for Figma.
- * @namespace shapeOperations
- * @property {function} createRectangle - Create a rectangle node.
- * @property {function} createFrame - Create a frame node.
- * @property {function} createEllipse - Create an ellipse node.
- * @property {function} createPolygon - Create a polygon node.
- * @property {function} createStar - Create a star node.
- * @property {function} createVector - Create a vector node.
- * @property {function} createVectors - Create multiple vector nodes.
- * @property {function} createLine - Create a line node.
- */
 import { boolean_operation } from './node/node-misc.js';
 
-/**
- * Unified handler for RESIZE_NODE plugin command.
- * Accepts both { resize }, { resizes }, or flat { nodeId, width, height }.
- * @function resizeNodeUnified
- * @param {object} params
- * @returns {Promise<any>}
- */
-async function resizeNodeUnified(params) {
-  // These functions are not imported above, but assumed to be available in the original codebase.
-  // If not, they should be imported from their respective modules.
-  if (params && (params.resize || params.resizes)) {
-    return shapeOperations.resizeNode(params);
-  } else {
-    return shapeOperations.resizeNodes({ resizes: [params] });
+async function setMask(params) {
+  // Support both single and batch
+  const ops = Array.isArray(params.operations)
+    ? params.operations
+    : (params.targetNodeId && params.maskNodeId
+        ? [{ targetNodeId: params.targetNodeId, maskNodeId: params.maskNodeId, channelId: params.channelId }]
+        : []);
+  const results = [];
+  for (const op of ops) {
+    try {
+      const { targetNodeId, maskNodeId } = op;
+      const targetNode = figma.getNodeById(targetNodeId);
+      const maskNode = figma.getNodeById(maskNodeId);
+
+      if (!targetNode || !maskNode) {
+        results.push({
+          success: false,
+          error: "One or both nodes not found",
+          targetNodeId,
+          maskNodeId
+        });
+        continue;
+      }
+
+      // Only allow masking for rectangles, ellipses, polygons, vectors, frames, groups
+      const validTargetTypes = ["RECTANGLE", "ELLIPSE", "POLYGON", "FRAME", "GROUP", "VECTOR"];
+      const validMaskTypes = ["RECTANGLE", "ELLIPSE", "POLYGON", "VECTOR"];
+      if (!validTargetTypes.includes(targetNode.type) || !validMaskTypes.includes(maskNode.type)) {
+        results.push({
+          success: false,
+          error: "Invalid node types for masking operation",
+          targetNodeId,
+          maskNodeId
+        });
+        continue;
+      }
+
+      // Create a frame to contain the masked result
+      const maskFrame = figma.createFrame();
+      maskFrame.name = `Masked_${targetNode.name || targetNodeId}`;
+      maskFrame.x = targetNode.x;
+      maskFrame.y = targetNode.y;
+      maskFrame.resize(targetNode.width, targetNode.height);
+
+      // Clone the target and mask nodes
+      const clonedTarget = targetNode.clone();
+      clonedTarget.x = 0;
+      clonedTarget.y = 0;
+      maskFrame.appendChild(clonedTarget);
+
+      const clonedMask = maskNode.clone();
+      clonedMask.x = maskNode.x - targetNode.x;
+      clonedMask.y = maskNode.y - targetNode.y;
+      maskFrame.appendChild(clonedMask);
+
+      // Apply the mask
+      clonedTarget.isMask = false;
+      clonedMask.isMask = true;
+
+      // Insert the masked frame in the same parent as the target
+      const parent = targetNode.parent;
+      const targetIndex = parent.children.indexOf(targetNode);
+      parent.insertChild(targetIndex, maskFrame);
+
+      // Remove original nodes
+      targetNode.remove();
+      maskNode.remove();
+
+      // Select the new masked group
+      figma.currentPage.selection = [maskFrame];
+
+      results.push({
+        success: true,
+        message: "Mask applied successfully",
+        nodeId: maskFrame.id,
+        targetNodeId,
+        maskNodeId
+      });
+    } catch (error) {
+      results.push({
+        success: false,
+        error: error && error.message ? error.message : String(error)
+      });
+    }
   }
+  return results;
 }
 
 export const shapeOperations = {
@@ -86,13 +145,6 @@ export const shapeOperations = {
   boolean: boolean_operation,
   resizeNodeUnified,
 
-  /**
-   * Unified handler for CREATE_VECTOR plugin command.
-   * Accepts both { vector }, { vectors }, or flat { x, y, ... }.
-   * @function createVectorUnified
-   * @param {object} params
-   * @returns {Promise<any>}
-   */
   async createVectorUnified(params) {
     if (params && (params.vector || params.vectors)) {
       return shapeOperations.createVector(params);
@@ -101,13 +153,6 @@ export const shapeOperations = {
     }
   },
 
-  /**
-   * Unified handler for SET_CORNER_RADIUS plugin command.
-   * Accepts both { radii }, { options }, or flat { nodeId, ... }.
-   * @function setCornerRadiusUnified
-   * @param {object} params
-   * @returns {Promise<any>}
-   */
   async setCornerRadiusUnified(params) {
     if (params && (params.radii || params.options)) {
       return shapeOperations.setNodeCornerRadii(params);
@@ -116,13 +161,6 @@ export const shapeOperations = {
     }
   },
 
-  /**
-   * Unified handler for CREATE_FRAME plugin command.
-   * Accepts both { frame }, { frames }, or flat { x, y, ... }.
-   * @function createFrameUnified
-   * @param {object} params
-   * @returns {Promise<any>}
-   */
   async createFrameUnified(params) {
     if (params && (params.frame || params.frames)) {
       return shapeOperations.createFrame(params);
@@ -131,13 +169,6 @@ export const shapeOperations = {
     }
   },
 
-  /**
-   * Unified handler for CREATE_RECTANGLE plugin command.
-   * Accepts both { rectangle }, { rectangles }, or flat { x, y, ... }.
-   * @function createRectangleUnified
-   * @param {object} params
-   * @returns {Promise<any>}
-   */
   async createRectangleUnified(params) {
     if (params && (params.rectangle || params.rectangles)) {
       return shapeOperations.createRectangle(params);
@@ -146,13 +177,6 @@ export const shapeOperations = {
     }
   },
 
-  /**
-   * Unified handler for ROTATE_NODE plugin command.
-   * Rotates a node around a specified pivot.
-   * @function rotateNodeUnified
-   * @param {object} params - { nodeId, angle, pivot, pivotPoint }
-   * @returns {Promise<any>}
-   */
   async rotateNodeUnified(params) {
     const { nodeId, angle, pivot = "center", pivotPoint } = params;
     const node = await figma.getNodeByIdAsync(nodeId);
@@ -163,7 +187,6 @@ export const shapeOperations = {
       throw new Error("Node does not support rotation or positioning");
     }
 
-    // Helper to resolve pivot coordinates
     function getPivotCoords(node, pivot, pivotPoint) {
       switch (pivot) {
         case "center":
@@ -184,25 +207,16 @@ export const shapeOperations = {
       }
     }
 
-    // 1. Get pivot coordinates
     const pivotCoords = getPivotCoords(node, pivot, pivotPoint);
-
-    // 2. Calculate offset from pivot to node's top-left
     const dx = node.x - pivotCoords.x;
     const dy = node.y - pivotCoords.y;
-
-    // 3. Rotate the offset
     const rad = (angle - (node.rotation || 0)) * Math.PI / 180;
     const cos = Math.cos(rad);
     const sin = Math.sin(rad);
     const rotatedDx = dx * cos - dy * sin;
     const rotatedDy = dx * sin + dy * cos;
-
-    // 4. Compute new node position so pivot stays fixed
     node.x = pivotCoords.x + rotatedDx;
     node.y = pivotCoords.y + rotatedDy;
-
-    // 5. Set rotation
     node.rotation = angle;
 
     return {
@@ -214,6 +228,7 @@ export const shapeOperations = {
       y: node.y,
       success: true
     };
-  }
-  // Note: If any legacy batch/single functions remain, remove them.
+  },
+
+  setMask
 };

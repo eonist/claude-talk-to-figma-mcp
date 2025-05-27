@@ -251,6 +251,25 @@ export const shapeCommands = {
   },
 
   /**
+   * Applies a mask (single or batch) in Figma.
+   * @param {object} params - { targetNodeId, maskNodeId, channelId? } or { operations: [ ... ] }
+   * @returns {Promise<any>} Result(s) of the mask operation(s)
+   */
+  async setMask(
+    this: FigmaClient,
+    params: { targetNodeId: string; maskNodeId: string; channelId?: string }
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_MASK, params);
+  },
+
+  async setMaskBatch(
+    this: FigmaClient,
+    params: { operations: Array<{ targetNodeId: string; maskNodeId: string; channelId?: string }> }
+  ): Promise<any> {
+    return this.executeCommand(MCP_COMMANDS.SET_MASK, params);
+  },
+
+  /**
    * Retrieves a single vector node by ID.
    */
   async getVector(
