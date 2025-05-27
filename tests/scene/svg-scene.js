@@ -123,8 +123,8 @@ async function create_svg_from_raw(parentId, svgText, name) {
  * @param {string} color - CSS color string (e.g. "#ff0000")
  */
 async function set_fill_color(nodeId, color) {
-  // Convert hex to Figma RGBA
-  function hexToRgba(hex) {
+  // Convert hex to Figma RGBA with alpha
+  function hexToRgbaObj(hex) {
     let c = hex.replace("#", "");
     if (c.length === 3) c = c.split("").map((x) => x + x).join("");
     const num = parseInt(c, 16);
@@ -135,17 +135,14 @@ async function set_fill_color(nodeId, color) {
       a: 1
     };
   }
-  const rgba = hexToRgba(color);
+  const rgba = hexToRgbaObj(color);
   await runStep({
     ws,
     channel,
     command: "set_fill_and_stroke",
     params: {
       nodeId,
-      fill: {
-        type: "SOLID",
-        color: rgba
-      }
+      fillColor: rgba
     },
     assert: (response) => true,
     label: `set_fill_color (${nodeId})`
