@@ -120,6 +120,8 @@ async function create_image_from_base64(parentId, base64Data, name, targetSize =
   const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
   const nodeId = ids && ids.length > 0 ? ids[0] : null;
   if (nodeId) {
+    console.log(`[TEST] Starting resize process for ${name} (nodeId: ${nodeId})`);
+    
     // Get current node dimensions to calculate proper aspect ratio
     const nodeInfoRes = await runStep({
       ws,
@@ -130,19 +132,33 @@ async function create_image_from_base64(parentId, base64Data, name, targetSize =
       label: `get_node_info for resize (${nodeId})`
     });
 
+    console.log(`[TEST] get_node_info response for ${name}:`, JSON.stringify(nodeInfoRes.response, null, 2));
+    
     const nodeInfo = nodeInfoRes.response;
+    console.log(`[TEST] nodeInfo exists:`, !!nodeInfo);
+    console.log(`[TEST] nodeInfo.document exists:`, !!(nodeInfo && nodeInfo.document));
+    console.log(`[TEST] nodeInfo.document.absoluteBoundingBox exists:`, !!(nodeInfo && nodeInfo.document && nodeInfo.document.absoluteBoundingBox));
+    
     if (nodeInfo && nodeInfo.document && nodeInfo.document.absoluteBoundingBox) {
       const currentWidth = nodeInfo.document.absoluteBoundingBox.width;
       const currentHeight = nodeInfo.document.absoluteBoundingBox.height;
+      console.log(`[TEST] Current dimensions for ${name}: ${currentWidth}x${currentHeight}`);
 
       // Calculate scale to fit within targetSize x targetSize box without stretching
       // (Preserve aspect ratio, do not force square)
       const scale = Math.min(targetSize / currentWidth, targetSize / currentHeight);
       const newWidth = currentWidth * scale;
       const newHeight = currentHeight * scale;
+      console.log(`[TEST] Calculated scale for ${name}: ${scale}`);
+      console.log(`[TEST] New dimensions for ${name}: ${newWidth}x${newHeight}`);
 
       // Only resize if the new size is different (avoid unnecessary resize)
-      if (Math.abs(newWidth - currentWidth) > 0.1 || Math.abs(newHeight - currentHeight) > 0.1) {
+      const widthDiff = Math.abs(newWidth - currentWidth);
+      const heightDiff = Math.abs(newHeight - currentHeight);
+      console.log(`[TEST] Size differences for ${name}: width=${widthDiff}, height=${heightDiff}`);
+      
+      if (widthDiff > 0.1 || heightDiff > 0.1) {
+        console.log(`[TEST] Proceeding with resize for ${name} (differences exceed 0.1)`);
         await runStep({
           ws,
           channel,
@@ -155,8 +171,21 @@ async function create_image_from_base64(parentId, base64Data, name, targetSize =
             response["0"].nodeId === nodeId,
           label: `resize_image_node (${name}) to ${newWidth.toFixed(1)}x${newHeight.toFixed(1)}`
         });
+        console.log(`[TEST] Resize completed for ${name}`);
+      } else {
+        console.log(`[TEST] Skipping resize for ${name} (differences too small)`);
+      }
+    } else {
+      console.log(`[TEST] Cannot resize ${name} - missing nodeInfo structure`);
+      if (nodeInfo) {
+        console.log(`[TEST] Available nodeInfo keys for ${name}:`, Object.keys(nodeInfo));
+        if (nodeInfo.document) {
+          console.log(`[TEST] Available document keys for ${name}:`, Object.keys(nodeInfo.document));
+        }
       }
     }
+  } else {
+    console.log(`[TEST] No nodeId returned for ${name}`);
   }
   return nodeId;
 }
