@@ -117,16 +117,16 @@ async function create_svg_from_raw(parentId, svgText, name, targetSize = 50) {
       const currentHeight = nodeInfo.height;
       const aspectRatio = currentWidth / currentHeight;
       
-      // Calculate new dimensions maintaining aspect ratio
+      // Calculate new dimensions to fit within targetSize x targetSize box
       let newWidth, newHeight;
-      if (aspectRatio >= 1) {
-        // Wider than tall - fit to width
+      if (currentWidth > currentHeight) {
+        // Wider than tall - scale width to targetSize
         newWidth = targetSize;
-        newHeight = targetSize / aspectRatio;
+        newHeight = (currentHeight / currentWidth) * targetSize;
       } else {
-        // Taller than wide - fit to height
+        // Taller than wide - scale height to targetSize  
         newHeight = targetSize;
-        newWidth = targetSize * aspectRatio;
+        newWidth = (currentWidth / currentHeight) * targetSize;
       }
       
       // Resize the node maintaining aspect ratio
@@ -190,7 +190,7 @@ async function create_svg_from_url(parentId, url, name, width = 50, height = 50)
 }
 
 /**
- * Helper to set the fill color on a node's children (for SVG groups).
+ * Helper to set the fill color on a node's children recursively (for SVG groups).
  * @param {string} nodeId
  * @param {string} color - CSS color string (e.g. "#ff0000")
  */
@@ -209,46 +209,45 @@ async function set_fill_color(nodeId, color) {
   }
   const rgba = hexToRgbaObj(color);
   
-  // Get node info to find children
-  const nodeInfoRes = await runStep({
-    ws,
-    channel,
-    command: "get_node_info",
-    params: { nodeId },
-    assert: (response) => response && response.id === nodeId,
-    label: `get_node_info for fill (${nodeId})`
-  });
-  
-  const nodeInfo = nodeInfoRes.response;
-  if (nodeInfo && nodeInfo.children && nodeInfo.children.length > 0) {
-    // Apply fill to all children (vector paths)
-    for (const child of nodeInfo.children) {
-      await runStep({
-        ws,
-        channel,
-        command: "set_fill_and_stroke",
-        params: {
-          nodeId: child.id,
-          fillColor: rgba
-        },
-        assert: (response) => true,
-        label: `set_fill_color child (${child.id})`
-      });
-    }
-  } else {
-    // Fallback: apply to the node itself if no children
-    await runStep({
+  // Recursive function to apply fill to all vector children
+  async function applyFillRecursively(currentNodeId) {
+    // Get node info to find children
+    const nodeInfoRes = await runStep({
       ws,
       channel,
-      command: "set_fill_and_stroke",
-      params: {
-        nodeId,
-        fillColor: rgba
-      },
-      assert: (response) => true,
-      label: `set_fill_color fallback (${nodeId})`
+      command: "get_node_info",
+      params: { nodeId: currentNodeId },
+      assert: (response) => response && response.id === currentNodeId,
+      label: `get_node_info for fill (${currentNodeId})`
     });
+    
+    const nodeInfo = nodeInfoRes.response;
+    if (nodeInfo && nodeInfo.children && nodeInfo.children.length > 0) {
+      // Apply fill to all direct children
+      for (const child of nodeInfo.children) {
+        // Apply fill to this child
+        await runStep({
+          ws,
+          channel,
+          command: "set_fill_and_stroke",
+          params: {
+            nodeId: child.id,
+            fillColor: rgba
+          },
+          assert: (response) => true,
+          label: `set_fill_color child (${child.id}) type:${child.type}`
+        });
+        
+        // If child has children, recurse
+        if (child.children && child.children.length > 0) {
+          await applyFillRecursively(child.id);
+        }
+      }
+    }
   }
+  
+  // Start recursive fill application
+  await applyFillRecursively(nodeId);
 }
 
 // Color definitions
