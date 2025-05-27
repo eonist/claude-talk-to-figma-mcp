@@ -162,7 +162,8 @@ async function create_image_from_base64(parentId, base64Data, name, targetSize =
 const IMAGE_URLS = {
   cat: "https://i.imgur.com/CzXTtJV.jpg",
   bird: "https://farm4.staticflickr.com/3075/3168662394_7d7103de7d_z_d.jpg",
-  fox: "https://farm4.staticflickr.com/3852/14447103450_2d0ff8802b_z_d.jpg"
+  fox: "https://farm4.staticflickr.com/3852/14447103450_2d0ff8802b_z_d.jpg",
+  bridge: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Golden_Gate_Bridge_as_seen_from_Battery_East.jpg/2560px-Golden_Gate_Bridge_as_seen_from_Battery_East.jpg"
 };
 
 // --- Image creation functions for debugging ---
@@ -208,6 +209,20 @@ export async function create_img3(frameId) {
   await create_image_from_base64(frameId, base64Data, name);
 }
 
+export async function create_img4(frameId) {
+  const url = IMAGE_URLS.bridge;
+  const name = "Golden Gate Bridge";
+  let base64Data;
+  try {
+    base64Data = await fetch_image_base64(url);
+  } catch (e) {
+    console.warn(`fetch_image_base64 (${name}): ${e.message}`);
+    return;
+  }
+  console.log("image-scene: base64Data length", base64Data.length);
+  await create_image_from_base64(frameId, base64Data, name);
+}
+
 /**
  * Main test function for Image scene.
  * Comment out any calls below to toggle creation of individual images for debugging.
@@ -217,4 +232,5 @@ export async function imageScene() {
   await create_img1(frameId);
   await create_img2(frameId);
   await create_img3(frameId);
+  await create_img4(frameId);
 }
