@@ -77,7 +77,7 @@ async function fetch_svg(url) {
 }
 
 // Helper to create an SVG node from raw SVG markup and return its nodeId (tests raw SVG support)
-async function create_svg_from_raw(parentId, svgText, name, width = 50, height = 50) {
+async function create_svg_from_raw(parentId, svgText, name, targetSize = 50) {
   const res = await runStep({
     ws,
     channel,
@@ -101,19 +101,48 @@ async function create_svg_from_raw(parentId, svgText, name, width = 50, height =
   const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
   const nodeId = ids && ids.length > 0 ? ids[0] : null;
   if (nodeId) {
-    // Resize the node after creation using MCP
-    await runStep({
+    // Get current node dimensions to maintain aspect ratio
+    const nodeInfoRes = await runStep({
       ws,
       channel,
-      command: "resize_node",
-      params: { nodeId, width, height },
-      assert: (response) =>
-        response &&
-        response["0"] &&
-        response["0"].success === true &&
-        response["0"].nodeId === nodeId,
-      label: `resize_svg_node (${name})`
+      command: "get_node_info",
+      params: { nodeId },
+      assert: (response) => response && response.id === nodeId,
+      label: `get_node_info for resize (${nodeId})`
     });
+    
+    const nodeInfo = nodeInfoRes.response;
+    if (nodeInfo && nodeInfo.width && nodeInfo.height) {
+      const currentWidth = nodeInfo.width;
+      const currentHeight = nodeInfo.height;
+      const aspectRatio = currentWidth / currentHeight;
+      
+      // Calculate new dimensions maintaining aspect ratio
+      let newWidth, newHeight;
+      if (aspectRatio >= 1) {
+        // Wider than tall - fit to width
+        newWidth = targetSize;
+        newHeight = targetSize / aspectRatio;
+      } else {
+        // Taller than wide - fit to height
+        newHeight = targetSize;
+        newWidth = targetSize * aspectRatio;
+      }
+      
+      // Resize the node maintaining aspect ratio
+      await runStep({
+        ws,
+        channel,
+        command: "resize_node",
+        params: { nodeId, width: newWidth, height: newHeight },
+        assert: (response) =>
+          response &&
+          response["0"] &&
+          response["0"].success === true &&
+          response["0"].nodeId === nodeId,
+        label: `resize_svg_node (${name}) to ${newWidth.toFixed(1)}x${newHeight.toFixed(1)}`
+      });
+    }
   }
   return nodeId;
 }
@@ -161,7 +190,7 @@ async function create_svg_from_url(parentId, url, name, width = 50, height = 50)
 }
 
 /**
- * Helper to set the fill color on a node by nodeId.
+ * Helper to set the fill color on a node's children (for SVG groups).
  * @param {string} nodeId
  * @param {string} color - CSS color string (e.g. "#ff0000")
  */
@@ -179,17 +208,47 @@ async function set_fill_color(nodeId, color) {
     };
   }
   const rgba = hexToRgbaObj(color);
-  await runStep({
+  
+  // Get node info to find children
+  const nodeInfoRes = await runStep({
     ws,
     channel,
-    command: "set_fill_and_stroke",
-    params: {
-      nodeId,
-      fillColor: rgba
-    },
-    assert: (response) => true,
-    label: `set_fill_color (${nodeId})`
+    command: "get_node_info",
+    params: { nodeId },
+    assert: (response) => response && response.id === nodeId,
+    label: `get_node_info for fill (${nodeId})`
   });
+  
+  const nodeInfo = nodeInfoRes.response;
+  if (nodeInfo && nodeInfo.children && nodeInfo.children.length > 0) {
+    // Apply fill to all children (vector paths)
+    for (const child of nodeInfo.children) {
+      await runStep({
+        ws,
+        channel,
+        command: "set_fill_and_stroke",
+        params: {
+          nodeId: child.id,
+          fillColor: rgba
+        },
+        assert: (response) => true,
+        label: `set_fill_color child (${child.id})`
+      });
+    }
+  } else {
+    // Fallback: apply to the node itself if no children
+    await runStep({
+      ws,
+      channel,
+      command: "set_fill_and_stroke",
+      params: {
+        nodeId,
+        fillColor: rgba
+      },
+      assert: (response) => true,
+      label: `set_fill_color fallback (${nodeId})`
+    });
+  }
 }
 
 // Color definitions
@@ -204,11 +263,17 @@ const COLORS = {
 
 // --- Logo SVGs (Apple, Instagram, GitHub) ---
 export async function createLogoSVG1(frameId) {
-  // Test SVG URL support
   const url = "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg";
   const name = "Apple Logo";
   const color = COLORS.red;
-  const nodeId = await create_svg_from_url(frameId, url, name);
+  let svgText;
+  try {
+    svgText = await fetch_svg(url);
+  } catch (e) {
+    console.warn(`fetch_svg (${name}): ${e.message}`);
+    return;
+  }
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
   if (nodeId) await set_fill_color(nodeId, color);
 }
 
@@ -281,8 +346,8 @@ export async function createIconSVG3(frameId) {
  * Comment out any calls below to toggle creation of individual SVGs for debugging.
  */
 export async function svgScene() {
-  //const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
-  const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
+  const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
+  //const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
 
   // Add logo SVGs to logo frame
   await createLogoSVG1(logoFrameId);
