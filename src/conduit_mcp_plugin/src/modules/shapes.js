@@ -27,6 +27,7 @@ import { createPolygon } from "./shape/shapes-polygon.js";
 import { createStar } from "./shape/shapes-star.js";
 import { createVector, createVectors } from "./shape/shapes-vector.js";
 import { createLine } from "./shape/shapes-line.js";
+import { resizeNode, resizeNodes } from "./node/node-modify.js";
 
 export {
   createRectangle,
@@ -42,6 +43,23 @@ export {
 };
 
 import { boolean_operation } from './node/node-misc.js';
+
+/**
+ * Unified handler for RESIZE_NODE plugin command.
+ * Accepts both { resize }, { resizes }, or flat { nodeId, width, height }.
+ * @function resizeNodeUnified
+ * @param {object} params
+ * @returns {Promise<any>}
+ */
+async function resizeNodeUnified(params) {
+  if (params && (params.resize || params.resizes)) {
+    // If batch, call resizeNodes
+    return resizeNodes(params);
+  } else {
+    // Single node resize
+    return resizeNode(params);
+  }
+}
 
 async function setMask(params) {
   // Support both single and batch

@@ -320,6 +320,57 @@ function create_bookmark(parentId = null) {
   });
 }
 
+/**
+ * create_mask: Creates a rectangle and a star inside the given frame, applies set_mask, and logs all steps.
+ * @param {string} frameId - The parent frame ID to place the shapes inside
+ * @returns {Promise<string|null>} The nodeId of the masked group, or null on failure
+ */
+export async function create_mask(frameId) {
+  console.log("create_mask: Starting mask test step...");
+
+  // Create rectangle
+  const rectRes = await runStep({
+    ws, channel,
+    command: 'create_rectangle',
+    params: { rectangle: { x: 10, y: 10, width: 100, height: 80, parentId: frameId, name: "MaskRect" } },
+    assert: r => ({ pass: Array.isArray(r.ids) && r.ids.length > 0, response: r }),
+    label: "create_mask: rectangle"
+  });
+  const rectId = rectRes.response?.ids?.[0];
+  console.log("create_mask: Rectangle ID:", rectId);
+
+  // Create star
+  const starRes = await runStep({
+    ws, channel,
+    command: 'create_star',
+    params: { star: { x: 30, y: 30, points: 5, width: 80, height: 80, parentId: frameId, name: "MaskStar" } },
+    assert: r => ({ pass: Array.isArray(r.ids) && r.ids.length > 0, response: r }),
+    label: "create_mask: star"
+  });
+  const starId = starRes.response?.ids?.[0];
+  console.log("create_mask: Star ID:", starId);
+
+  // Apply mask
+  if (rectId && starId) {
+    const maskRes = await runStep({
+      ws, channel,
+      command: 'set_mask',
+      params: { targetNodeId: rectId, maskNodeId: starId },
+      assert: r => {
+        const res = Array.isArray(r) ? r[0] : r;
+        const pass = res && res.success === true && typeof res.nodeId === "string";
+        return { pass, reason: pass ? undefined : JSON.stringify(res), response: r };
+      },
+      label: `create_mask: mask star (${starId}) to rectangle (${rectId})`
+    });
+    console.log("create_mask: Mask result:", maskRes);
+    return maskRes.response?.[0]?.nodeId || null;
+  } else {
+    console.log("create_mask: Failed to create shapes for masking.");
+    return null;
+  }
+}
+
 export async function shapeScene(results) {
   // Create frame first and store its ID
   const frameResult = await create_frame();
@@ -341,7 +392,10 @@ export async function shapeScene(results) {
   results.push(await create_bookmark(frameId));
   results.push(await create_heart(frameId));
   results.push(await create_lightning_bolt(frameId));
-  
+
+  // Run the mask test as a separate step, using the frameId for parentId
+  await create_mask(frameId);
+
   // Apply autolayout to create horizontal flow with wrapping
   results.push(await apply_autolayout(frameId));
 }

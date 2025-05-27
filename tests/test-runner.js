@@ -80,7 +80,7 @@ async function main() {
 
   // Define the sequence of scenes
   const sequence = [
-    // shapeScene, 
+    shapeScene
     // textScene, 
     // styleScene,
     // transformScene,
@@ -88,7 +88,7 @@ async function main() {
     // flattenScene,
     // effectScene,
     // svgScene,
-    imageScene
+    //imageScene
   ];
   const results = [];
   for (const scene of sequence) {
