@@ -117,8 +117,11 @@ async function create_image_from_base64(parentId, base64Data, name, targetSize =
     label: `create_image_from_base64 (${name})`
   });
   // Get the nodeId of the created image node
+  console.log(`[TEST] set_image response for ${name}:`, JSON.stringify(res.response, null, 2));
   const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
+  console.log(`[TEST] Extracted ids for ${name}:`, ids);
   const nodeId = ids && ids.length > 0 ? ids[0] : null;
+  console.log(`[TEST] Final nodeId for ${name}:`, nodeId);
   if (nodeId) {
     console.log(`[TEST] Starting resize process for ${name} (nodeId: ${nodeId})`);
     
@@ -265,4 +268,8 @@ export async function imageScene() {
   await create_img2(frameId);
   await create_img3(frameId);
   await create_img4(frameId);
+  
+  // Add delay for large image processing
+  console.log("[TEST] Waiting for large image processing to complete...");
+  await new Promise(resolve => setTimeout(resolve, 3000));
 }
