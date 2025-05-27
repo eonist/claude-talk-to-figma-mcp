@@ -19,6 +19,72 @@
  */
 
 /**
+ * Extract image dimensions from image bytes.
+ * Supports JPEG, PNG, WebP, and GIF formats.
+ * @param {Uint8Array} bytes - The image bytes
+ * @returns {{ width: number, height: number } | null} Dimensions or null if unable to parse
+ */
+function getImageDimensions(bytes) {
+  try {
+    // PNG format check
+    if (bytes.length >= 24 && 
+        bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) {
+      // PNG header: bytes 16-19 = width, bytes 20-23 = height (big-endian)
+      const width = (bytes[16] << 24) | (bytes[17] << 16) | (bytes[18] << 8) | bytes[19];
+      const height = (bytes[20] << 24) | (bytes[21] << 16) | (bytes[22] << 8) | bytes[23];
+      return { width, height };
+    }
+    
+    // JPEG format check
+    if (bytes.length >= 4 && bytes[0] === 0xFF && bytes[1] === 0xD8) {
+      let offset = 2;
+      while (offset < bytes.length - 8) {
+        if (bytes[offset] === 0xFF) {
+          const marker = bytes[offset + 1];
+          // SOF0, SOF1, SOF2 markers contain dimensions
+          if (marker === 0xC0 || marker === 0xC1 || marker === 0xC2) {
+            const height = (bytes[offset + 5] << 8) | bytes[offset + 6];
+            const width = (bytes[offset + 7] << 8) | bytes[offset + 8];
+            return { width, height };
+          }
+          // Skip to next segment
+          const segmentLength = (bytes[offset + 2] << 8) | bytes[offset + 3];
+          offset += segmentLength + 2;
+        } else {
+          offset++;
+        }
+      }
+    }
+    
+    // WebP format check
+    if (bytes.length >= 30 && 
+        bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 &&
+        bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) {
+      // Simple WebP format
+      if (bytes[12] === 0x56 && bytes[13] === 0x50 && bytes[14] === 0x38 && bytes[15] === 0x20) {
+        const width = ((bytes[26] | (bytes[27] << 8) | (bytes[28] << 16)) & 0x3FFF) + 1;
+        const height = ((bytes[28] >> 6) | (bytes[29] << 2) | ((bytes[30] & 0x3F) << 10)) + 1;
+        return { width, height };
+      }
+    }
+    
+    // GIF format check
+    if (bytes.length >= 10 && 
+        bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) {
+      // GIF header: bytes 6-7 = width, bytes 8-9 = height (little-endian)
+      const width = bytes[6] | (bytes[7] << 8);
+      const height = bytes[8] | (bytes[9] << 8);
+      return { width, height };
+    }
+    
+    return null;
+  } catch (error) {
+    console.warn('Error parsing image dimensions:', error);
+    return null;
+  }
+}
+
+/**
  * Inserts a single image into the document.
  * Fetches image bytes from a URL and places them in a new rectangle node.
  *
@@ -93,16 +159,36 @@ export async function insertImage(params) {
     } else {
       throw new Error("Must provide either 'url' or 'imageData' for each image.");
     }
+    // Extract image dimensions from bytes
+    const imageDimensions = getImageDimensions(imageBytes);
+    console.log('Parsed image dimensions:', imageDimensions);
+    
     // Create Figma image and a rectangle to hold it
     const image = figma.createImage(imageBytes);
+    console.log('Image created - API dimensions:', image.width, 'x', image.height);
+    
     const rect = figma.createRectangle();
     rect.x = x;
     rect.y = y;
+    
+    console.log('Input parameters - width:', width, 'height:', height);
+    
     if (width !== undefined) {
       // Use provided dimensions or square fallback
       const h = height !== undefined ? height : width;
+      console.log('Using provided dimensions:', width, 'x', h);
       rect.resize(width, h);
+    } else if (imageDimensions) {
+      // Use image's natural dimensions when no width/height provided
+      console.log('Using parsed image dimensions:', imageDimensions.width, 'x', imageDimensions.height);
+      rect.resize(imageDimensions.width, imageDimensions.height);
+    } else {
+      // Fallback to a reasonable default if we can't parse dimensions
+      console.log('Could not parse image dimensions, using fallback size: 200x200');
+      rect.resize(200, 200);
     }
+    
+    console.log('Final rectangle size:', rect.width, 'x', rect.height);
     rect.name = name;
     rect.fills = [{
       type: "IMAGE",
