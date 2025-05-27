@@ -31,12 +31,12 @@ import { setStyle } from './styles/styles-set.js';
  * Unified style management for Figma: create, update, delete (PAINT, EFFECT, TEXT, GRID).
  * Used by MCP set_fill_and_stroke command.
  *
- * @param {object} params - { nodeId, nodeIds, fillColor, strokeColor }
+ * @param {object} params - { nodeId, nodeIds, fillColor, strokeColor, strokeWeight }
  * @returns {Promise<object>} Result: { results: [...] }
  */
 async function setFillAndStrokeUnified(params) {
   console.log("💥 setFillAndStrokeUnified", params);
-  const { nodeId, nodeIds, fillColor, strokeColor } = params;
+  const { nodeId, nodeIds, fillColor, strokeColor, strokeWeight } = params;
   const ids = nodeIds || (nodeId ? [nodeId] : []);
   if (!ids.length) throw new Error("No node IDs provided");
   const results = [];
@@ -59,9 +59,13 @@ async function setFillAndStrokeUnified(params) {
         opacity: a
       }];
     }
+    if ("strokeWeight" in params && strokeWeight !== undefined) {
+      node.strokeWeight = strokeWeight;
+    }
     const result = { id };
     if ("fillColor" in params && fillColor) result.fill = node.fills;
     if ("strokeColor" in params && strokeColor) result.stroke = node.strokes;
+    if ("strokeWeight" in params && strokeWeight !== undefined) result.strokeWeight = node.strokeWeight;
     results.push(result);
   }
   return { results };

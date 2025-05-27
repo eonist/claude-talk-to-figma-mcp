@@ -413,7 +413,7 @@ export async function createIconSVG3(frameId) {
  * Comment out any calls below to toggle creation of individual SVGs for debugging.
  */
 export async function svgScene() {
-  //const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
+ //const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
   const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
 
   // Add logo SVGs to logo frame
