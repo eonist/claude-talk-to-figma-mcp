@@ -71,7 +71,13 @@ export async function insertImage(params) {
       if (imageData.startsWith("data:")) {
         base64 = imageData.split(",")[1];
       }
-      imageBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+      // Figma plugin environment may not support Uint8Array.from with a mapping function
+      const binaryStr = atob(base64);
+      const len = binaryStr.length;
+      imageBytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        imageBytes[i] = binaryStr.charCodeAt(i);
+      }
       console.log("🟠 insertImage: decoded imageBytes length", imageBytes.length);
     } else {
       throw new Error("Must provide either 'url' or 'imageData' for each image.");
