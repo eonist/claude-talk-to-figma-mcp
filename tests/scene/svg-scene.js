@@ -76,15 +76,7 @@ async function fetch_svg(url) {
   return await res.text();
 }
 
-/**
- * Helper to create an SVG node from raw SVG markup and return its nodeId.
- * @param {string} parentId
- * @param {string} svgText
- * @param {string} name
- * @param {number} [width=50] - Desired width of the SVG node
- * @param {number} [height=50] - Desired height of the SVG node
- * @returns {Promise<string>} nodeId
- */
+// Helper to create an SVG node from raw SVG markup and return its nodeId (tests raw SVG support)
 async function create_svg_from_raw(parentId, svgText, name, width = 50, height = 50) {
   const res = await runStep({
     ws,
@@ -104,6 +96,48 @@ async function create_svg_from_raw(parentId, svgText, name, width = 50, height =
       return Array.isArray(ids) && ids.length > 0;
     },
     label: `create_svg_from_raw (${name})`
+  });
+  // Get the nodeId of the created SVG node
+  const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
+  const nodeId = ids && ids.length > 0 ? ids[0] : null;
+  if (nodeId) {
+    // Resize the node after creation using MCP
+    await runStep({
+      ws,
+      channel,
+      command: "resize_node",
+      params: { nodeId, width, height },
+      assert: (response) =>
+        response &&
+        response["0"] &&
+        response["0"].success === true &&
+        response["0"].nodeId === nodeId,
+      label: `resize_svg_node (${name})`
+    });
+  }
+  return nodeId;
+}
+
+// Helper to create an SVG node from a URL (tests URL support)
+async function create_svg_from_url(parentId, url, name, width = 50, height = 50) {
+  const res = await runStep({
+    ws,
+    channel,
+    command: "set_svg_vector",
+    params: {
+      svg: {
+        svg: url, // Pass the URL as the 'svg' property
+        x: 0,
+        y: 0,
+        name,
+        parentId
+      }
+    },
+    assert: (response) => {
+      const ids = Array.isArray(response.ids) ? response.ids : response.nodeIds;
+      return Array.isArray(ids) && ids.length > 0;
+    },
+    label: `create_svg_from_url (${name})`
   });
   // Get the nodeId of the created SVG node
   const ids = Array.isArray(res.response?.ids) ? res.response.ids : res.response?.nodeIds;
@@ -170,47 +204,29 @@ const COLORS = {
 
 // --- Logo SVGs (Apple, Instagram, GitHub) ---
 export async function createLogoSVG1(frameId) {
+  // Test SVG URL support
   const url = "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg";
   const name = "Apple Logo";
   const color = COLORS.red;
-  let svgText;
-  try {
-    svgText = await fetch_svg(url);
-  } catch (e) {
-    console.warn(`fetch_svg (${name}): ${e.message}`);
-    return;
-  }
-  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  const nodeId = await create_svg_from_url(frameId, url, name);
   if (nodeId) await set_fill_color(nodeId, color);
 }
 
 export async function createLogoSVG2(frameId) {
+  // Test SVG URL support
   const url = "https://simpleicons.org/icons/instagram.svg";
   const name = "Instagram Logo";
   const color = COLORS.green;
-  let svgText;
-  try {
-    svgText = await fetch_svg(url);
-  } catch (e) {
-    console.warn(`fetch_svg (${name}): ${e.message}`);
-    return;
-  }
-  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  const nodeId = await create_svg_from_url(frameId, url, name);
   if (nodeId) await set_fill_color(nodeId, color);
 }
 
 export async function createLogoSVG3(frameId) {
+  // Test SVG URL support
   const url = "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg";
   const name = "GitHub Logo";
   const color = COLORS.blue;
-  let svgText;
-  try {
-    svgText = await fetch_svg(url);
-  } catch (e) {
-    console.warn(`fetch_svg (${name}): ${e.message}`);
-    return;
-  }
-  const nodeId = await create_svg_from_raw(frameId, svgText, name);
+  const nodeId = await create_svg_from_url(frameId, url, name);
   if (nodeId) await set_fill_color(nodeId, color);
 }
 
