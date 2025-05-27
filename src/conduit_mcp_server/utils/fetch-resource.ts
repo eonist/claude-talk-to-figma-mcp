@@ -3,8 +3,6 @@
  * Throws an error if the fetch fails or the response is not text.
  */
 
-import fetch from "node-fetch";
-
 /**
  * Fetches a text resource from a URL.
  * @param {string} url - The URL to fetch.

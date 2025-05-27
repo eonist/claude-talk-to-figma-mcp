@@ -80,14 +80,14 @@ async function main() {
 
   // Define the sequence of scenes
   const sequence = [
-    shapeScene
+    // shapeScene
     // textScene, 
     // styleScene,
     // transformScene,
     // booleanScene,
     // flattenScene,
     // effectScene,
-    // svgScene,
+     svgScene
     //imageScene
   ];
   const results = [];
