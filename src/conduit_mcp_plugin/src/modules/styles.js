@@ -31,22 +31,37 @@ import { setStyle } from './styles/styles-set.js';
  * Unified style management for Figma: create, update, delete (PAINT, EFFECT, TEXT, GRID).
  * Used by MCP set_fill_and_stroke command.
  *
- * @param {object} params - { nodeId, nodeIds, fill, stroke }
+ * @param {object} params - { nodeId, nodeIds, fillColor, strokeColor }
  * @returns {Promise<object>} Result: { results: [...] }
  */
 async function setFillAndStrokeUnified(params) {
-  const { nodeId, nodeIds, fill, stroke } = params;
+  console.log("💥 setFillAndStrokeUnified", params);
+  const { nodeId, nodeIds, fillColor, strokeColor } = params;
   const ids = nodeIds || (nodeId ? [nodeId] : []);
   if (!ids.length) throw new Error("No node IDs provided");
   const results = [];
   for (const id of ids) {
     const node = await figma.getNodeByIdAsync(id);
     if (!node) throw new Error(`Node not found: ${id}`);
-    if ("fill" in params) node.fills = Array.isArray(fill) ? fill : [fill];
-    if ("stroke" in params) node.strokes = Array.isArray(stroke) ? stroke : [stroke];
+    if ("fillColor" in params && fillColor) {
+      const { r, g, b, a } = fillColor;
+      node.fills = [{
+        type: "SOLID",
+        color: { r, g, b },
+        opacity: a
+      }];
+    }
+    if ("strokeColor" in params && strokeColor) {
+      const { r, g, b, a } = strokeColor;
+      node.strokes = [{
+        type: "SOLID",
+        color: { r, g, b },
+        opacity: a
+      }];
+    }
     const result = { id };
-    if ("fill" in params) result.fill = node.fills;
-    if ("stroke" in params) result.stroke = node.strokes;
+    if ("fillColor" in params && fillColor) result.fill = node.fills;
+    if ("strokeColor" in params && strokeColor) result.stroke = node.strokes;
     results.push(result);
   }
   return { results };

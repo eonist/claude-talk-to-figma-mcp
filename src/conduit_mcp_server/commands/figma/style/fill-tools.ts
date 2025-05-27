@@ -15,27 +15,7 @@ export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     MCP_COMMANDS.SET_FILL_AND_STROKE,
     "Sets fill and/or stroke color(s) for one or more nodes.",
-    {
-      nodeId: z.string()
-        .optional()
-        .describe("The unique Figma node ID to update. Provide either nodeId or nodeIds, not both."),
-      nodeIds: z.array(z.string())
-        .optional()
-        .describe("An array of Figma node IDs to update. Provide either nodeId or nodeIds, not both."),
-      fill: z.any()
-        .optional()
-        .describe("The fill color(s) to set. Can be a single fill or an array of fills."),
-      stroke: z.any()
-        .optional()
-        .describe("The stroke color(s) to set. Can be a single stroke or an array of strokes.")
-    },
-    {
-      title: "Set Fill and Stroke",
-      edgeCaseWarnings: [
-        "Provide either nodeId or nodeIds, not both.",
-        "At least one of fill or stroke must be provided."
-      ]
-    },
+    setFillAndStrokeSchema,
     async (params: { nodeId?: string; nodeIds?: string[]; fill?: any; stroke?: any }) => {
       if (!!params.nodeId === !!params.nodeIds) {
         throw new Error("Provide either nodeId or nodeIds, not both.");
@@ -66,20 +46,7 @@ export function registerFillTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
     MCP_COMMANDS.GET_FILL_AND_STROKE,
     "Gets fill and/or stroke color(s) for one or more nodes.",
-    {
-      nodeId: z.string()
-        .optional()
-        .describe("The unique Figma node ID to query. Provide either nodeId or nodeIds, not both."),
-      nodeIds: z.array(z.string())
-        .optional()
-        .describe("An array of Figma node IDs to query. Provide either nodeId or nodeIds, not both.")
-    },
-    {
-      title: "Get Fill and Stroke",
-      edgeCaseWarnings: [
-        "Provide either nodeId or nodeIds, not both."
-      ]
-    },
+    getFillAndStrokeSchema,
     async (params: { nodeId?: string; nodeIds?: string[] }) => {
       if (!!params.nodeId === !!params.nodeIds) {
         throw new Error("Provide either nodeId or nodeIds, not both.");
