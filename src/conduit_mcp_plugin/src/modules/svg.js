@@ -35,6 +35,7 @@ export async function insertSvgVector(params) {
   const ids = [];
   for (const cfg of svgsArr) {
     const { svg, x = 0, y = 0, name = "SVG Vector", parentId } = cfg || {};
+    console.log(svg);
     // Determine content: raw SVG text or URL fetch
     const content = svg.startsWith('http') ? await fetch(svg).then(res => res.text()) : svg;
     // Create vector nodes from SVG
