@@ -112,9 +112,9 @@ async function create_svg_from_raw(parentId, svgText, name, targetSize = 50) {
     });
     
     const nodeInfo = nodeInfoRes.response;
-    if (nodeInfo && nodeInfo.width && nodeInfo.height) {
-      const currentWidth = nodeInfo.width;
-      const currentHeight = nodeInfo.height;
+    if (nodeInfo && nodeInfo.document && nodeInfo.document.absoluteBoundingBox) {
+      const currentWidth = nodeInfo.document.absoluteBoundingBox.width;
+      const currentHeight = nodeInfo.document.absoluteBoundingBox.height;
       
       console.log(`Original dimensions for ${name}: ${currentWidth}x${currentHeight}`);
       
@@ -222,9 +222,9 @@ async function set_fill_color(nodeId, color) {
   console.log(`Node structure for ${nodeId}:`, JSON.stringify(nodeInfo, null, 2));
   
   // Apply fill ONLY to children (NOT to main node as specifically requested)
-  if (nodeInfo && nodeInfo.children && nodeInfo.children.length > 0) {
-    console.log(`Found ${nodeInfo.children.length} children, applying fill to all`);
-    for (const child of nodeInfo.children) {
+  if (nodeInfo && nodeInfo.document && nodeInfo.document.children && nodeInfo.document.children.length > 0) {
+    console.log(`Found ${nodeInfo.document.children.length} children, applying fill to all`);
+    for (const child of nodeInfo.document.children) {
       console.log(`Applying fill to child: ${child.id} (type: ${child.type})`);
       await runStep({
         ws,
@@ -343,8 +343,8 @@ export async function svgScene() {
 
   // Add logo SVGs to logo frame
   await createLogoSVG1(logoFrameId);
-  // await createLogoSVG2(logoFrameId);
-  // await createLogoSVG3(logoFrameId);
+  await createLogoSVG2(logoFrameId);
+  await createLogoSVG3(logoFrameId);
 
   // Add icon SVGs to icon frame
   //await createIconSVG1(iconFrameId);
