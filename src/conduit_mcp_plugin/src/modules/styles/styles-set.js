@@ -117,3 +117,6 @@ export async function setStyle(entry) {
   // Invalid
   return { styleId, styleType, success: false, error: "Invalid setStyle operation" };
 }
+
+// Ensure named export for module systems
+export { setFillAndStrokeUnified };
