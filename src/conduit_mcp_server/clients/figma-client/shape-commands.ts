@@ -240,11 +240,13 @@ export const shapeCommands = {
   ): Promise<BaseFigmaNode> {
     const parentIdString = params.parentId ? ensureNodeIdIsString(params.parentId) : undefined;
     return this.executeCommand(MCP_COMMANDS.SET_SVG_VECTOR, {
-      svg: params.svg,
-      x: params.x || 0,
-      y: params.y || 0,
-      name: params.name || "SVG Vector",
-      parentId: parentIdString
+      svg: {
+        svg: params.svg,
+        x: params.x || 0,
+        y: params.y || 0,
+        name: params.name || "SVG Vector",
+        parentId: parentIdString
+      }
     });
   },
 
