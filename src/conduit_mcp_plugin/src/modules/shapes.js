@@ -69,13 +69,22 @@ async function setMask(params) {
         ? [{ targetNodeId: params.targetNodeId, maskNodeId: params.maskNodeId, channelId: params.channelId }]
         : []);
   const results = [];
+
+  if (!ops.length) {
+    console.log("setMask: No operations provided");
+    return [{ success: false, error: "No operations provided" }];
+  }
+
   for (const op of ops) {
     try {
       const { targetNodeId, maskNodeId } = op;
+      console.log(`setMask: Processing targetNodeId=${targetNodeId}, maskNodeId=${maskNodeId}`);
+
       const targetNode = await figma.getNodeByIdAsync(targetNodeId);
       const maskNode = await figma.getNodeByIdAsync(maskNodeId);
 
       if (!targetNode || !maskNode) {
+        console.log("setMask: One or both nodes not found", { targetNodeId, maskNodeId });
         results.push({
           success: false,
           error: "One or both nodes not found",
@@ -98,12 +107,51 @@ async function setMask(params) {
         "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", 
         "LINE", "FRAME", "GROUP"
       ];
+      console.log(`setMask: targetNode.type=${targetNode.type}, maskNode.type=${maskNode.type}`);
       if (!validTargetTypes.includes(targetNode.type) || !validMaskTypes.includes(maskNode.type)) {
+        console.log("setMask: Invalid node types for masking operation", { targetNodeType: targetNode.type, maskNodeType: maskNode.type });
         results.push({
           success: false,
           error: "Invalid node types for masking operation",
           targetNodeId,
           maskNodeId
+        });
+        continue;
+      }
+
+      // Clone nodes and check extensibility
+      let clonedTarget, clonedMask;
+      try {
+        clonedTarget = targetNode.clone();
+        clonedMask = maskNode.clone();
+      } catch (cloneError) {
+        console.log(`setMask: Clone failed for ${targetNode.type} or ${maskNode.type}:`, cloneError.message);
+        results.push({
+          success: false,
+          error: `Clone operation failed: ${cloneError.message}`,
+          targetNodeId,
+          maskNodeId
+        });
+        continue;
+      }
+
+      // Check if cloned nodes are extensible
+      const targetExtensible = Object.isExtensible(clonedTarget);
+      const maskExtensible = Object.isExtensible(clonedMask);
+      console.log(`setMask: Target clone extensible: ${targetExtensible}, type: ${clonedTarget.type}`);
+      console.log(`setMask: Mask clone extensible: ${maskExtensible}, type: ${clonedMask.type}`);
+
+      if (!targetExtensible || !maskExtensible) {
+        const nonExtensibleTypes = [];
+        if (!targetExtensible) nonExtensibleTypes.push(clonedTarget.type);
+        if (!maskExtensible) nonExtensibleTypes.push(clonedMask.type);
+        console.log(`setMask: Skipping mask operation - non-extensible node types: ${nonExtensibleTypes.join(', ')}`);
+        results.push({
+          success: false,
+          error: `Cannot apply mask - node types not extensible: ${nonExtensibleTypes.join(', ')}`,
+          targetNodeId,
+          maskNodeId,
+          nonExtensibleTypes
         });
         continue;
       }
@@ -116,47 +164,72 @@ async function setMask(params) {
       maskFrame.resize(targetNode.width, targetNode.height);
       maskFrame.clipContent = true; // Essential for masking
 
-      // Clone nodes
-      const clonedMask = maskNode.clone();
-      const clonedTarget = targetNode.clone();
+      // Position and configure nodes (only if extensible)
+      try {
+        // Position mask relative to frame
+        clonedMask.x = maskNode.x - targetNode.x;
+        clonedMask.y = maskNode.y - targetNode.y;
+        clonedMask.isMask = true;
 
-      // Position mask relative to frame
-      clonedMask.x = maskNode.x - targetNode.x;
-      clonedMask.y = maskNode.y - targetNode.y;
-      clonedMask.isMask = true;
+        // Position target
+        clonedTarget.x = 0;
+        clonedTarget.y = 0;
+        clonedTarget.isMask = false;
 
-      // Position target
-      clonedTarget.x = 0;
-      clonedTarget.y = 0;
-      clonedTarget.isMask = false;
+        // Add mask first, then content
+        maskFrame.appendChild(clonedMask);
+        maskFrame.appendChild(clonedTarget);
 
-      // CRITICAL: Add mask first, then content
-      maskFrame.appendChild(clonedMask);
-      maskFrame.appendChild(clonedTarget);
+        // Insert the masked frame
+        const parent = targetNode.parent;
+        if (!parent) {
+          console.log("setMask: Target node has no parent", { targetNodeId, maskNodeId });
+          results.push({
+            success: false,
+            error: "Target node has no parent",
+            targetNodeId,
+            maskNodeId
+          });
+          continue;
+        }
 
-      // Insert the masked frame in the same parent as the target
-      const parent = targetNode.parent;
-      const targetIndex = parent.children.indexOf(targetNode);
-      parent.insertChild(targetIndex, maskFrame);
+        const targetIndex = parent.children.indexOf(targetNode);
+        parent.insertChild(targetIndex, maskFrame);
 
-      // Remove original nodes
-      targetNode.remove();
-      maskNode.remove();
+        // Remove original nodes
+        targetNode.remove();
+        maskNode.remove();
 
-      // Select the new masked group
-      figma.currentPage.selection = [maskFrame];
+        // Select the new masked group
+        figma.currentPage.selection = [maskFrame];
 
-      results.push({
-        success: true,
-        message: "Mask applied successfully",
-        nodeId: maskFrame.id,
-        targetNodeId,
-        maskNodeId
-      });
+        results.push({
+          success: true,
+          message: "Mask applied successfully",
+          nodeId: maskFrame.id,
+          targetNodeId,
+          maskNodeId
+        });
+
+      } catch (maskError) {
+        console.log(`setMask: Error setting mask properties:`, maskError.message);
+        // Clean up the frame if mask application failed
+        maskFrame.remove();
+        results.push({
+          success: false,
+          error: `Failed to apply mask properties: ${maskError.message}`,
+          targetNodeId,
+          maskNodeId
+        });
+      }
+
     } catch (error) {
+      console.log(`setMask: Unexpected error:`, error?.message || error);
       results.push({
         success: false,
-        error: error && error.message ? error.message : String(error)
+        error: error?.message || String(error),
+        targetNodeId: op.targetNodeId,
+        maskNodeId: op.maskNodeId
       });
     }
   }
