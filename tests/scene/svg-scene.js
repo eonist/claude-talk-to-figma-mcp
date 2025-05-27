@@ -270,20 +270,32 @@ export async function createLogoSVG1(frameId) {
 }
 
 export async function createLogoSVG2(frameId) {
-  // Test SVG URL support
   const url = "https://simpleicons.org/icons/instagram.svg";
   const name = "Instagram Logo";
   const color = COLORS.green;
-  const nodeId = await create_svg_from_url(frameId, url, name);
+  let svgText;
+  try {
+    svgText = await fetch_svg(url);
+  } catch (e) {
+    console.warn(`fetch_svg (${name}): ${e.message}`);
+    return;
+  }
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
   if (nodeId) await set_fill_color(nodeId, color);
 }
 
 export async function createLogoSVG3(frameId) {
-  // Test SVG URL support
   const url = "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg";
   const name = "GitHub Logo";
   const color = COLORS.blue;
-  const nodeId = await create_svg_from_url(frameId, url, name);
+  let svgText;
+  try {
+    svgText = await fetch_svg(url);
+  } catch (e) {
+    console.warn(`fetch_svg (${name}): ${e.message}`);
+    return;
+  }
+  const nodeId = await create_svg_from_raw(frameId, svgText, name);
   if (nodeId) await set_fill_color(nodeId, color);
 }
 
@@ -338,16 +350,16 @@ export async function createIconSVG3(frameId) {
  * Comment out any calls below to toggle creation of individual SVGs for debugging.
  */
 export async function svgScene() {
-  const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
-  //const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
+  //const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
+  const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
 
   // Add logo SVGs to logo frame
-  await createLogoSVG1(logoFrameId);
-  await createLogoSVG2(logoFrameId);
-  await createLogoSVG3(logoFrameId);
+  // await createLogoSVG1(logoFrameId);
+  // await createLogoSVG2(logoFrameId);
+  // await createLogoSVG3(logoFrameId);
 
   // Add icon SVGs to icon frame
-  //await createIconSVG1(iconFrameId);
-  // await createIconSVG2(iconFrameId);
-  // await createIconSVG3(iconFrameId);
+  await createIconSVG1(iconFrameId);
+  //await createIconSVG2(iconFrameId);
+  //await createIconSVG3(iconFrameId);
 }
