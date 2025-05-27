@@ -85,14 +85,18 @@ async function setMask(params) {
         continue;
       }
 
-      // Expanded valid node types based on Figma API docs
+      // Updated valid node types based on Figma API docs and your recommendations
       const validTargetTypes = [
-        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR", "FRAME", "GROUP",
-        "COMPONENT", "COMPONENT_SET", "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", "LINE"
+        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR",
+        "FRAME", "GROUP", "COMPONENT", "COMPONENT_SET", 
+        "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", 
+        "LINE", "BOOLEAN_OPERATION"
       ];
       const validMaskTypes = [
-        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR", "BOOLEAN_OPERATION",
-        "COMPONENT", "COMPONENT_SET", "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", "LINE"
+        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR",
+        "BOOLEAN_OPERATION", "COMPONENT", "COMPONENT_SET", 
+        "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", 
+        "LINE", "FRAME", "GROUP"
       ];
       if (!validTargetTypes.includes(targetNode.type) || !validMaskTypes.includes(maskNode.type)) {
         results.push({
@@ -104,7 +108,7 @@ async function setMask(params) {
         continue;
       }
 
-      // Create a frame to contain the masked result
+      // Create frame with clipping enabled
       const maskFrame = figma.createFrame();
       maskFrame.name = `Masked_${targetNode.name || targetNodeId}`;
       maskFrame.x = targetNode.x;
@@ -116,17 +120,17 @@ async function setMask(params) {
       const clonedMask = maskNode.clone();
       const clonedTarget = targetNode.clone();
 
-      // Position the mask relative to the frame
+      // Position mask relative to frame
       clonedMask.x = maskNode.x - targetNode.x;
       clonedMask.y = maskNode.y - targetNode.y;
       clonedMask.isMask = true;
 
-      // Position the target
+      // Position target
       clonedTarget.x = 0;
       clonedTarget.y = 0;
       clonedTarget.isMask = false;
 
-      // Add mask first, then content
+      // CRITICAL: Add mask first, then content
       maskFrame.appendChild(clonedMask);
       maskFrame.appendChild(clonedTarget);
 

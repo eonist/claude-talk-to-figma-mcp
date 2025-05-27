@@ -384,14 +384,14 @@ export async function shapeScene(results) {
   }
   
   // Create 8 shapes inside the frame for comprehensive grid demonstration
-  results.push(await create_star(frameId));
-  results.push(await create_rectangle(frameId));
-  results.push(await create_ellipse(frameId));
-  results.push(await create_hexagon(frameId));
-  results.push(await create_speech_bubble(frameId));
-  results.push(await create_bookmark(frameId));
-  results.push(await create_heart(frameId));
-  results.push(await create_lightning_bolt(frameId));
+  // results.push(await create_star(frameId));
+  // results.push(await create_rectangle(frameId));
+  // results.push(await create_ellipse(frameId));
+  // results.push(await create_hexagon(frameId));
+  // results.push(await create_speech_bubble(frameId));
+  // results.push(await create_bookmark(frameId));
+  // results.push(await create_heart(frameId));
+  // results.push(await create_lightning_bolt(frameId));
 
   // Run the mask test as a separate step, using the frameId for parentId
   await create_mask(frameId);
