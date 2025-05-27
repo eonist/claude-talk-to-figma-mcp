@@ -140,14 +140,22 @@ Returns:
           svgsArr,
           async (cfg) => {
             let content = cfg.svg;
-            // If content looks like a URL, fetch it server-side
-            if (typeof content === "string" && /^https?:\/\//i.test(content)) {
+            logger.info(`[SVG MCP] Received svg property: ${content}`);
+            // If content looks like a URL, fetch it server-side (match plugin logic: startsWith('http'))
+            if (typeof content === "string" && content.startsWith("http")) {
+              logger.info(`[SVG MCP] Detected URL, fetching SVG from: ${content}`);
               try {
                 content = await fetchTextResource(content);
+                logger.info(`[SVG MCP] Fetched SVG content length: ${content.length}`);
               } catch (fetchErr) {
-                throw new Error(`Failed to fetch SVG from URL (${cfg.svg}): ${fetchErr.message}`);
+                const errMsg = (fetchErr && typeof fetchErr === "object" && "message" in fetchErr)
+                  ? (fetchErr as any).message
+                  : String(fetchErr);
+                logger.error(`[SVG MCP] Failed to fetch SVG from URL (${cfg.svg}): ${errMsg}`);
+                throw new Error(`Failed to fetch SVG from URL (${cfg.svg}): ${errMsg}`);
               }
             }
+            logger.info(`[SVG MCP] Sending to plugin, SVG content starts with: ${typeof content === "string" ? content.slice(0, 100) : ""}`);
             const result = await (figmaClient as any).insertSvgVector({
               svg: content,
               x: cfg.x,
