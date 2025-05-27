@@ -46,6 +46,7 @@ import { transformScene } from "./scene/transform-scene.js";
 import { booleanScene } from './scene/boolean-scene.js';
 import { flattenScene } from './scene/flatten-scene.js';
 import { effectScene } from './scene/effect-scene.js';
+import { svgScene } from './scene/svg-scene.js';
 
 // --- Main Runner ---
 /**
@@ -84,7 +85,8 @@ async function main() {
     // transformScene,
     // booleanScene,
     // flattenScene,
-    effectScene
+    // effectScene,
+    svgScene
   ];
   const results = [];
   for (const scene of sequence) {

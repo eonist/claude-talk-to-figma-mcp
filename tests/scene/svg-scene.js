@@ -260,15 +260,15 @@ export async function createIconSVG3(frameId) {
  */
 export async function svgScene() {
   const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
-  const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
+  //const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
 
   // Add logo SVGs to logo frame
   await createLogoSVG1(logoFrameId);
-  await createLogoSVG2(logoFrameId);
-  await createLogoSVG3(logoFrameId);
+  // await createLogoSVG2(logoFrameId);
+  // await createLogoSVG3(logoFrameId);
 
   // Add icon SVGs to icon frame
-  await createIconSVG1(iconFrameId);
-  await createIconSVG2(iconFrameId);
-  await createIconSVG3(iconFrameId);
+  // await createIconSVG1(iconFrameId);
+  // await createIconSVG2(iconFrameId);
+  // await createIconSVG3(iconFrameId);
 }

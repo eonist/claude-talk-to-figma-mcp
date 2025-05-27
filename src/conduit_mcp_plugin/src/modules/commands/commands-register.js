@@ -215,8 +215,7 @@ export function initializeCommands() {
   registerCommand(PLUGIN_COMMANDS.GET_DOC_STYLE, styleOperations.getStyles);
   registerCommand(PLUGIN_COMMANDS.GET_NODE_STYLE, getNodeStyles);
   registerCommand(PLUGIN_COMMANDS.GET_FILL_AND_STROKE, getFillAndStroke);
-  // TODO: Fix setFillAndStrokeUnified implementation and re-enable
-  // registerCommand(PLUGIN_COMMANDS.SET_FILL_AND_STROKE, styleOperations.setFillAndStrokeUnified);
+  registerCommand(PLUGIN_COMMANDS.SET_FILL_AND_STROKE, styleOperations.setFillAndStrokeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_STYLE, styleOperations.setStyle);
   registerCommand(PLUGIN_COMMANDS.CREATE_GRADIENT_STYLE, styleOperations.createGradientStyle);
   registerCommand(PLUGIN_COMMANDS.SET_GRADIENT, styleOperations.setGradient);
