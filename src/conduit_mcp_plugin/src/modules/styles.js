@@ -25,7 +25,33 @@ import { setFillColor, setStrokeColor } from './styles/styles-color.js';
 import { setEffects, setEffectStyleId, createEffectStyleVariable } from './styles/styles-effects.js';
 import { createGradientStyle, setGradient } from './styles/styles-gradient.js';
 import { getStyles } from './styles/styles-get.js';
-import { setStyle, setFillAndStrokeUnified } from './styles/styles-set.js';
+import { setStyle } from './styles/styles-set.js';
+
+/**
+ * Unified style management for Figma: create, update, delete (PAINT, EFFECT, TEXT, GRID).
+ * Used by MCP set_fill_and_stroke command.
+ *
+ * @param {object} params - { nodeId, nodeIds, fill, stroke }
+ * @returns {Promise<object>} Result: { results: [...] }
+ */
+async function setFillAndStrokeUnified(params) {
+  const { nodeId, nodeIds, fill, stroke } = params;
+  const ids = nodeIds || (nodeId ? [nodeId] : []);
+  if (!ids.length) throw new Error("No node IDs provided");
+  const results = [];
+  for (const id of ids) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (!node) throw new Error(`Node not found: ${id}`);
+    if ("fill" in params) node.fills = Array.isArray(fill) ? fill : [fill];
+    if ("stroke" in params) node.strokes = Array.isArray(stroke) ? stroke : [stroke];
+    results.push({
+      id,
+      ...( "fill" in params ? { fill: node.fills } : {} ),
+      ...( "stroke" in params ? { stroke: node.strokes } : {} )
+    });
+  }
+  return { results };
+}
 
 /**
  * Unified handler for SET_EFFECT plugin command.
