@@ -41,7 +41,7 @@ function apply_autolayout(frameId) {
  */
 function create_frame() {
   const params = {
-    x: 50, y: 100, width: 400, height: 300,
+    x: 50, y: 100, width: 500, height: 300,
     name: 'Main Frame',
     fillColor: randomColor(),
     strokeColor: randomColor(),

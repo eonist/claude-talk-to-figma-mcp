@@ -72,8 +72,8 @@ async function setMask(params) {
   for (const op of ops) {
     try {
       const { targetNodeId, maskNodeId } = op;
-      const targetNode = figma.getNodeById(targetNodeId);
-      const maskNode = figma.getNodeById(maskNodeId);
+      const targetNode = await figma.getNodeByIdAsync(targetNodeId);
+      const maskNode = await figma.getNodeByIdAsync(maskNodeId);
 
       if (!targetNode || !maskNode) {
         results.push({
@@ -85,9 +85,15 @@ async function setMask(params) {
         continue;
       }
 
-      // Only allow masking for rectangles, ellipses, polygons, vectors, frames, groups
-      const validTargetTypes = ["RECTANGLE", "ELLIPSE", "POLYGON", "FRAME", "GROUP", "VECTOR"];
-      const validMaskTypes = ["RECTANGLE", "ELLIPSE", "POLYGON", "VECTOR"];
+      // Expanded valid node types based on Figma API docs
+      const validTargetTypes = [
+        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR", "FRAME", "GROUP",
+        "COMPONENT", "COMPONENT_SET", "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", "LINE"
+      ];
+      const validMaskTypes = [
+        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR", "BOOLEAN_OPERATION",
+        "COMPONENT", "COMPONENT_SET", "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", "LINE"
+      ];
       if (!validTargetTypes.includes(targetNode.type) || !validMaskTypes.includes(maskNode.type)) {
         results.push({
           success: false,
@@ -104,21 +110,25 @@ async function setMask(params) {
       maskFrame.x = targetNode.x;
       maskFrame.y = targetNode.y;
       maskFrame.resize(targetNode.width, targetNode.height);
+      maskFrame.clipContent = true; // Essential for masking
 
-      // Clone the target and mask nodes
-      const clonedTarget = targetNode.clone();
-      clonedTarget.x = 0;
-      clonedTarget.y = 0;
-      maskFrame.appendChild(clonedTarget);
-
+      // Clone nodes
       const clonedMask = maskNode.clone();
+      const clonedTarget = targetNode.clone();
+
+      // Position the mask relative to the frame
       clonedMask.x = maskNode.x - targetNode.x;
       clonedMask.y = maskNode.y - targetNode.y;
-      maskFrame.appendChild(clonedMask);
-
-      // Apply the mask
-      clonedTarget.isMask = false;
       clonedMask.isMask = true;
+
+      // Position the target
+      clonedTarget.x = 0;
+      clonedTarget.y = 0;
+      clonedTarget.isMask = false;
+
+      // Add mask first, then content
+      maskFrame.appendChild(clonedMask);
+      maskFrame.appendChild(clonedTarget);
 
       // Insert the masked frame in the same parent as the target
       const parent = targetNode.parent;
