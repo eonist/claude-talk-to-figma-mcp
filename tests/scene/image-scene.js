@@ -136,23 +136,26 @@ async function create_image_from_base64(parentId, base64Data, name, targetSize =
       const currentHeight = nodeInfo.document.absoluteBoundingBox.height;
 
       // Calculate scale to fit within targetSize x targetSize box without stretching
+      // (Preserve aspect ratio, do not force square)
       const scale = Math.min(targetSize / currentWidth, targetSize / currentHeight);
       const newWidth = currentWidth * scale;
       const newHeight = currentHeight * scale;
 
-      // Resize with proper aspect ratio
-      await runStep({
-        ws,
-        channel,
-        command: "resize_node",
-        params: { nodeId, width: newWidth, height: newHeight },
-        assert: (response) =>
-          response &&
-          response["0"] &&
-          response["0"].success === true &&
-          response["0"].nodeId === nodeId,
-        label: `resize_image_node (${name}) to ${newWidth.toFixed(1)}x${newHeight.toFixed(1)}`
-      });
+      // Only resize if the new size is different (avoid unnecessary resize)
+      if (Math.abs(newWidth - currentWidth) > 0.1 || Math.abs(newHeight - currentHeight) > 0.1) {
+        await runStep({
+          ws,
+          channel,
+          command: "resize_node",
+          params: { nodeId, width: newWidth, height: newHeight },
+          assert: (response) =>
+            response &&
+            response["0"] &&
+            response["0"].success === true &&
+            response["0"].nodeId === nodeId,
+          label: `resize_image_node (${name}) to ${newWidth.toFixed(1)}x${newHeight.toFixed(1)}`
+        });
+      }
     }
   }
   return nodeId;
