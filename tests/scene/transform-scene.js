@@ -31,7 +31,34 @@ const AUTO_LAYOUT_CONFIG = {
   paddingRight: 10,
   paddingTop: 15,
   paddingBottom: 15,
+  primaryAxisSizing: 'HUG',
+  counterAxisSizing: 'HUG',
+  layoutWrap: 'WRAP'
+};
+
+const AUTO_LAYOUT_CONFIG_HUG_BOTH = {
+  mode: 'HORIZONTAL',
+  itemSpacing: 20,
+  counterAxisSpacing: 30,
+  paddingLeft: 10,
+  paddingRight: 10,
+  paddingTop: 15,
+  paddingBottom: 15,
+  primaryAxisSizing: 'HUG',
+  counterAxisSizing: 'HUG',
+  layoutWrap: 'WRAP'
+};
+
+const AUTO_LAYOUT_CONFIG_HUG_HEIGHT = {
+  mode: 'HORIZONTAL',
+  itemSpacing: 20,
+  counterAxisSpacing: 30,
+  paddingLeft: 10,
+  paddingRight: 10,
+  paddingTop: 15,
+  paddingBottom: 15,
   primaryAxisSizing: 'FIXED',
+  counterAxisSizing: 'HUG',
   layoutWrap: 'WRAP'
 };
 
@@ -162,11 +189,11 @@ function setSize(nodeId, width, height) {
 /**
  * Applies auto layout to a frame
  */
-function setAutoLayout(frameId) {
+function setAutoLayout(frameId, config = AUTO_LAYOUT_CONFIG) {
   const params = {
     layout: {
       nodeId: frameId,
-      ...AUTO_LAYOUT_CONFIG
+      ...config
     }
   };
 
@@ -179,7 +206,7 @@ function setAutoLayout(frameId) {
     'set_auto_layout',
     params,
     assertFn,
-    `apply_autolayout to frame ${frameId}`
+    `apply_autolayout (hug: ${config.primaryAxisSizing}/${config.counterAxisSizing}) to frame ${frameId}`
   );
 }
 
@@ -288,28 +315,31 @@ async function createMainFrame(results) {
     name: 'Main Frame'
   });
   results.push(frameResult);
-  
+
   const frameId = frameResult.response?.ids?.[0];
-  
-  // Create rectangles with specific positions
-  const rectangles = [
-    { color: COLORS.red, width: 100, height: 100, x: 0, y: 0 },
-    { color: COLORS.green, width: 150, height: 100, x: 100, y: 0 },
-    { color: COLORS.blue, width: 100, height: 150, x: 250, y: 0 }
-  ];
-  
-  for (const rect of rectangles) {
-    const { result, operations } = await createAndSetupRectangle(
-      rect.color,
-      rect.width,
-      rect.height,
-      frameId,
-      rect.x,
-      rect.y
-    );
-    results.push(result, ...operations);
+
+  // Apply autolayout with hug height, padding, and gaps
+  if (frameId) {
+    results.push(await setAutoLayout(frameId, AUTO_LAYOUT_CONFIG_HUG_HEIGHT));
   }
-  
+
+  // Create rectangles as children (autolayout will arrange them)
+  const rectangles = [
+    { color: COLORS.red, width: 100, height: 100 },
+    { color: COLORS.green, width: 150, height: 100 },
+    { color: COLORS.blue, width: 100, height: 150 }
+  ];
+
+  for (const rect of rectangles) {
+    const result = await createRectangle({
+      fillColor: rect.color,
+      width: rect.width,
+      height: rect.height,
+      parentId: frameId
+    });
+    results.push(result);
+  }
+
   return frameId;
 }
 
@@ -325,16 +355,21 @@ async function createAutoLayoutFrame(results) {
     name: 'AutoLayout Frame'
   });
   results.push(frame2Result);
-  
+
   const frame2Id = frame2Result.response?.ids?.[0];
-  
+
+  // Apply autolayout with hug both axes, padding, and gaps
+  if (frame2Id) {
+    results.push(await setAutoLayout(frame2Id, AUTO_LAYOUT_CONFIG_HUG_BOTH));
+  }
+
   // Create rectangles for auto layout
   const rectangleConfigs = [
     { color: COLORS.red, width: 120, height: 80 },
     { color: COLORS.green, width: 90, height: 120 },
     { color: COLORS.blue, width: 140, height: 60 }
   ];
-  
+
   const rectangleIds = [];
   for (const config of rectangleConfigs) {
     const result = await createRectangle({
@@ -346,12 +381,7 @@ async function createAutoLayoutFrame(results) {
     results.push(result);
     rectangleIds.push(result.response?.ids?.[0]);
   }
-  
-  // Apply auto layout
-  if (frame2Id) {
-    results.push(await setAutoLayout(frame2Id));
-  }
-  
+
   return { frameId: frame2Id, rectangleIds };
 }
 
