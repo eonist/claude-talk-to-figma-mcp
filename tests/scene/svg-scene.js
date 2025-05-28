@@ -36,9 +36,10 @@ async function apply_autolayout(frameId) {
 
 /**
  * Helper to create the main parent container frame with vertical flow.
+ * @param {string} [parentId] - Optional parent frame ID
  * @returns {Promise} frameId
  */
-async function create_main_container() {
+async function create_main_container(parentId) {
   const params = {
     x: 30,
     y: 50,
@@ -47,7 +48,8 @@ async function create_main_container() {
     name: "SVG Container",
     fillColor: { r: 0.96, g: 0.96, b: 0.96, a: 1 }, // Light gray background
     strokeColor: { r: 0.7, g: 0.7, b: 0.7, a: 1 },
-    strokeWeight: 2
+    strokeWeight: 2,
+    ...(parentId && { parentId })
   };
   const res = await runStep({
     ws,
@@ -490,11 +492,13 @@ export async function createIconSVG3(frameId) {
 
 /**
  * Main test function for SVG scene.
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
  * Comment out any calls below to toggle creation of individual SVGs for debugging.
  */
-export async function svgScene() {
-  // 1. Create main parent container with vertical flow
-  const mainContainerId = await create_main_container();
+export async function svgScene(results, parentFrameId) {
+  // 1. Create main parent container with vertical flow as a child of the all-scenes container
+  const mainContainerId = await create_main_container(parentFrameId);
 
   if (!mainContainerId) {
     console.error("Failed to create main container");

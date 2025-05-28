@@ -27,9 +27,10 @@ function webColorToRgb(hex) {
 
 /**
  * Helper to create the parent container frame.
+ * @param {string} [parentId] - Optional parent frame ID
  * @returns {Promise}
  */
-function create_parent_frame() {
+function create_parent_frame(parentId) {
   const params = {
     x: 20, y: 50,
     width: 800, // Initial width, will be hugged
@@ -37,7 +38,8 @@ function create_parent_frame() {
     name: "Layout Container",
     fillColor: { r: 0.95, g: 0.95, b: 0.95, a: 1 }, // Light gray background
     strokeColor: { r: 0.5, g: 0.5, b: 0.5, a: 1 },
-    strokeWeight: 2
+    strokeWeight: 2,
+    ...(parentId && { parentId })
   };
   return runStep({
     ws, channel,
@@ -197,27 +199,28 @@ async function create_ellipses_in_frame(frameId, results) {
 /**
  * Main test function for layout scene.
  * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
  */
-export async function layoutScene(results) {
-  // 1. Create parent container frame
-  const parentFrameResult = await create_parent_frame();
+export async function layoutScene(results, parentFrameId) {
+  // 1. Create parent container frame as a child of the all-scenes container
+  const parentFrameResult = await create_parent_frame(parentFrameId);
   results.push(parentFrameResult);
-  const parentFrameId = parentFrameResult.response?.ids?.[0];
+  const parentFrameNodeId = parentFrameResult.response?.ids?.[0];
 
-  if (!parentFrameId) {
+  if (!parentFrameNodeId) {
     results.push({ label: "parent frame creation failed", pass: false, reason: "No parentFrameId" });
     return;
   }
 
   // 2. Apply auto layout to parent frame
-  const parentAutoLayoutResult = await apply_parent_autolayout(parentFrameId);
+  const parentAutoLayoutResult = await apply_parent_autolayout(parentFrameNodeId);
   results.push(parentAutoLayoutResult);
 
   // 3. Create child frames with layouts: 3x2, 2x3, 1x6
   const layouts = ["3x2", "2x3", "1x6"];
   for (const layoutType of layouts) {
     // Create frame as child of parent
-    const frameResult = await create_layout_frame(layoutType, parentFrameId);
+    const frameResult = await create_layout_frame(layoutType, parentFrameNodeId);
     results.push(frameResult);
     const frameId = frameResult.response?.ids?.[0];
 

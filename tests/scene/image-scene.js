@@ -37,21 +37,37 @@ async function apply_autolayout(frameId) {
 
 /**
  * Helper to create a frame for images and immediately apply autolayout.
- * @param {number} y - Y position for the frame
+ * @param {number} y - Y position for the frame (if parentId is not provided)
  * @param {string} name - Frame name
+ * @param {string} [parentId] - Optional parent frame ID
  * @returns {Promise<string>} frameId
  */
-async function create_image_frame(y, name) {
-  const params = {
-    x: 50,
-    y,
-    width: 400,
-    height: 120,
-    name,
-    fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1 },
-    strokeColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
-    strokeWeight: 1
-  };
+async function create_image_frame(y, name, parentId) {
+  let params;
+  if (parentId) {
+    params = {
+      x: 0,
+      y: 0,
+      width: 400,
+      height: 120,
+      name,
+      fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1 },
+      strokeColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
+      strokeWeight: 1,
+      parentId
+    };
+  } else {
+    params = {
+      x: 50,
+      y,
+      width: 400,
+      height: 120,
+      name,
+      fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1 },
+      strokeColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
+      strokeWeight: 1
+    };
+  }
   const res = await runStep({
     ws,
     channel,
@@ -261,10 +277,12 @@ export async function create_img4(frameId) {
 
 /**
  * Main test function for Image scene.
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
  * Comment out any calls below to toggle creation of individual images for debugging.
  */
-export async function imageScene() {
-  const frameId = await create_image_frame(100, "Image Frame");
+export async function imageScene(results, parentFrameId) {
+  const frameId = await create_image_frame(100, "Image Frame", parentFrameId);
   await create_img1(frameId);
   await create_img2(frameId);
   await create_img3(frameId);

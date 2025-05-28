@@ -257,9 +257,10 @@ async function apply_auto_layout(frameId, mode, gap, padding) {
 /**
  * Text scene: creates a nested auto layout structure for text nodes.
  * @param {Array} results - Collector array for test step results.
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
  * @returns {Promise<void>}
  */
-export async function textScene(results) {
+export async function textScene(results, parentFrameId) {
   // Create 5 text nodes, store their nodeIds
   const textNodes = [];
 
@@ -298,27 +299,27 @@ export async function textScene(results) {
   await apply_auto_layout(frame1Id, "VERTICAL", 10, 20);
   await apply_auto_layout(frame2Id, "VERTICAL", 10, 20);
 
-  // Create parent horizontal frame
-  const parentFrame = await create_frame({ name: "ParentHorizontalFrame" });
+  // Create parent horizontal frame as a child of the all-scenes container
+  const parentFrame = await create_frame({ name: "ParentHorizontalFrame", ...(parentFrameId && { parentId: parentFrameId }) });
   results.push(parentFrame);
-  const parentFrameId = parentFrame.frameId;
+  const parentFrameNodeId = parentFrame.frameId;
 
   // Move the two vertical frames into the parent frame
   await runStep({
     ws, channel,
     command: "set_node",
-    params: { parentId: parentFrameId, childId: frame1Id },
+    params: { parentId: parentFrameNodeId, childId: frame1Id },
     assert: (response) => ({ pass: true, response }),
     label: `set_node (move frame1 into parent)`
   });
   await runStep({
     ws, channel,
     command: "set_node",
-    params: { parentId: parentFrameId, childId: frame2Id },
+    params: { parentId: parentFrameNodeId, childId: frame2Id },
     assert: (response) => ({ pass: true, response }),
     label: `set_node (move frame2 into parent)`
   });
 
   // Apply horizontal auto layout to parent frame
-  await apply_auto_layout(parentFrameId, "HORIZONTAL", 10, 20);
+  await apply_auto_layout(parentFrameNodeId, "HORIZONTAL", 10, 20);
 }

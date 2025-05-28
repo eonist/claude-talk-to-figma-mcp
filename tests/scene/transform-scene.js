@@ -300,17 +300,19 @@ function createSkewMatrix(angleInDegrees) {
 // ========== MAIN SCENE CREATION FUNCTION ==========
 /**
  * Creates and transforms the complete scene with a parent frame
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
  */
-export async function transformScene(results) {
+export async function transformScene(results, parentFrameId) {
   try {
-    // Create parent frame with vertical auto layout
-    const parentFrameId = await createParentFrame(results);
+    // Create parent frame with vertical auto layout as a child of the all-scenes container
+    const parentFrameNodeId = await createParentFrame(results, parentFrameId);
 
     // Create main frame as child of parent
-    const mainFrame = await createMainFrame(results, parentFrameId);
+    const mainFrame = await createMainFrame(results, parentFrameNodeId);
 
     // Create auto layout frame as child of parent
-    const autoLayoutFrame = await createAutoLayoutFrame(results, parentFrameId);
+    const autoLayoutFrame = await createAutoLayoutFrame(results, parentFrameNodeId);
 
     // Apply transformations to auto layout frame rectangles
     await applyTransformations(results, autoLayoutFrame);
@@ -323,14 +325,17 @@ export async function transformScene(results) {
 
 /**
  * Creates the parent frame with vertical auto layout
+ * @param {Array} results
+ * @param {string} [parentId] - Optional parent frame ID
  */
-async function createParentFrame(results) {
+async function createParentFrame(results, parentId) {
   const parentFrameResult = await createFrame({
     x: 20,
     y: 20,
     width: 500,
     height: 800,
-    name: 'Parent Container'
+    name: 'Parent Container',
+    ...(parentId && { parentId })
   });
   results.push(parentFrameResult);
 

@@ -121,8 +121,10 @@ async function createRectangleWithGradient(name, gradientStyleId) {
 
 /**
  * Creates an auto layout frame and adds rectangles to it
+ * @param {Array<string>} childNodeIds
+ * @param {string} [parentId] - Optional parent frame ID
  */
-async function createAutoLayoutFrame(childNodeIds) {
+async function createAutoLayoutFrame(childNodeIds, parentId) {
   // Create frame
   const frameResult = await runStep({
     ws,
@@ -133,7 +135,8 @@ async function createAutoLayoutFrame(childNodeIds) {
       y: 0,
       width: 400,
       height: 120,
-      name: "GradientContainer"
+      name: "GradientContainer",
+      ...(parentId && { parentId })
     },
     assert: (response) => ({ pass: !!(response && response.ids && response.ids.length > 0), response }),
     label: "create_container_frame"
@@ -204,8 +207,10 @@ async function createAutoLayoutFrame(childNodeIds) {
 
 /**
  * Main function that creates 3 rectangles with gradients in auto layout
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
  */
-export async function styleScene(results) {
+export async function styleScene(results, parentFrameId) {
   try {
     // Create gradient styles
     const linearGradientId = await createLinearGradient();
@@ -217,8 +222,8 @@ export async function styleScene(results) {
     const rect2 = await createRectangleWithGradient("RadialRect", radialGradientId);
     const rect3 = await createRectangleWithGradient("MulticolorRect", multicolorGradientId);
     
-    // Create auto layout container and add rectangles
-    const frameId = await createAutoLayoutFrame([rect1, rect2, rect3]);
+    // Create auto layout container and add rectangles as a child of the all-scenes container
+    const frameId = await createAutoLayoutFrame([rect1, rect2, rect3], parentFrameId);
 
     results.push({
       label: "create_three_gradient_rectangles",
