@@ -7,19 +7,26 @@ import { FontFamilyStyleSchema, FontSizeSchema, FontWeightSchema } from "./schem
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
- * Registers property-manipulation-related modify commands on the MCP server.
- *
- * This function adds tools for setting font properties and loading fonts asynchronously in Figma.
- * It includes commands for setting font name, size, weight, letter spacing, line height,
- * paragraph spacing, text case, text decoration, and loading fonts.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
+ * Registers font-related commands on the MCP server.
+ * 
+ * This module provides tools for font management in Figma, including asynchronous font loading
+ * to ensure fonts are available before applying text styles.
+ * 
+ * Registered commands:
+ * - `load_font_async`: Loads a font family and style asynchronously
+ * 
+ * @param {McpServer} server - The MCP server instance to register the tools on
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API
+ * @returns {void}
+ * 
  * @example
+ * ```
  * registerFontTools(server, figmaClient);
+ * // Now you can use: load_font_async command
+ * await figmaClient.executeCommand('load_font_async', { family: 'Roboto', style: 'Regular' });
+ * ```
+ * 
+ * @throws {Error} When font family or style is invalid or unavailable
  */
 export function registerFontTools(server: McpServer, figmaClient: FigmaClient) {
 
