@@ -158,10 +158,13 @@ export async function maskScene(results, parentFrameId) {
 
     await setMask(rectId, ellipseId);
 
+    // --- Wait for mask operation to complete ---
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     // --- Ensure mask group is direct child of container ---
-    // Get children of containerId
     let groupId = null;
     if (containerId) {
+      // First, check if group is a child of the container
       const nodeInfoRes = await runStep({
         ws,
         channel,
@@ -171,20 +174,53 @@ export async function maskScene(results, parentFrameId) {
         label: "get_mask_scene_container_info"
       });
       const children = nodeInfoRes.response?.document?.children || [];
-      // Find group node that is not the ellipse or rectangle
       groupId = children.find(child =>
         child.type === "GROUP" &&
         child.id !== ellipseId &&
         child.id !== rectId
       )?.id;
-      // If groupId found and not already a direct child, move it
-      if (groupId) {
-        // Defensive: ensure group is direct child (should be, but just in case)
-        // (If not, would need to move_node, but Figma API usually puts group in place)
-        // Optionally, could log or assert here
-      } else {
-        // If not found, warn but do not fail test
-        console.warn("Mask group not found as direct child of container after masking.");
+
+      if (!groupId) {
+        // If not found, search the document root for a new GROUP node
+        const docInfoRes = await runStep({
+          ws,
+          channel,
+          command: "get_document_info",
+          params: {},
+          assert: (response) => response && response.id,
+          label: "get_document_info_for_mask_group"
+        });
+        const allNodes = docInfoRes.response?.document?.children || [];
+        // Find a GROUP node that is not in the container and not ellipse/rect
+        const candidateGroups = allNodes.filter(child =>
+          child.type === "GROUP" &&
+          child.id !== ellipseId &&
+          child.id !== rectId
+        );
+        // If multiple, pick the one with children matching ellipse/rect (or just the first)
+        if (candidateGroups.length > 0) {
+          groupId = candidateGroups[0].id;
+          // Move the group into the container
+          await runStep({
+            ws,
+            channel,
+            command: "move_node",
+            params: { nodeId: groupId, x: padding, y: padding },
+            assert: () => true,
+            label: "move_mask_group_to_container"
+          });
+          // Set parent to container
+          await runStep({
+            ws,
+            channel,
+            command: "set_node",
+            params: { parentId: containerId, childId: groupId },
+            assert: () => true,
+            label: "set_mask_group_parent"
+          });
+        } else {
+          console.warn("Mask group not found anywhere in document after masking.");
+        }
       }
     }
 
