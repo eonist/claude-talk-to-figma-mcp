@@ -194,7 +194,30 @@ export async function styleScene(results) {
   results.push(frameResult);
 
   // 2. Create and add three rectangles with different gradients
-  results.push(await create_linear_gradient_rect(frameId));
-  results.push(await create_radial_gradient_rect(frameId));
-  results.push(await create_multicolor_gradient_rect(frameId));
+  // Linear gradient rectangle
+  const linear = await create_linear_gradient_rect(frameId);
+  results.push({
+    label: "create_linear_gradient_rect",
+    pass: !!linear.nodeId,
+    nodeId: linear.nodeId,
+    ...linear.result
+  });
+
+  // Radial gradient rectangle
+  const radial = await create_radial_gradient_rect(frameId);
+  results.push({
+    label: "create_radial_gradient_rect",
+    pass: !!radial.nodeId,
+    nodeId: radial.nodeId,
+    ...radial.result
+  });
+
+  // Multicolor gradient rectangle
+  const multi = await create_multicolor_gradient_rect(frameId);
+  results.push({
+    label: "create_multicolor_gradient_rect",
+    pass: !!multi.nodeId,
+    nodeId: multi.nodeId,
+    ...multi.result
+  });
 }
