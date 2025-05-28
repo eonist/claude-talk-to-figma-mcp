@@ -9,47 +9,75 @@ import { v4 as uuidv4 } from "uuid";
 /**
  * Registers frame creation commands with the MCP server.
  * 
- * @param {McpServer} server - The MCP server instance to register tools on.
- * @param {FigmaClient} figmaClient - The Figma client for executing commands.
+ * Frames are container elements in Figma that can hold other design elements.
+ * This function enables programmatic creation of UI containers, artboards, and
+ * layout structures through the MCP protocol.
+ *
+ * @param {McpServer} server - The MCP server instance to register tools on
+ * @param {FigmaClient} figmaClient - The Figma client for executing API commands
  * 
- * Adds:
- * - create_frame: Create one or more frames in Figma.
+ * @example
+ * registerFramesTools(server, figmaClient);
+ * 
+ * @see {@link MCP_COMMANDS.CREATE_FRAME}
+ * @since 1.0.0
  */
 export function registerFramesTools(server: McpServer, figmaClient: FigmaClient) {
   /**
    * MCP Tool: create_frame
    *
-   * Creates one or more frame nodes in the specified Figma document.
-   * Accepts either a single frame config (via the 'frame' property) or an array of configs (via the 'frames' property).
-   * Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+   * Creates one or more frame container nodes in the specified Figma document.
+   * Frames serve as containers for other design elements and are essential for
+   * creating organized, hierarchical designs.
+   * 
+   * **Frame Properties:**
+   * - `x`, `y`: Position coordinates (required)
+   * - `width`, `height`: Frame dimensions in pixels (required, must be > 0)
+   * - `name`: Human-readable frame name (optional)
+   * - `parentId`: Parent container node ID (optional)
+   * - `fillColor`: Background fill color as RGBA object (optional)
+   * - `strokeColor`: Border color as RGBA object (optional)
+   * - `strokeWeight`: Border thickness in pixels (optional)
    *
-   * This tool is useful for programmatically generating UI containers, artboards, or design primitives in Figma via MCP.
-   *
-   * @param {object} args - The input object. Must provide either:
-   *   - frame: A single frame config object (x, y, width, height, name?, parentId?, fillColor?, strokeColor?, strokeWeight?)
-   *   - frames: An array of frame config objects (same shape as above)
-   *
-   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created frame node ID(s).
-   *
+   * @param {Object} args - The input configuration object
+   * @param {Object} [args.frame] - Single frame configuration
+   * @param {number} args.frame.x - X coordinate position
+   * @param {number} args.frame.y - Y coordinate position
+   * @param {number} args.frame.width - Frame width (must be > 0)
+   * @param {number} args.frame.height - Frame height (must be > 0)
+   * @param {string} [args.frame.name] - Optional frame name
+   * @param {string} [args.frame.parentId] - Optional parent node ID
+   * @param {Object} [args.frame.fillColor] - Optional RGBA fill color
+   * @param {Object} [args.frame.strokeColor] - Optional RGBA stroke color  
+   * @param {number} [args.frame.strokeWeight] - Optional stroke weight
+   * @param {Object[]} [args.frames] - Array of frame configurations (alternative to single)
+   * 
+   * @returns {Promise} Promise resolving to MCP response format
+   * @returns {Object[]} returns.content - Array of response objects
+   * @returns {string} returns.content[].type - Response type ("text")
+   * @returns {string} returns.content[].text - JSON string with creation results
+   * 
+   * @throws {Error} When neither 'frame' nor 'frames' is provided
+   * @throws {Error} When figmaClient.createFrame fails or returns invalid data
+   * 
    * @example
-   * // Single frame
-   * {
+   * // Create main artboard frame
+   * const result = await createFrame({
    *   frame: {
-   *     x: 50,
-   *     y: 100,
-   *     width: 400,
-   *     height: 300,
-   *     name: "Main Frame"
+   *     x: 50, y: 100, width: 400, height: 300,
+   *     name: "Main Artboard",
+   *     fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1.0 }
    *   }
-   * }
-   *
-   * // Multiple frames
-   * {
+   * });
+   * 
+   * @example
+   * // Create multiple layout frames
+   * const result = await createFrame({
    *   frames: [
-   *     { x: 10, y: 20, width: 100, height: 50, name: "Frame1" },
-   *     { x: 120, y: 20, width: 80, height: 40 }
+   *     { x: 10, y: 20, width: 200, height: 150, name: "Header" },
+   *     { x: 10, y: 180, width: 200, height: 300, name: "Content" }
    *   ]
-   * }
+   * });
    */
   server.tool(
     MCP_COMMANDS.CREATE_FRAME,

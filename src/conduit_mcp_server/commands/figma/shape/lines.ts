@@ -6,53 +6,74 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers line creation commands with the MCP server.
+ * 
+ * Lines are fundamental design elements used for creating connectors, dividers,
+ * borders, and other linear graphics in Figma designs.
  *
- * This function adds a tool named "create_line" to the MCP server,
- * enabling creation of single or multiple line nodes in Figma. It validates inputs,
- * executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
+ * @param {McpServer} server - The MCP server instance to register the tools on
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API
+ * 
+ * @returns {void} This function does not return a value but registers the tools asynchronously
+ * 
  * @example
  * registerLinesTools(server, figmaClient);
+ * 
+ * @see {@link MCP_COMMANDS.CREATE_LINE}
+ * @since 1.0.0
  */
 export function registerLinesTools(server: McpServer, figmaClient: FigmaClient) {
   /**
    * MCP Tool: create_line
    *
    * Creates one or more line nodes in the specified Figma document.
-   * Accepts either a single line config (via the 'line' property) or an array of configs (via the 'lines' property).
-   * Optionally, you can provide a parent node ID, stroke color, and stroke weight.
+   * Lines are defined by start and end coordinates and are useful for creating
+   * connectors, dividers, underlines, and other linear design elements.
+   * 
+   * **Line Properties:**
+   * - `x1`, `y1`: Start point coordinates (required)
+   * - `x2`, `y2`: End point coordinates (required, must differ from start)
+   * - `parentId`: Parent container node ID (optional)
+   * - `strokeColor`: Line color as RGBA object (optional)
+   * - `strokeWeight`: Line thickness in pixels (optional, default varies)
    *
-   * This tool is useful for programmatically generating connectors, dividers, or design primitives in Figma via MCP.
-   *
-   * @param {object} args - The input object. Must provide either:
-   *   - line: A single line config object (x1, y1, x2, y2, parentId?, strokeColor?, strokeWeight?)
-   *   - lines: An array of line config objects (same shape as above)
-   *
-   * @returns {Promise<object>} Returns a promise resolving to an object containing a text message with the created line node ID(s).
-   *
+   * @param {Object} args - The input configuration object
+   * @param {Object} [args.line] - Single line configuration
+   * @param {number} args.line.x1 - Start point X coordinate
+   * @param {number} args.line.y1 - Start point Y coordinate
+   * @param {number} args.line.x2 - End point X coordinate  
+   * @param {number} args.line.y2 - End point Y coordinate
+   * @param {string} [args.line.parentId] - Optional parent node ID
+   * @param {Object} [args.line.strokeColor] - Optional RGBA stroke color
+   * @param {number} [args.line.strokeWeight] - Optional stroke weight
+   * @param {Object[]} [args.lines] - Array of line configurations (alternative to single)
+   * 
+   * @returns {Promise} Promise resolving to creation result
+   * @returns {boolean} returns.success - Whether operation succeeded
+   * @returns {string} returns.message - Success/failure message  
+   * @returns {string[]} returns.nodeIds - Array of created line node IDs
+   * 
+   * @throws {Error} When neither 'line' nor 'lines' is provided
+   * @throws {Error} When start and end points are identical
+   * @throws {Error} When figmaClient.createLine fails or returns invalid data
+   * 
    * @example
-   * // Single line
-   * {
+   * // Create horizontal divider line
+   * const result = await createLine({
    *   line: {
-   *     x1: 10,
-   *     y1: 20,
-   *     x2: 110,
-   *     y2: 20
+   *     x1: 10, y1: 50, x2: 200, y2: 50,
+   *     strokeColor: { r: 0.8, g: 0.8, b: 0.8, a: 1.0 },
+   *     strokeWeight: 1
    *   }
-   * }
-   *
-   * // Multiple lines
-   * {
+   * });
+   * 
+   * @example
+   * // Create multiple connector lines
+   * const result = await createLine({
    *   lines: [
    *     { x1: 10, y1: 20, x2: 110, y2: 20 },
    *     { x1: 20, y1: 30, x2: 120, y2: 30 }
    *   ]
-   * }
+   * });
    */
   server.tool(
     MCP_COMMANDS.CREATE_LINE,
