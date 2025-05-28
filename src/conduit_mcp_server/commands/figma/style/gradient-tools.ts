@@ -6,9 +6,45 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
- * Registers gradient-related styling commands:
- * - create_gradient_style (unified: supports single or batch)
- * - set_gradient (unified: supports single or batch, direct or style)
+ * Registers gradient-related styling commands for the MCP server.
+ * 
+ * This module provides comprehensive gradient management tools including:
+ * - Creating reusable gradient style variables
+ * - Applying gradients directly to nodes with custom parameters
+ * - Applying existing gradient styles to nodes
+ * - Support for multiple gradient types (LINEAR, RADIAL, ANGULAR, DIAMOND)
+ * - Batch operations for efficient bulk updates
+ * 
+ * Registered commands:
+ * - `create_gradient_style`: Creates one or more gradient style variables
+ * - `set_gradient`: Applies gradients directly or via style variables
+ * 
+ * @param {McpServer} server - The MCP server instance to register tools on
+ * @param {FigmaClient} figmaClient - The Figma client for API communication
+ * @returns {void}
+ * 
+ * @example
+ * ```
+ * registerGradientTools(server, figmaClient);
+ * 
+ * // Create a gradient style
+ * const gradient = {
+ *   name: "Primary Gradient",
+ *   gradientType: "LINEAR",
+ *   stops: [
+ *     { position: 0, color: [1][1] },
+ *     { position: 1, color: [1][1] }
+ *   ]
+ * };
+ * 
+ * // Apply gradient to a node
+ * await figmaClient.executeCommand('set_gradient', {
+ *   entries: { nodeId: "123:456", gradientStyleId: "S:gradient123" }
+ * });
+ * ```
+ * 
+ * @throws {Error} When gradient parameters are invalid (insufficient stops, invalid colors, etc.)
+ * @throws {Error} When node IDs are malformed or don't exist
  */
 export function registerGradientTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified Gradient Variable Schema
