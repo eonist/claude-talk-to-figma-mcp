@@ -33,7 +33,8 @@ async function applyAutolayout(frameId) {
       paddingRight: 20,
       paddingTop: 20,
       paddingBottom: 20,
-      primaryAxisSizing: "FIXED"
+      primaryAxisSizing: "AUTO",
+      counterAxisSizing: "AUTO"
     }
   };
   await runStep({
