@@ -147,10 +147,10 @@ async function main() {
     styleScene,
     transformScene,
     booleanScene,
-    //flattenScene,
+    flattenScene,
     svgScene,
     imageScene,
-    //maskScene,
+    maskScene,
     layoutScene
   ];
   const results = [];

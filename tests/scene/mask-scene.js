@@ -1,13 +1,14 @@
 import { runStep, ws, channel } from '../test-runner.js';
 
-async function createRectangle() {
+async function createRectangle(parentId) {
   const params = {
     x: 0,
     y: 0,
     width: 100,
     height: 100,
     name: 'MaskRectangle',
-    fillColor: { r: 0, g: 1, b: 0, a: 1 } // Green
+    fillColor: { r: 0, g: 1, b: 0, a: 1 }, // Green
+    ...(parentId && { parentId })
   };
   const response = await runStep({
     ws,
@@ -20,14 +21,15 @@ async function createRectangle() {
   return response.response?.ids?.[0];
 }
 
-async function createEllipse() {
+async function createEllipse(parentId) {
   const params = {
     x: 0,
     y: 0,
     width: 100,
     height: 100,
     name: 'MaskEllipse',
-    fillColor: { r: 1, g: 0, b: 0, a: 1 } // Red
+    fillColor: { r: 1, g: 0, b: 0, a: 1 }, // Red
+    ...(parentId && { parentId })
   };
   const response = await runStep({
     ws,
@@ -58,10 +60,39 @@ async function setMask(rectId, ellipseId) {
   });
 }
 
-export async function maskScene(results) {
+/**
+ * Main mask scene test.
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ */
+export async function maskScene(results, parentFrameId) {
   try {
-    const ellipseId = await createEllipse(); // must be bellow the shape to mask
-    const rectId = await createRectangle();
+    // Create a container frame as a child of the all-scenes container
+    let containerId = null;
+    if (parentFrameId) {
+      const containerRes = await runStep({
+        ws,
+        channel,
+        command: "create_frame",
+        params: {
+          frame: {
+            x: 0,
+            y: 0,
+            width: 200,
+            height: 200,
+            name: "MaskSceneContainer",
+            fillColor: { r: 1, g: 1, b: 1, a: 1 },
+            parentId: parentFrameId
+          }
+        },
+        assert: (response) => Array.isArray(response.ids) && response.ids.length > 0,
+        label: "create_mask_scene_container"
+      });
+      containerId = containerRes.response?.ids?.[0];
+    }
+
+    const ellipseId = await createEllipse(containerId); // must be bellow the shape to mask
+    const rectId = await createRectangle(containerId);
     await setMask(rectId, ellipseId);
     results.push({ label: 'Mask Scene', pass: true });
   } catch (error) {

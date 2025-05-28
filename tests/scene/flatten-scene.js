@@ -1,12 +1,13 @@
 import { channel, runStep, ws } from "../test-runner.js";
 
 /**
- * Helper: Create a frame at the root.
+ * Helper: Create a frame, optionally as a child of a parent.
  */
-async function createFrame({ x, y, width, height, name }, results) {
+async function createFrame({ x, y, width, height, name, parentId }, results) {
   const params = {
     x, y, width, height, name,
-    fillColor: { r: 1, g: 1, b: 1, a: 1 }
+    fillColor: { r: 1, g: 1, b: 1, a: 1 },
+    ...(parentId && { parentId })
   };
   const result = await runStep({
     ws, channel,
@@ -68,10 +69,12 @@ async function flattenNodes({ nodeIds }, results) {
 
 /**
  * Main flatten scene test.
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
  */
-export async function flattenScene(results) {
-  // 1. Create frame at root
-  const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "FlattenTestFrame" }, results);
+export async function flattenScene(results, parentFrameId) {
+  // 1. Create frame as a child of the all-scenes container
+  const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "FlattenTestFrame", ...(parentFrameId && { parentId: parentFrameId }) }, results);
   if (!frameId) return;
 
   // 2. Create first rectangle in frame
