@@ -31,8 +31,8 @@ const AUTO_LAYOUT_CONFIG = {
   paddingRight: 10,
   paddingTop: 15,
   paddingBottom: 15,
-  primaryAxisSizing: 'HUG',
-  counterAxisSizing: 'HUG',
+  primaryAxisSizing: 'AUTO',
+  counterAxisSizing: 'AUTO',
   layoutWrap: 'WRAP'
 };
 
@@ -44,8 +44,8 @@ const AUTO_LAYOUT_CONFIG_HUG_BOTH = {
   paddingRight: 10,
   paddingTop: 15,
   paddingBottom: 15,
-  primaryAxisSizing: 'HUG',
-  counterAxisSizing: 'HUG',
+  primaryAxisSizing: 'AUTO',
+  counterAxisSizing: 'AUTO',
   layoutWrap: 'WRAP'
 };
 
@@ -58,7 +58,7 @@ const AUTO_LAYOUT_CONFIG_HUG_HEIGHT = {
   paddingTop: 15,
   paddingBottom: 15,
   primaryAxisSizing: 'FIXED',
-  counterAxisSizing: 'HUG',
+  counterAxisSizing: 'AUTO',
   layoutWrap: 'WRAP'
 };
 
@@ -318,9 +318,9 @@ async function createMainFrame(results) {
 
   const frameId = frameResult.response?.ids?.[0];
 
-  // Apply autolayout with hug height, padding, and gaps
+  // Apply autolayout with hug both width and height, padding, and gaps
   if (frameId) {
-    results.push(await setAutoLayout(frameId, AUTO_LAYOUT_CONFIG_HUG_HEIGHT));
+    results.push(await setAutoLayout(frameId, AUTO_LAYOUT_CONFIG_HUG_BOTH));
   }
 
   // Create rectangles as children (autolayout will arrange them)
