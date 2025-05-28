@@ -26,9 +26,6 @@
 export async function setAutoLayout(params) {
   // LOGGING: Print all received params for debugging
   console.log("[setAutoLayout] called with params:", JSON.stringify(params, null, 2));
-  if ('counterAxisSizingMode' in params || 'counterAxisSizing' in params) {
-    console.warn("[setAutoLayout] WARNING: counterAxisSizingMode/counterAxisSizing param received but is NOT handled by this function. This may be why height hugging is not working.");
-  }
   const { 
     nodeId, 
     layoutMode, 
@@ -40,7 +37,12 @@ export async function setAutoLayout(params) {
     primaryAxisAlignItems, 
     counterAxisAlignItems, 
     layoutWrap, 
-    strokesIncludedInLayout 
+    strokesIncludedInLayout,
+    // New for sizing
+    counterAxisSizingMode,
+    primaryAxisSizingMode,
+    axis,
+    mode
   } = params || {};
 
   if (!nodeId) throw new Error("Missing nodeId parameter");
@@ -63,6 +65,37 @@ export async function setAutoLayout(params) {
     if (counterAxisAlignItems !== undefined) node.counterAxisAlignItems = counterAxisAlignItems;
     if (layoutWrap !== undefined) node.layoutWrap = layoutWrap;
     if (strokesIncludedInLayout !== undefined) node.strokesIncludedInLayout = strokesIncludedInLayout;
+
+    // --- Sizing logic for hug/fill/fixed ---
+    // Direct property support
+    if (typeof primaryAxisSizingMode === "string") {
+      node.primaryAxisSizingMode = primaryAxisSizingMode;
+      console.log(`[setAutoLayout] Set node.primaryAxisSizingMode = ${primaryAxisSizingMode}`);
+    }
+    if (typeof counterAxisSizingMode === "string") {
+      node.counterAxisSizingMode = counterAxisSizingMode;
+      console.log(`[setAutoLayout] Set node.counterAxisSizingMode = ${counterAxisSizingMode}`);
+    }
+    // Axis/mode mapping support (for legacy or alternate API usage)
+    if (axis && mode) {
+      if (axis === "vertical") {
+        if (layoutMode === "HORIZONTAL") {
+          node.counterAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.counterAxisSizingMode (height in HORIZONTAL) = ${mode}`);
+        } else if (layoutMode === "VERTICAL") {
+          node.primaryAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.primaryAxisSizingMode (height in VERTICAL) = ${mode}`);
+        }
+      } else if (axis === "horizontal") {
+        if (layoutMode === "VERTICAL") {
+          node.counterAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.counterAxisSizingMode (width in VERTICAL) = ${mode}`);
+        } else if (layoutMode === "HORIZONTAL") {
+          node.primaryAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.primaryAxisSizingMode (width in HORIZONTAL) = ${mode}`);
+        }
+      }
+    }
   }
 
   return {
@@ -77,7 +110,9 @@ export async function setAutoLayout(params) {
     primaryAxisAlignItems: node.primaryAxisAlignItems,
     counterAxisAlignItems: node.counterAxisAlignItems,
     layoutWrap: node.layoutWrap,
-    strokesIncludedInLayout: node.strokesIncludedInLayout
+    strokesIncludedInLayout: node.strokesIncludedInLayout,
+    primaryAxisSizingMode: node.primaryAxisSizingMode,
+    counterAxisSizingMode: node.counterAxisSizingMode
   };
 }
 
@@ -94,6 +129,7 @@ export async function setAutoLayout(params) {
  * @throws {Error} If parameters are missing/invalid, or node does not support auto layout.
  */
 export async function setAutoLayoutUnified(params) {
+  console.log("[setAutoLayoutUnified] called with params:", JSON.stringify(params, null, 2));
   const { layout, layouts, options } = params || {};
   const configs = [];
   if (layout) configs.push(layout);

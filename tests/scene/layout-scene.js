@@ -87,7 +87,7 @@ function apply_layout_autolayout(frameId) {
       paddingBottom: 20,
       layoutWrap: "WRAP",
       primaryAxisSizing: "FIXED",
-      counterAxisSizingMode: "HUG"
+      counterAxisSizingMode: "AUTO"
     }
   };
   return runStep({
