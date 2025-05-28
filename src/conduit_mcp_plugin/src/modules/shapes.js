@@ -60,176 +60,37 @@ async function resizeNodeUnified(params) {
     return resizeNode(params);
   }
 }
-
-async function setMask(params) {
-  // Support both single and batch
-  const ops = Array.isArray(params.operations)
-    ? params.operations
-    : (params.targetNodeId && params.maskNodeId
-        ? [{ targetNodeId: params.targetNodeId, maskNodeId: params.maskNodeId, channelId: params.channelId }]
-        : []);
-  const results = [];
-
-  if (!ops.length) {
-    console.log("setMask: No operations provided");
-    return [{ success: false, error: "No operations provided" }];
-  }
-
-  for (const op of ops) {
-    try {
-      const { targetNodeId, maskNodeId } = op;
-      console.log(`setMask: Processing targetNodeId=${targetNodeId}, maskNodeId=${maskNodeId}`);
-
-      const targetNode = await figma.getNodeByIdAsync(targetNodeId);
-      const maskNode = await figma.getNodeByIdAsync(maskNodeId);
-
-      if (!targetNode || !maskNode) {
-        console.log("setMask: One or both nodes not found", { targetNodeId, maskNodeId });
-        results.push({
-          success: false,
-          error: "One or both nodes not found",
-          targetNodeId,
-          maskNodeId
-        });
-        continue;
-      }
-
-      // Updated valid node types based on Figma API docs and your recommendations
-      const validTargetTypes = [
-        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR",
-        "FRAME", "GROUP", "COMPONENT", "COMPONENT_SET", 
-        "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", 
-        "LINE", "BOOLEAN_OPERATION"
-      ];
-      const validMaskTypes = [
-        "RECTANGLE", "ELLIPSE", "POLYGON", "STAR", "VECTOR",
-        "BOOLEAN_OPERATION", "COMPONENT", "COMPONENT_SET", 
-        "INSTANCE", "TEXT", "SHAPE_WITH_TEXT", "STICKY", 
-        "LINE", "FRAME", "GROUP"
-      ];
-      console.log(`setMask: targetNode.type=${targetNode.type}, maskNode.type=${maskNode.type}`);
-      if (!validTargetTypes.includes(targetNode.type) || !validMaskTypes.includes(maskNode.type)) {
-        console.log("setMask: Invalid node types for masking operation", { targetNodeType: targetNode.type, maskNodeType: maskNode.type });
-        results.push({
-          success: false,
-          error: "Invalid node types for masking operation",
-          targetNodeId,
-          maskNodeId
-        });
-        continue;
-      }
-
-      // Move original nodes instead of cloning
-      const originalTargetParent = targetNode.parent;
-      const originalMaskParent = maskNode.parent;
-      const targetIndex = originalTargetParent.children.indexOf(targetNode);
-
-      console.log(`setMask: Moving original nodes - Target: ${targetNode.type}, Mask: ${maskNode.type}`);
-
-      // Create frame with clipping enabled
-      const maskFrame = figma.createFrame();
-      maskFrame.name = `Masked_${targetNode.name || targetNodeId}`;
-      maskFrame.x = targetNode.x;
-      maskFrame.y = targetNode.y;
-      maskFrame.resize(targetNode.width, targetNode.height);
-      maskFrame.clipContent = true;
-
-      // Calculate relative positions for nodes within the frame
-      const maskRelativeX = maskNode.x - targetNode.x;
-      const maskRelativeY = maskNode.y - targetNode.y;
-      console.log(`setMask: Calculated relative positions - Mask: (${maskRelativeX}, ${maskRelativeY})`);
-
-      // Set mask properties on original nodes BEFORE moving them
-      try {
-        maskNode.isMask = true;
-        targetNode.isMask = false;
-        console.log(`setMask: Set isMask properties successfully`);
-      } catch (maskPropertyError) {
-        console.log(`setMask: Error setting isMask properties:`, maskPropertyError && maskPropertyError.message ? maskPropertyError.message : maskPropertyError);
-        results.push({
-          success: false,
-          error: `Failed to set mask properties: ${maskPropertyError && maskPropertyError.message ? maskPropertyError.message : maskPropertyError}`,
-          targetNodeId,
-          maskNodeId
-        });
-        continue;
-      }
-
-      // Move nodes into the frame (mask first, then target)
-      try {
-        // Move mask node first
-        maskFrame.appendChild(maskNode);
-        maskNode.x = maskRelativeX;
-        maskNode.y = maskRelativeY;
-        console.log(`setMask: Moved mask node to frame`);
-
-        // Move target node
-        maskFrame.appendChild(targetNode);
-        targetNode.x = 0;
-        targetNode.y = 0;
-        console.log(`setMask: Moved target node to frame`);
-
-      } catch (moveError) {
-        console.log(`setMask: Error moving nodes:`, moveError && moveError.message ? moveError.message : moveError);
-        // Clean up the frame if move failed
-        maskFrame.remove();
-        results.push({
-          success: false,
-          error: `Failed to move nodes: ${moveError && moveError.message ? moveError.message : moveError}`,
-          targetNodeId,
-          maskNodeId
-        });
-        continue;
-      }
-
-      // Insert the masked frame at the original target position
-      try {
-        if (!originalTargetParent) {
-          console.log("setMask: Target node has no parent", { targetNodeId, maskNodeId });
-          results.push({
-            success: false,
-            error: "Target node has no parent",
-            targetNodeId,
-            maskNodeId
-          });
-          continue;
-        }
-        originalTargetParent.insertChild(targetIndex, maskFrame);
-        console.log(`setMask: Inserted masked frame into parent`);
-
-        // Select the new masked group
-        figma.currentPage.selection = [maskFrame];
-
-        results.push({
-          success: true,
-          message: "Mask applied successfully using original nodes",
-          nodeId: maskFrame.id,
-          targetNodeId,
-          maskNodeId
-        });
-
-      } catch (insertError) {
-        console.log(`setMask: Error inserting frame:`, insertError && insertError.message ? insertError.message : insertError);
-        results.push({
-          success: false,
-          error: `Failed to insert masked frame: ${insertError && insertError.message ? insertError.message : insertError}`,
-          targetNodeId,
-          maskNodeId
-        });
-      }
-
-    } catch (error) {
-      console.log("setMask: Unexpected error:", error && error.message ? error.message : error);
-      results.push({
-        success: false,
-        error: error && error.message ? error.message : String(error),
-        targetNodeId: op.targetNodeId,
-        maskNodeId: op.maskNodeId
-      });
+ async function setMask(params) {
+  try {
+    const targetNodeId = params.targetNodeId;
+    const maskNodeId = params.maskNodeId;
+    
+    if (!targetNodeId || !maskNodeId) {
+      return [{ success: false, error: "Missing node IDs" }];
     }
+
+    const targetNode = await figma.getNodeByIdAsync(targetNodeId);
+    const maskNode = await figma.getNodeByIdAsync(maskNodeId);
+    
+    if (!targetNode || !maskNode) {
+      return [{ success: false, error: "Nodes not found" }];
+    }
+
+    // Set mask property BEFORE grouping
+    maskNode.isMask = true;
+    
+    // Group with mask first in selection (this puts it at bottom of group)
+    const maskGroup = figma.group([maskNode, targetNode], figma.currentPage);
+    maskGroup.name = "Masked_" + targetNode.name;
+
+    return [{ success: true, nodeId: maskGroup.id }];
+    
+  } catch (error) {
+    return [{ success: false, error: error.message }];
   }
-  return results;
 }
+
+
 
 export const shapeOperations = {
   createRectangle,
