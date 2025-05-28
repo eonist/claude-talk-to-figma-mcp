@@ -14,9 +14,9 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
  * - Effect style variable application
  * - Batch operations for multiple nodes
  * 
- * @param server - The MCP server instance to register tools on
- * @param figmaClient - The Figma client for API communication
- * @returns void
+ * @param {McpServer} server - The MCP server instance to register tools on
+ * @param {FigmaClient} figmaClient - The Figma client for API communication
+ * @returns {void}
  * 
  * @example
  * ```

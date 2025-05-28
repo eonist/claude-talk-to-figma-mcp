@@ -14,10 +14,9 @@ import { EffectSchema } from "./schema/effect-schema.js";
  * enabling setting visual effects and applying effect styles to nodes in Figma.
  * It validates inputs, executes corresponding Figma commands, and returns informative results.
  *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
+ * @param server - The MCP server instance to register the tools on
+ * @param figmaClient - The Figma client used to execute commands against the Figma API
+ * @returns void
  *
  * @example
  * registerEffectsTools(server, figmaClient);
