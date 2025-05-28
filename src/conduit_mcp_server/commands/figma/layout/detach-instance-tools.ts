@@ -5,19 +5,37 @@ import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { InstanceIdSchema } from "./schema/instance-id-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 /**
- * Registers detach instance command on the MCP server.
- *
- * This function adds a tool named "detach_instance" to the MCP server,
- * enabling detaching a Figma component instance from its master component.
- * It validates input, executes the corresponding Figma command, and returns the result.
- *
- * @param {McpServer} server - The MCP server instance to register the tool on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tool asynchronously.
- *
+ * Registers component instance detachment tools on the MCP server.
+ * 
+ * This function adds a unified tool named "detach_instances" to the MCP server,
+ * enabling detachment of Figma component instances from their master components.
+ * Supports both single instance and batch operations with configurable error handling.
+ * 
+ * @param {McpServer} server - The MCP server instance to register the detach tool on
+ * @param {FigmaClient} figmaClient - The Figma client used to execute detach commands against the Figma API
+ * 
+ * @returns {void} This function does not return a value but registers the tool asynchronously
+ * 
  * @example
+ * ```
+ * import { registerDetachInstanceTools } from './detach-instance-tools.js';
+ * 
  * registerDetachInstanceTools(server, figmaClient);
+ * ```
+ * 
+ * @warning
+ * - Detaching instances is irreversible
+ * - Detached instances lose connection to their master component
+ * - Consider backing up your design before performing batch detach operations
+ * 
+ * @remarks
+ * - Supports batch processing of multiple instances
+ * - Configurable error handling with skip_errors option
+ * - Maintains position option available for detached instances
+ * - Returns comprehensive results for each detach operation
+ * 
+ * @since 1.0.0
+ * @category Components
  */
 export function registerDetachInstanceTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified detach_instances tool (single or batch)
