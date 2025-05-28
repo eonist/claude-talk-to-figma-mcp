@@ -88,10 +88,10 @@ async function main() {
     // booleanScene,
     // flattenScene,
     // effectScene,
-    // svgScene
+    svgScene
     // imageScene
     // maskScene
-    layoutScene
+    // layoutScene
   ];
   const results = [];
   for (const scene of sequence) {
