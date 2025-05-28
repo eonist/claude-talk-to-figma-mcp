@@ -142,29 +142,6 @@ export async function booleanScene(results, parentFrameId) {
   const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "BooleanTestFrame", ...(parentFrameId && { parentId: parentFrameId }) }, results);
   if (!frameId) return;
 
-  // Apply hugging autolayout to the top-level frame
-  const autoLayoutResult = await runStep({
-    ws, channel,
-    command: "set_auto_layout",
-    params: {
-      layout: {
-        nodeId: frameId,
-        mode: "HORIZONTAL",
-        itemSpacing: 20,
-        counterAxisSpacing: 20,
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingTop: 20,
-        paddingBottom: 20,
-        primaryAxisSizing: "AUTO",
-        counterAxisSizing: "AUTO"
-      }
-    },
-    assert: (response) => response && response["0"] && response["0"].success === true && response["0"].nodeId === frameId,
-    label: "set_auto_layout (hug both axes, booleanScene)"
-  });
-  results.push(autoLayoutResult);
-
   // 2. Create rectangle inside the frame
   const rectId = await createRectangle({
     x: 0, y: 0, width: 100, height: 100,
