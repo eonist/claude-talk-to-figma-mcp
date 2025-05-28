@@ -109,6 +109,7 @@ export async function maskScene(results, parentFrameId) {
     const frameHeight = 100 + 2 * padding;
 
     if (parentFrameId) {
+      console.log("[MASK SCENE] Creating container frame...");
       const containerRes = await runStep({
         ws,
         channel,
@@ -128,15 +129,22 @@ export async function maskScene(results, parentFrameId) {
         label: "create_mask_scene_container"
       });
       containerId = containerRes.response?.ids?.[0];
+      console.log("[MASK SCENE] Container frame created:", containerId, containerRes);
     }
 
     // Offset both shapes by padding
+    console.log("[MASK SCENE] Creating ellipse...");
     const ellipseId = await createEllipse(containerId); // must be bellow the shape to mask
+    console.log("[MASK SCENE] Ellipse created:", ellipseId);
+
+    console.log("[MASK SCENE] Creating rectangle...");
     const rectId = await createRectangle(containerId);
+    console.log("[MASK SCENE] Rectangle created:", rectId);
 
     // Move both to (padding, padding)
     if (ellipseId) {
-      await runStep({
+      console.log("[MASK SCENE] Moving ellipse to padding...");
+      const moveEllipseRes = await runStep({
         ws,
         channel,
         command: "move_node",
@@ -144,9 +152,11 @@ export async function maskScene(results, parentFrameId) {
         assert: () => true,
         label: "move_ellipse_to_padding"
       });
+      console.log("[MASK SCENE] Ellipse moved:", moveEllipseRes);
     }
     if (rectId) {
-      await runStep({
+      console.log("[MASK SCENE] Moving rect to padding...");
+      const moveRectRes = await runStep({
         ws,
         channel,
         command: "move_node",
@@ -154,17 +164,22 @@ export async function maskScene(results, parentFrameId) {
         assert: () => true,
         label: "move_rect_to_padding"
       });
+      console.log("[MASK SCENE] Rect moved:", moveRectRes);
     }
 
+    console.log("[MASK SCENE] Applying mask...");
     await setMask(rectId, ellipseId);
+    console.log("[MASK SCENE] Mask applied.");
 
     // --- Wait for mask operation to complete ---
+    console.log("[MASK SCENE] Waiting for mask operation to complete...");
     await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log("[MASK SCENE] Wait complete.");
 
     // --- Ensure mask group is inside the container frame ---
     let groupId = null;
     if (containerId) {
-      // Find the group at the page root (after setMask)
+      console.log("[MASK SCENE] Getting document info to find mask group...");
       const docInfoRes = await runStep({
         ws,
         channel,
@@ -173,6 +188,7 @@ export async function maskScene(results, parentFrameId) {
         assert: (response) => response && response.id,
         label: "get_document_info_for_mask_group"
       });
+      console.log("[MASK SCENE] Document info:", docInfoRes);
       const allNodes = docInfoRes.response?.document?.children || [];
       // Find a GROUP node that is not ellipse/rect
       const candidateGroups = allNodes.filter(child =>
@@ -180,29 +196,34 @@ export async function maskScene(results, parentFrameId) {
         child.id !== ellipseId &&
         child.id !== rectId
       );
+      console.log("[MASK SCENE] Candidate groups found:", candidateGroups.map(g => g.id));
       if (candidateGroups.length > 0) {
         groupId = candidateGroups[0].id;
-        // 1. Ungroup the group (promotes children to page root)
-        await runStep({
+        console.log("[MASK SCENE] Attempting to move group to container:", groupId, "->", containerId);
+        const moveGroupRes = await runStep({
           ws,
           channel,
-          command: "group_node",
-          params: { group: false, nodeId: groupId },
-          assert: () => true,
-          label: "ungroup_mask_group"
+          command: "set_node",
+          params: { parentId: containerId, childId: groupId, index: 0 },
+          assert: (response) => {
+            // Check for success in the returned content array
+            const content = response?.content;
+            if (Array.isArray(content)) {
+              return content.some(
+                obj =>
+                  obj.type === "text" &&
+                  obj.text &&
+                  obj.text.includes('"success":true')
+              );
+            }
+            return false;
+          },
+          label: "move_mask_group_to_container"
         });
-        // 2. Group the two nodes inside the container frame
-        await runStep({
-          ws,
-          channel,
-          command: "group_node",
-          params: { group: true, nodeIds: [rectId, ellipseId], name: "MaskedGroup" },
-          assert: () => true,
-          label: "regroup_mask_nodes_in_container"
-        });
-        // Optionally, move the new group to (padding, padding) if needed
+        console.log("[MASK SCENE] Move group result:", moveGroupRes);
+        // Optionally, move the group to (padding, padding) if needed
       } else {
-        console.warn("Mask group not found anywhere in document after masking.");
+        console.warn("[MASK SCENE] Mask group not found anywhere in document after masking.");
       }
     }
 
