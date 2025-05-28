@@ -49,6 +49,7 @@ import { effectScene } from './scene/effect-scene.js';
 import { svgScene } from './scene/svg-scene.js';
 import { imageScene } from './scene/image-scene.js';
 import { maskScene } from './scene/mask-scene.js';
+import { layoutScene } from './scene/layout-scene.js';
 // --- Main Runner ---
 /**
  * Main entry point: initializes WebSocket, joins the channel, executes test scenes, and outputs results.
@@ -87,9 +88,10 @@ async function main() {
     // booleanScene,
     // flattenScene,
     // effectScene,
-    //svgScene
-    //imageScene
-    maskScene
+    // svgScene
+    // imageScene
+    // maskScene
+    layoutScene
   ];
   const results = [];
   for (const scene of sequence) {

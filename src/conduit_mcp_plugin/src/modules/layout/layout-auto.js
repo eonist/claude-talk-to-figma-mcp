@@ -24,6 +24,11 @@
  * @throws {Error} If nodeId or layoutMode is missing, node is not found, or does not support auto layout.
  */
 export async function setAutoLayout(params) {
+  // LOGGING: Print all received params for debugging
+  console.log("[setAutoLayout] called with params:", JSON.stringify(params, null, 2));
+  if ('counterAxisSizingMode' in params || 'counterAxisSizing' in params) {
+    console.warn("[setAutoLayout] WARNING: counterAxisSizingMode/counterAxisSizing param received but is NOT handled by this function. This may be why height hugging is not working.");
+  }
   const { 
     nodeId, 
     layoutMode, 
