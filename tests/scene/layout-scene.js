@@ -81,6 +81,8 @@ function apply_parent_autolayout(frameId) {
         pass = response.some(r => r && r.success === true && r.nodeId === frameId);
       } else if (response && response.success === true && response.nodeId === frameId) {
         pass = true;
+      } else if (response && typeof response['0'] === 'object' && response['0'].success === true && response['0'].nodeId === frameId) {
+        pass = true;
       } else if (response === undefined) {
         pass = true;
       }
@@ -167,6 +169,8 @@ function apply_layout_autolayout(frameId) {
       if (Array.isArray(response)) {
         pass = response.some(r => r && r.success === true && r.nodeId === frameId);
       } else if (response && response.success === true && response.nodeId === frameId) {
+        pass = true;
+      } else if (response && typeof response['0'] === 'object' && response['0'].success === true && response['0'].nodeId === frameId) {
         pass = true;
       } else if (response === undefined) {
         pass = true;

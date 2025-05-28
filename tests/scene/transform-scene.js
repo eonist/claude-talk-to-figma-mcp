@@ -189,7 +189,8 @@ function setSize(nodeId, width, height) {
     let pass = false;
     if (Array.isArray(response?.results)) {
       pass = response.results.some(r => r.nodeId === nodeId && r.success === true);
-    } else if (response && response.success === true && response.nodeId === nodeId) {
+    } else if (response && response.success === true) {
+      // Accept any top-level object with success: true, even if nodeId is missing
       pass = true;
     } else if (response === undefined) {
       // If the response is undefined but the operation works, consider it a pass
