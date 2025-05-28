@@ -9,19 +9,55 @@ import { NodeIdsArraySchema } from "./schema/node-ids-schema.js";
 import { GetNodeInfoSchema } from "./schema/node-info-schema.js";
 
 /**
- * Registers node info read commands on the MCP server.
- *
- * This function adds tools named "get_node_info" and "get_nodes_info" to the MCP server,
- * enabling retrieval of detailed information about single or multiple nodes in Figma.
- * It validates inputs, executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
+ * Registers comprehensive node information retrieval and matrix transformation tools on the MCP server.
+ * 
+ * This function adds two powerful tools: one for retrieving detailed node information and metadata,
+ * and another for applying matrix transformations to nodes. Both tools support single node operations
+ * and batch processing, providing extensive capabilities for node inspection, property analysis,
+ * and geometric transformations within Figma documents.
+ * 
+ * @param {McpServer} server - The MCP server instance to register the node tools on
+ * @param {FigmaClient} figmaClient - The Figma client instance for API communication
+ * 
+ * @returns {void} This function has no return value but registers the tools asynchronously
+ * 
+ * @throws {Error} Throws an error if node IDs are invalid, transformation matrices are malformed, or nodes are not found
+ * 
  * @example
- * registerNodeTools(server, figmaClient);
+ * ```
+ * // Get single node information
+ * const result = await nodeInfoTool({ nodeId: "123:456" });
+ * 
+ * // Get multiple nodes information
+ * const result = await nodeInfoTool({ 
+ *   nodeIds: ["123:456", "789:101", "abc:def"] 
+ * });
+ * 
+ * // Apply matrix transformation to single node
+ * const result = await matrixTool({
+ *   entry: { 
+ *     nodeId: "123:456", 
+ *     matrix: [1][1] // [scaleX, skewY, skewX, scaleY, translateX, translateY]
+ *   }
+ * });
+ * 
+ * // Batch matrix transformations with error handling
+ * const result = await matrixTool({
+ *   entries: [
+ *     { nodeId: "123:456", matrix: [2][2] }, // 2x scale
+ *     { nodeId: "789:101", matrix: [1][1] } // translate
+ *   ],
+ *   options: { skipErrors: true }
+ * });
+ * ```
+ * 
+ * @note Matrix transformations use a 6-element array representing 2D affine transformation: [scaleX, skewY, skewX, scaleY, translateX, translateY]
+ * @note Node info includes comprehensive properties: dimensions, fills, strokes, effects, constraints, positioning, and hierarchy data
+ * @note Large batch requests may impact performance; consider chunking for very large operations
+ * @warning Matrix transformations are destructive and will overwrite existing node transforms
+ * @since 1.0.0
+ * @see {@link https://www.figma.com/developers/api#get-node} Figma Get Node API
+ * @see {@link https://www.figma.com/developers/api#matrix-transform} Figma Matrix Transform API
  */
 export function registerNodeTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified Get Node Info (single or batch)

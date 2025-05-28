@@ -6,19 +6,46 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
 import { InsertChildOperation } from "./schema/insert-child-schema.js";
 
 /**
- * Registers the set_node command on the MCP server to enable setting or inserting a child node into a parent node in Figma.
- *
- * This function integrates the MCP server with the Figma client by adding a tool named "set_node".
- * The tool accepts parameters for the parent node ID, child node ID, and an optional insertion index.
- * It executes the corresponding Figma command to insert the child node at the specified position within the parent.
- *
- * @param {McpServer} server - The MCP server instance to register the tool on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tool asynchronously.
- *
+ * Registers child node insertion tools on the MCP server for managing Figma node hierarchies.
+ * 
+ * This function adds a comprehensive tool for inserting child nodes into parent containers 
+ * at specific positions within the Figma node tree. It supports both single insertions 
+ * and batch operations with configurable error handling, position maintenance options, 
+ * and flexible index positioning for precise hierarchy management.
+ * 
+ * @param {McpServer} server - The MCP server instance to register the insertion tools on
+ * @param {FigmaClient} figmaClient - The Figma client instance for API communication
+ * 
+ * @returns {void} This function has no return value but registers the tools asynchronously
+ * 
+ * @throws {Error} Throws an error if parent/child relationships are invalid, nodes don't exist, or index positions are out of bounds
+ * 
  * @example
- * registerInsertChildTools(server, figmaClient);
+ * ```
+ * // Single child insertion
+ * const result = await insertTool({
+ *   parentId: "parent:123",
+ *   childId: "child:456",
+ *   index: 0,
+ *   maintainPosition: true
+ * });
+ * 
+ * // Batch insertion with error handling
+ * const result = await insertTool({
+ *   operations: [
+ *     { parentId: "parent:123", childId: "child:456", index: 0 },
+ *     { parentId: "parent:789", childId: "child:101", index: 2, maintainPosition: true }
+ *   ],
+ *   options: { skipErrors: true }
+ * });
+ * ```
+ * 
+ * @note Index parameter is zero-based; omitting it appends the child at the end of the parent's children array
+ * @note maintainPosition preserves the child's absolute canvas position during insertion
+ * @note skipErrors option allows batch operations to continue despite individual failures
+ * @warning Invalid parent/child relationships may result in unexpected node positioning or hierarchy corruption
+ * @since 1.0.0
+ * @see {@link https://www.figma.com/developers/api#set-node} Figma Set Node API
  */
 export function registerInsertChildTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(

@@ -5,16 +5,55 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
 import { ReorderSchema } from "./schema/reorder-layer-schema.js";
 
 /**
- * Registers reorder layer commands on the MCP server.
- *
- * This function adds the unified "reorder_node" tool to the MCP server,
- * enabling reordering of single or multiple nodes in Figma. It validates inputs,
- * executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
+ * Registers layer reordering tools on the MCP server for managing node z-order and stacking positions.
+ * 
+ * This function adds a comprehensive tool for changing the stacking order of nodes within their 
+ * parent containers. It supports directional movements (up, down, front, back), specific index 
+ * positioning, and batch reordering operations with configurable error handling strategies for 
+ * complex layer management and visual hierarchy adjustments.
+ * 
+ * @param {McpServer} server - The MCP server instance to register the reordering tools on
+ * @param {FigmaClient} figmaClient - The Figma client instance for API communication
+ * 
+ * @returns {void} This function has no return value but registers the tools asynchronously
+ * 
+ * @throws {Error} Throws an error if nodes lack valid parents, index positions are out of bounds, or nodes are not found
+ * 
+ * @example
+ * ```
+ * // Move node up one position in layer order
+ * const result = await reorderTool({
+ *   reorder: { nodeId: "123:456", direction: "up" }
+ * });
+ * 
+ * // Move node to front of all siblings
+ * const result = await reorderTool({
+ *   reorder: { nodeId: "123:456", direction: "front" }
+ * });
+ * 
+ * // Set specific index position (zero-based)
+ * const result = await reorderTool({
+ *   reorder: { nodeId: "123:456", index: 2 }
+ * });
+ * 
+ * // Batch reorder with error handling
+ * const result = await reorderTool({
+ *   reorders: [
+ *     { nodeId: "123:456", direction: "front" },
+ *     { nodeId: "789:101", direction: "back" },
+ *     { nodeId: "abc:def", index: 1 }
+ *   ],
+ *   options: { skip_errors: true }
+ * });
+ * ```
+ * 
+ * @note Direction options include: "up" (move one position forward), "down" (move one position back), "front" (move to top), "back" (move to bottom)
+ * @note Index-based positioning uses zero-based indexing within the parent's children array
+ * @note skip_errors option allows batch operations to continue despite individual failures
+ * @note Each node must have a valid parent container to be reordered
+ * @warning Reordering affects visual stacking and may impact design layout and user interactions
+ * @since 1.0.0
+ * @see {@link https://www.figma.com/developers/api#reorder-node} Figma Reorder Node API
  */
 export function registerReorderLayerTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified reorder_node tool (single or batch)

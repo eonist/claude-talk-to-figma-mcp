@@ -9,15 +9,48 @@ import { RenameSchema } from "./schema/rename-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
- * Registers rename commands for the MCP server
+ * Registers node renaming tools on the MCP server for updating Figma node names and auto-rename settings.
  * 
- * These commands handle operations for renaming elements in Figma, including:
- * - Renaming a single layer
- * - Batch renaming multiple layers
- * - Targeted renaming of multiple elements with individual names
+ * This function adds a unified renaming tool that supports both single node renaming and batch 
+ * renaming operations. The tool provides comprehensive name management capabilities including
+ * custom naming, auto-rename behavior control for text nodes, and detailed feedback on 
+ * renaming operations with original and new names for audit and tracking purposes.
  * 
- * @param {McpServer} server - The MCP server instance
- * @param {FigmaClient} figmaClient - The Figma client instance
+ * @param {McpServer} server - The MCP server instance to register the renaming tools on
+ * @param {FigmaClient} figmaClient - The Figma client instance for API communication
+ * 
+ * @returns {void} This function has no return value but registers the tools asynchronously
+ * 
+ * @throws {Error} Throws an error if node IDs are invalid, new names exceed character limits, or nodes are not found
+ * 
+ * @example
+ * ```
+ * // Rename single node with auto-rename control
+ * const result = await renameTool({
+ *   rename: { 
+ *     nodeId: "123:456", 
+ *     newName: "Updated Header Text",
+ *     setAutoRename: false 
+ *   }
+ * });
+ * 
+ * // Batch rename multiple nodes
+ * const result = await renameTool({
+ *   renames: [
+ *     { nodeId: "123:456", newName: "Primary Button" },
+ *     { nodeId: "789:101", newName: "Secondary Button", setAutoRename: true },
+ *     { nodeId: "abc:def", newName: "Navigation Menu" }
+ *   ]
+ * });
+ * ```
+ * 
+ * @note New names must be non-empty strings with a maximum length of 100 characters
+ * @note setAutoRename parameter controls automatic naming behavior specifically for TextNode elements
+ * @note Batch operations continue processing even if individual renames fail, providing comprehensive error reporting
+ * @note Original names are preserved in the response for audit trails and rollback scenarios
+ * @warning Empty or excessively long names will cause the operation to fail
+ * @since 1.0.0
+ * @see {@link https://www.figma.com/developers/api#rename-node} Figma Rename Node API
  */
 export function registerRenameCommands(server: McpServer, figmaClient: FigmaClient) {
 
