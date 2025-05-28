@@ -1,8 +1,13 @@
 import { channel, runStep, ws } from "../test-runner.js";
 
 /**
- * Helper to apply autolayout to a frame with horizontal flow, wrapping, and specific gaps and padding.
- * @param {string} frameId
+ * Applies horizontal auto-layout to a frame with wrapping and consistent spacing.
+ * Configures padding, gaps, and sizing behavior for optimal SVG arrangement.
+ * @param {string} frameId - The Figma frame ID to apply auto-layout to
+ * @returns {Promise} Test result object
+ * @example
+ * const result = await apply_autolayout('frame123');
+ * if (result.pass) console.log('Auto-layout applied successfully');
  */
 async function apply_autolayout(frameId) {
   const params = {
@@ -35,9 +40,11 @@ async function apply_autolayout(frameId) {
 }
 
 /**
- * Helper to create the main parent container frame with vertical flow.
+ * Creates the main parent container frame for SVGs with vertical flow.
  * @param {string} [parentId] - Optional parent frame ID
- * @returns {Promise} frameId
+ * @returns {Promise<string>} The container frame ID
+ * @example
+ * const containerId = await create_main_container('parent123');
  */
 async function create_main_container(parentId) {
   const params = {
@@ -67,8 +74,11 @@ async function create_main_container(parentId) {
 }
 
 /**
- * Helper to apply vertical auto layout to the main container.
- * @param {string} frameId
+ * Applies vertical auto-layout to the main SVG container frame.
+ * @param {string} frameId - The Figma frame ID to apply auto-layout to
+ * @returns {Promise} Test result object
+ * @example
+ * const result = await apply_main_container_autolayout('frame123');
  */
 async function apply_main_container_autolayout(frameId) {
   const params = {
@@ -99,10 +109,12 @@ async function apply_main_container_autolayout(frameId) {
 }
 
 /**
- * Helper to create a frame for SVGs and immediately apply autolayout.
- * @param {number|string} yOrParentId - Y position for the frame (number) or parentId (string)
+ * Creates a frame for SVGs and immediately applies auto-layout.
+ * @param {number|string} yOrParentId - Y position (number) or parent frame ID (string)
  * @param {string} name - Frame name
- * @returns {Promise<string>} frameId
+ * @returns {Promise<string>} The created frame ID
+ * @example
+ * const frameId = await create_svg_frame(100, 'SVG Frame 1');
  */
 async function create_svg_frame(yOrParentId, name) {
   let params;
@@ -148,9 +160,13 @@ async function create_svg_frame(yOrParentId, name) {
 }
 
 /**
- * Helper to fetch SVG text from a URL.
- * @param {string} url
- * @returns {Promise<string>}
+ * Fetches SVG content from a remote URL and returns it as text.
+ * Handles network errors and validates response status.
+ * @param {string} url - The URL to fetch SVG content from
+ * @returns {Promise<string>} The SVG markup as a string
+ * @throws {Error} When the fetch request fails or returns non-OK status
+ * @example
+ * const svgContent = await fetch_svg('https://example.com/icon.svg');
  */
 async function fetch_svg(url) {
   const res = await fetch(url);
@@ -309,10 +325,12 @@ async function create_svg_from_url(parentId, url, name, width = 50, height = 50)
 }
 
 /**
- * Helper to intelligently set fill and stroke on children nodes.
- * Only replaces existing fills/strokes, doesn't add new ones.
- * @param {string} nodeId
- * @param {string} color - CSS color string (e.g. "#ff0000")
+ * Intelligently applies fill and stroke colors to SVG child elements.
+ * Only modifies existing fills/strokes, preserving the original SVG structure.
+ * @param {string} nodeId - The SVG node ID to modify
+ * @param {string} color - CSS hex color string (e.g., '#ff0000')
+ * @example
+ * await set_fill_color('svg123', '#ff0000'); // Apply red color
  */
 async function set_fill_color(nodeId, color) {
   // Convert hex to Figma RGBA with alpha
@@ -491,10 +509,14 @@ export async function createIconSVG3(frameId) {
 }
 
 /**
- * Main test function for SVG scene.
- * @param {Array} results
- * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ * Main entry point for the SVG scene test.
+ * Creates containers and populates with various SVG logos and icons.
+ * @param {Array} results - Array to collect test results
+ * @param {string} [parentFrameId] - Optional parent frame ID for scene organization
  * Comment out any calls below to toggle creation of individual SVGs for debugging.
+ * @example
+ * const results = [];
+ * await svgScene(results, 'container123');
  */
 export async function svgScene(results, parentFrameId) {
   // 1. Create main parent container with vertical flow as a child of the all-scenes container

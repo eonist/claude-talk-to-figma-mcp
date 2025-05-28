@@ -13,8 +13,12 @@ let channel;
 
 // --- CLI Argument Parsing ---
 /**
- * Parse command-line arguments into an options object.
- * @returns {{_: Array<string>, [key: string]: string|boolean}} Parsed options with flags and positional arguments.
+ * Parses command-line arguments into a structured options object.
+ * Handles both flags (--flag) and positional arguments.
+ * @returns {{_: string[], [key: string]: string|boolean}} Parsed options with flags and positional arguments
+ * @example
+ * // Command: node script.js run --channel abc123 --verbose
+ * // Returns: { _: ['run'], channel: 'abc123', verbose: true }
  */
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -66,10 +70,14 @@ const CONTAINER_FRAME_CONFIG = {
 };
 
 /**
- * Creates the top-level container frame for all scenes.
- * @param {WebSocket} ws
- * @param {string} channel
- * @returns {Promise<string>} The container frame ID
+ * Creates the top-level container frame for organizing all test scenes.
+ * Applies horizontal auto-layout with wrapping and consistent spacing.
+ * @param {WebSocket} ws - Active WebSocket connection to Figma
+ * @param {string} channel - Channel ID for the Figma session
+ * @returns {Promise} The container frame ID
+ * @throws {Error} When frame creation or auto-layout application fails
+ * @example
+ * const containerId = await createContainerFrame(ws, 'channel123');
  */
 async function createContainerFrame(ws, channel) {
   const res = await runStep({
@@ -110,8 +118,13 @@ async function createContainerFrame(ws, channel) {
 
 // --- Main Runner ---
 /**
- * Main entry point: initializes WebSocket, joins the channel, executes test scenes, and outputs results.
- * @returns {Promise<void>}
+ * Main entry point for the test runner. Initializes WebSocket connection,
+ * joins the specified channel, executes all test scenes, and reports results.
+ * @returns {Promise}
+ * @throws {Error} When WebSocket connection fails or test execution encounters errors
+ * @example
+ * // Usage: node scripts/test-runner.js run --channel mychannel
+ * await main();
  */
 async function main() {
   const opts = parseArgs();

@@ -110,6 +110,16 @@ function assertSuccessResponse(response) {
 // ========== SHAPE CREATION FUNCTIONS ==========
 /**
  * Creates a frame with the specified properties
+ * @param {object} options - Frame options
+ * @param {number} options.x - X coordinate
+ * @param {number} options.y - Y coordinate
+ * @param {number} options.width - Width of the frame
+ * @param {number} options.height - Height of the frame
+ * @param {string} options.name - Name of the frame
+ * @param {string} [options.parentId] - Optional parent frame ID
+ * @returns {Promise} Test result with frame creation status
+ * @example
+ * const frameResult = await createFrame({ x: 0, y: 0, width: 400, height: 300, name: 'Main Frame' });
  */
 function createFrame({ x, y, width, height, name, parentId }) {
   const params = {
@@ -134,6 +144,15 @@ function createFrame({ x, y, width, height, name, parentId }) {
 
 /**
  * Creates a rectangle with the specified properties
+ * @param {object} options - Rectangle options
+ * @param {object} options.fillColor - Fill color RGBA object
+ * @param {number} options.width - Width of the rectangle
+ * @param {number} options.height - Height of the rectangle
+ * @param {string} [options.parentId] - Optional parent frame ID
+ * @param {string} [options.name='TransformRectangle'] - Name of the rectangle
+ * @returns {Promise} Test result with rectangle creation status
+ * @example
+ * const rectResult = await createRectangle({ fillColor: { r: 1, g: 0, b: 0, a: 1 }, width: 100, height: 100 });
  */
 function createRectangle({ fillColor, width, height, parentId = null, name = 'TransformRectangle' }) {
   const params = {
@@ -160,6 +179,12 @@ function createRectangle({ fillColor, width, height, parentId = null, name = 'Tr
 // ========== TRANSFORMATION FUNCTIONS ==========
 /**
  * Sets the position of a node
+ * @param {string} nodeId - Node ID to move
+ * @param {number} x - X coordinate
+ * @param {number} y - Y coordinate
+ * @returns {Promise} Test result of move operation
+ * @example
+ * await setPosition('node123', 100, 200);
  */
 function setPosition(nodeId, x, y) {
   const assertFn = (response) => {
@@ -182,6 +207,12 @@ function setPosition(nodeId, x, y) {
 
 /**
  * Sets the size of a node
+ * @param {string} nodeId - Node ID to resize
+ * @param {number} width - New width
+ * @param {number} height - New height
+ * @returns {Promise} Test result of resize operation
+ * @example
+ * await setSize('node123', 200, 100);
  */
 function setSize(nodeId, width, height) {
   const assertFn = (response) => {
@@ -217,6 +248,11 @@ function setSize(nodeId, width, height) {
 
 /**
  * Applies auto layout to a frame
+ * @param {string} frameId - Frame ID to apply auto layout
+ * @param {object} [config=AUTO_LAYOUT_CONFIG] - Auto layout configuration
+ * @returns {Promise} Test result of auto layout application
+ * @example
+ * await setAutoLayout('frame123', AUTO_LAYOUT_CONFIG);
  */
 function setAutoLayout(frameId, config = AUTO_LAYOUT_CONFIG) {
   const params = {
@@ -241,6 +277,11 @@ function setAutoLayout(frameId, config = AUTO_LAYOUT_CONFIG) {
 
 /**
  * Reorders nodes in z-index
+ * @param {string[]} nodeIds - Array of node IDs to reorder
+ * @param {string[]} order - Desired order of node IDs
+ * @returns {Promise[]} Array of test results for reorder operations
+ * @example
+ * await reorderNodes(['id1', 'id2'], ['id2', 'id1']);
  */
 function reorderNodes(nodeIds, order) {
   return Promise.all(
@@ -257,6 +298,11 @@ function reorderNodes(nodeIds, order) {
 
 /**
  * Rotates a node by the specified angle
+ * @param {string} nodeId - Node ID to rotate
+ * @param {number} angle - Rotation angle in degrees
+ * @returns {Promise} Test result of rotate operation
+ * @example
+ * await rotateNode('node123', 45);
  */
 function rotateNode(nodeId, angle) {
   return createRunStepConfig(
@@ -269,6 +315,11 @@ function rotateNode(nodeId, angle) {
 
 /**
  * Applies a matrix transformation to a node
+ * @param {string} nodeId - Node ID to transform
+ * @param {number[]} matrix - 6-element transformation matrix
+ * @returns {Promise} Test result of matrix transform operation
+ * @example
+ * await setMatrixTransform('node123', [1, 0, 0, 1, 0, 0]);
  */
 function setMatrixTransform(nodeId, matrix) {
   const assertFn = (response) => {
@@ -288,6 +339,15 @@ function setMatrixTransform(nodeId, matrix) {
 // ========== HELPER FUNCTIONS ==========
 /**
  * Creates a rectangle with position and size setup
+ * @param {object} color - Fill color RGBA object
+ * @param {number} width - Width of the rectangle
+ * @param {number} height - Height of the rectangle
+ * @param {string} parentId - Parent frame ID
+ * @param {number} [x=0] - X coordinate
+ * @param {number} [y=0] - Y coordinate
+ * @returns {Promise<object>} Object containing result, rectangleId, and operations
+ * @example
+ * const { result, rectangleId, operations } = await createAndSetupRectangle({ r: 1, g: 0, b: 0, a: 1 }, 100, 100, 'parent123', 10, 20);
  */
 async function createAndSetupRectangle(color, width, height, parentId, x = 0, y = 0) {
   const result = await createRectangle({ fillColor: color, width, height, parentId });
@@ -304,6 +364,10 @@ async function createAndSetupRectangle(color, width, height, parentId, x = 0, y 
 
 /**
  * Creates a skew transformation matrix
+ * @param {number} angleInDegrees - Skew angle in degrees
+ * @returns {number[]} 6-element transformation matrix [a, b, c, d, e, f]
+ * @example
+ * const matrix = createSkewMatrix(45); // 45-degree skew
  */
 function createSkewMatrix(angleInDegrees) {
   const angleInRadians = (angleInDegrees * Math.PI) / 180;
@@ -314,8 +378,11 @@ function createSkewMatrix(angleInDegrees) {
 // ========== MAIN SCENE CREATION FUNCTION ==========
 /**
  * Creates and transforms the complete scene with a parent frame
- * @param {Array} results
+ * @param {Array} results - Array to collect test results
  * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ * @example
+ * const results = [];
+ * await transformScene(results, 'container123');
  */
 export async function transformScene(results, parentFrameId) {
   try {
@@ -339,8 +406,11 @@ export async function transformScene(results, parentFrameId) {
 
 /**
  * Creates the parent frame with vertical auto layout
- * @param {Array} results
+ * @param {Array} results - Array to collect test results
  * @param {string} [parentId] - Optional parent frame ID
+ * @returns {Promise<string>} The parent frame ID
+ * @example
+ * const parentFrameId = await createParentFrame(results, 'container123');
  */
 async function createParentFrame(results, parentId) {
   const parentFrameResult = await createFrame({
@@ -365,6 +435,11 @@ async function createParentFrame(results, parentId) {
 
 /**
  * Creates the main frame with three rectangles as child of parent
+ * @param {Array} results - Array to collect test results
+ * @param {string} parentFrameId - Parent frame ID
+ * @returns {Promise<string>} The main frame ID
+ * @example
+ * const mainFrameId = await createMainFrame(results, parentFrameId);
  */
 async function createMainFrame(results, parentFrameId) {
   const frameResult = await createFrame({
@@ -406,6 +481,11 @@ async function createMainFrame(results, parentFrameId) {
 
 /**
  * Creates the auto layout frame with rectangles as child of parent
+ * @param {Array} results - Array to collect test results
+ * @param {string} parentFrameId - Parent frame ID
+ * @returns {Promise<object>} Object containing frameId and rectangleIds
+ * @example
+ * const autoLayoutFrame = await createAutoLayoutFrame(results, parentFrameId);
  */
 async function createAutoLayoutFrame(results, parentFrameId) {
   const frame2Result = await createFrame({
@@ -449,6 +529,8 @@ async function createAutoLayoutFrame(results, parentFrameId) {
 
 /**
  * Applies various transformations to the auto layout frame rectangles
+ * @param {Array} results - Array to collect test results
+ * @param {object} param1 - Object containing frameId and rectangleIds
  */
 async function applyTransformations(results, { frameId, rectangleIds }) {
   const [rectAId, rectBId, rectCId] = rectangleIds;

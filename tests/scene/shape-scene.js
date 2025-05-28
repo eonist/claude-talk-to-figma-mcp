@@ -3,9 +3,13 @@ import { channel, runStep, ws } from "../test-runner.js";
 
 
 /**
- * Helper to apply autolayout to a frame with horizontal flow, wrapping, and specific gaps and padding.
- * @param {string} frameId - The frame ID to apply autolayout to
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
+ * Applies horizontal auto-layout to a frame with wrapping and consistent spacing.
+ * Configures padding, gaps, and sizing behavior for optimal shape arrangement.
+ * @param {string} frameId - The Figma frame ID to apply auto-layout to
+ * @returns {Promise} Test result object
+ * @example
+ * const result = await apply_autolayout('frame123');
+ * if (result.pass) console.log('Auto-layout applied successfully');
  */
 function apply_autolayout(frameId) {
   const params = {
@@ -36,9 +40,12 @@ function apply_autolayout(frameId) {
 
 
 /**
- * Helper to create a frame in Figma for shape tests.
- * @param {string} [parentId] - Optional parent frame ID
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
+ * Creates a main container frame for shape demonstrations with random styling.
+ * @param {string} [parentId] - Optional parent frame ID for hierarchical organization
+ * @returns {Promise} Test result with frame creation status
+ * @example
+ * const frameResult = await create_frame('parent123');
+ * const frameId = frameResult.response?.ids?.[0];
  */
 function create_frame(parentId) {
   const params = {
@@ -59,9 +66,12 @@ function create_frame(parentId) {
 }
 
 /**
- * Helper to create a rectangle in Figma for shape tests.
- * @param {string} parentId - Optional parent frame ID to place the rectangle inside
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
+ * Creates a rectangle shape with random styling and positioning.
+ * @param {string|null} [parentId=null] - Optional parent frame ID for containment
+ * @returns {Promise} Test result with rectangle creation status
+ * @example
+ * const rectResult = await create_rectangle('frame123');
+ * const rectId = rectResult.response?.ids?.[0];
  */
 function create_rectangle(parentId = null) {
   const params = {
@@ -183,9 +193,13 @@ function create_star(parentId = null) {
 }
 
 /**
- * Helper to create a heart shape in Figma using vector paths and bezier curves.
- * @param {string} parentId - Optional parent frame ID to place the heart inside
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
+ * Creates a heart shape using SVG vector paths with bezier curves.
+ * Demonstrates complex vector path creation with curved elements.
+ * @param {string|null} [parentId=null] - Optional parent frame ID for containment
+ * @returns {Promise} Test result with heart creation status
+ * @example
+ * const heartResult = await create_heart('frame123');
+ * const heartId = heartResult.response?.nodeIds?.[0];
  */
 function create_heart(parentId = null) {
   const params = {
@@ -324,9 +338,14 @@ function create_bookmark(parentId = null) {
  
 
 /**
- * Main Entrypoint for shape scene
- * @param {Array} results
- * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ * Main entry point for the shape scene test. Creates a container frame
+ * and populates it with various geometric shapes to demonstrate shape creation capabilities.
+ * @param {Array} results - Array to collect test results
+ * @param {string} [parentFrameId] - Optional parent frame ID for scene organization
+ * @example
+ * const results = [];
+ * await shapeScene(results, 'container123');
+ * console.log(`Created ${results.length} shapes`);
  */
 export async function shapeScene(results, parentFrameId) {
   // Create frame first and store its ID
