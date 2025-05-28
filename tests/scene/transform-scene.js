@@ -62,6 +62,20 @@ const AUTO_LAYOUT_CONFIG_HUG_HEIGHT = {
   layoutWrap: 'WRAP'
 };
 
+// New vertical auto layout configuration for parent frame
+const AUTO_LAYOUT_CONFIG_VERTICAL = {
+  mode: 'VERTICAL',
+  itemSpacing: 30,
+  counterAxisSpacing: 0,
+  paddingLeft: 20,
+  paddingRight: 20,
+  paddingTop: 25,
+  paddingBottom: 25,
+  primaryAxisSizing: 'AUTO',
+  counterAxisSizing: 'AUTO',
+  layoutWrap: 'NO_WRAP'
+};
+
 // ========== UTILITY FUNCTIONS ==========
 /**
  * Creates a standardized runStep configuration
@@ -97,7 +111,7 @@ function assertSuccessResponse(response) {
 /**
  * Creates a frame with the specified properties
  */
-function createFrame({ x, y, width, height, name }) {
+function createFrame({ x, y, width, height, name, parentId }) {
   const params = {
     frame: {
       x,
@@ -105,7 +119,8 @@ function createFrame({ x, y, width, height, name }) {
       width,
       height,
       name,
-      ...DEFAULT_STYLES.frame
+      ...DEFAULT_STYLES.frame,
+      ...(parentId && { parentId })
     }
   };
 
@@ -284,19 +299,22 @@ function createSkewMatrix(angleInDegrees) {
 
 // ========== MAIN SCENE CREATION FUNCTION ==========
 /**
- * Creates and transforms the complete scene
+ * Creates and transforms the complete scene with a parent frame
  */
 export async function transformScene(results) {
   try {
-    // Create main frame
-    const mainFrame = await createMainFrame(results);
-    
-    // Create auto layout frame
-    const autoLayoutFrame = await createAutoLayoutFrame(results);
-    
+    // Create parent frame with vertical auto layout
+    const parentFrameId = await createParentFrame(results);
+
+    // Create main frame as child of parent
+    const mainFrame = await createMainFrame(results, parentFrameId);
+
+    // Create auto layout frame as child of parent
+    const autoLayoutFrame = await createAutoLayoutFrame(results, parentFrameId);
+
     // Apply transformations to auto layout frame rectangles
     await applyTransformations(results, autoLayoutFrame);
-    
+
   } catch (error) {
     console.error('Error in transformScene:', error);
     throw error;
@@ -304,15 +322,39 @@ export async function transformScene(results) {
 }
 
 /**
- * Creates the main frame with three rectangles
+ * Creates the parent frame with vertical auto layout
  */
-async function createMainFrame(results) {
+async function createParentFrame(results) {
+  const parentFrameResult = await createFrame({
+    x: 20,
+    y: 20,
+    width: 500,
+    height: 800,
+    name: 'Parent Container'
+  });
+  results.push(parentFrameResult);
+
+  const parentFrameId = parentFrameResult.response?.ids?.[0];
+
+  // Apply vertical auto layout with padding and gap
+  if (parentFrameId) {
+    results.push(await setAutoLayout(parentFrameId, AUTO_LAYOUT_CONFIG_VERTICAL));
+  }
+
+  return parentFrameId;
+}
+
+/**
+ * Creates the main frame with three rectangles as child of parent
+ */
+async function createMainFrame(results, parentFrameId) {
   const frameResult = await createFrame({
-    x: 50,
-    y: 100,
+    x: 0, // Position will be handled by parent auto layout
+    y: 0,
     width: 400,
     height: 300,
-    name: 'Main Frame'
+    name: 'Main Frame',
+    parentId: parentFrameId
   });
   results.push(frameResult);
 
@@ -344,15 +386,16 @@ async function createMainFrame(results) {
 }
 
 /**
- * Creates the auto layout frame with rectangles
+ * Creates the auto layout frame with rectangles as child of parent
  */
-async function createAutoLayoutFrame(results) {
+async function createAutoLayoutFrame(results, parentFrameId) {
   const frame2Result = await createFrame({
-    x: 50,
-    y: 450,
+    x: 0, // Position will be handled by parent auto layout
+    y: 0,
     width: 400,
     height: 300,
-    name: 'AutoLayout Frame'
+    name: 'AutoLayout Frame',
+    parentId: parentFrameId
   });
   results.push(frame2Result);
 
@@ -390,7 +433,7 @@ async function createAutoLayoutFrame(results) {
  */
 async function applyTransformations(results, { frameId, rectangleIds }) {
   const [rectAId, rectBId, rectCId] = rectangleIds;
-  
+
   // Reorder z-index: blue, green, red
   if (rectAId && rectBId && rectCId) {
     const reorderResults = await reorderNodes(
@@ -399,7 +442,7 @@ async function applyTransformations(results, { frameId, rectangleIds }) {
     );
     reorderResults.forEach(r => results.push(r));
   }
-  
+
   // Apply individual transformations
   const transformations = [
     // Rotate red rectangle 45 degrees
@@ -409,7 +452,7 @@ async function applyTransformations(results, { frameId, rectangleIds }) {
     // Apply skew transformation to blue rectangle
     rectCId && setMatrixTransform(rectCId, createSkewMatrix(45))
   ].filter(Boolean);
-  
+
   for (const transformation of transformations) {
     results.push(await transformation);
   }
