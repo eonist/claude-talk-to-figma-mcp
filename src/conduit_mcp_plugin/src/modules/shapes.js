@@ -60,36 +60,129 @@ async function resizeNodeUnified(params) {
     return resizeNode(params);
   }
 }
- //  users need to ensure the mask node is below the target node on the page before running the function
- async function setMask(params) {
-  try {
-    const targetNodeId = params.targetNodeId;
-    const maskNodeId = params.maskNodeId;
-    
-    if (!targetNodeId || !maskNodeId) {
-      return [{ success: false, error: "Missing node IDs" }];
-    }
+ /**
+ * Applies mask operations to Figma nodes by grouping them and setting mask properties.
+ * Supports both single operations and batch processing.
+ * 
+ * @async
+ * @function setMask
+ * @param {Object} params - The parameters object
+ * @param {string} [params.targetNodeId] - ID of the node to be masked (for single operation)
+ * @param {string} [params.maskNodeId] - ID of the node to use as mask (for single operation)
+ * @param {Array<Object>} [params.operations] - Array of operations for batch processing
+ * @param {string} params.operations[].targetNodeId - ID of the node to be masked
+ * @param {string} params.operations[].maskNodeId - ID of the node to use as mask
+ * @returns {Promise<Array<Object>>} Array of results, each containing success status and details
+ * @returns {boolean} returns[].success - Whether the operation succeeded
+ * @returns {string} [returns[].nodeId] - ID of the created masked group (on success)
+ * @returns {string} [returns[].error] - Error message (on failure)
+ * @returns {string} [returns[].targetNodeId] - Original target node ID
+ * @returns {string} [returns[].maskNodeId] - Original mask node ID
+ * 
+ * @example
+ * // Single operation
+ * const result = await setMask({
+ *   targetNodeId: "123:456",
+ *   maskNodeId: "789:012"
+ * });
+ * 
+ * @example
+ * // Batch operations
+ * const results = await setMask({
+ *   operations: [
+ *     { targetNodeId: "123:456", maskNodeId: "789:012" },
+ *     { targetNodeId: "345:678", maskNodeId: "901:234" }
+ *   ]
+ * });
+ * 
+ * @note The mask node must be positioned below the target node in the layer hierarchy
+ *       for the masking to work correctly. This function preserves the existing layer
+ *       order from the page when grouping nodes.
+ */
+async function setMask(params) {
+  // Parse input parameters to support both single and batch operations
+  // If operations array is provided, use it; otherwise create single operation from individual IDs
+  const ops = Array.isArray(params.operations)
+    ? params.operations
+    : (params.targetNodeId && params.maskNodeId
+        ? [{ targetNodeId: params.targetNodeId, maskNodeId: params.maskNodeId }]
+        : []);
+  
+  // Array to collect results from all operations
+  const results = [];
 
-    const targetNode = await figma.getNodeByIdAsync(targetNodeId);
-    const maskNode = await figma.getNodeByIdAsync(maskNodeId);
-    
-    if (!targetNode || !maskNode) {
-      return [{ success: false, error: "Nodes not found" }];
-    }
-
-    // Set mask property FIRST
-    maskNode.isMask = true;
-    
-    // Group them (layer order will be preserved from page)
-    const maskGroup = figma.group([targetNode, maskNode], figma.currentPage);
-    maskGroup.name = "Masked_" + targetNode.name;
-
-    return [{ success: true, nodeId: maskGroup.id }];
-    
-  } catch (error) {
-    return [{ success: false, error: error.message }];
+  // Validate that we have operations to process
+  if (!ops.length) {
+    return [{ success: false, error: "No operations provided" }];
   }
+
+  // Process each operation individually
+  for (const op of ops) {
+    try {
+      // Extract node IDs from current operation
+      const { targetNodeId, maskNodeId } = op;
+      
+      // Validate required parameters for this operation
+      if (!targetNodeId || !maskNodeId) {
+        results.push({
+          success: false,
+          error: "Missing node IDs",
+          targetNodeId,
+          maskNodeId
+        });
+        continue; // Skip to next operation
+      }
+
+      // Fetch the actual nodes from Figma using their IDs
+      const targetNode = await figma.getNodeByIdAsync(targetNodeId);
+      const maskNode = await figma.getNodeByIdAsync(maskNodeId);
+      
+      // Verify both nodes exist and are accessible
+      if (!targetNode || !maskNode) {
+        results.push({
+          success: false,
+          error: "Nodes not found",
+          targetNodeId,
+          maskNodeId
+        });
+        continue; // Skip to next operation
+      }
+
+      // Set the mask property BEFORE grouping to ensure it's applied correctly
+      // This is crucial - the isMask property must be set before the nodes are grouped
+      maskNode.isMask = true;
+      
+      // Group the nodes together using Figma's built-in group function
+      // The layer order is preserved from the page hierarchy (mask should be below target)
+      const maskGroup = figma.group([targetNode, maskNode], figma.currentPage);
+      
+      // Set a descriptive name for the masked group
+      maskGroup.name = "Masked_" + (targetNode.name || targetNodeId);
+
+      // Record successful operation
+      results.push({
+        success: true,
+        nodeId: maskGroup.id,
+        targetNodeId,
+        maskNodeId
+      });
+
+    } catch (error) {
+      // Handle any unexpected errors during processing
+      results.push({
+        success: false,
+        error: error.message || String(error),
+        targetNodeId: op.targetNodeId,
+        maskNodeId: op.maskNodeId
+      });
+    }
+  }
+  
+  // Return all results (successful and failed operations)
+  return results;
 }
+
+
 
 
 export const shapeOperations = {
