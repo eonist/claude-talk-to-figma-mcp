@@ -60,6 +60,7 @@ async function resizeNodeUnified(params) {
     return resizeNode(params);
   }
 }
+ //  users need to ensure the mask node is below the target node on the page before running the function
  async function setMask(params) {
   try {
     const targetNodeId = params.targetNodeId;
@@ -76,11 +77,11 @@ async function resizeNodeUnified(params) {
       return [{ success: false, error: "Nodes not found" }];
     }
 
-    // Set mask property BEFORE grouping
+    // Set mask property FIRST
     maskNode.isMask = true;
     
-    // Group with mask first in selection (this puts it at bottom of group)
-    const maskGroup = figma.group([maskNode, targetNode], figma.currentPage);
+    // Group them (layer order will be preserved from page)
+    const maskGroup = figma.group([targetNode, maskNode], figma.currentPage);
     maskGroup.name = "Masked_" + targetNode.name;
 
     return [{ success: true, nodeId: maskGroup.id }];
@@ -89,7 +90,6 @@ async function resizeNodeUnified(params) {
     return [{ success: false, error: error.message }];
   }
 }
-
 
 
 export const shapeOperations = {

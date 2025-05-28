@@ -60,9 +60,8 @@ async function setMask(rectId, ellipseId) {
 
 export async function maskScene(results) {
   try {
-    const ellipseId = await createEllipse();
+    const ellipseId = await createEllipse(); // must be bellow the shape to mask
     const rectId = await createRectangle();
-    
     await setMask(rectId, ellipseId);
     results.push({ label: 'Mask Scene', pass: true });
   } catch (error) {
