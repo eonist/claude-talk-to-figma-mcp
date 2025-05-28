@@ -102,9 +102,6 @@ export async function maskScene(results, parentFrameId) {
     let containerId = null;
     // Use padding and fit frame to content
     const padding = 20;
-    // Rectangle: x: 0, y: 0, width: 100, height: 100
-    // Ellipse: x: 0, y: 0, width: 100, height: 100 (overlap)
-    // For this simple case, content size is 100x100, so frame is 100+2*padding
     const frameWidth = 100 + 2 * padding;
     const frameHeight = 100 + 2 * padding;
 
@@ -132,12 +129,12 @@ export async function maskScene(results, parentFrameId) {
       console.log("[MASK SCENE] Container frame created:", containerId, containerRes);
     }
 
-    // Offset both shapes by padding
-    console.log("[MASK SCENE] Creating ellipse...");
-    const ellipseId = await createEllipse(containerId); // must be bellow the shape to mask
+    // Create shapes inside the container
+    console.log("[MASK SCENE] Creating ellipse in container...");
+    const ellipseId = await createEllipse(containerId);
     console.log("[MASK SCENE] Ellipse created:", ellipseId);
 
-    console.log("[MASK SCENE] Creating rectangle...");
+    console.log("[MASK SCENE] Creating rectangle in container...");
     const rectId = await createRectangle(containerId);
     console.log("[MASK SCENE] Rectangle created:", rectId);
 
@@ -167,65 +164,26 @@ export async function maskScene(results, parentFrameId) {
       console.log("[MASK SCENE] Rect moved:", moveRectRes);
     }
 
-    console.log("[MASK SCENE] Applying mask...");
-    await setMask(rectId, ellipseId);
-    console.log("[MASK SCENE] Mask applied.");
-
-    // --- Wait for mask operation to complete ---
-    console.log("[MASK SCENE] Waiting for mask operation to complete...");
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log("[MASK SCENE] Wait complete.");
-
-    // --- Ensure mask group is inside the container frame ---
-    let groupId = null;
-    if (containerId) {
-      console.log("[MASK SCENE] Getting document info to find mask group...");
-      const docInfoRes = await runStep({
-        ws,
-        channel,
-        command: "get_document_info",
-        params: {},
-        assert: (response) => response && response.id,
-        label: "get_document_info_for_mask_group"
-      });
-      console.log("[MASK SCENE] Document info:", docInfoRes);
-      const allNodes = docInfoRes.response?.document?.children || [];
-      // Find a GROUP node that is not ellipse/rect
-      const candidateGroups = allNodes.filter(child =>
-        child.type === "GROUP" &&
-        child.id !== ellipseId &&
-        child.id !== rectId
-      );
-      console.log("[MASK SCENE] Candidate groups found:", candidateGroups.map(g => g.id));
-      if (candidateGroups.length > 0) {
-        groupId = candidateGroups[0].id;
-        console.log("[MASK SCENE] Attempting to move group to container:", groupId, "->", containerId);
-        const moveGroupRes = await runStep({
-          ws,
-          channel,
-          command: "set_node",
-          params: { parentId: containerId, childId: groupId, index: 0 },
-          assert: (response) => {
-            // Check for success in the returned content array
-            const content = response?.content;
-            if (Array.isArray(content)) {
-              return content.some(
-                obj =>
-                  obj.type === "text" &&
-                  obj.text &&
-                  obj.text.includes('"success":true')
-              );
-            }
-            return false;
-          },
-          label: "move_mask_group_to_container"
-        });
-        console.log("[MASK SCENE] Move group result:", moveGroupRes);
-        // Optionally, move the group to (padding, padding) if needed
-      } else {
-        console.warn("[MASK SCENE] Mask group not found anywhere in document after masking.");
-      }
-    }
+    console.log("[MASK SCENE] Applying mask with parentId:", containerId);
+    await runStep({
+      ws,
+      channel,
+      command: "set_mask",
+      params: {
+        targetNodeId: rectId,
+        maskNodeId: ellipseId,
+        operations: [
+          { targetNodeId: rectId, maskNodeId: ellipseId }
+        ],
+        parentId: containerId
+      },
+      assert: (response) => response && (
+        (Array.isArray(response) && response[0]?.success) ||
+        response.success
+      ),
+      label: "set_mask_with_parent"
+    });
+    console.log("[MASK SCENE] Mask applied with parentId.");
 
     results.push({ label: 'Mask Scene', pass: true });
   } catch (error) {

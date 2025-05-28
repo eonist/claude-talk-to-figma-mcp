@@ -100,6 +100,7 @@ async function resizeNodeUnified(params) {
  *       order from the page when grouping nodes.
  */
 async function setMask(params) {
+  // console.log("💥 setMask", params);
   // Parse input parameters to support both single and batch operations
   // If operations array is provided, use it; otherwise create single operation from individual IDs
   const ops = Array.isArray(params.operations)
@@ -108,6 +109,16 @@ async function setMask(params) {
         ? [{ targetNodeId: params.targetNodeId, maskNodeId: params.maskNodeId }]
         : []);
   
+  // Optional parentId for grouping
+  const parentId = params.parentId;
+  let groupParent = figma.currentPage;
+  if (parentId) {
+    const parentNode = await figma.getNodeByIdAsync(parentId);
+    if (parentNode && parentNode.children) {
+      groupParent = parentNode;
+    }
+  }
+
   // Array to collect results from all operations
   const results = [];
 
@@ -154,7 +165,7 @@ async function setMask(params) {
       
       // Group the nodes together using Figma's built-in group function
       // The layer order is preserved from the page hierarchy (mask should be below target)
-      const maskGroup = figma.group([targetNode, maskNode], figma.currentPage);
+      const maskGroup = figma.group([targetNode, maskNode], groupParent);
       
       // Set a descriptive name for the masked group
       maskGroup.name = "Masked_" + (targetNode.name || targetNodeId);
