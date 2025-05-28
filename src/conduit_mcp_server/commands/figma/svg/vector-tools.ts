@@ -5,7 +5,43 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
 import { getSvgVectorSchema } from "./schema/svg-vector-schema.js";
 
 /**
- * Registers get_svg_vector (single or batch) on the MCP server.
+ * Registers SVG vector extraction tools on the MCP server.
+ * 
+ * This function adds the "get_svg_vector" tool to the MCP server, enabling extraction
+ * of SVG markup from existing vector nodes in Figma. Supports both single node and
+ * batch extraction operations. The tool validates node types and ensures only
+ * vector-compatible nodes are processed.
+ * 
+ * @param {McpServer} server - The MCP server instance where the tool will be registered
+ * @param {FigmaClient} figmaClient - The Figma client instance for API communication
+ * 
+ * @returns {void} This function does not return a value
+ * 
+ * @example
+ * ```
+ * // Register the SVG vector extraction tool
+ * registerSvgVectorTool(server, figmaClient);
+ * 
+ * // Extract SVG from a single node
+ * const result = await server.callTool('get_svg_vector', {
+ *   nodeId: '123:456'
+ * });
+ * 
+ * // Extract SVG from multiple nodes
+ * const batchResult = await server.callTool('get_svg_vector', {
+ *   nodeIds: ['123:456', '789:101', '112:131']
+ * });
+ * ```
+ * 
+ * @throws {Error} When provided node IDs are invalid or malformed
+ * @throws {Error} When nodes are not found in the Figma document
+ * @throws {Error} When nodes are not vector-compatible types
+ * @throws {Error} When SVG export operations fail
+ * 
+ * @see {@link MCP_COMMANDS.GET_SVG_VECTOR} for the command constant
+ * @see {@link getSvgVectorSchema} for input validation schema
+ * 
+ * @since 1.0.0
  */
 export function registerSvgVectorTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(

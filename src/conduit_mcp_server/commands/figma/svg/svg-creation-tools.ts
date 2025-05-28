@@ -11,19 +11,47 @@ import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
- * Registers SVG insertion commands on the MCP server.
- *
- * This function adds tools named "set_svg_vector" and "set_svg_vectors" to the MCP server,
- * enabling setting or insertion of single or multiple SVG vectors into Figma.
- * It validates inputs, executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
+ * Registers SVG creation and insertion commands on the MCP server.
+ * 
+ * This function adds the "set_svg_vector" tool to the MCP server, enabling the creation
+ * and insertion of single or multiple SVG vectors into Figma documents. The tool supports
+ * both raw SVG content and URL-based SVG resources, with automatic fetching for URLs.
+ * 
+ * @param {McpServer} server - The MCP server instance to register the tools on
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API
+ * 
+ * @returns {void} This function does not return a value but registers the tools asynchronously
+ * 
  * @example
+ * ```
+ * // Register SVG creation tools
  * registerSvgCreationCommands(server, figmaClient);
+ * 
+ * // Tool usage examples:
+ * // Single SVG insertion
+ * await server.callTool('set_svg_vector', {
+ *   svg: {
+ *     svg: '...',
+ *     x: 100,
+ *     y: 200,
+ *     name: 'My Icon'
+ *   }
+ * });
+ * 
+ * // Batch SVG insertion
+ * await server.callTool('set_svg_vector', {
+ *   svgs: [
+ *     { svg: '...', x: 0, y: 0 },
+ *     { svg: 'https://example.com/icon.svg', x: 100, y: 0 }
+ *   ]
+ * });
+ * ```
+ * 
+ * @throws {Error} When neither 'svg' nor 'svgs' parameters are provided
+ * @throws {Error} When SVG content cannot be fetched from a provided URL
+ * @throws {Error} When Figma API calls fail or return invalid responses
+ * 
+ * @since 1.0.0
  */
 export function registerSvgCreationCommands(server: McpServer, figmaClient: FigmaClient) {
   logger.info("🔧 Loading SVG creation tools");
