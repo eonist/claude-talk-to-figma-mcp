@@ -56,7 +56,7 @@ const CONTAINER_FRAME_CONFIG = {
   mode: 'HORIZONTAL',
   layoutWrap: 'WRAP',
   itemSpacing: 32,
-  counterAxisSpacing: 0,
+  counterAxisSpacing: 32, // vertical gap between rows
   paddingLeft: 32,
   paddingRight: 32,
   paddingTop: 32,

@@ -77,6 +77,29 @@ export async function flattenScene(results, parentFrameId) {
   const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "FlattenTestFrame", ...(parentFrameId && { parentId: parentFrameId }) }, results);
   if (!frameId) return;
 
+  // Apply hugging autolayout to the top-level frame
+  const autoLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: frameId,
+        mode: "HORIZONTAL",
+        itemSpacing: 20,
+        counterAxisSpacing: 20,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingTop: 20,
+        paddingBottom: 20,
+        primaryAxisSizing: "AUTO",
+        counterAxisSizing: "AUTO"
+      }
+    },
+    assert: (response) => response && response["0"] && response["0"].success === true && response["0"].nodeId === frameId,
+    label: "set_auto_layout (hug both axes, flattenScene)"
+  });
+  results.push(autoLayoutResult);
+
   // 2. Create first rectangle in frame
   const rect1Id = await createRectangle({
     x: 20, y: 40, width: 80, height: 60, name: "FlattenRect1", parentId: frameId

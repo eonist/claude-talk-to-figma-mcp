@@ -89,6 +89,31 @@ export async function maskScene(results, parentFrameId) {
         label: "create_mask_scene_container"
       });
       containerId = containerRes.response?.ids?.[0];
+
+      // Apply hugging autolayout to the container frame
+      if (containerId) {
+        await runStep({
+          ws,
+          channel,
+          command: "set_auto_layout",
+          params: {
+            layout: {
+              nodeId: containerId,
+              mode: "HORIZONTAL",
+              itemSpacing: 20,
+              counterAxisSpacing: 20,
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 20,
+              paddingBottom: 20,
+              primaryAxisSizing: "AUTO",
+              counterAxisSizing: "AUTO"
+            }
+          },
+          assert: (response) => response && response["0"] && response["0"].success === true && response["0"].nodeId === containerId,
+          label: "set_auto_layout (hug both axes, maskScene)"
+        });
+      }
     }
 
     const ellipseId = await createEllipse(containerId); // must be bellow the shape to mask
