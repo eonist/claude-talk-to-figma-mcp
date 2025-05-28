@@ -130,18 +130,12 @@ export async function maskScene(results, parentFrameId) {
     }
 
     // Create shapes inside the container
-    console.log("[MASK SCENE] Creating ellipse in container...");
     const ellipseId = await createEllipse(containerId);
-    console.log("[MASK SCENE] Ellipse created:", ellipseId);
-
-    console.log("[MASK SCENE] Creating rectangle in container...");
     const rectId = await createRectangle(containerId);
-    console.log("[MASK SCENE] Rectangle created:", rectId);
 
     // Move both to (padding, padding)
     if (ellipseId) {
-      console.log("[MASK SCENE] Moving ellipse to padding...");
-      const moveEllipseRes = await runStep({
+      await runStep({
         ws,
         channel,
         command: "move_node",
@@ -149,11 +143,9 @@ export async function maskScene(results, parentFrameId) {
         assert: () => true,
         label: "move_ellipse_to_padding"
       });
-      console.log("[MASK SCENE] Ellipse moved:", moveEllipseRes);
     }
     if (rectId) {
-      console.log("[MASK SCENE] Moving rect to padding...");
-      const moveRectRes = await runStep({
+      await runStep({
         ws,
         channel,
         command: "move_node",
@@ -161,10 +153,9 @@ export async function maskScene(results, parentFrameId) {
         assert: () => true,
         label: "move_rect_to_padding"
       });
-      console.log("[MASK SCENE] Rect moved:", moveRectRes);
     }
 
-    console.log("[MASK SCENE] Applying mask with parentId:", containerId);
+    // Apply mask, ensuring group is created in the container
     await runStep({
       ws,
       channel,
@@ -183,7 +174,6 @@ export async function maskScene(results, parentFrameId) {
       ),
       label: "set_mask_with_parent"
     });
-    console.log("[MASK SCENE] Mask applied with parentId.");
 
     results.push({ label: 'Mask Scene', pass: true });
   } catch (error) {
