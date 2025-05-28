@@ -84,10 +84,10 @@ async function main() {
     // shapeScene,
     // textScene, 
     // styleScene,
-    transformScene,
+    // transformScene,
     // booleanScene,
     // flattenScene,
-    // effectScene,
+    effectScene,
     // svgScene
     // imageScene
     // maskScene
