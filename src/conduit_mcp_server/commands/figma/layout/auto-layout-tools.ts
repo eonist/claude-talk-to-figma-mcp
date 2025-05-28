@@ -8,18 +8,25 @@ import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
  * Registers auto layout commands on the MCP server.
- *
+ * 
  * This function adds tools named "set_auto_layout" and "set_auto_layout_resizing" to the MCP server,
  * enabling configuration of auto layout properties and resizing modes for Figma nodes.
  * It validates inputs, executes corresponding Figma commands, and returns informative results.
- *
- * @param {McpServer} server - The MCP server instance to register the tools on.
- * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API.
- *
- * @returns {void} This function does not return a value but registers the tools asynchronously.
- *
+ * 
+ * @param {McpServer} server - The MCP server instance to register the tools on
+ * @param {FigmaClient} figmaClient - The Figma client used to execute commands against the Figma API
+ * 
+ * @returns {void} This function does not return a value but registers the tools asynchronously
+ * 
  * @example
+ * ```
+ * import { registerAutoLayoutTools } from './auto-layout-tools.js';
+ * 
  * registerAutoLayoutTools(server, figmaClient);
+ * ```
+ * 
+ * @since 1.0.0
+ * @category Layout
  */
 export function registerAutoLayoutTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
