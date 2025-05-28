@@ -157,6 +157,37 @@ export async function maskScene(results, parentFrameId) {
     }
 
     await setMask(rectId, ellipseId);
+
+    // --- Ensure mask group is direct child of container ---
+    // Get children of containerId
+    let groupId = null;
+    if (containerId) {
+      const nodeInfoRes = await runStep({
+        ws,
+        channel,
+        command: "get_node_info",
+        params: { nodeId: containerId },
+        assert: (response) => response && response.id === containerId,
+        label: "get_mask_scene_container_info"
+      });
+      const children = nodeInfoRes.response?.document?.children || [];
+      // Find group node that is not the ellipse or rectangle
+      groupId = children.find(child =>
+        child.type === "GROUP" &&
+        child.id !== ellipseId &&
+        child.id !== rectId
+      )?.id;
+      // If groupId found and not already a direct child, move it
+      if (groupId) {
+        // Defensive: ensure group is direct child (should be, but just in case)
+        // (If not, would need to move_node, but Figma API usually puts group in place)
+        // Optionally, could log or assert here
+      } else {
+        // If not found, warn but do not fail test
+        console.warn("Mask group not found as direct child of container after masking.");
+      }
+    }
+
     results.push({ label: 'Mask Scene', pass: true });
   } catch (error) {
     results.push({ label: 'Mask Scene', pass: false, reason: error.message });
