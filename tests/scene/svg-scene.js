@@ -34,22 +34,101 @@ async function apply_autolayout(frameId) {
 }
 
 /**
+ * Helper to create the main parent container frame with vertical flow.
+ * @returns {Promise} frameId
+ */
+async function create_main_container() {
+  const params = {
+    x: 30,
+    y: 50,
+    width: 500, // Initial width, will be hugged
+    height: 400, // Initial height, will be hugged
+    name: "SVG Container",
+    fillColor: { r: 0.96, g: 0.96, b: 0.96, a: 1 }, // Light gray background
+    strokeColor: { r: 0.7, g: 0.7, b: 0.7, a: 1 },
+    strokeWeight: 2
+  };
+  const res = await runStep({
+    ws,
+    channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => Array.isArray(response.ids) && response.ids.length > 0,
+    label: "create_main_container (SVG Container)"
+  });
+  const frameId = res.response?.ids?.[0];
+  if (frameId) {
+    await apply_main_container_autolayout(frameId);
+  }
+  return frameId;
+}
+
+/**
+ * Helper to apply vertical auto layout to the main container.
+ * @param {string} frameId
+ */
+async function apply_main_container_autolayout(frameId) {
+  const params = {
+    layout: {
+      nodeId: frameId,
+      mode: "VERTICAL", // Vertical flow
+      itemSpacing: 25, // Gap between child frames
+      paddingLeft: 25,
+      paddingRight: 25,
+      paddingTop: 25,
+      paddingBottom: 25,
+      primaryAxisSizing: "AUTO",   // height: hug content
+      counterAxisSizing: "AUTO"    // width: hug content
+    }
+  };
+  await runStep({
+    ws,
+    channel,
+    command: "set_auto_layout",
+    params: params,
+    assert: (response) =>
+      response &&
+      response["0"] &&
+      response["0"].success === true &&
+      response["0"].nodeId === frameId,
+    label: `apply_main_container_autolayout to frame ${frameId} (vertical, hug both)`
+  });
+}
+
+/**
  * Helper to create a frame for SVGs and immediately apply autolayout.
- * @param {number} y - Y position for the frame
+ * @param {number|string} yOrParentId - Y position for the frame (number) or parentId (string)
  * @param {string} name - Frame name
  * @returns {Promise<string>} frameId
  */
-async function create_svg_frame(y, name) {
-  const params = {
-    x: 50,
-    y,
-    width: 400,
-    height: 120,
-    name,
-    fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1 },
-    strokeColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
-    strokeWeight: 1
-  };
+async function create_svg_frame(yOrParentId, name) {
+  let params;
+  if (typeof yOrParentId === "string") {
+    // If parentId is provided, use it and set x/y to 0
+    params = {
+      x: 0,
+      y: 0,
+      width: 400,
+      height: 120,
+      name,
+      fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1 },
+      strokeColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
+      strokeWeight: 1,
+      parentId: yOrParentId
+    };
+  } else {
+    // Fallback to original behavior (absolute y)
+    params = {
+      x: 50,
+      y: yOrParentId,
+      width: 400,
+      height: 120,
+      name,
+      fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1 },
+      strokeColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
+      strokeWeight: 1
+    };
+  }
   const res = await runStep({
     ws,
     channel,
@@ -413,15 +492,24 @@ export async function createIconSVG3(frameId) {
  * Comment out any calls below to toggle creation of individual SVGs for debugging.
  */
 export async function svgScene() {
- const logoFrameId = await create_svg_frame(100, "SVG Frame 1");
-  const iconFrameId = await create_svg_frame(240, "SVG Frame 2");
+  // 1. Create main parent container with vertical flow
+  const mainContainerId = await create_main_container();
 
-  // Add logo SVGs to logo frame
-   await createLogoSVG1(logoFrameId);
-   await createLogoSVG2(logoFrameId);
-   await createLogoSVG3(logoFrameId);
+  if (!mainContainerId) {
+    console.error("Failed to create main container");
+    return;
+  }
 
-  // Add icon SVGs to icon frame
+  // 2. Create child frames as children of the main container
+  const logoFrameId = await create_svg_frame(mainContainerId, "SVG Frame 1");
+  const iconFrameId = await create_svg_frame(mainContainerId, "SVG Frame 2");
+
+  // 3. Add logo SVGs to logo frame
+  await createLogoSVG1(logoFrameId);
+  await createLogoSVG2(logoFrameId);
+  await createLogoSVG3(logoFrameId);
+
+  // 4. Add icon SVGs to icon frame
   await createIconSVG1(iconFrameId);
   await createIconSVG2(iconFrameId);
   await createIconSVG3(iconFrameId);
