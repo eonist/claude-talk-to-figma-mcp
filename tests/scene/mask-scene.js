@@ -1,6 +1,16 @@
-export function createRectangle() {
+export async function maskScene(results) {
+  try {
+    const rectId = await createRectangle();
+    const ellipseId = await createEllipse();
+    await setMask(rectId, ellipseId);
+    results.push({ label: 'Mask Scene', pass: true });
+  } catch (error) {
+    results.push({ label: 'Mask Scene', pass: false, reason: error.message });
+  }
+}
+
+async function createRectangle() {
   // Logic to create a rectangle with green fill
-  // Assuming a function createShape exists that returns the shape ID
   return createShape({
     type: 'rectangle',
     width: 100,
@@ -9,9 +19,8 @@ export function createRectangle() {
   });
 }
 
-export function createEllipse() {
+async function createEllipse() {
   // Logic to create an ellipse with red fill
-  // Assuming a function createShape exists that returns the shape ID
   return createShape({
     type: 'ellipse',
     width: 100,
@@ -20,15 +29,20 @@ export function createEllipse() {
   });
 }
 
-export function applyMask() {
-  const rectId = createRectangle();
-  const ellipseId = createEllipse();
-  // Logic to call set_mask with rectId and ellipseId
-  setMask(rectId, ellipseId);
-}
-
-// Assuming setMask is a function that applies the mask using the given IDs
-export function setMask(rectId, ellipseId) {
-  // Placeholder for the actual set_mask command
-  console.log(`Applying mask with rectangle ID: ${rectId} and ellipse ID: ${ellipseId}`);
+async function setMask(rectId, ellipseId) {
+  // Command to apply the mask using the given IDs
+  await runStep({
+    ws,
+    channel,
+    command: "set_mask",
+    params: {
+      targetNodeId: rectId,
+      maskNodeId: ellipseId,
+      operations: [
+        { targetNodeId: rectId, maskNodeId: ellipseId }
+      ]
+    },
+    assert: (response) => response && response.success === true,
+    label: `set_mask with rectId: ${rectId} and ellipseId: ${ellipseId}`
+  });
 }
