@@ -7,10 +7,21 @@ import { EffectSchema } from "./schema/effect-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
 /**
- * Registers effect-related styling commands:
- * - apply_effect_style
- * - set_effect
- * - create_effect_style_variable
+ * Registers effect-related styling commands for the MCP server.
+ * 
+ * This module provides tools for applying visual effects to Figma nodes, including:
+ * - Direct effect application with custom parameters
+ * - Effect style variable application
+ * - Batch operations for multiple nodes
+ * 
+ * @param server - The MCP server instance to register tools on
+ * @param figmaClient - The Figma client for API communication
+ * @returns void
+ * 
+ * @example
+ * ```
+ * registerEffectTools(server, figmaClient);
+ * ```
  */
 export function registerEffectTools(server: McpServer, figmaClient: FigmaClient) {
   // 2. set_effect
