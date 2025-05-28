@@ -35,7 +35,8 @@ async function createRadialGradient() {
       { position: 0, color: [1, 1, 0, 1] }, // Yellow center
       { position: 1, color: [1, 0, 0, 1] }  // Red outer
     ],
-    transformMatrix: [[1, 0, 0.5], [0, 1, 0.5]]
+    // Centered radial gradient
+    transformMatrix: [[1, 0, 0], [0, 1, 0]]
   };
   const result = await runStep({
     ws,
