@@ -15,7 +15,8 @@ async function apply_autolayout(frameId) {
       paddingRight: 10,
       paddingTop: 15,
       paddingBottom: 15,
-      primaryAxisSizing: "FIXED",
+      primaryAxisSizing: "AUTO",
+      counterAxisSizing: "AUTO",
       layoutWrap: "WRAP"
     }
   };
