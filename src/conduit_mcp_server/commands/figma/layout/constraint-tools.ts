@@ -3,6 +3,33 @@ import type { FigmaClient } from "../../../clients/figma-client.js";
 import { SetConstraintsSchema, GetConstraintsSchema } from "./schema/constraint-schema.js";
 import { MCP_COMMANDS } from "../../../types/commands.js";
 
+/**
+ * Registers constraint management commands on the MCP server.
+ * 
+ * This function adds tools for setting and getting layout constraints (left/right/top/bottom/center/scale/stretch)
+ * for Figma nodes. Supports both single node operations and batch processing with optional child node inclusion.
+ * 
+ * @param {McpServer} server - The MCP server instance to register the constraint tools on
+ * @param {FigmaClient} figmaClient - The Figma client used to execute constraint operations against the Figma API
+ * 
+ * @returns {void} This function does not return a value but registers the constraint tools asynchronously
+ * 
+ * @example
+ * ```
+ * import { registerConstraintCommands } from './constraint-tools.js';
+ * 
+ * registerConstraintCommands(server, figmaClient);
+ * ```
+ * 
+ * @remarks
+ * - Supports batch operations for multiple nodes
+ * - Can apply constraints to child nodes when specified
+ * - Maintains aspect ratio options available
+ * - Returns detailed success/error information for each operation
+ * 
+ * @since 1.0.0
+ * @category Layout
+ */
 export function registerConstraintCommands(server: McpServer, figmaClient: FigmaClient) {
   // set_constraints: set constraints (single or batch)
   console.log("REGISTERING SET_CONSTRAINT:", MCP_COMMANDS.SET_CONSTRAINT);
