@@ -50,6 +50,46 @@ import { svgScene } from './scene/svg-scene.js';
 import { imageScene } from './scene/image-scene.js';
 import { maskScene } from './scene/mask-scene.js';
 import { layoutScene } from './scene/layout-scene.js';
+
+// --- Container Frame Config ---
+const CONTAINER_FRAME_CONFIG = {
+  mode: 'HORIZONTAL',
+  layoutWrap: 'WRAP',
+  itemSpacing: 32,
+  counterAxisSpacing: 0,
+  paddingLeft: 32,
+  paddingRight: 32,
+  paddingTop: 32,
+  paddingBottom: 32,
+  primaryAxisSizing: 'FIXED', // or 'AUTO' if you want horizontal hug
+  counterAxisSizing: 'AUTO'   // hug vertically
+};
+
+/**
+ * Creates the top-level container frame for all scenes.
+ * @param {WebSocket} ws
+ * @param {string} channel
+ * @returns {Promise<string>} The container frame ID
+ */
+async function createContainerFrame(ws, channel) {
+  const res = await runStep({
+    ws, channel,
+    command: 'create_frame',
+    params: {
+      frame: {
+        x: 0, y: 0,
+        width: 1600, // or a large value, or use 'AUTO' for primaryAxisSizing
+        height: 900, // initial height, will hug vertically
+        name: 'All Scenes Container',
+        ...CONTAINER_FRAME_CONFIG
+      }
+    },
+    assert: r => Array.isArray(r.ids) && r.ids.length > 0,
+    label: 'create_container_frame'
+  });
+  return res.response?.ids?.[0];
+}
+
 // --- Main Runner ---
 /**
  * Main entry point: initializes WebSocket, joins the channel, executes test scenes, and outputs results.
@@ -79,10 +119,13 @@ async function main() {
     });
   });
 
+  // Create the container frame for all scenes
+  const containerFrameId = await createContainerFrame(ws, channel);
+
   // Define the sequence of scenes
   const sequence = [
-    // shapeScene,
-    // textScene, 
+    shapeScene,
+    textScene, 
     // styleScene,
     // transformScene,
     // booleanScene,
@@ -95,7 +138,9 @@ async function main() {
   ];
   const results = [];
   for (const scene of sequence) {
-    await scene(results);
+    // Pass containerFrameId as the first argument to each scene
+    // Each scene function should accept (results, parentFrameId) and use parentFrameId as parentId for its top-level frame
+    await scene(results, containerFrameId);
   }
 
   ws.close();
