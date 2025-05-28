@@ -1,3 +1,7 @@
+/**
+ * Configuration schema for cloning a single node in Figma.
+ * Defines the structure for specifying which node to clone and where to place it.
+ */
 import { z } from "zod";
 export const CloneNodeConfig = z.object({
   nodeId: z.string()
