@@ -134,6 +134,7 @@ function apply_layout_autolayout(frameId) {
       nodeId: frameId,
       mode: "HORIZONTAL",
       itemSpacing: 10, // gap between items
+      counterAxisSpacing: 20, // vertical gap between rows
       paddingLeft: 20,
       paddingRight: 20,
       paddingTop: 20,
