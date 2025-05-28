@@ -69,6 +69,14 @@ export async function maskScene(results, parentFrameId) {
   try {
     // Create a container frame as a child of the all-scenes container
     let containerId = null;
+    // Use padding and fit frame to content
+    const padding = 20;
+    // Rectangle: x: 0, y: 0, width: 100, height: 100
+    // Ellipse: x: 0, y: 0, width: 100, height: 100 (overlap)
+    // For this simple case, content size is 100x100, so frame is 100+2*padding
+    const frameWidth = 100 + 2 * padding;
+    const frameHeight = 100 + 2 * padding;
+
     if (parentFrameId) {
       const containerRes = await runStep({
         ws,
@@ -78,8 +86,8 @@ export async function maskScene(results, parentFrameId) {
           frame: {
             x: 0,
             y: 0,
-            width: 200,
-            height: 200,
+            width: frameWidth,
+            height: frameHeight,
             name: "MaskSceneContainer",
             fillColor: { r: 1, g: 1, b: 1, a: 1 },
             parentId: parentFrameId
@@ -89,11 +97,34 @@ export async function maskScene(results, parentFrameId) {
         label: "create_mask_scene_container"
       });
       containerId = containerRes.response?.ids?.[0];
-
     }
 
+    // Offset both shapes by padding
     const ellipseId = await createEllipse(containerId); // must be bellow the shape to mask
     const rectId = await createRectangle(containerId);
+
+    // Move both to (padding, padding)
+    if (ellipseId) {
+      await runStep({
+        ws,
+        channel,
+        command: "move_node",
+        params: { nodeId: ellipseId, x: padding, y: padding },
+        assert: () => true,
+        label: "move_ellipse_to_padding"
+      });
+    }
+    if (rectId) {
+      await runStep({
+        ws,
+        channel,
+        command: "move_node",
+        params: { nodeId: rectId, x: padding, y: padding },
+        assert: () => true,
+        label: "move_rect_to_padding"
+      });
+    }
+
     await setMask(rectId, ellipseId);
     results.push({ label: 'Mask Scene', pass: true });
   } catch (error) {

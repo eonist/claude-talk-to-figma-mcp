@@ -74,18 +74,48 @@ async function flattenNodes({ nodeIds }, results) {
  */
 export async function flattenScene(results, parentFrameId) {
   // 1. Create frame as a child of the all-scenes container
-  const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "FlattenTestFrame", ...(parentFrameId && { parentId: parentFrameId }) }, results);
+  // Use padding and fit frame to content
+  const padding = 20;
+  // Rectangle 1: x: 20, y: 40, width: 80, height: 60
+  // Rectangle 2: x: 60, y: 80, width: 70, height: 70
+  // Find bounds
+  const minX = Math.min(20, 60);
+  const minY = Math.min(40, 80);
+  const maxX = Math.max(20 + 80, 60 + 70);
+  const maxY = Math.max(40 + 60, 80 + 70);
+  const contentWidth = maxX - minX;
+  const contentHeight = maxY - minY;
+  const frameWidth = contentWidth + 2 * padding;
+  const frameHeight = contentHeight + 2 * padding;
+
+  const frameId = await createFrame({
+    x: 0, y: 0,
+    width: frameWidth,
+    height: frameHeight,
+    name: "FlattenTestFrame",
+    ...(parentFrameId && { parentId: parentFrameId })
+  }, results);
   if (!frameId) return;
 
-  // 2. Create first rectangle in frame
+  // 2. Create first rectangle in frame (offset by padding)
   const rect1Id = await createRectangle({
-    x: 20, y: 40, width: 80, height: 60, name: "FlattenRect1", parentId: frameId
+    x: 20 - minX + padding,
+    y: 40 - minY + padding,
+    width: 80,
+    height: 60,
+    name: "FlattenRect1",
+    parentId: frameId
   }, results);
   if (!rect1Id) return;
 
-  // 3. Create second rectangle in frame
+  // 3. Create second rectangle in frame (offset by padding)
   const rect2Id = await createRectangle({
-    x: 60, y: 80, width: 70, height: 70, name: "FlattenRect2", parentId: frameId
+    x: 60 - minX + padding,
+    y: 80 - minY + padding,
+    width: 70,
+    height: 70,
+    name: "FlattenRect2",
+    parentId: frameId
   }, results);
   if (!rect2Id) return;
 

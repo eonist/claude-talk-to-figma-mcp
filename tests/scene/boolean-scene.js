@@ -139,21 +139,47 @@ async function insertNodeIntoFrame({ parentId, childId }, results) {
  */
 export async function booleanScene(results, parentFrameId) {
   // 1. Create frame as a child of the all-scenes container
-  const frameId = await createFrame({ x: 0, y: 0, width: 200, height: 200, name: "BooleanTestFrame", ...(parentFrameId && { parentId: parentFrameId }) }, results);
+  // Use padding and fit frame to content
+  const padding = 20;
+  // Rectangle: x: 0, y: 0, width: 100, height: 100
+  // Star: x: 25, y: 25, width: 50, height: 50
+  const minX = Math.min(0, 25);
+  const minY = Math.min(0, 25);
+  const maxX = Math.max(0 + 100, 25 + 50);
+  const maxY = Math.max(0 + 100, 25 + 50);
+  const contentWidth = maxX - minX;
+  const contentHeight = maxY - minY;
+  const frameWidth = contentWidth + 2 * padding;
+  const frameHeight = contentHeight + 2 * padding;
+
+  const frameId = await createFrame({
+    x: 0, y: 0,
+    width: frameWidth,
+    height: frameHeight,
+    name: "BooleanTestFrame",
+    ...(parentFrameId && { parentId: parentFrameId })
+  }, results);
   if (!frameId) return;
 
-  // 2. Create rectangle inside the frame
+  // 2. Create rectangle inside the frame (offset by padding)
   const rectId = await createRectangle({
-    x: 0, y: 0, width: 100, height: 100,
+    x: 0 - minX + padding,
+    y: 0 - minY + padding,
+    width: 100,
+    height: 100,
     fillColor: { r: 1, g: 0, b: 0, a: 1 },
     name: "BooleanRect",
     parentId: frameId
   }, results);
   if (!rectId) return;
 
-  // 3. Create star inside the frame
+  // 3. Create star inside the frame (offset by padding)
   const starId = await createStar({
-    x: 25, y: 25, width: 50, height: 50, points: 5,
+    x: 25 - minX + padding,
+    y: 25 - minY + padding,
+    width: 50,
+    height: 50,
+    points: 5,
     fillColor: { r: 0, g: 0, b: 1, a: 1 },
     name: "BooleanStar",
     parentId: frameId
