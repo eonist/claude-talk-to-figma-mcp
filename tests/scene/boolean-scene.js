@@ -96,20 +96,20 @@ async function booleanSubtract({ nodeIds }, results) {
 /**
  * Helper: Flatten a node.
  */
-async function flattenNode({ nodeId }, results) {
-  const result = await runStep({
-    ws, channel,
-    command: "flatten_node",
-    params: { nodeId },
-    assert: (response) => ({
-      pass: !!response.nodeId,
-      response
-    }),
-    label: "flatten_node"
-  });
-  results.push(result);
-  return result.response?.nodeId;
-}
+// async function flattenNode({ nodeId }, results) {
+//   const result = await runStep({
+//     ws, channel,
+//     command: "flatten_node",
+//     params: { nodeId },
+//     assert: (response) => ({
+//       pass: !!response.nodeId,
+//       response
+//     }),
+//     label: "flatten_node"
+//   });
+//   results.push(result);
+//   return result.response?.nodeId;
+// }
 
 /**
  * Helper: Insert a node into a frame (single operation).
