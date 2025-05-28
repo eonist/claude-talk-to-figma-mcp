@@ -14,14 +14,22 @@ import { setFill, setStroke } from "./shapes-helpers.js";
  * @param {number} [params.rectangle.height=100] - Height of the rectangle.
  * @param {string} [params.rectangle.name="Rectangle"] - Name of the rectangle node.
  * @param {string} [params.rectangle.parentId] - Optional parent node ID to append the rectangle.
+ * @param {number} [params.rectangle.cornerRadius] - Optional corner radius.
  * @param {{ r: number, g: number, b: number, a?: number }} [params.rectangle.fillColor] - Optional RGBA fill color.
  * @param {{ r: number, g: number, b: number, a?: number }} [params.rectangle.strokeColor] - Optional RGBA stroke color.
  * @param {number} [params.rectangle.strokeWeight] - Optional stroke weight.
  * @returns {Promise<{ ids: Array<string> }>} Object with array of created rectangle node IDs.
  * @throws {Error} If neither 'rectangle' nor 'rectangles' is provided, or if parent is not found.
+ * 
  * @example
- * const result = await createRectangle({ rectangle: { x: 0, y: 0, width: 100, height: 100 } });
+ * // Create a rounded button background
+ * const result = await createRectangle({ rectangle: { x: 0, y: 0, width: 100, height: 100, cornerRadius: 10 } });
+ * 
+ * // Create multiple rectangles
  * const batchResult = await createRectangle({ rectangles: [{ width: 50 }, { width: 60 }] });
+ * 
+ * @see {@link MCP_COMMANDS.CREATE_RECTANGLE}
+ * @since 1.0.0
  */
 export async function createRectangle(params) {
   console.log("💥 PLUGIN createRectangle params:", params);

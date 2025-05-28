@@ -20,9 +20,16 @@ import { setFill, setStroke } from "./shapes-helpers.js";
  * @param {number} [params.polygon.strokeWeight] - Optional stroke weight.
  * @returns {Promise<{ ids: Array<string> }>} Object with array of created polygon node IDs.
  * @throws {Error} If neither 'polygon' nor 'polygons' is provided, or if parent is not found.
+ * 
  * @example
- * const polyRes = await createPolygon({ polygon: { x:10, y:10, width:80, height:80, sides:5 } });
- * const batchRes = await createPolygon({ polygons: [{ sides:3 }, { sides:4 }] });
+ * // Create a pentagon
+ * const polyRes = await createPolygon({ polygon: { x: 10, y: 10, width: 80, height: 80, sides: 5 } });
+ * 
+ * // Create multiple polygons
+ * const batchRes = await createPolygon({ polygons: [{ sides: 3 }, { sides: 4 }] });
+ * 
+ * @see {@link MCP_COMMANDS.CREATE_POLYGON}
+ * @since 1.0.0
  */
 export async function createPolygon(params) {
   let polygonsArr;
