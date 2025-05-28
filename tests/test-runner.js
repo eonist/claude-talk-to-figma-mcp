@@ -83,12 +83,12 @@ async function main() {
   const sequence = [
     // shapeScene,
     // textScene, 
-     styleScene,
+    // styleScene,
     // transformScene,
     // booleanScene,
     // flattenScene,
     // effectScene,
-    // svgScene
+    svgScene
     // imageScene
     // maskScene
     // layoutScene

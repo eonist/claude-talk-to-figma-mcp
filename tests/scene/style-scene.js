@@ -11,7 +11,11 @@ async function createLinearGradient() {
       { position: 0, color: [1, 0, 0, 1] }, // Red
       { position: 1, color: [0, 0, 1, 1] }  // Blue
     ],
-    transformMatrix: [[1, 0, 0], [0, 1, 0]] // Horizontal
+    // Vertical linear gradient (original)
+    transformMatrix: [
+      [0, 1, 0],     // 90-degree rotation: cos(90°), sin(90°), x-translation
+      [-1, 0, 1]     // -sin(90°), cos(90°), y-translation
+    ]
   };
   const result = await runStep({
     ws,
