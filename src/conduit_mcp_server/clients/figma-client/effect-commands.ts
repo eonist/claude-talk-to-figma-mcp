@@ -13,10 +13,10 @@ import type { FigmaClient } from "./index.js";
  */
 export const effectCommands = {
   /**
-   * Sets visual effects (shadows, blurs) on a node
+   * Sets visual effects (shadows, blurs) on a node.
    * 
-   * @param {object} params - Effect parameters
-   * @returns {Promise<any>} Operation result
+   * @param {object} params - Effect parameters including nodeId and effects array.
+   * @returns {Promise<any>} Operation result from Figma API.
    */
   async setEffects(
     this: FigmaClient,
@@ -42,8 +42,9 @@ export const effectCommands = {
 
   /**
    * Sets the effect style ID for a node in Figma.
-   * @param params - { nodeId: string, effectStyleId: string }
-   * @returns {Promise<any>}
+   * 
+   * @param params - Object containing nodeId and effectStyleId.
+   * @returns {Promise<any>} Result of applying effect style.
    */
   async setEffectStyleId(
     this: FigmaClient,
@@ -54,12 +55,19 @@ export const effectCommands = {
     return this.executeCommand(MCP_COMMANDS.APPLY_EFFECT_STYLE, params);
   },
 
-
   /**
    * Set effect(s) directly or by style variable on one or more nodes.
-   * @param {Object} params - { entries: [{ nodeId, effects?, effectStyleId? }] }
+   * 
+   * @param {Object} params - Object with entries array containing nodeId, effects, and/or effectStyleId.
+   * @returns {Array} Array of results indicating success for each entry.
    */
-  async set_effect({ entries }) {
+  /**
+   * Set effect(s) directly or by style variable on one or more nodes.
+   * 
+   * @param {Object} params - Object with entries array containing nodeId, effects, and/or effectStyleId.
+   * @returns {Array} Array of results indicating success for each entry.
+   */
+  async set_effect({ entries }: { entries: Array<{ nodeId: string; effects?: any; effectStyleId?: string }> | { nodeId: string; effects?: any; effectStyleId?: string } }) {
     const entryList = Array.isArray(entries) ? entries : [entries];
     // TODO: Implement actual Figma API logic
     // For now, return mock success for each entry
@@ -73,7 +81,9 @@ export const effectCommands = {
 
   /**
    * Create one or more effect style variables.
-   * @param {Object} params - { effects: [effectDef] }
+   * 
+   * @param {Object} params - Object containing effects array to create style variables for.
+   * @returns {Array} Array of created effect style variable IDs and success status.
    */
   async create_effect_style_variable({ effects }) {
     const effectList = Array.isArray(effects) ? effects : [effects];
