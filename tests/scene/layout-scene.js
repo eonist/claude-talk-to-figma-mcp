@@ -128,24 +128,6 @@ function create_ellipse(parentId, fillColor) {
   });
 }
 
-
-
-/**
- * Helper to set fill color of an ellipse node.
- * @param {string} nodeId
- * @param {{r:number,g:number,b:number,a:number}} fillColor
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
- */
-function set_ellipse_color(nodeId, fillColor) {
-  return runStep({
-    ws, channel,
-    command: "set_fill_and_stroke",
-    params: { nodeId, fillColor },
-    assert: (response) => ({ pass: true, response }),
-    label: `set_ellipse_color (${nodeId})`
-  });
-}
-
 /**
  * Create 6 ellipses in the frame, each with a different web color.
  * @param {string} frameId
