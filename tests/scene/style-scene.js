@@ -1,171 +1,172 @@
 import { ws, channel, runStep, assertEchoedCommand } from "../test-runner.js";
 
 /**
- * Helper to create a gradient style and return the style ID.
+ * Helper to create a frame with horizontal auto layout and hug settings.
+ * @returns {Promise<{frameId: string, result: object}>}
  */
-/**
- * Helper to create a gradient style in Figma and return its style ID.
- * @returns {Promise<{styleId: string, result: object}>} The created style ID and full result object.
- */
-async function create_gradient() {
+async function create_autolayout_frame() {
   const params = {
-    name: "UnitTestGradientStyle",
-    gradientType: "LINEAR",
-    stops: [
-      { position: 0, color: [1, 0, 0, 1] }, // Red RGBA
-      { position: 1, color: [0, 0, 1, 1] }  // Blue RGBA
-    ],
-    transformMatrix: [
-      [0, 1, 0],     // 90-degree rotation: cos(90°), sin(90°), x-translation
-      [-1, 0, 1]     // -sin(90°), cos(90°), y-translation
-    ]
+    x: 0,
+    y: 0,
+    width: 10,
+    height: 10,
+    name: "GradientFrame",
   };
   const result = await runStep({
+    ws,
+    channel,
+    command: "create_frame",
+    params,
+    assert: (response) => {
+      return { pass: !!(response && response.ids && response.ids.length > 0), response };
+    },
+    label: "create_autolayout_frame"
+  });
+  const frameId = result.response && result.response.ids && result.response.ids[0];
+
+  // Set auto layout: horizontal, hug width/height
+  await runStep({
+    ws,
+    channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: frameId,
+        mode: "HORIZONTAL"
+      }
+    },
+    assert: () => ({ pass: true }),
+    label: "set_auto_layout_horizontal"
+  });
+  await runStep({
+    ws,
+    channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: frameId,
+      axis: "horizontal",
+      mode: "HUG"
+    },
+    assert: () => ({ pass: true }),
+    label: "set_auto_layout_hug_width"
+  });
+  await runStep({
+    ws,
+    channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: frameId,
+      axis: "vertical",
+      mode: "HUG"
+    },
+    assert: () => ({ pass: true }),
+    label: "set_auto_layout_hug_height"
+  });
+
+  return { frameId, result };
+}
+
+/**
+ * Helper to create a rectangle, apply a gradient, and add to a parent frame.
+ * @param {object} gradientParams - Gradient style params
+ * @param {string} rectName - Name for the rectangle
+ * @param {string} parentId - Frame node ID
+ * @returns {Promise<{nodeId: string, result: object}>}
+ */
+async function create_gradient_rectangle(gradientParams, rectName, parentId) {
+  // 1. Create gradient style
+  const gradResult = await runStep({
     ws,
     channel,
     command: "create_gradient_style",
-    params: { gradients: params },
-    assert: (response) => {
-      return { pass: !!(response && response.id), response };
-    },
-    label: `create_gradient (${params.name})`
+    params: { gradients: gradientParams },
+    assert: (response) => ({ pass: !!(response && response.id), response }),
+    label: `create_gradient_style (${gradientParams.name})`
   });
-  const styleId = result.response && result.response.id;
-  return { styleId, result };
-}
+  const styleId = gradResult.response && gradResult.response.id;
 
-/**
- * Helper to create a rectangle and return the nodeId.
- */
-/**
- * Helper to create a rectangle in Figma for gradient tests.
- * @returns {Promise<{nodeId: string, result: object}>} The created node ID and full result object.
- */
-/**
- * Helper to create a rectangle in Figma for gradient tests.
- * @param {string} name - Name for the rectangle
- * @param {number} x - X position (default: 0)
- * @param {number} y - Y position (default: 0)
- * @returns {Promise<{nodeId: string, result: object}>} The created node ID and full result object.
- */
-async function create_rectangle(name = "GradientRectTest", x = 0, y = 0) {
-  const params = {
-    x,
-    y,
+  // 2. Create rectangle
+  const rectParams = {
+    x: 0,
+    y: 0,
     width: 100,
     height: 50,
-    name
+    name: rectName,
+    parentId
   };
-  console.log("[create_rectangle] params:", params);
-  const result = await runStep({
+  const rectResult = await runStep({
     ws,
     channel,
     command: "create_rectangle",
-    params: params,
-    assert: (response) => {
-      console.log("[create_rectangle] response:", response);
-      return { pass: !!(response && response.ids && response.ids.length > 0), response };
-    },
-    label: `create_rectangle (${params.name})`
+    params: rectParams,
+    assert: (response) => ({ pass: !!(response && response.ids && response.ids.length > 0), response }),
+    label: `create_rectangle (${rectName})`
   });
-  const nodeId = result.response && result.response.ids && result.response.ids[0];
-  return { nodeId, result };
-}
+  const nodeId = rectResult.response && rectResult.response.ids && rectResult.response.ids[0];
 
-/**
- * Helper to apply a gradient style to a node.
- */
-/**
- * Helper to apply a gradient style to a Figma node.
- * @param {object} options - Options for the operation.
- * @param {string} options.nodeId - ID of the node to style.
- * @param {string} options.gradientStyleId - ID of the gradient style to apply.
- * @returns {Promise<object>} The result of the set_gradient command.
- */
-async function set_gradient({ nodeId, gradientStyleId }) {
-  return await runStep({
+  // 3. Apply gradient style to rectangle
+  await runStep({
     ws,
     channel,
     command: "set_gradient",
     params: {
       entries: {
         nodeId,
-        gradientStyleId,
+        gradientStyleId: styleId,
         applyTo: "FILL"
       }
     },
-    assert: (response) => ({ pass: true }),
-    label: `set_gradient (nodeId: ${nodeId}, styleId: ${gradientStyleId})`
+    assert: () => ({ pass: true }),
+    label: `set_gradient (${rectName})`
   });
+
+  return { nodeId, result: rectResult };
 }
 
 /**
- * Scene for style/gradient tests.
+ * Create a rectangle with a vertical linear gradient and add to frame.
  */
-/**
- * Style scene: creates a gradient style, a rectangle, then applies the style to the rectangle.
- * @param {Array} results - Collector array for test step results.
- * @returns {Promise<void>}
- */
-export async function styleScene(results) {
-  // 1. Create the gradient style
-  const { styleId, result: gradResult } = await create_gradient();
-  results.push(gradResult);
-
-  // 2. Create the rectangle
-  const { nodeId, result: rectResult } = await create_rectangle();
-  results.push(rectResult);
-
-  // 3. Apply the gradient style to the rectangle
-  if (styleId && nodeId) {
-    results.push(await set_gradient({ nodeId, gradientStyleId: styleId }));
-  } else {
-    results.push({
-      label: "set_gradient (skipped)",
-      pass: false,
-      reason: `Missing styleId (${styleId}) or nodeId (${nodeId})`
-    });
-  }
+async function create_linear_gradient_rect(parentId) {
+  const gradientParams = {
+    name: "UnitTestGradientStyle",
+    gradientType: "LINEAR",
+    stops: [
+      { position: 0, color: [1, 0, 0, 1] }, // Red
+      { position: 1, color: [0, 0, 1, 1] }  // Blue
+    ],
+    transformMatrix: [
+      [0, 1, 0],
+      [-1, 0, 1]
+    ]
+  };
+  return await create_gradient_rectangle(gradientParams, "LinearGradientRect", parentId);
 }
 
 /**
- * Helper to create a radial gradient style.
- * @returns {Promise<{styleId: string, result: object}>} The created style ID and full result object.
+ * Create a rectangle with a radial gradient and add to frame.
  */
-async function create_radial_gradient() {
-  const params = {
+async function create_radial_gradient_rect(parentId) {
+  const gradientParams = {
     name: "UnitTestRadialGradientStyle",
     gradientType: "RADIAL",
     stops: [
-      { position: 0, color: [1, 1, 0, 1] },   // Yellow center
-      { position: 0.5, color: [1, 0.5, 0, 1] }, // Orange middle
-      { position: 1, color: [1, 0, 0, 1] }    // Red outer
+      { position: 0, color: [1, 1, 0, 1] },   // Yellow
+      { position: 0.5, color: [1, 0.5, 0, 1] }, // Orange
+      { position: 1, color: [1, 0, 0, 1] }    // Red
     ],
     transformMatrix: [
-      [1, 0, 0.5],   // Scale and center horizontally
-      [0, 1, 0.5]    // Scale and center vertically
+      [1, 0, 0.5],
+      [0, 1, 0.5]
     ]
   };
-  const result = await runStep({
-    ws,
-    channel,
-    command: "create_gradient_style",
-    params: { gradients: params },
-    assert: (response) => {
-      return { pass: !!(response && response.id), response };
-    },
-    label: `create_radial_gradient (${params.name})`
-  });
-  const styleId = result.response && result.response.id;
-  return { styleId, result };
+  return await create_gradient_rectangle(gradientParams, "RadialGradientRect", parentId);
 }
 
 /**
- * Helper to create a multicolor horizontal linear gradient style.
- * @returns {Promise<{styleId: string, result: object}>} The created style ID and full result object.
+ * Create a rectangle with a multicolor horizontal linear gradient and add to frame.
  */
-async function create_multicolor_horizontal_gradient() {
-  const params = {
+async function create_multicolor_gradient_rect(parentId) {
+  const gradientParams = {
     name: "UnitTestMulticolorHorizontalGradient",
     gradientType: "LINEAR",
     stops: [
@@ -176,73 +177,24 @@ async function create_multicolor_horizontal_gradient() {
       { position: 1, color: [0.5, 0, 0.5, 1] }  // Purple
     ],
     transformMatrix: [
-      [1, 0, 0],     // Horizontal direction (0° rotation)
-      [0, 1, 0]      // No vertical transformation
+      [1, 0, 0],
+      [0, 1, 0]
     ]
   };
-  const result = await runStep({
-    ws,
-    channel,
-    command: "create_gradient_style",
-    params: { gradients: params },
-    assert: (response) => {
-      return { pass: !!(response && response.id), response };
-    },
-    label: `create_multicolor_horizontal_gradient (${params.name})`
-  });
-  const styleId = result.response && result.response.id;
-  return { styleId, result };
+  return await create_gradient_rectangle(gradientParams, "MulticolorGradientRect", parentId);
 }
 
 /**
- * Extended scene that demonstrates all three gradient types.
+ * Main scene: creates a frame with horizontal auto layout, then adds three rectangles with different gradients.
  * @param {Array} results - Collector array for test step results.
- * @returns {Promise<void>}
  */
-export async function extendedGradientScene(results) {
-  // Create all three gradient styles
-  const { styleId: linearStyleId, result: linearResult } = await create_gradient();
-  results.push(linearResult);
+export async function styleScene(results) {
+  // 1. Create frame with horizontal auto layout
+  const { frameId, result: frameResult } = await create_autolayout_frame();
+  results.push(frameResult);
 
-  const { styleId: radialStyleId, result: radialResult } = await create_radial_gradient();
-  results.push(radialResult);
-
-  const { styleId: multicolorStyleId, result: multicolorResult } = await create_multicolor_horizontal_gradient();
-  results.push(multicolorResult);
-
-  // Create three rectangles for each gradient with different positions
-  const rectangles = [];
-  const spacing = 120; // Space between rectangles (width + margin)
-  for (let i = 0; i < 3; i++) {
-    const rectName = `GradientRectTest ${i + 1}`;
-    const x = i * spacing; // Position rectangles horizontally
-    const y = 0;
-    console.log(`[extendedGradientScene] Creating rectangle: ${rectName} at position (${x}, ${y})`);
-    const { nodeId, result: rectResult } = await create_rectangle(rectName, x, y);
-    rectangles.push(nodeId);
-    results.push(rectResult);
-  }
-
-  // Apply each gradient to its respective rectangle
-  const gradientStyles = [linearStyleId, radialStyleId, multicolorStyleId];
-  const gradientNames = ["linear", "radial", "multicolor"];
-
-  for (let i = 0; i < 3; i++) {
-    if (gradientStyles[i] && rectangles[i]) {
-      console.log(`[extendedGradientScene] Applying ${gradientNames[i]} gradient to rectangle: ${rectangles[i]}`);
-      const setResult = await set_gradient({
-        nodeId: rectangles[i],
-        gradientStyleId: gradientStyles[i]
-      });
-      setResult.label = `set_gradient (${gradientNames[i]})`;
-      results.push(setResult);
-    } else {
-      console.log(`[extendedGradientScene] Skipped applying ${gradientNames[i]} gradient: missing styleId or nodeId`);
-      results.push({
-        label: `set_gradient (${gradientNames[i]} - skipped)`,
-        pass: false,
-        reason: `Missing styleId or nodeId for ${gradientNames[i]} gradient`
-      });
-    }
-  }
+  // 2. Create and add three rectangles with different gradients
+  results.push(await create_linear_gradient_rect(frameId));
+  results.push(await create_radial_gradient_rect(frameId));
+  results.push(await create_multicolor_gradient_rect(frameId));
 }
