@@ -1,13 +1,29 @@
 #!/usr/bin/env node
 
 /**
- * Script to configure the Claude AI agent for the Conduit MCP server.
- * - Backs up and updates the Claude desktop configuration file.
- * - Adds MCP server configuration for ClaudeTalkToFigma.
- * - Detects Bun or falls back to npx.
- * - Provides instructions for using the MCP in AI Agent.
- *
- * Usage: node configure-claude.js
+ * Claude AI Agent Configuration Script
+ * 
+ * Automatically configures the Claude desktop application to work with the Conduit MCP server
+ * for Figma integration. This script handles cross-platform configuration file management
+ * and provides a seamless setup experience.
+ * 
+ * Features:
+ * - Cross-platform support (macOS and Windows)
+ * - Automatic backup creation with timestamps
+ * - Runtime detection (Bun vs npx)
+ * - Safe configuration merging with existing settings
+ * - Comprehensive error handling and user feedback
+ * 
+ * @author Conduit MCP Team
+ * @version 1.0.0
+ * @requires fs, path, os, child_process
+ * 
+ * Usage:
+ *   node configure-claude.js
+ * 
+ * Exit Codes:
+ *   0 - Success
+ *   1 - Configuration error (file permissions, invalid JSON, etc.)
  */
 
 import fs from 'fs';

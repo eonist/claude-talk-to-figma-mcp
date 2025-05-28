@@ -1,21 +1,39 @@
 #!/bin/bash
 #
+# Automated Version Bump Script
+# 
+# Intelligently increments project version numbers across multiple package.json files
+# following semantic versioning principles. Handles lock file regeneration, git operations,
+# and documentation updates in a single atomic operation.
+#
+# Author: Conduit MCP Team
+# Version: 2.0.0
+# Dependencies: git, npm, bun (optional), sed
+#
+# Semantic Versioning Rules:
+# - X.Y.9 → X.(Y+1).0 (minor version bump when patch reaches 9)
+# - X.9.9 → (X+1).0.0 (major version bump when minor and patch reach 9)
+# - X.Y.Z → X.Y.(Z+1) (standard patch increment)
+#
 # Usage:
-#   1. Save this script as scripts/bump-version.sh
-#   2. Make it executable:
-#        chmod +x scripts/bump-version.sh
-#   3. Run the script from the project root:
-#        ./scripts/bump-version.sh
+#   chmod +x scripts/bump-version.sh
+#   ./scripts/bump-version.sh
 #
 # What it does:
-#   - Automatically bumps the version in both package.json files according to these rules:
-#       - If current version is X.Y.9, next is X.(Y+1).0
-#       - If current version is X.9.9, next is (X+1).0.0
-#       - Otherwise, next is X.Y.(Z+1)
-#   - Updates the version badge in readme.md
-#   - Regenerates lock files (bun & npm) in both root and src/conduit_mcp_server/
-#   - Commits, tags, and pushes the changes
-#   - Prompts for confirmation before making any changes
+# 1. Reads current version from latest git tag
+# 2. Calculates next version using semantic rules
+# 3. Updates package.json files in root and src/conduit_mcp_server/
+# 4. Updates version badge in README.md
+# 5. Regenerates all lock files (bun.lock, package-lock.json)
+# 6. Creates git commit with descriptive message
+# 7. Creates and pushes git tag
+# 8. Pushes all changes to remote repository
+#
+# Exit Codes:
+#   0 - Success
+#   1 - User cancelled operation
+#   2 - Git operation failed
+#   3 - Package update failed
 #
 # Example:
 #   ./scripts/bump-version.sh

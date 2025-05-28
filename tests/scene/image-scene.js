@@ -119,7 +119,7 @@ async function fetch_image_base64(url) {
  * @param {string} parentId - Parent frame ID to contain the image
  * @param {string} base64Data - Base64 encoded image data with MIME type prefix
  * @param {string} name - Display name for the image node
- * @param {number} [targetSize=50] - Target size in pixels for the longest dimension
+ * @param {number} [targetSize=200] - Target size in pixels for the longest dimension
  * @returns {Promise<string|null>} The created image node ID, or null if creation failed
  * @example
  * const imageId = await create_image_from_base64(
@@ -129,7 +129,7 @@ async function fetch_image_base64(url) {
  *   100
  * );
  */
-async function create_image_from_base64(parentId, base64Data, name, targetSize = 50) {
+async function create_image_from_base64(parentId, base64Data, name, targetSize = 100) {
   // Insert image node
   const res = await runStep({
     ws,
