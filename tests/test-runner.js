@@ -87,8 +87,8 @@ async function main() {
     // transformScene,
     // booleanScene,
     // flattenScene,
-    // effectScene,
-    svgScene
+     effectScene,
+    // svgScene
     // imageScene
     // maskScene
     // layoutScene
