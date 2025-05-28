@@ -80,14 +80,32 @@ async function createContainerFrame(ws, channel) {
         x: 0, y: 0,
         width: 1600, // or a large value, or use 'AUTO' for primaryAxisSizing
         height: 900, // initial height, will hug vertically
-        name: 'All Scenes Container',
-        ...CONTAINER_FRAME_CONFIG
+        name: 'All Scenes Container'
+        // Do NOT spread autolayout config here; set it explicitly below
       }
     },
     assert: r => Array.isArray(r.ids) && r.ids.length > 0,
     label: 'create_container_frame'
   });
-  return res.response?.ids?.[0];
+  const containerFrameId = res.response?.ids?.[0];
+
+  // Explicitly apply autolayout to the container frame
+  if (containerFrameId) {
+    await runStep({
+      ws, channel,
+      command: 'set_auto_layout',
+      params: {
+        layout: {
+          nodeId: containerFrameId,
+          ...CONTAINER_FRAME_CONFIG
+        }
+      },
+      assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === containerFrameId,
+      label: 'set_auto_layout (container frame)'
+    });
+  }
+
+  return containerFrameId;
 }
 
 // --- Main Runner ---
