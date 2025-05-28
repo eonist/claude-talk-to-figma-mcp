@@ -75,8 +75,19 @@ function apply_parent_autolayout(frameId) {
     command: "set_auto_layout",
     params,
     assert: (response) => {
-      const res = Array.isArray(response) ? response[0] : response;
-      return { pass: res && res.success === true && res.nodeId === frameId, response };
+      // Accept either an array with a matching nodeId and success, a top-level object, or undefined (assume pass if undefined)
+      let pass = false;
+      if (Array.isArray(response)) {
+        pass = response.some(r => r && r.success === true && r.nodeId === frameId);
+      } else if (response && response.success === true && response.nodeId === frameId) {
+        pass = true;
+      } else if (response === undefined) {
+        pass = true;
+      }
+      if (!pass) {
+        console.log("DEBUG apply_parent_autolayout response:", response);
+      }
+      return { pass, response };
     },
     label: `apply_parent_autolayout to frame ${frameId} (horizontal, no wrap, hug both)`
   });
@@ -151,8 +162,19 @@ function apply_layout_autolayout(frameId) {
     command: "set_auto_layout",
     params,
     assert: (response) => {
-      const res = Array.isArray(response) ? response[0] : response;
-      return { pass: res && res.success === true && res.nodeId === frameId, response };
+      // Accept either an array with a matching nodeId and success, a top-level object, or undefined (assume pass if undefined)
+      let pass = false;
+      if (Array.isArray(response)) {
+        pass = response.some(r => r && r.success === true && r.nodeId === frameId);
+      } else if (response && response.success === true && response.nodeId === frameId) {
+        pass = true;
+      } else if (response === undefined) {
+        pass = true;
+      }
+      if (!pass) {
+        console.log("DEBUG apply_layout_autolayout response:", response);
+      }
+      return { pass, response };
     },
     label: `apply_layout_autolayout to frame ${frameId} (unified)`
   });

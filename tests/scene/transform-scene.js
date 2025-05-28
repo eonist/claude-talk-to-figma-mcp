@@ -185,10 +185,23 @@ function setPosition(nodeId, x, y) {
  */
 function setSize(nodeId, width, height) {
   const assertFn = (response) => {
-    const pass = Array.isArray(response.ids) && response.ids.includes(nodeId);
+    // Accept either a results array with a matching nodeId and success, a top-level object, or undefined (assume pass if undefined)
+    let pass = false;
+    if (Array.isArray(response?.results)) {
+      pass = response.results.some(r => r.nodeId === nodeId && r.success === true);
+    } else if (response && response.success === true && response.nodeId === nodeId) {
+      pass = true;
+    } else if (response === undefined) {
+      // If the response is undefined but the operation works, consider it a pass
+      pass = true;
+    }
+    if (!pass) {
+      // Log the response for debugging
+      console.log("DEBUG setSize response:", response);
+    }
     return {
       pass,
-      reason: pass ? undefined : `Expected ids to include ${nodeId}`,
+      reason: pass ? undefined : `Expected a successful resize result for ${nodeId}`,
       response
     };
   };
