@@ -37,15 +37,17 @@ function apply_autolayout(frameId) {
 
 /**
  * Helper to create a frame in Figma for shape tests.
+ * @param {string} [parentId] - Optional parent frame ID
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any}>}
  */
-function create_frame() {
+function create_frame(parentId) {
   const params = {
     x: 50, y: 100, width: 500, height: 300,
     name: 'Main Frame',
     fillColor: randomColor(),
     strokeColor: randomColor(),
-    strokeWeight: Math.floor(Math.random() * 8) + 1
+    strokeWeight: Math.floor(Math.random() * 8) + 1,
+    ...(parentId && { parentId })
   };
   return runStep({
     ws, channel,
@@ -321,27 +323,32 @@ function create_bookmark(parentId = null) {
 }
  
 
-export async function shapeScene(results) {
+/**
+ * Main Entrypoint for shape scene
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ */
+export async function shapeScene(results, parentFrameId) {
   // Create frame first and store its ID
-  const frameResult = await create_frame();
+  const frameResult = await create_frame(parentFrameId);
   results.push(frameResult);
-  
+
   // Extract frame ID from the response
   const frameId = frameResult.response?.ids?.[0];
-  
+
   if (!frameId) {
     console.warn('Could not get frame ID for placing shapes inside frame');
   }
-  
+
   // Create 8 shapes inside the frame for comprehensive grid demonstration
-   results.push(await create_star(frameId));
-   results.push(await create_rectangle(frameId));
-   results.push(await create_ellipse(frameId));
-   results.push(await create_hexagon(frameId));
-   results.push(await create_speech_bubble(frameId));
-   results.push(await create_bookmark(frameId));
-   results.push(await create_heart(frameId));
-   results.push(await create_lightning_bolt(frameId));
+  results.push(await create_star(frameId));
+  results.push(await create_rectangle(frameId));
+  results.push(await create_ellipse(frameId));
+  results.push(await create_hexagon(frameId));
+  results.push(await create_speech_bubble(frameId));
+  results.push(await create_bookmark(frameId));
+  results.push(await create_heart(frameId));
+  results.push(await create_lightning_bolt(frameId));
 
   // Apply autolayout to create horizontal flow with wrapping
   results.push(await apply_autolayout(frameId));

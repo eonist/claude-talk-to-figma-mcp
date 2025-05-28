@@ -1,14 +1,18 @@
 import { randomColor } from "../helper.js";
 import { channel, runStep, ws } from "../test-runner.js";
 
-// Create a frame and return its ID
-async function createFrame() {
+/**
+ * Create a frame and return its ID
+ * @param {string} [parentId] - Optional parent frame ID
+ */
+async function createFrame(parentId) {
   const params = {
     x: 50, y: 100, width: 400, height: 200,
     name: "Effect Frame",
     fillColor: randomColor(),
     strokeColor: randomColor(),
-    strokeWeight: 2
+    strokeWeight: 2,
+    ...(parentId && { parentId })
   };
   const res = await runStep({
     ws, channel,
@@ -177,8 +181,13 @@ async function addBlueRectWithBackgroundBlur(frameId) {
 
 // --- Main Entrypoint ---
 
-export async function effectScene() {
-  const frameId = await createFrame();
+/**
+ * Main Entrypoint
+ * @param {Array} results
+ * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ */
+export async function effectScene(results, parentFrameId) {
+  const frameId = await createFrame(parentFrameId);
   if (!frameId) return;
   await applyAutolayout(frameId);
 
