@@ -86,19 +86,20 @@ function apply_layout_autolayout(frameId) {
       paddingTop: 20,
       paddingBottom: 20,
       layoutWrap: "WRAP",
-      primaryAxisSizing: "FIXED",
-      counterAxisSizingMode: "AUTO"
+      primaryAxisSizing: "FIXED",   // width
+      counterAxisSizing: "AUTO"     // height: hug
     }
   };
   return runStep({
     ws, channel,
     command: "set_auto_layout",
     params,
-    assert: (response) => ({
-      pass: response && response["0"] && response["0"].success === true && response["0"].nodeId === frameId,
-      response
-    }),
-    label: `apply_layout_autolayout to frame ${frameId}`
+    assert: (response) => {
+      // Accept array of results, check for success and nodeId
+      const res = Array.isArray(response) ? response[0] : response;
+      return { pass: res && res.success === true && res.nodeId === frameId, response };
+    },
+    label: `apply_layout_autolayout to frame ${frameId} (unified)`
   });
 }
 
@@ -166,7 +167,7 @@ async function create_ellipses_in_frame(frameId, results) {
  */
 export async function layoutScene(results) {
   // Layouts: 3x2, 2x3, 1x6
-  const layouts = ["3x2"/*, "2x3", "1x6"*/];
+  const layouts = ["3x2", "2x3", "1x6"/**/];
   for (const layoutType of layouts) {
     // 1. Create frame
     const frameResult = await create_layout_frame(layoutType);
