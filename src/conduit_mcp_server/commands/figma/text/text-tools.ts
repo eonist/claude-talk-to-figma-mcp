@@ -7,15 +7,58 @@ import { SingleTextSchema, BatchTextsSchema, TextSchema } from "./schema/text-sc
 import { v4 as uuidv4 } from "uuid";
 import { handleToolError } from "../../../utils/error-handling.js";
 
+
 /**
- * Registers text-creation-related commands with the MCP server.
+ * Registers comprehensive text creation tools with the MCP server.
+ * 
+ * Provides unified text creation capabilities supporting both regular text nodes
+ * and bounded text boxes. Handles single text creation and efficient batch operations.
  * 
  * @param server - The MCP server instance to register tools on
- * @param figmaClient - The Figma client for executing commands
+ * @param figmaClient - The Figma client for executing text creation commands
  * 
- * Adds:
- * - create_text: Create a new text element in Figma
- * - createText: Create a text box in Figma (bounded text box support removed)
+ * @description
+ * Registered tools:
+ * - `SET_TEXT`: Creates single or multiple text elements with optional bounding
+ * - Supports both auto-sizing text and fixed-dimension text boxes
+ * - Batch creation optimized for performance with multiple text elements
+ * 
+ * @example
+ * ```
+ * // Create single auto-sizing text
+ * registerTextTools(server, client);
+ * await server.call('SET_TEXT', {
+ *   text: {
+ *     x: 100, y: 200,
+ *     text: "Hello World",
+ *     fontSize: 16,
+ *     fontWeight: 400
+ *   }
+ * });
+ * 
+ * // Create bounded text box
+ * await server.call('SET_TEXT', {
+ *   text: {
+ *     x: 100, y: 200,
+ *     width: 300, height: 100,
+ *     text: "Bounded text content",
+ *     fontSize: 14
+ *   }
+ * });
+ * 
+ * // Batch creation
+ * await server.call('SET_TEXT', {
+ *   texts: [
+ *     { x: 10, y: 20, text: "Label A" },
+ *     { x: 30, y: 40, width: 120, height: 60, text: "Label B" }
+ *   ]
+ * });
+ * ```
+ * 
+ * @see {@link SingleTextSchema} For detailed parameter validation rules
+ * @see {@link BatchTextsSchema} For batch operation constraints
+ * 
+ * @since 1.0.0
  */
 export function registerTextTools(server: McpServer, figmaClient: FigmaClient) {
   // Unified single/batch text creation (regular and bounded)

@@ -14,8 +14,35 @@ import {
   SetTextStyleParamsSchema
 } from "./schema/text-content-schema.js";
 
+
 /**
- * Registers the unified "set_text_content" tool on the MCP server.
+ * Registers the unified text content management tool on the MCP server.
+ * 
+ * This tool provides both single and batch text content updates for Figma text nodes.
+ * It supports updating one text node at a time or multiple nodes in a single operation.
+ * 
+ * @param server - The MCP server instance to register the tool on
+ * @param figmaClient - The Figma client instance for executing API commands
+ * 
+ * @example
+ * ```
+ * // Single text update
+ * await tool({ nodeId: "123:456", text: "Hello World" });
+ * 
+ * // Batch text update
+ * await tool({ 
+ *   texts: [
+ *     { nodeId: "123:456", text: "First text" },
+ *     { nodeId: "789:012", text: "Second text" }
+ *   ]
+ * });
+ * ```
+ * 
+ * @throws {Error} When neither (nodeId + text) nor texts array is provided
+ * @throws {Error} When nodeId format is invalid (must match /^\d+:\d+$/ or complex instance format)
+ * @throws {Error} When text content exceeds 10,000 characters or is empty
+ * 
+ * @returns Tool registration with success/error response containing updated node results
  */
 export function registerTextContentTools(server: McpServer, figmaClient: FigmaClient) {
   server.tool(
@@ -107,13 +134,41 @@ Returns:
   );
 }
 
-
-
-
-
-
 /**
- * Registers the unified "set_text_style" tool on the MCP server.
+ * Registers the unified text style management tool on the MCP server.
+ * 
+ * This tool enables comprehensive text styling operations including font properties,
+ * spacing, alignment, and visual effects. Supports both single node and batch operations.
+ * 
+ * @param server - The MCP server instance to register the tool on
+ * @param figmaClient - The Figma client instance for executing style commands
+ * 
+ * @example
+ * ```
+ * // Single node styling
+ * await tool({ 
+ *   nodeId: "123:456", 
+ *   styles: { 
+ *     fontSize: 18, 
+ *     fontWeight: 700,
+ *     textAlignHorizontal: "CENTER"
+ *   }
+ * });
+ * 
+ * // Batch styling
+ * await tool({
+ *   entries: [
+ *     { nodeId: "123:456", styles: { fontSize: 16 } },
+ *     { nodeId: "789:012", styles: { fontWeight: 400, letterSpacing: { value: 2, unit: "PIXELS" } } }
+ *   ]
+ * });
+ * ```
+ * 
+ * @throws {Error} When neither (nodeId + styles) nor entries array is provided
+ * @throws {Error} When style properties are invalid or out of supported ranges
+ * @throws {Error} When target node is not a text node
+ * 
+ * @returns Tool registration with success/error response containing styled node results
  */
 export function registerTextStyleTool(server: McpServer, figmaClient: FigmaClient) {
   server.tool(

@@ -7,10 +7,48 @@ import { logger } from "../../../utils/logger.js";
 import { ensureNodeIdIsString } from "../../../utils/node-utils.js";
 import { isValidNodeId } from "../../../utils/figma/is-valid-node-id.js";
 
+
 /**
- * Registers text analysis read commands:
- * - get_styled_text_segments
- * - scan_text_nodes
+ * Registers advanced text analysis and inspection tools with the MCP server.
+ * 
+ * Provides comprehensive text node analysis capabilities including style segmentation
+ * and hierarchical text node discovery for complex Figma documents.
+ * 
+ * @param server - The MCP server instance to register analysis tools on
+ * @param figmaClient - The Figma client instance for executing read-only analysis commands
+ * 
+ * @description
+ * Registered analysis tools:
+ * - `GET_STYLED_TEXT_SEGMENTS`: Analyzes text styling variations within a single text node
+ * - `SCAN_TEXT_NODES`: Recursively discovers all text nodes within a container
+ * 
+ * Both tools are read-only and safe for production use without modification risks.
+ * 
+ * @example
+ * ```
+ * // Analyze font size variations in a text node
+ * await server.call('GET_STYLED_TEXT_SEGMENTS', {
+ *   nodeId: "123:456",
+ *   property: "fontSize"
+ * });
+ * // Returns: segments with different font sizes and their character ranges
+ * 
+ * // Find all text nodes in a frame
+ * await server.call('SCAN_TEXT_NODES', {
+ *   nodeId: "789:012"
+ * });
+ * // Returns: complete inventory of descendant text nodes with metadata
+ * ```
+ * 
+ * @performance
+ * - Styled segments analysis: O(n) where n = character count
+ * - Text node scanning: O(m) where m = total descendant nodes
+ * - Large documents use automatic chunking (10 nodes per chunk)
+ * 
+ * @throws {Error} When target node doesn't exist or is inaccessible
+ * @throws {Error} When style property is unsupported for segmentation
+ * 
+ * @since 1.0.0
  */
 export function registerTextAnalysisTools(server: McpServer, figmaClient: FigmaClient) {
   // Get Styled Text Segments
