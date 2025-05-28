@@ -1,3 +1,28 @@
+/**
+ * Registers boolean operation tools on the MCP server for Figma node manipulation.
+ * 
+ * This function adds a unified boolean operation tool that supports union, subtract, 
+ * intersect, and exclude operations on vector nodes in Figma. The tool validates 
+ * input parameters, executes the corresponding Figma API commands, and returns 
+ * structured results with success/error information.
+ * 
+ * @param {McpServer} server - The MCP server instance to register the boolean tools on
+ * @param {FigmaClient} figmaClient - The Figma client instance used to communicate with the Figma API
+ * 
+ * @returns {void} This function has no return value but registers the tools asynchronously
+ * 
+ * @throws {Error} Throws an error if the server or figmaClient parameters are invalid
+ * 
+ * @example
+ * ```
+ * const server = new McpServer();
+ * const figmaClient = new FigmaClient(apiKey);
+ * registerBooleanTools(server, figmaClient);
+ * ```
+ * 
+ * @since 1.0.0
+ * @see {@link https://www.figma.com/developers/api#boolean-operations} Figma Boolean Operations API
+ */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { FigmaClient } from "../../../clients/figma-client.js";
 import { BooleanSchema } from "./schema/boolean-schema.js";
