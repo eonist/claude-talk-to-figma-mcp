@@ -2,8 +2,11 @@ import { randomColor } from "../helper.js";
 import { channel, runStep, ws } from "../test-runner.js";
 
 /**
- * Create a frame and return its ID
- * @param {string} [parentId] - Optional parent frame ID
+ * Creates a frame container for effect demonstrations with random styling.
+ * @param {string} [parentId] - Optional parent frame ID for hierarchical organization
+ * @returns {Promise<string|null>} The created frame ID, or null if creation failed
+ * @example
+ * const frameId = await createFrame('container123');
  */
 async function createFrame(parentId) {
   const params = {
@@ -24,7 +27,15 @@ async function createFrame(parentId) {
   return res?.response?.ids?.[0];
 }
 
-// Apply autolayout to a frame
+/**
+ * Applies horizontal auto-layout to a frame with wrapping and consistent spacing.
+ * Optimizes layout for effect demonstration with proper padding and gaps.
+ * @param {string} frameId - The frame ID to apply auto-layout to
+ * @returns {Promise} Test result object
+ * @example
+ * await applyAutolayout('frame123');
+ * // Frame now has horizontal flow with 20px spacing
+ */
 async function applyAutolayout(frameId) {
   const params = {
     layout: {
@@ -50,7 +61,15 @@ async function applyAutolayout(frameId) {
   });
 }
 
-// Create a rectangle of a given color and return its ID
+/**
+ * Creates a rectangle with specified styling for effect testing.
+ * @param {string} frameId - Parent frame ID for containment
+ * @param {string} name - Display name for the rectangle
+ * @param {{r: number, g: number, b: number, a: number}} fillColor - Rectangle fill color
+ * @returns {Promise<string|null>} The created rectangle ID, or null if creation failed
+ * @example
+ * const rectId = await createRect('frame123', 'TestRect', { r: 1, g: 0, b: 0, a: 1 });
+ */
 async function createRect(frameId, name, fillColor) {
   const params = {
     x: 0, y: 0,
@@ -71,7 +90,22 @@ async function createRect(frameId, name, fillColor) {
   return res?.response?.ids?.[0];
 }
 
-// Apply a single effect to a node
+/**
+ * Applies visual effects to a node (drop shadow, inner shadow, background blur, etc.).
+ * @param {string} nodeId - Target node ID to apply effects to
+ * @param {Array} effects - Array of effect configurations
+ * @param {string} label - Descriptive label for the operation
+ * @returns {Promise<void>}
+ * @throws {Error} When effect application fails or node is invalid
+ * @example
+ * await applyEffect('rect123', [{
+ *   type: "DROP_SHADOW",
+ *   color: { r: 0, g: 0, b: 0, a: 1 },
+ *   offset: { x: 0, y: 2 },
+ *   radius: 4,
+ *   visible: true
+ * }], "Apply drop shadow");
+ */
 async function applyEffect(nodeId, effects, label) {
   await runStep({
     ws, channel,
@@ -85,9 +119,14 @@ async function applyEffect(nodeId, effects, label) {
   });
 }
 
-// --- Rectangle + Effect Functions ---
-
-// Red rectangle with drop shadow
+/**
+ * Creates a red rectangle with drop shadow effect for demonstration.
+ * @param {string} frameId - Parent frame ID for the rectangle
+ * @returns {Promise<void>}
+ * @example
+ * await addRedRectWithDropShadow('frame123');
+ * // Creates red rectangle with subtle drop shadow
+ */
 async function addRedRectWithDropShadow(frameId) {
   const red = { r: 1, g: 0, b: 0, a: 1 };
   const rectId = await createRect(frameId, "RedRect", red);
@@ -107,7 +146,15 @@ async function addRedRectWithDropShadow(frameId) {
   ], "Apply drop shadow to RedRect");
 }
 
-// Green rectangle with inner shadow
+/**
+ * Creates a green rectangle with inner shadow effect using style variables.
+ * Demonstrates advanced effect styling with reusable style definitions.
+ * @param {string} frameId - Parent frame ID for the rectangle
+ * @returns {Promise<void>}
+ * @example
+ * await addGreenRectWithInnerShadow('frame123');
+ * // Creates green rectangle with inner shadow style
+ */
 async function addGreenRectWithInnerShadow(frameId) {
   const green = { r: 0, g: 1, b: 0, a: 1 };
   const rectId = await createRect(frameId, "GreenRect", green);
@@ -163,7 +210,14 @@ async function addGreenRectWithInnerShadow(frameId) {
 
 }
 
-// Blue rectangle with background blur
+/**
+ * Creates a blue rectangle with background blur effect.
+ * @param {string} frameId - Parent frame ID for the rectangle
+ * @returns {Promise<void>}
+ * @example
+ * await addBlueRectWithBackgroundBlur('frame123');
+ * // Creates blue rectangle with 6px background blur
+ */
 async function addBlueRectWithBackgroundBlur(frameId) {
   const blue = { r: 0, g: 0, b: 1, a: 1 };
   const rectId = await createRect(frameId, "BlueRect", blue);
@@ -182,9 +236,14 @@ async function addBlueRectWithBackgroundBlur(frameId) {
 // --- Main Entrypoint ---
 
 /**
- * Main Entrypoint
- * @param {Array} results
- * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ * Main entry point for effect scene demonstration.
+ * Creates multiple rectangles showcasing different visual effects.
+ * @param {Array} results - Array to collect test results
+ * @param {string} [parentFrameId] - Optional parent frame ID for scene organization
+ * @example
+ * const results = [];
+ * await effectScene(results, 'container123');
+ * console.log('Effect demonstrations completed');
  */
 export async function effectScene(results, parentFrameId) {
   const frameId = await createFrame(parentFrameId);

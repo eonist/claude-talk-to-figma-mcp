@@ -1,9 +1,13 @@
 import { channel, runStep, ws } from "../test-runner.js";
 
 /**
- * Helper to apply autolayout to a frame with horizontal flow, wrapping, and specific gaps and padding.
- * Mirrors svg-scene.js.
- * @param {string} frameId
+ * Applies horizontal auto-layout to a frame with wrapping and image-optimized spacing.
+ * Configures layout specifically for image gallery arrangements.
+ * @param {string} frameId - The frame ID to apply auto-layout to
+ * @returns {Promise} Test result object
+ * @example
+ * await apply_autolayout('frame123');
+ * // Frame configured for horizontal image flow with wrapping
  */
 async function apply_autolayout(frameId) {
   const params = {
@@ -36,11 +40,13 @@ async function apply_autolayout(frameId) {
 }
 
 /**
- * Helper to create a frame for images and immediately apply autolayout.
- * @param {number} y - Y position for the frame (if parentId is not provided)
- * @param {string} name - Frame name
- * @param {string} [parentId] - Optional parent frame ID
- * @returns {Promise<string>} frameId
+ * Creates a frame container optimized for image display with auto-layout.
+ * @param {number} y - Y position for the frame (when parentId not provided)
+ * @param {string} name - Display name for the frame
+ * @param {string} [parentId] - Optional parent frame ID for hierarchical organization
+ * @returns {Promise<string>} The created frame ID
+ * @example
+ * const frameId = await create_image_frame(100, "Gallery Frame", 'container123');
  */
 async function create_image_frame(y, name, parentId) {
   let params;
@@ -84,10 +90,13 @@ async function create_image_frame(y, name, parentId) {
 }
 
 /**
- * Helper to fetch an image from a URL and return a base64 data URL.
- * Figma plugin cannot use direct URLs.
- * @param {string} url
- * @returns {Promise<string>} base64 data URL
+ * Fetches an image from a remote URL and converts it to base64 data URL.
+ * Handles various image formats and maintains proper MIME type information.
+ * @param {string} url - The image URL to fetch
+ * @returns {Promise<string>} Base64 data URL string (data:image/type;base64,...)
+ * @throws {Error} When fetch fails, URL is invalid, or image cannot be processed
+ * @example
+ * const base64Data = await fetch_image_base64('https://example.com/image.jpg');
  */
 async function fetch_image_base64(url) {
   const res = await fetch(url);
@@ -105,12 +114,20 @@ async function fetch_image_base64(url) {
 }
 
 /**
- * Helper to create an image node from base64 data and resize to fit 50x50 (maintain aspect).
- * @param {string} parentId
- * @param {string} base64Data
- * @param {string} name
- * @param {number} targetSize
- * @returns {Promise<string>} nodeId
+ * Creates an image node from base64 data with automatic aspect-ratio-preserving resize.
+ * Maintains image quality while fitting within specified dimensions.
+ * @param {string} parentId - Parent frame ID to contain the image
+ * @param {string} base64Data - Base64 encoded image data with MIME type prefix
+ * @param {string} name - Display name for the image node
+ * @param {number} [targetSize=50] - Target size in pixels for the longest dimension
+ * @returns {Promise<string|null>} The created image node ID, or null if creation failed
+ * @example
+ * const imageId = await create_image_from_base64(
+ *   'frame123',
+ *   'data:image/jpeg;base64,/9j/4AAQ...',
+ *   'Profile Photo',
+ *   100
+ * );
  */
 async function create_image_from_base64(parentId, base64Data, name, targetSize = 50) {
   // Insert image node
@@ -276,10 +293,15 @@ export async function create_img4(frameId) {
 }
 
 /**
- * Main test function for Image scene.
- * @param {Array} results
- * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ * Main entry point for image scene demonstration.
+ * Creates a gallery of test images from various remote sources.
+ * @param {Array} results - Array to collect test results
+ * @param {string} [parentFrameId] - Optional parent frame ID for scene organization
  * Comment out any calls below to toggle creation of individual images for debugging.
+ * @example
+ * const results = [];
+ * await imageScene(results, 'container123');
+ * console.log('Image gallery created successfully');
  */
 export async function imageScene(results, parentFrameId) {
   const frameId = await create_image_frame(100, "Image Frame", parentFrameId);

@@ -2,8 +2,28 @@ import { ws, channel, assertEchoedCommand, runStep } from "../test-runner.js";
 import { randomFontSize, randomFontWeight, randomColor } from "../helper.js";
 
 /**
- * Helper to create a single-line text node in Figma for text tests.
- * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any, nodeId?:string}>} Test result object.
+ * Creates a text node with specified content, styling, and positioning.
+ * Supports rich typography options including font family, size, weight, and color.
+ * @param {Object} config - Text configuration object
+ * @param {string} config.content - Text content to display
+ * @param {string} config.fontFamily - CSS font family name (e.g., "Arial", "Helvetica")
+ * @param {number} config.fontSize - Font size in pixels
+ * @param {number} config.fontWeight - CSS font weight (100-900)
+ * @param {{r: number, g: number, b: number, a: number}} config.fillColor - Text color as RGBA object
+ * @param {number} config.x - X coordinate position
+ * @param {number} config.y - Y coordinate position
+ * @param {string} [config.parentId] - Optional parent frame ID for containment
+ * @returns {Promise} Test result with text creation status
+ * @example
+ * const textResult = await createText({
+ *   content: "Hello World",
+ *   fontFamily: "Inter",
+ *   fontSize: 24,
+ *   fontWeight: 600,
+ *   fillColor: { r: 0, g: 0, b: 0, a: 1 },
+ *   x: 50, y: 100,
+ *   parentId: frameId
+ * });
  */
 async function create_text(frameId) {
   const params = {
@@ -45,7 +65,7 @@ async function create_text(frameId) {
 }
 
 /**
- * Helper to create a multi-line text area in Figma for text tests.
+ * Creates a multi-line text area in Figma for text tests.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any, nodeId?:string}>} Test result object.
  */
 async function create_text_area(frameId) {
@@ -98,7 +118,7 @@ async function create_text_area(frameId) {
 }
 
 /**
- * Helper to create a heading text node in Figma for text tests.
+ * Creates a heading text node in Figma for text tests.
  * @param {string} frameId - The frame ID to place the heading inside.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any, nodeId?:string}>} Test result object.
  */
@@ -136,7 +156,7 @@ async function create_heading(frameId) {
 }
 
 /**
- * Helper to create a text block in Figma for text tests.
+ * Creates a text block in Figma for text tests.
  * @param {string} frameId - The frame ID to place the text block inside.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any, nodeId?:string}>} Test result object.
  */
@@ -163,7 +183,7 @@ async function create_text_block(frameId) {
 }
 
 /**
- * Helper to create a hero title text node in Figma for text tests.
+ * Creates a hero title text node in Figma for text tests.
  * @param {string} frameId - The frame ID to place the hero title inside.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any, nodeId?:string}>} Test result object.
  */
@@ -201,7 +221,7 @@ async function create_hero_title(frameId) {
 }
 
 /**
- * Helper to create a frame in Figma for text tests.
+ * Creates a frame in Figma for text tests.
  * @param {object} opts - Optional overrides for frame params.
  * @returns {Promise<{label:string, pass:boolean, reason?:string, response:any, frameId?:string}>}
  */
@@ -225,11 +245,13 @@ async function create_frame(opts = {}) {
 }
 
 /**
- * Helper to apply vertical or horizontal autolayout to a frame.
- * @param {string} frameId
- * @param {"VERTICAL"|"HORIZONTAL"} mode
- * @param {number} gap
- * @param {number} padding
+ * Applies auto-layout configuration to a frame for organized text arrangement.
+ * Sets up vertical flow with consistent spacing and padding for optimal text readability.
+ * @param {string} frameId - The frame ID to apply auto-layout to
+ * @returns {Promise} Auto-layout application result
+ * @example
+ * const layoutResult = await applyTextLayout('frame123');
+ * if (layoutResult.pass) console.log('Text layout applied successfully');
  */
 async function apply_auto_layout(frameId, mode, gap, padding) {
   const params = {
@@ -255,10 +277,14 @@ async function apply_auto_layout(frameId, mode, gap, padding) {
 }
 
 /**
- * Text scene: creates a nested auto layout structure for text nodes.
- * @param {Array} results - Collector array for test step results.
- * @param {string} [parentFrameId] - Optional parent frame ID for the scene
- * @returns {Promise<void>}
+ * Main entry point for text scene demonstration.
+ * Creates a variety of text samples showcasing different typography styles and arrangements.
+ * @param {Array} results - Array to collect test results
+ * @param {string} [parentFrameId] - Optional parent frame ID for scene organization
+ * @example
+ * const results = [];
+ * await textScene(results, 'container123');
+ * console.log(`Created ${results.filter(r => r.pass).length} text elements`);
  */
 export async function textScene(results, parentFrameId) {
   // Create 5 text nodes, store their nodeIds

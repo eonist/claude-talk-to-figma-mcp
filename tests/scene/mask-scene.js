@@ -1,5 +1,13 @@
 import { runStep, ws, channel } from '../test-runner.js';
 
+/**
+ * Creates a rectangle shape for masking operations with predefined styling.
+ * @param {string} [parentId] - Optional parent frame ID for containment
+ * @returns {Promise<string|null>} The created rectangle ID, or null if creation failed
+ * @example
+ * const rectId = await createRectangle('frame123');
+ * // Creates a green 100x100 rectangle at origin
+ */
 async function createRectangle(parentId) {
   const params = {
     x: 0,
@@ -21,6 +29,14 @@ async function createRectangle(parentId) {
   return response.response?.ids?.[0];
 }
 
+/**
+ * Creates an ellipse shape for masking operations with predefined styling.
+ * @param {string} [parentId] - Optional parent frame ID for containment  
+ * @returns {Promise<string|null>} The created ellipse ID, or null if creation failed
+ * @example
+ * const ellipseId = await createEllipse('frame123');
+ * // Creates a red 100x100 ellipse at origin
+ */
 async function createEllipse(parentId) {
   const params = {
     x: 0,
@@ -42,6 +58,16 @@ async function createEllipse(parentId) {
   return response.response?.ids?.[0];
 }
 
+/**
+ * Applies a mask operation using one shape to clip another shape.
+ * The mask node defines the visible area of the target node.
+ * @param {string} rectId - ID of the target node to be masked
+ * @param {string} ellipseId - ID of the mask node that defines the clipping area
+ * @throws {Error} When mask operation fails or nodes are invalid
+ * @example
+ * await setMask('rect123', 'ellipse456');
+ * // Rectangle will only be visible within the ellipse boundaries
+ */
 async function setMask(rectId, ellipseId) {
   // Command to apply the mask using the given IDs
   await runStep({
@@ -61,9 +87,14 @@ async function setMask(rectId, ellipseId) {
 }
 
 /**
- * Main mask scene test.
- * @param {Array} results
- * @param {string} [parentFrameId] - Optional parent frame ID for the scene
+ * Main entry point for mask scene testing.
+ * Creates overlapping shapes and demonstrates masking functionality.
+ * @param {Array} results - Array to collect test results
+ * @param {string} [parentFrameId] - Optional parent frame ID for scene organization
+ * @example
+ * const results = [];
+ * await maskScene(results, 'container123');
+ * console.log('Mask operations completed');
  */
 export async function maskScene(results, parentFrameId) {
   try {
