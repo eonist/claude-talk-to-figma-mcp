@@ -161,66 +161,48 @@ export async function maskScene(results, parentFrameId) {
     // --- Wait for mask operation to complete ---
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // --- Ensure mask group is direct child of container ---
+    // --- Ensure mask group is inside the container frame ---
     let groupId = null;
     if (containerId) {
-      // First, check if group is a child of the container
-      const nodeInfoRes = await runStep({
+      // Find the group at the page root (after setMask)
+      const docInfoRes = await runStep({
         ws,
         channel,
-        command: "get_node_info",
-        params: { nodeId: containerId },
-        assert: (response) => response && response.id === containerId,
-        label: "get_mask_scene_container_info"
+        command: "get_document_info",
+        params: {},
+        assert: (response) => response && response.id,
+        label: "get_document_info_for_mask_group"
       });
-      const children = nodeInfoRes.response?.document?.children || [];
-      groupId = children.find(child =>
+      const allNodes = docInfoRes.response?.document?.children || [];
+      // Find a GROUP node that is not ellipse/rect
+      const candidateGroups = allNodes.filter(child =>
         child.type === "GROUP" &&
         child.id !== ellipseId &&
         child.id !== rectId
-      )?.id;
-
-      if (!groupId) {
-        // If not found, search the document root for a new GROUP node
-        const docInfoRes = await runStep({
+      );
+      if (candidateGroups.length > 0) {
+        groupId = candidateGroups[0].id;
+        // 1. Ungroup the group (promotes children to page root)
+        await runStep({
           ws,
           channel,
-          command: "get_document_info",
-          params: {},
-          assert: (response) => response && response.id,
-          label: "get_document_info_for_mask_group"
+          command: "group_node",
+          params: { group: false, nodeId: groupId },
+          assert: () => true,
+          label: "ungroup_mask_group"
         });
-        const allNodes = docInfoRes.response?.document?.children || [];
-        // Find a GROUP node that is not in the container and not ellipse/rect
-        const candidateGroups = allNodes.filter(child =>
-          child.type === "GROUP" &&
-          child.id !== ellipseId &&
-          child.id !== rectId
-        );
-        // If multiple, pick the one with children matching ellipse/rect (or just the first)
-        if (candidateGroups.length > 0) {
-          groupId = candidateGroups[0].id;
-          // Move the group into the container
-          await runStep({
-            ws,
-            channel,
-            command: "move_node",
-            params: { nodeId: groupId, x: padding, y: padding },
-            assert: () => true,
-            label: "move_mask_group_to_container"
-          });
-          // Set parent to container
-          await runStep({
-            ws,
-            channel,
-            command: "set_node",
-            params: { parentId: containerId, childId: groupId },
-            assert: () => true,
-            label: "set_mask_group_parent"
-          });
-        } else {
-          console.warn("Mask group not found anywhere in document after masking.");
-        }
+        // 2. Group the two nodes inside the container frame
+        await runStep({
+          ws,
+          channel,
+          command: "group_node",
+          params: { group: true, nodeIds: [rectId, ellipseId], name: "MaskedGroup" },
+          assert: () => true,
+          label: "regroup_mask_nodes_in_container"
+        });
+        // Optionally, move the new group to (padding, padding) if needed
+      } else {
+        console.warn("Mask group not found anywhere in document after masking.");
       }
     }
 
