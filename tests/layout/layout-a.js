@@ -119,11 +119,34 @@ async function create_green_rounded_rectangle(parentId) {
   const frameId = convertResult.response?.id;
   if (!frameId) return { ...rectResult, effectResult, convertResult };
 
+  // 4. Apply auto layout to the frame
+  const autoLayoutParams = {
+    layout: {
+      nodeId: frameId,
+      mode: "HORIZONTAL",
+      layoutWrap: "WRAP",
+      paddingLeft: 15,
+      paddingRight: 15,
+      paddingTop: 15,
+      paddingBottom: 15,
+      primaryAxisSizing: "FIXED",
+      counterAxisSizing: "FIXED"
+    }
+  };
+  const autoLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: autoLayoutParams,
+    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === frameId,
+    label: "Set auto layout on NeonGreenFrame"
+  });
+
   // Return all results for reporting
   return {
     ...rectResult,
     effectResult,
-    convertResult
+    convertResult,
+    autoLayoutResult
   };
 }
 
