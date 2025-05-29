@@ -236,13 +236,24 @@ async function create_header(parentId) {
   // 6. Create the "USD" capsule
   const usdCapsuleResult = await create_header_usd_capsule(headerId);
 
-  // 7. Create the growth metrics section below the header
-  const growthSectionResult = await create_growth_metrics_section(parentId);
-
-  // 8. Create the "+38%" percentage text inside the growth section
-  const growthPercentResult = growthSectionResult.sectionId
-    ? await create_growth_percentage_text(growthSectionResult.sectionId)
-    : null;
+//  // 7. Create the growth metrics section below the header
+//  const growthSectionResult = await create_growth_metrics_section(parentId);
+//
+//  // 8. Create the "+38%" percentage text inside the growth section
+//  const growthPercentResult = growthSectionResult.sectionId
+//    ? await create_growth_percentage_text(growthSectionResult.sectionId)
+//    : null;
+//
+//  // 9. Create the subtitle frame below the percentage text
+//  let subtitleResult = null, growthTextResult = null, arrowTextResult = null;
+//  if (growthSectionResult.sectionId) {
+//    subtitleResult = await create_subtitle_frame(growthSectionResult.sectionId);
+//    if (subtitleResult.subtitleId) {
+//      // 10. Create the growth text and arrow inside the subtitle frame
+//      growthTextResult = await create_growth_text(subtitleResult.subtitleId);
+//      arrowTextResult = await create_upward_arrow_text(subtitleResult.subtitleId);
+//    }
+//  }
 
   // Return all results for reporting
   return {
@@ -252,9 +263,135 @@ async function create_header(parentId) {
     cashTextResult,
     amountTextResult,
     usdCapsuleResult,
-    growthSectionResult,
-    growthPercentResult
+    //growthSectionResult,
+    //growthPercentResult,
+    //subtitleResult,
+    //growthTextResult,
+    //arrowTextResult
   };
+}
+
+/**
+ * Creates the subtitle frame below the percentage text.
+ * @param {string} parentId - The growth metrics section frame ID
+ * @returns {Promise<{subtitleId: string}|object>} Test result with subtitle frame creation status
+ */
+async function create_subtitle_frame(parentId) {
+  console.log("💥 create_subtitle_frame called with parentId:", parentId);
+  // 1. Create the subtitle frame
+  const params = {
+    x: 0, y: 0,
+    name: "sub_title",
+    parentId
+  };
+  const subtitleResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_subtitle_frame"
+  });
+  const subtitleId = subtitleResult.response?.ids?.[0];
+  console.log("Created subtitle frame with ID:", subtitleId, "Result:", subtitleResult);
+  if (!subtitleId) return subtitleResult;
+
+  // 2. Set horizontal auto layout, gap 4px, HUG both axes
+  const subtitleLayoutParams = {
+    layout: {
+      nodeId: subtitleId,
+      mode: "HORIZONTAL",
+      layoutWrap: "NO_WRAP",
+      itemSpacing: 4,
+      primaryAxisSizing: "AUTO",
+      counterAxisSizing: "AUTO"
+    }
+  };
+  const subtitleLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: subtitleLayoutParams,
+    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === subtitleId,
+    label: "Set auto layout on subtitle frame"
+  });
+
+  return {
+    ...subtitleResult,
+    subtitleId,
+    subtitleLayoutResult
+  };
+}
+
+/**
+ * Creates the "Growth since last day" text node in the subtitle frame.
+ * @param {string} parentId - The subtitle frame ID
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_growth_text(parentId) {
+  console.log("💥 create_growth_text called with parentId:", parentId);
+  // 1. Create the text node
+  const params = {
+    x: 0, y: 0,
+    text: "Growth since last day",
+    fontSize: 8,
+    fontWeight: 400,
+    fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
+    parentId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_growth_text"
+  });
+  const textId = textResult.response?.id;
+  console.log("Created growth text with ID:", textId, "Result:", textResult);
+  if (!textId) return textResult;
+
+  // No need to set auto layout resizing: HUG is default for text nodes
+
+  return textResult;
+}
+
+/**
+ * Creates the up-right arrow text node in the subtitle frame.
+ * @param {string} parentId - The subtitle frame ID
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_upward_arrow_text(parentId) {
+  console.log("💥 create_upward_arrow_text called with parentId:", parentId);
+  // 1. Create the text node
+  const params = {
+    x: 0, y: 0,
+    text: "↗",
+    fontSize: 8,
+    fontWeight: 400,
+    fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
+    parentId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_upward_arrow_text"
+  });
+  const textId = textResult.response?.id;
+  console.log("Created upward arrow text with ID:", textId, "Result:", textResult);
+  if (!textId) return textResult;
+
+  // No need to set auto layout resizing: HUG is default for text nodes
+
+  return textResult;
 }
 
 /**
