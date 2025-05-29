@@ -172,6 +172,7 @@ async function create_green_rounded_rectangle(parentId) {
  * @returns {Promise} Test result with header creation status
  */
 async function create_header(parentId) {
+  console.log("💥 create_header called with parentId:", parentId);
   // 1. Create the header frame
   const params = {
     x: 0, y: 0,
@@ -192,7 +193,7 @@ async function create_header(parentId) {
     label: "create_header"
   });
   const headerId = headerResult.response?.ids?.[0];
-  console.log("Created header frame with ID:", headerId, "Result:", headerResult);
+  console.log("💥 Created header frame with ID:", headerId, "Result:", headerResult);
   if (!headerId) return headerResult;
 
   // No need to move or insert header; parentId is set at creation
@@ -244,6 +245,7 @@ async function create_header(parentId) {
  * @returns {Promise} Test result with text creation status
  */
 async function create_header_cash_text(parentId) {
+  console.log("💥 create_header_cash_text called with parentId:", parentId);
   // 1. Create the text node
   const params = {
     x: 0, y: 0,
@@ -263,10 +265,12 @@ async function create_header_cash_text(parentId) {
     }),
     label: "create_header_cash_text"
   });
-  const textId = textResult.response?.ids?.[0];
+  const textId = textResult.response?.id;
+  console.log("Created cash text with ID:", textId, "Result:", textResult);
   if (!textId) return textResult;
 
   // 2. Set auto layout resizing: fill horizontally
+  console.log("💥 About to call set_auto_layout_resizing for cash text. NodeId:", textId);
   const resizingResult = await runStep({
     ws, channel,
     command: "set_auto_layout_resizing",
@@ -278,7 +282,7 @@ async function create_header_cash_text(parentId) {
     assert: r => r && r.nodeId === textId,
     label: "Set cash text to fill header"
   });
-  console.log("Set_auto_layout_resizing for cash text. NodeId:", textId, "Result:", resizingResult);
+  console.log("💥 Set_auto_layout_resizing for cash text. NodeId:", textId, "Result:", resizingResult);
 
   return {
     ...textResult,
