@@ -380,17 +380,31 @@ export async function setAutoLayoutResizing(params) {
    */
   function setAlignBehavior(node, mode) {
     if (!("layoutAlign" in node)) return;
-    
-    console.log(`🔧 Setting align behavior: ${mode}`);
-    
-    switch (mode) {
-      case "FILL":
-        node.layoutAlign = "STRETCH";
-        break;
-      case "HUG":
-      case "FIXED":
-        node.layoutAlign = "INHERIT";
-        break;
+
+    console.log(`🔧 [setAlignBehavior] Node: ${node.name} (${node.id}) - Current width: ${node.width}, layoutAlign: ${node.layoutAlign}, mode: ${mode}`);
+
+    if (mode === "FILL") {
+      // If parent is vertical, clear width so STRETCH can work
+      if (
+        node.parent &&
+        "layoutMode" in node.parent &&
+        node.parent.layoutMode === "VERTICAL" &&
+        typeof node.width === "number"
+      ) {
+        try {
+          node.resize(undefined, node.height);
+          console.log(`✅ [setAlignBehavior] Cleared width for node ${node.name} (${node.id}) to enable STRETCH in vertical parent`);
+        } catch (e) {
+          console.log(`❌ [setAlignBehavior] Failed to clear width for node ${node.name} (${node.id}):`, e);
+        }
+      }
+      node.layoutAlign = "STRETCH";
+      console.log(`✅ [setAlignBehavior] Set layoutAlign to "STRETCH" for node ${node.name} (${node.id})`);
+    } else if (mode === "HUG" || mode === "FIXED") {
+      node.layoutAlign = "INHERIT";
+      console.log(`✅ [setAlignBehavior] Set layoutAlign to "INHERIT" for node ${node.name} (${node.id})`);
+    } else {
+      console.log(`❌ [setAlignBehavior] Did NOT set layoutAlign to "STRETCH" for node ${node.name} (${node.id}) - mode: ${mode}`);
     }
   }
 
