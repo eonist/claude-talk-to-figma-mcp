@@ -176,7 +176,7 @@ async function create_header(parentId) {
   // 1. Create the header frame
   const params = {
     x: 0, y: 0,
-    width: 100, // will be stretched to fill parent
+    // width: 100, // remove width for FILL
     height: 32,
     name: "Header",
     fillColor: { r: 1, g: 1, b: 1, a: 0 }, // gray
