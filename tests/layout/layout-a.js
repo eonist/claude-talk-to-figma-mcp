@@ -164,11 +164,11 @@ async function create_header(parentId) {
   // 1. Create the header frame
   const params = {
     x: 0, y: 0,
-    width: 10, // will be stretched to fill parent
+    width: 100, // will be stretched to fill parent
     height: 32,
     name: "Header",
-    fillColor: { r: 0.5, g: 0.5, b: 0.5, a: 1 }, // gray
-    parentId
+    fillColor: { r: 0.5, g: 0.5, b: 0.5, a: 1 } // gray
+    // Do not set parentId here; we'll insert after creation
   };
   const headerResult = await runStep({
     ws, channel,
@@ -183,40 +183,54 @@ async function create_header(parentId) {
   const headerId = headerResult.response?.ids?.[0];
   if (!headerId) return headerResult;
 
-  // 2. Set auto layout on the header: horizontal, no wrap
-  const autoLayoutParams = {
-    layout: {
-      nodeId: headerId,
-      mode: "HORIZONTAL",
-      layoutWrap: "NO_WRAP"
-    }
-  };
-  const autoLayoutResult = await runStep({
+  // Insert header into parent frame
+  const insertResult = await runStep({
     ws, channel,
-    command: "set_auto_layout",
-    params: autoLayoutParams,
-    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === headerId,
-    label: "Set auto layout on header"
+    command: "set_node",
+    params: {
+      parentId,
+      childId: headerId
+    },
+    assert: r => r && r.parentId === parentId && r.childId === headerId,
+    label: "Insert header into green frame"
   });
 
+  // 2. Set auto layout on the header: horizontal, no wrap
+  // const autoLayoutParams = {
+  //   layout: {
+  //     nodeId: headerId,
+  //     mode: "HORIZONTAL",
+  //     layoutWrap: "NO_WRAP",
+  //     primaryAxisSizing: "AUTO",
+  //     counterAxisSizing: "FIXED"
+  //   }
+  // };
+  // const autoLayoutResult = await runStep({
+  //   ws, channel,
+  //   command: "set_auto_layout",
+  //   params: autoLayoutParams,
+  //   assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === headerId,
+  //   label: "Set auto layout on header"
+  // });
+
   // 3. Set auto layout resizing: fill horizontally, fixed vertically
-  const resizingResult = await runStep({
-    ws, channel,
-    command: "set_auto_layout_resizing",
-    params: {
-      nodeId: headerId,
-      axis: "horizontal",
-      mode: "FILL"
-    },
-    assert: r => r && r.nodeId === headerId,
-    label: "Set header to fill parent width"
-  });
+  // const resizingResult = await runStep({
+  //   ws, channel,
+  //   command: "set_auto_layout_resizing",
+  //   params: {
+  //     nodeId: headerId,
+  //     axis: "horizontal",
+  //     mode: "FILL"
+  //   },
+  //   assert: r => r && r.nodeId === headerId,
+  //   label: "Set header to fill parent width"
+  // });
 
   // Return all results for reporting
   return {
     ...headerResult,
-    autoLayoutResult,
-    resizingResult
+    //autoLayoutResult,
+    //resizingResult
   };
 }
 
@@ -239,9 +253,9 @@ export async function layoutATest(results, parentFrameId) {
   }
 
   // 3. Create the green rounded rectangle inside the frame
-  // const rectResult = await create_green_rounded_rectangle(frameId);
-  // results.push(rectResult);
-
-  const headerResult = await create_header(frameId);
+  const rectResult = await create_green_rounded_rectangle(frameId);
   results.push(rectResult);
+
+  // const headerResult = await create_header(frameId);
+  // results.push(headerResult);
 }

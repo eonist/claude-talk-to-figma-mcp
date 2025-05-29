@@ -129,7 +129,7 @@ export async function setAutoLayout(params) {
  * @throws {Error} If parameters are missing/invalid, or node does not support auto layout.
  */
 export async function setAutoLayoutUnified(params) {
-  console.log("[setAutoLayoutUnified] called with params:", JSON.stringify(params, null, 2));
+  console.log("💥 [setAutoLayoutUnified] called with params:", JSON.stringify(params, null, 2));
   const { layout, layouts, options } = params || {};
   const configs = [];
   if (layout) configs.push(layout);
@@ -230,7 +230,7 @@ export async function setAutoLayoutUnified(params) {
   }
   return results;
 }
-
+// fixme add doc
 export async function setAutoLayoutResizing(params) {
   const { nodeId, axis, mode } = params || {};
   if (!nodeId) throw new Error("Missing nodeId parameter");
