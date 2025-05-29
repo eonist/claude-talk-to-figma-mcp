@@ -284,6 +284,7 @@ async function create_subtitle_frame(parentId) {
   const params = {
     x: 0, y: 0,
     name: "sub_title",
+    fillColor: { r: 1, g: 1, b: 1, a: 0 }, // gray
     parentId
   };
   const subtitleResult = await runStep({
@@ -407,9 +408,9 @@ async function create_growth_metrics_section(parentId) {
   const params = {
     x: 0, y: 0,
     // width: 10, // remove width for HUG
-    height: 10, // HUG
+    height: 0, // HUG
     name: "Growth Metrics Section",
-    fillColor: { r: 0.7, g: 0.7, b: 0.7, a: 1 }, // gray for debug
+    fillColor: { r: 0.7, g: 0.7, b: 0.7, a: 0 }, // gray for debug
     parentId
   };
   const sectionResult = await runStep({
