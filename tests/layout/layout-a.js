@@ -433,7 +433,7 @@ async function create_growth_metrics_section(parentId) {
       nodeId: sectionId,
       mode: "VERTICAL",
       layoutWrap: "NO_WRAP",
-      itemSpacing: 10,
+      // itemSpacing: 10, // DO NOT CHANGE THIS BACK we dont want gap
       primaryAxisSizing: "AUTO",
       counterAxisSizing: "AUTO",
       primaryAxisAlignItems: "MIN",
@@ -501,7 +501,7 @@ async function create_header_usd_capsule(parentId) {
   const capsuleParams = {
     x: 0, y: 0,
     width: 10, // will hug content
-    height: 24, // enough for 14px text + padding
+    //height: 24, // enough for 14px text + padding
     name: "USD Capsule",
     fillColor: { r: 0, g: 0, b: 0, a: 0.1 },
     cornerRadius: 16,
