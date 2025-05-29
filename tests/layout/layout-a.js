@@ -82,7 +82,7 @@ async function create_green_rounded_rectangle(parentId) {
     label: `create_green_rounded_rectangle (${params.name})`
   });
   const rectId = rectResult.response?.ids?.[0];
-  console.log("Created rectangle with ID:", rectId, "Result:", rectResult);
+  console.log(" 💥 Created rectangle with ID:", rectId, "Result:", rectResult);
   if (!rectId) return rectResult;
 
   // 2. Apply drop shadow effect to the rectangle
@@ -108,23 +108,26 @@ async function create_green_rounded_rectangle(parentId) {
     assert: r => r && r.nodeId === rectId,
     label: "Apply drop shadow to NeonGreenRectangle"
   });
-  console.log("Applied drop shadow to rectangle. Result:", effectResult);
+  console.log("💥 Applied drop shadow to rectangle. Result:", effectResult);
 
   // 3. Convert rectangle to frame (should copy effects)
   const convertResult = await runStep({
     ws, channel,
     command: "convert_rectangle_to_frame",
     params: { nodeId: rectId },
-    assert: r => r && r.frameId,
+    assert: r => r && r.id,
     label: "Convert rectangle to frame"
   });
-  console.log("Convert rectangle to frame result (full):", JSON.stringify(convertResult, null, 2));
+  console.log("💥 Convert rectangle to frame result (full):", JSON.stringify(convertResult, null, 2));
+  console.log("💥 convertResult.respons", convertResult.reason);
+  console.log("💥 convertResult", convertResult);
   const frameId = convertResult.response?.id;
+  console.log("💥 Converted rectangle to frame. New frame ID:", frameId);
   if (!frameId) {
-    console.error("convert_rectangle_to_frame failed. Response:", convertResult);
+    console.error("🚫 convert_rectangle_to_frame failed. Response:", convertResult);
     return { ...rectResult, effectResult, convertResult };
   }
-
+ 
   // 4. Apply auto layout to the frame
   const autoLayoutParams = {
     layout: {
@@ -146,11 +149,11 @@ async function create_green_rounded_rectangle(parentId) {
     assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === frameId,
     label: "Set auto layout on NeonGreenFrame"
   });
-  console.log("Set auto layout on green frame. Result:", autoLayoutResult);
+  console.log("💥 Set auto layout on green frame. Result:", autoLayoutResult);
 
   // 5. Create header inside the green frame
   const headerResult = await create_header(frameId);
-  console.log("Header creation result:", headerResult);
+  console.log("💥 Header creation result:", headerResult);
 
   // Return all results for reporting
   return {
