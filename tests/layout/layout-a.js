@@ -155,13 +155,39 @@ async function create_green_rounded_rectangle(parentId) {
   const headerResult = await create_header(frameId);
   console.log("💥 Header creation result:", headerResult);
 
+
+  // 6. Create the growth metrics section below the header
+  const growthSectionResult = await create_growth_metrics_section(frameId);
+
+  // 7. Create the "+38%" percentage text inside the growth section
+  const growthPercentResult = growthSectionResult.sectionId
+    ? await create_growth_percentage_text(growthSectionResult.sectionId)
+    : null;
+
+  // 8. Create the subtitle frame below the percentage text
+  let subtitleResult = null, growthTextResult = null, arrowTextResult = null;
+  if (growthSectionResult.sectionId) {
+    subtitleResult = await create_subtitle_frame(growthSectionResult.sectionId);
+    if (subtitleResult.subtitleId) {
+      // 10. Create the growth text and arrow inside the subtitle frame
+      growthTextResult = await create_growth_text(subtitleResult.subtitleId);
+      arrowTextResult = await create_upward_arrow_text(subtitleResult.subtitleId);
+    }
+  }
+
   // Return all results for reporting
   return {
     ...rectResult,
     effectResult,
     convertResult,
     autoLayoutResult,
-    headerResult
+    headerResult,
+    // growth section
+    growthSectionResult,
+    growthPercentResult,
+    subtitleResult,
+    growthTextResult,
+    arrowTextResult
   };
 }
 
@@ -238,24 +264,6 @@ async function create_header(parentId) {
   // 6. Create the "USD" capsule
   const usdCapsuleResult = await create_header_usd_capsule(headerId);
 
-  // 7. Create the growth metrics section below the header
-  const growthSectionResult = await create_growth_metrics_section(parentId);
-
-  // 8. Create the "+38%" percentage text inside the growth section
-  const growthPercentResult = growthSectionResult.sectionId
-    ? await create_growth_percentage_text(growthSectionResult.sectionId)
-    : null;
-
-  // 9. Create the subtitle frame below the percentage text
-  let subtitleResult = null, growthTextResult = null, arrowTextResult = null;
-  if (growthSectionResult.sectionId) {
-    subtitleResult = await create_subtitle_frame(growthSectionResult.sectionId);
-    if (subtitleResult.subtitleId) {
-      // 10. Create the growth text and arrow inside the subtitle frame
-      growthTextResult = await create_growth_text(subtitleResult.subtitleId);
-      arrowTextResult = await create_upward_arrow_text(subtitleResult.subtitleId);
-    }
-  }
 
   // Return all results for reporting
   return {
@@ -265,11 +273,7 @@ async function create_header(parentId) {
     cashTextResult,
     amountTextResult,
     usdCapsuleResult,
-    growthSectionResult,
-    growthPercentResult,
-    subtitleResult,
-    growthTextResult,
-    arrowTextResult
+    
   };
 }
 
@@ -700,13 +704,11 @@ export async function layoutATest(results, parentFrameId) {
   // const headerResult = await create_header(frameId);
    //results.push(headerResult);
 }
+ 
+// in the layoutATest (init) method we should; create green frame
 
-// move the growth section code into its own function (use sonnet in pplx)
+// add header to the green frame
 
-// in the init method we should; create green frame
-
-// add header to it
-
-// add growth section
+// add growth section to the green frame
 
 // add bar section (next task)
