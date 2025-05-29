@@ -198,25 +198,23 @@ async function create_header(parentId) {
   // No need to move or insert header; parentId is set at creation
 
   // 2. Set auto layout on the header: horizontal, no wrap
-//   const autoLayoutParams = {
-//     layout: {
-//       nodeId: headerId,
-//       mode: "HORIZONTAL",
-//       layoutWrap: "NO_WRAP",
-//       primaryAxisSizing: "FIXED",
-//       //counterAxisSizing: "FIXED"
-//     }
-//   };
-//   const autoLayoutResult = await runStep({
-//     ws, channel,
-//     command: "set_auto_layout",
-//     params: autoLayoutParams,
-//     assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === headerId,
-//     label: "Set auto layout on header"
-//   });
+  const autoLayoutParams = {
+    layout: {
+      nodeId: headerId,
+      mode: "HORIZONTAL",
+      layoutWrap: "NO_WRAP"
+    }
+  };
+  const autoLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: autoLayoutParams,
+    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === headerId,
+    label: "Set auto layout on header"
+  });
 
-  // 3. Set auto layout resizing: fill horizontally, fixed vertically
-  const resizingResult = await runStep({
+  // 3. Set auto layout resizing: fill horizontally for the header frame itself
+  const headerResizingResult = await runStep({
     ws, channel,
     command: "set_auto_layout_resizing",
     params: {
@@ -225,13 +223,64 @@ async function create_header(parentId) {
       mode: "FILL"
     },
     assert: r => r && r.nodeId === headerId,
-    label: "Set header to fill parent width"
+    label: "Set header frame to fill parent width"
   });
+
+  // 4. Create the "Cash" text node
+  const cashTextResult = await create_header_cash_text(headerId);
 
   // Return all results for reporting
   return {
     ...headerResult,
-    //autoLayoutResult,
+    autoLayoutResult,
+    headerResizingResult,
+    cashTextResult
+  };
+}
+
+/**
+ * Creates the "Cash" text node in the header frame.
+ * @param {string} parentId - The header frame ID
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_header_cash_text(parentId) {
+  // 1. Create the text node
+  const params = {
+    x: 0, y: 0,
+    text: "Cash",
+    fontSize: 16,
+    fontWeight: 700,
+    fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
+    parentId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_header_cash_text"
+  });
+  const textId = textResult.response?.ids?.[0];
+  if (!textId) return textResult;
+
+  // 2. Set auto layout resizing: fill horizontally
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: textId,
+      axis: "horizontal",
+      mode: "FILL"
+    },
+    assert: r => r && r.nodeId === textId,
+    label: "Set cash text to fill header"
+  });
+
+  return {
+    ...textResult,
     resizingResult
   };
 }
@@ -259,5 +308,5 @@ export async function layoutATest(results, parentFrameId) {
   results.push(rectResult);
 
   // const headerResult = await create_header(frameId);
-  // results.push(headerResult);
+   //results.push(headerResult);
 }
