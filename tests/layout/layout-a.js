@@ -239,6 +239,9 @@ export async function layoutATest(results, parentFrameId) {
   }
 
   // 3. Create the green rounded rectangle inside the frame
-  const rectResult = await create_green_rounded_rectangle(frameId);
+  // const rectResult = await create_green_rounded_rectangle(frameId);
+  // results.push(rectResult);
+
+  const headerResult = await create_header(frameId);
   results.push(rectResult);
 }
