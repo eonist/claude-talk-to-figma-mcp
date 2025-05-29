@@ -230,13 +230,52 @@ async function create_header(parentId) {
   // 4. Create the "Cash" text node
   const cashTextResult = await create_header_cash_text(headerId);
 
+  // 5. Create the "Amount" text node
+  const amountTextResult = await create_header_amount_text(headerId);
+
   // Return all results for reporting
   return {
     ...headerResult,
     autoLayoutResult,
     headerResizingResult,
-    cashTextResult
+    cashTextResult,
+    amountTextResult
   };
+}
+
+/**
+ * Creates the "816,754" amount text node in the header frame.
+ * @param {string} parentId - The header frame ID
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_header_amount_text(parentId) {
+  console.log("💥 create_header_amount_text called with parentId:", parentId);
+  // 1. Create the text node
+  const params = {
+    x: 0, y: 0,
+    text: "816,754",
+    fontSize: 24,
+    fontWeight: 700,
+    fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
+    parentId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_header_amount_text"
+  });
+  const textId = textResult.response?.id;
+  console.log("Created amount text with ID:", textId, "Result:", textResult);
+  if (!textId) return textResult;
+
+  // No need to set auto layout resizing: HUG is default for text nodes
+
+  return textResult;
 }
 
 /**
