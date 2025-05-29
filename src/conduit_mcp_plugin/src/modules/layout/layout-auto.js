@@ -230,8 +230,60 @@ export async function setAutoLayoutUnified(params) {
   }
   return results;
 }
-// fixme add doc
+/**
+ * Sets the auto layout resizing behavior for a Figma node along a specified axis.
+ * This function configures how a node and its children behave in auto layout containers,
+ * supporting three resizing modes: HUG (content-based sizing), FILL (stretch to fill),
+ * and FIXED (explicit dimensions).
+ *
+ * @async
+ * @function setAutoLayoutResizing
+ * @param {Object} params - Configuration parameters for auto layout resizing
+ * @param {string} params.nodeId - The unique identifier of the Figma node to modify
+ * @param {("horizontal"|"vertical")} params.axis - The axis along which to apply resizing behavior
+ * @param {("HUG"|"FIXED"|"FILL")} params.mode - The resizing mode to apply:
+ *   - "HUG": Node sizes itself to fit its content
+ *   - "FILL": Node stretches to fill available space
+ *   - "FIXED": Node maintains explicit dimensions
+ * 
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *   - {string} id - The node's unique identifier
+ *   - {string} primaryAxisSizingMode - The primary axis sizing mode after modification
+ *   - {string} counterAxisSizingMode - The counter axis sizing mode after modification
+ * 
+ * @throws {Error} Throws an error if:
+ *   - nodeId parameter is missing or falsy
+ *   - axis parameter is missing or not "horizontal" or "vertical"
+ *   - mode parameter is missing or not one of "HUG", "FIXED", "FILL"
+ *   - the specified node doesn't exist or doesn't support auto layout
+ * 
+ * @example
+ * // Set a node to hug its content horizontally
+ * const result = await setAutoLayoutResizing({
+ *   nodeId: "123:456",
+ *   axis: "horizontal",
+ *   mode: "HUG"
+ * });
+ * console.log(result.primaryAxisSizingMode); // "AUTO"
+ * 
+ * @example
+ * // Set a node to fill available space vertically
+ * await setAutoLayoutResizing({
+ *   nodeId: "789:012",
+ *   axis: "vertical",
+ *   mode: "FILL"
+ * });
+ * 
+ * @example
+ * // Set a node to fixed dimensions horizontally
+ * await setAutoLayoutResizing({
+ *   nodeId: "345:678",
+ *   axis: "horizontal",
+ *   mode: "FIXED"
+ * });
+ */
 export async function setAutoLayoutResizing(params) {
+  console.log("💥 [setAutoLayoutResizing] called with params:", JSON.stringify(params, null, 2));
   const { nodeId, axis, mode } = params || {};
   if (!nodeId) throw new Error("Missing nodeId parameter");
   if (!axis || (axis !== "horizontal" && axis !== "vertical")) throw new Error("Invalid or missing axis parameter");
