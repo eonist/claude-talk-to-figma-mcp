@@ -61,27 +61,17 @@ function create_padded_frame(parentId) {
  * @param {string} parentId - Parent frame ID to place the rectangle inside
  * @returns {Promise} Test result with rectangle creation status
  */
-function create_green_rounded_rectangle(parentId) {
+async function create_green_rounded_rectangle(parentId) {
   const params = {
     x: 0, y: 0,
     width: 300, height: 220,
     name: "NeonGreenRectangle",
     cornerRadius: 20,
     fillColor: { r: 0.2235, g: 1, b: 0.0784, a: 1 }, // #39FF14
-    effects: [
-      {
-        type: "DROP_SHADOW",
-        color: { r: 0.2235, g: 1, b: 0.0784, a: 0.5 }, // #39FF14, 50% opacity
-        offset: { x: 0, y: 0 },
-        radius: 15,
-        spread: 0,
-        visible: true,
-        blendMode: "NORMAL"
-      }
-    ],
     parentId
   };
-  return runStep({
+  // 1. Create the rectangle
+  const rectResult = await runStep({
     ws, channel,
     command: "create_rectangle",
     params: { rectangle: params },
@@ -91,6 +81,38 @@ function create_green_rounded_rectangle(parentId) {
     }),
     label: `create_green_rounded_rectangle (${params.name})`
   });
+  const rectId = rectResult.response?.ids?.[0];
+  if (!rectId) return rectResult;
+
+  // 2. Apply drop shadow effect using set_effect
+  const effectParams = [
+    {
+      type: "DROP_SHADOW",
+      color: { r: 0.2235, g: 1, b: 0.0784, a: 0.5 }, // #39FF14, 50% opacity
+      offset: { x: 0, y: 0 },
+      radius: 15,
+      spread: 0,
+      visible: true,
+      blendMode: "NORMAL",
+      name: "Drop Shadow"
+    }
+  ];
+  const effectResult = await runStep({
+    ws, channel,
+    command: "set_effect",
+    params: {
+      nodeId: rectId,
+      effects: effectParams
+    },
+    assert: r => r && r.nodeId === rectId,
+    label: "Apply drop shadow to NeonGreenRectangle"
+  });
+
+  // Return both results for reporting
+  return {
+    ...rectResult,
+    effectResult
+  };
 }
 
 /**
