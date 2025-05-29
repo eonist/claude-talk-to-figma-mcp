@@ -215,6 +215,7 @@ async function create_header(parentId) {
   });
 
   // 3. Set auto layout resizing: fill horizontally for the header frame itself
+  console.log("💥 About to call set_auto_layout_resizing for header frame. NodeId:", headerId);
   const headerResizingResult = await runStep({
     ws, channel,
     command: "set_auto_layout_resizing",
@@ -226,6 +227,7 @@ async function create_header(parentId) {
     assert: r => r && r.nodeId === headerId,
     label: "Set header frame to fill parent width"
   });
+  console.log("💥 Set_auto_layout_resizing for header frame. NodeId:", headerId, "Result:", headerResizingResult);
 
   // 4. Create the "Cash" text node
   const cashTextResult = await create_header_cash_text(headerId);
