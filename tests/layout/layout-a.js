@@ -543,7 +543,21 @@ async function create_header_usd_capsule(parentId) {
     label: "Set auto layout on USD capsule"
   });
 
-  // 3. Create the "USD" text node inside the capsule
+  // 3. Set auto layout resizing: hug vertically for the capsule frame itself
+  const capsuleVerticalHugResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: capsuleId,
+      axis: "vertical",
+      mode: "AUTO"
+    },
+    assert: r => r && r.nodeId === capsuleId,
+    label: "Set USD capsule to hug height"
+  });
+  console.log("💥 Set_auto_layout_resizing for USD capsule (vertical hug/auto). NodeId:", capsuleId, "Result:", capsuleVerticalHugResult);
+
+  // 4. Create the "USD" text node inside the capsule
   const usdTextParams = {
     x: 0, y: 0,
     text: "USD",
@@ -565,13 +579,14 @@ async function create_header_usd_capsule(parentId) {
   });
   const usdTextId = usdTextResult.response?.id;
   console.log("Created USD text with ID:", usdTextId, "Result:", usdTextResult);
-  if (!usdTextId) return { ...capsuleResult, capsuleLayoutResult, usdTextResult };
+  if (!usdTextId) return { ...capsuleResult, capsuleLayoutResult, capsuleVerticalHugResult, usdTextResult };
 
   // No need to set resizing: HUG is default for text nodes
 
   return {
     ...capsuleResult,
     capsuleLayoutResult,
+    capsuleVerticalHugResult,
     usdTextResult
   };
 }
