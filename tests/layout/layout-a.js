@@ -718,5 +718,143 @@ export async function layoutATest(results, parentFrameId) {
     }
   }
 
+  // 10. Add chart component to the green frame
+  const chartResult = await create_chart_component(greenFrameId);
+  results.push(chartResult);
+
   // (Optional: add bar section in future)
+}
+
+/**
+ * Creates a chart component with 5 bars distributed horizontally.
+ * @param {string} parentId - The parent frame ID (green frame)
+ * @returns {Promise} Test result with chart creation status
+ */
+async function create_chart_component(parentId) {
+  console.log("💥 create_chart_component called with parentId:", parentId);
+
+  // 1. Create the chart container frame
+  const chartParams = {
+    x: 0, y: 0,
+    height: 100, // Fixed height
+    name: "Chart Container",
+    fillColor: { r: 1, g: 1, b: 1, a: 0 }, // Transparent
+    parentId
+  };
+
+  const chartResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: chartParams },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_chart_container"
+  });
+
+  const chartId = chartResult.response?.ids?.[0];
+  console.log("💥 Created chart container with ID:", chartId, "Result:", chartResult);
+  if (!chartId) return chartResult;
+
+  // 2. Set horizontal auto layout with 4px gap
+  const chartLayoutParams = {
+    layout: {
+      nodeId: chartId,
+      mode: "HORIZONTAL",
+      layoutWrap: "NO_WRAP",
+      itemSpacing: 4,
+      primaryAxisSizing: "AUTO",
+      counterAxisSizing: "AUTO"
+    }
+  };
+
+  const chartLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: chartLayoutParams,
+    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === chartId,
+    label: "Set auto layout on chart container"
+  });
+
+  // 3. Set chart container to fill width
+  const chartResizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: chartId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: r => r && r.nodeId === chartId,
+    label: "Set chart container to fill width"
+  });
+
+  // 4. Create the 5 bars
+  const barConfigs = [
+    { height: 20, opacity: 0.1, name: "Bar1" },
+    { height: 35, opacity: 0.2, name: "Bar2" },
+    { height: 50, opacity: 0.3, name: "Bar3" },
+    { height: 70, opacity: 0.4, name: "Bar4" },
+    { height: 90, opacity: 1.0, name: "Bar5" }
+  ];
+
+  const barResults = [];
+
+  for (const config of barConfigs) {
+    // Create rectangle for each bar
+    const barParams = {
+      x: 0, y: 0,
+      width: 20, // Initial width, will be set to fill
+      height: config.height,
+      name: config.name,
+      cornerRadius: 8,
+      fillColor: { r: 0, g: 0, b: 0, a: config.opacity }, // Black with specified opacity
+      parentId: chartId
+    };
+
+    const barResult = await runStep({
+      ws, channel,
+      command: "create_rectangle",
+      params: { rectangle: barParams },
+      assert: (response) => ({
+        pass: Array.isArray(response.ids) && response.ids.length > 0,
+        response
+      }),
+      label: `create_${config.name}`
+    });
+
+    const barId = barResult.response?.ids?.[0];
+    console.log(`💥 Created ${config.name} with ID:`, barId, "Result:", barResult);
+
+    if (barId) {
+      // Set bar to fill width horizontally (similar to cash text)
+      const barResizingResult = await runStep({
+        ws, channel,
+        command: "set_auto_layout_resizing",
+        params: {
+          nodeId: barId,
+          horizontal: "FILL",
+          vertical: "AUTO"
+        },
+        assert: r => r && r.nodeId === barId,
+        label: `Set ${config.name} to fill width`
+      });
+
+      barResults.push({
+        ...barResult,
+        barResizingResult
+      });
+    } else {
+      barResults.push(barResult);
+    }
+  }
+
+  // Return all results for reporting
+  return {
+    ...chartResult,
+    chartLayoutResult,
+    chartResizingResult,
+    barResults
+  };
 }
