@@ -765,7 +765,8 @@ async function create_chart_component(parentId) {
       layoutWrap: "NO_WRAP",
       itemSpacing: 4,
       primaryAxisSizing: "AUTO",
-      counterAxisSizing: "AUTO"
+      counterAxisSizing: "AUTO",
+      counterAxisAlignItems: "MAX" // Align bars to bottom
     }
   };
 
