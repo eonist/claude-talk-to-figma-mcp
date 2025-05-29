@@ -17,7 +17,7 @@ function create_padded_frame(parentId) {
     command: "create_frame",
     params: { frame: params },
     assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
       response
     }),
     label: `create_padded_frame (${params.name})`
@@ -316,22 +316,26 @@ async function create_growth_text(parentId) {
     fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
     parentId
   };
+  console.log("💥 [create_growth_text] called with params:", params);
   const textResult = await runStep({
     ws, channel,
     command: "set_text",
     params: { text: params },
-    assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
-      response
-    }),
-    label: "create_header_amount_text"
+    assert: (response) => {
+      const pass = Array.isArray(response.ids) && response.ids.length > 0 || typeof response.id === "string";
+      console.log("💥 [create_growth_text] assert check:", { ids: response.ids, id: response.id, pass, response });
+      return { pass, response };
+    },
+    label: "create_growth_text"
   });
   const textId = textResult.response?.id;
-  console.log("Created growth text with ID:", textId, "Result:", textResult);
+  console.log("💥 [create_growth_text] textResult:", textResult);
+  console.log("💥 [create_growth_text] textResult.pass:", textResult.pass, "textResult.response:", textResult.response);
   if (!textId) return textResult;
 
   // No need to set auto layout resizing: HUG is default for text nodes
 
+  console.log("💥 [create_growth_text] returning textResult");
   return textResult;
 }
 
@@ -351,22 +355,26 @@ async function create_upward_arrow_text(parentId) {
     fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
     parentId
   };
+  console.log("💥 [create_upward_arrow_text] called with params:", params);
   const textResult = await runStep({
     ws, channel,
     command: "set_text",
     params: { text: params },
-    assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
-      response
-    }),
-    label: "create_header_cash_text"
+    assert: (response) => {
+      const pass = Array.isArray(response.ids) && response.ids.length > 0 || typeof response.id === "string";
+      console.log("💥 [create_upward_arrow_text] assert check:", { ids: response.ids, id: response.id, pass, response });
+      return { pass, response };
+    },
+    label: "create_upward_arrow_text"
   });
   const textId = textResult.response?.id;
-  console.log("Created upward arrow text with ID:", textId, "Result:", textResult);
+  console.log("💥 [create_upward_arrow_text] textResult:", textResult);
+  console.log("💥 [create_upward_arrow_text] textResult.pass:", textResult.pass, "textResult.response:", textResult.response);
   if (!textId) return textResult;
 
   // No need to set auto layout resizing: HUG is default for text nodes
 
+  console.log("💥 [create_upward_arrow_text] returning textResult");
   return textResult;
 }
 
@@ -578,18 +586,20 @@ async function create_header_amount_text(parentId) {
     fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
     parentId
   };
+  console.log("💥 [create_header_amount_text] About to call runStep with params:", params);
   const textResult = await runStep({
     ws, channel,
     command: "set_text",
     params: { text: params },
-    assert: (response) => ({
-      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
-      response
-    }),
+    assert: (response) => {
+      const pass = (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string";
+      console.log("💥 [create_header_amount_text] assert check:", { ids: response.ids, id: response.id, pass, response });
+      return { pass, response };
+    },
     label: "create_header_amount_text"
   });
   const textId = textResult.response?.id;
-  console.log("Created amount text with ID:", textId, "Result:", textResult);
+  console.log("💥 [create_header_amount_text] Created amount text with ID:", textId, "Result:", textResult);
   if (!textId) return textResult;
 
   // No need to set auto layout resizing: HUG is default for text nodes
@@ -613,18 +623,20 @@ async function create_header_cash_text(parentId) {
     fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
     parentId
   };
+  console.log("💥 [create_header_cash_text] About to call runStep with params:", params);
   const textResult = await runStep({
     ws, channel,
     command: "set_text",
     params: { text: params },
-    assert: (response) => ({
-      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
-      response
-    }),
+    assert: (response) => {
+      const pass = (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string";
+      console.log("💥 [create_header_cash_text] assert check:", { ids: response.ids, id: response.id, pass, response });
+      return { pass, response };
+    },
     label: "create_header_cash_text"
   });
   const textId = textResult.response?.id;
-  console.log("Created cash text with ID:", textId, "Result:", textResult);
+  console.log("💥 [create_header_cash_text] Created cash text with ID:", textId, "Result:", textResult);
   if (!textId) return textResult;
 
   // 2. Set auto layout resizing: fill horizontally
