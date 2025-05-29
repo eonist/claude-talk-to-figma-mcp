@@ -685,6 +685,27 @@ export async function layoutATest(results, parentFrameId) {
   const growthSectionResult = await create_growth_metrics_section(greenFrameId);
   results.push(growthSectionResult);
 
+  // 7. Add "+38%" percentage text to the growth section
+  const growthSectionId = growthSectionResult.sectionId;
+  if (growthSectionId) {
+    const growthPercentResult = await create_growth_percentage_text(growthSectionId);
+    results.push(growthPercentResult);
+
+    // 8. Add subtitle frame to the growth section
+    const subtitleResult = await create_subtitle_frame(growthSectionId);
+    results.push(subtitleResult);
+
+    // 9. Add "Growth since last day" text and up-right arrow to the subtitle frame
+    const subtitleId = subtitleResult.subtitleId;
+    if (subtitleId) {
+      const growthTextResult = await create_growth_text(subtitleId);
+      results.push(growthTextResult);
+
+      const arrowTextResult = await create_upward_arrow_text(subtitleId);
+      results.push(arrowTextResult);
+    }
+  }
+
   // (Optional: add bar section in future)
 }
  
