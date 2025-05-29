@@ -54,6 +54,7 @@ import { svgScene } from './scene/svg-scene.js';
 import { imageScene } from './scene/image-scene.js';
 import { maskScene } from './scene/mask-scene.js';
 import { layoutScene } from './scene/layout-scene.js';
+import { layoutATest } from './layout/layout-a.js';
 
 // --- Container Frame Config ---
 const CONTAINER_FRAME_CONFIG = {
@@ -88,7 +89,8 @@ async function createContainerFrame(ws, channel) {
         x: 0, y: 0,
         width: 1600, // or a large value, or use 'AUTO' for primaryAxisSizing
         height: 900, // initial height, will hug vertically
-        name: 'All Scenes Container'
+        name: 'All Scenes Container',
+        fillColor: { r: 0.05, g: 0.05, b: 0.05, a: 1 }
         // Do NOT spread autolayout config here; set it explicitly below
       }
     },
@@ -155,16 +157,17 @@ async function main() {
 
   // Define the sequence of scenes
   const sequence = [
-    shapeScene,
-    textScene, 
-    styleScene,
-    transformScene,
-    booleanScene,
-    flattenScene,
-    svgScene,
-    imageScene,
-    layoutScene,
-    maskScene,
+    //shapeScene,
+    //textScene, 
+    //styleScene,
+    //transformScene,
+    //booleanScene,
+    //flattenScene,
+    //svgScene,
+    //imageScene,
+    //layoutScene,
+    //maskScene,
+    layoutATest
   ];
   const results = [];
   for (const scene of sequence) {
