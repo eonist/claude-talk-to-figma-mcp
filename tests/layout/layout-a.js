@@ -132,8 +132,7 @@ async function create_green_rounded_rectangle(parentId) {
   const autoLayoutParams = {
     layout: {
       nodeId: frameId,
-      mode: "HORIZONTAL",
-      layoutWrap: "WRAP",
+      mode: "VERTICAL",
       paddingLeft: 15,
       paddingRight: 15,
       paddingTop: 15,
@@ -237,6 +236,14 @@ async function create_header(parentId) {
   // 6. Create the "USD" capsule
   const usdCapsuleResult = await create_header_usd_capsule(headerId);
 
+  // 7. Create the growth metrics section below the header
+  const growthSectionResult = await create_growth_metrics_section(parentId);
+
+  // 8. Create the "+38%" percentage text inside the growth section
+  const growthPercentResult = growthSectionResult.sectionId
+    ? await create_growth_percentage_text(growthSectionResult.sectionId)
+    : null;
+
   // Return all results for reporting
   return {
     ...headerResult,
@@ -244,8 +251,101 @@ async function create_header(parentId) {
     headerResizingResult,
     cashTextResult,
     amountTextResult,
-    usdCapsuleResult
+    usdCapsuleResult,
+    growthSectionResult,
+    growthPercentResult
   };
+}
+
+/**
+ * Creates the growth metrics section frame below the header.
+ * @param {string} parentId - The green frame ID
+ * @returns {Promise<{sectionId: string}|object>} Test result with section frame creation status
+ */
+async function create_growth_metrics_section(parentId) {
+  console.log("💥 create_growth_metrics_section called with parentId:", parentId);
+  // 1. Create the section frame
+  const params = {
+    x: 0, y: 0,
+    width: 10, // HUG
+    height: 10, // HUG
+    name: "Growth Metrics Section",
+    fillColor: { r: 0.7, g: 0.7, b: 0.7, a: 1 }, // gray for debug
+    parentId
+  };
+  const sectionResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_growth_metrics_section"
+  });
+  const sectionId = sectionResult.response?.ids?.[0];
+  console.log("Created growth metrics section frame with ID:", sectionId, "Result:", sectionResult);
+  if (!sectionId) return sectionResult;
+
+  // 2. Set vertical auto layout, gap 10px, HUG both axes
+  const sectionLayoutParams = {
+    layout: {
+      nodeId: sectionId,
+      mode: "VERTICAL",
+      layoutWrap: "NO_WRAP",
+      itemSpacing: 10,
+      primaryAxisSizing: "HUG",
+      counterAxisSizing: "HUG"
+    }
+  };
+  const sectionLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: sectionLayoutParams,
+    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === sectionId,
+    label: "Set auto layout on growth metrics section"
+  });
+
+  return {
+    ...sectionResult,
+    sectionId,
+    sectionLayoutResult
+  };
+}
+
+/**
+ * Creates the "+38%" percentage text node in the growth metrics section.
+ * @param {string} parentId - The growth metrics section frame ID
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_growth_percentage_text(parentId) {
+  console.log("💥 create_growth_percentage_text called with parentId:", parentId);
+  // 1. Create the text node
+  const params = {
+    x: 0, y: 0,
+    text: "+38%",
+    fontSize: 28,
+    fontWeight: 700,
+    fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
+    parentId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_growth_percentage_text"
+  });
+  const textId = textResult.response?.id;
+  console.log("Created growth percentage text with ID:", textId, "Result:", textResult);
+  if (!textId) return textResult;
+
+  // No need to set auto layout resizing: HUG is default for text nodes
+
+  return textResult;
 }
 
 /**
