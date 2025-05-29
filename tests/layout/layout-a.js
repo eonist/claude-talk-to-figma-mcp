@@ -151,43 +151,12 @@ async function create_green_rounded_rectangle(parentId) {
   });
   console.log("💥 Set auto layout on green frame. Result:", autoLayoutResult);
 
-  // 5. Create header inside the green frame
-  const headerResult = await create_header(frameId);
-  console.log("💥 Header creation result:", headerResult);
-
-
-  // 6. Create the growth metrics section below the header
-  const growthSectionResult = await create_growth_metrics_section(frameId);
-
-  // 7. Create the "+38%" percentage text inside the growth section
-  const growthPercentResult = growthSectionResult.sectionId
-    ? await create_growth_percentage_text(growthSectionResult.sectionId)
-    : null;
-
-  // 8. Create the subtitle frame below the percentage text
-  let subtitleResult = null, growthTextResult = null, arrowTextResult = null;
-  if (growthSectionResult.sectionId) {
-    subtitleResult = await create_subtitle_frame(growthSectionResult.sectionId);
-    if (subtitleResult.subtitleId) {
-      // 10. Create the growth text and arrow inside the subtitle frame
-      growthTextResult = await create_growth_text(subtitleResult.subtitleId);
-      arrowTextResult = await create_upward_arrow_text(subtitleResult.subtitleId);
-    }
-  }
-
   // Return all results for reporting
   return {
     ...rectResult,
     effectResult,
     convertResult,
-    autoLayoutResult,
-    headerResult,
-    // growth section
-    growthSectionResult,
-    growthPercentResult,
-    subtitleResult,
-    growthTextResult,
-    arrowTextResult
+    autoLayoutResult
   };
 }
 
@@ -697,12 +666,26 @@ export async function layoutATest(results, parentFrameId) {
     return;
   }
 
-  // 3. Create the green rounded rectangle inside the frame
-  const rectResult = await create_green_rounded_rectangle(frameId);
-  results.push(rectResult);
+  // 3. Create the green frame inside the padded frame
+  const greenFrameResult = await create_green_rounded_rectangle(frameId);
+  results.push(greenFrameResult);
 
-  // const headerResult = await create_header(frameId);
-   //results.push(headerResult);
+  // 4. Get the green frame ID (from convertResult)
+  const greenFrameId = greenFrameResult.convertResult?.response?.id;
+  if (!greenFrameId) {
+    console.warn("Could not get green frame ID for header/growth section");
+    return;
+  }
+
+  // 5. Add header to the green frame
+  const headerResult = await create_header(greenFrameId);
+  results.push(headerResult);
+
+  // 6. Add growth section to the green frame
+  const growthSectionResult = await create_growth_metrics_section(greenFrameId);
+  results.push(growthSectionResult);
+
+  // (Optional: add bar section in future)
 }
  
 // in the layoutATest (init) method we should; create green frame
