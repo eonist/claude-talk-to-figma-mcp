@@ -84,7 +84,18 @@ async function create_green_rounded_rectangle(parentId) {
   const rectId = rectResult.response?.ids?.[0];
   if (!rectId) return rectResult;
 
-  // 2. Apply drop shadow effect using set_effect
+  // 2. Convert rectangle to frame
+  const convertResult = await runStep({
+    ws, channel,
+    command: "convert_rectangle_to_frame",
+    params: { nodeId: rectId },
+    assert: r => r && r.frameId,
+    label: "Convert rectangle to frame"
+  });
+  const frameId = convertResult.response?.frameId;
+  if (!frameId) return { ...rectResult, convertResult };
+
+  // 3. Apply drop shadow effect using set_effect
   const effectParams = [
     {
       type: "DROP_SHADOW",
@@ -101,16 +112,17 @@ async function create_green_rounded_rectangle(parentId) {
     ws, channel,
     command: "set_effect",
     params: {
-      nodeId: rectId,
+      nodeId: frameId,
       effects: effectParams
     },
-    assert: r => r && r.nodeId === rectId,
-    label: "Apply drop shadow to NeonGreenRectangle"
+    assert: r => r && r.nodeId === frameId,
+    label: "Apply drop shadow to NeonGreenFrame"
   });
 
-  // Return both results for reporting
+  // Return all results for reporting
   return {
     ...rectResult,
+    convertResult,
     effectResult
   };
 }

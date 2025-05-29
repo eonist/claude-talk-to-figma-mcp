@@ -171,6 +171,7 @@ export async function deleteNodeUnified(params) {
  * @throws {Error} If nodeId is missing, node cannot be found, or is not a rectangle.
  */
 export async function convertRectangleToFrame(params) {
+  console.log("💥 convertRectangleToFrame", params);
   const { nodeId, elementsToPlace = [], deleteOriginal = true } = params || {};
   if (!nodeId) throw new Error("Missing nodeId parameter");
   const rectangle = await figma.getNodeByIdAsync(nodeId);

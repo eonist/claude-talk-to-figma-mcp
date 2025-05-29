@@ -23,7 +23,7 @@ import { generateHtmlUnified } from '../html-generator.js';
 import { insertSvgVector } from '../svg.js';
 import { createButton } from './commands-button.js';
 import { duplicatePageUnified } from '../document/document-duplicate.js';
-import { getNodeStyles, getFillAndStroke, getImage, getTextStyle, deleteNode, deleteNodeUnified, getSvgVector, getAnnotationUnified, setAnnotationUnified } from '../node/node-edit.js';
+import { getNodeStyles, getFillAndStroke, getImage, getTextStyle, deleteNode, deleteNodeUnified, getSvgVector, getAnnotationUnified, setAnnotationUnified, convertRectangleToFrame } from '../node/node-edit.js';
 import { utilsOperations } from '../utils.js';
 import * as variableOperations from '../variables.js';
 
@@ -243,7 +243,7 @@ export function initializeCommands() {
 
   // --- Node Management ---
   registerCommand(PLUGIN_COMMANDS.GROUP_NODE, layoutOperations.groupOrUngroupNodes);
-  registerCommand(PLUGIN_COMMANDS.CONVERT_RECTANGLE_TO_FRAME, shapeOperations.convertRectangleToFrame);
+  registerCommand(PLUGIN_COMMANDS.CONVERT_RECTANGLE_TO_FRAME, convertRectangleToFrame);
   registerCommand(PLUGIN_COMMANDS.DELETE_NODE, deleteNodeUnified);
   registerCommand(PLUGIN_COMMANDS.DUPLICATE_NODE, layoutOperations.cloneNodeUnified);
   registerCommand(PLUGIN_COMMANDS.SET_NODE, layoutOperations.setNodeUnified);
