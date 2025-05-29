@@ -1,3 +1,31 @@
+/**
+ * Registers node property management commands on the MCP server.
+ * 
+ * This function adds a unified tool named "set_node_prop" to the MCP server,
+ * enabling modification of node properties such as visibility and lock state.
+ * Supports both single node and batch operations with comprehensive error handling.
+ * 
+ * @param {any} server - The MCP server instance to register the node property tool on
+ * @param {any} figmaClient - The Figma client used to execute node property commands against the Figma API
+ * 
+ * @returns {void} This function does not return a value but registers the tool asynchronously
+ * 
+ * @example
+ * ```
+ * import { registerNodeLockVisibilityCommands } from './node-visibility-lock.js';
+ * 
+ * registerNodeLockVisibilityCommands(server, figmaClient);
+ * ```
+ * 
+ * @remarks
+ * - Supports batch operations for multiple nodes
+ * - Configurable properties: locked, visible
+ * - Returns detailed success/error information for each node
+ * - Validates node existence before applying property changes
+ * 
+ * @since 1.0.0
+ * @category Node Management
+ */
 import { MCP_COMMANDS } from "../../../types/commands.js";
 import { SetNodePropSchema } from "./schema/node-visibility-lock-schema.js";
 
