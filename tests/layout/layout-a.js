@@ -64,12 +64,21 @@ function create_padded_frame(parentId) {
 function create_green_rounded_rectangle(parentId) {
   const params = {
     x: 0, y: 0,
-    width: 400, height: 300,
-    name: "GreenRoundedRectangle",
-    cornerRadius: 24,
-    fillColor: { r: 0, g: 1, b: 0, a: 1 },
-    strokeColor: { r: 0, g: 0.5, b: 0, a: 1 },
-    strokeWeight: 2,
+    width: 300, height: 220,
+    name: "NeonGreenRectangle",
+    cornerRadius: 20,
+    fillColor: { r: 0.2235, g: 1, b: 0.0784, a: 1 }, // #39FF14
+    effects: [
+      {
+        type: "DROP_SHADOW",
+        color: { r: 0.2235, g: 1, b: 0.0784, a: 0.5 }, // #39FF14, 50% opacity
+        offset: { x: 0, y: 0 },
+        radius: 15,
+        spread: 0,
+        visible: true,
+        blendMode: "NORMAL"
+      }
+    ],
     parentId
   };
   return runStep({
