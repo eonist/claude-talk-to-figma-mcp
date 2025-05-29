@@ -267,7 +267,7 @@ async function create_growth_metrics_section(parentId) {
   // 1. Create the section frame
   const params = {
     x: 0, y: 0,
-    width: 10, // HUG
+    // width: 10, // remove width for HUG
     height: 10, // HUG
     name: "Growth Metrics Section",
     fillColor: { r: 0.7, g: 0.7, b: 0.7, a: 1 }, // gray for debug
@@ -294,8 +294,8 @@ async function create_growth_metrics_section(parentId) {
       mode: "VERTICAL",
       layoutWrap: "NO_WRAP",
       itemSpacing: 10,
-      primaryAxisSizing: "HUG",
-      counterAxisSizing: "HUG"
+      primaryAxisSizing: "AUTO",
+      counterAxisSizing: "AUTO"
     }
   };
   const sectionLayoutResult = await runStep({
