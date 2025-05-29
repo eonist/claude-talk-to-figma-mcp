@@ -1,5 +1,5 @@
 import { setFill, setStroke } from "./shapes-helpers.js";
-
+ 
 /**
  * Creates one or more frame nodes in the Figma document.
  *
@@ -7,7 +7,7 @@ import { setFill, setStroke } from "./shapes-helpers.js";
  * @function
  * @param {Object} params - Configuration parameters.
  * @param {Object} [params.frame] - Single frame config (see below).
- * @param {Array<Object>} [params.frames] - Array of frame configs (see below).
+ * @param {Array} [params.frames] - Array of frame configs (see below).
  * @param {number} [params.frame.x=0] - X position.
  * @param {number} [params.frame.y=0] - Y position.
  * @param {number} [params.frame.width=100] - Width of the frame.
@@ -17,13 +17,15 @@ import { setFill, setStroke } from "./shapes-helpers.js";
  * @param {{ r: number, g: number, b: number, a?: number }} [params.frame.fillColor] - Optional RGBA fill color.
  * @param {{ r: number, g: number, b: number, a?: number }} [params.frame.strokeColor] - Optional RGBA stroke color.
  * @param {number} [params.frame.strokeWeight] - Optional stroke weight.
- * @returns {Promise<{ ids: Array<string> }>} Object with array of created frame node IDs.
+ * @param {number|Array} [params.frame.cornerRadius] - Corner radius (single value for all corners or array of 4 values [topLeft, topRight, bottomRight, bottomLeft]).
+ * @returns {Promise }>} Object with array of created frame node IDs.
  * @throws {Error} If neither 'frame' nor 'frames' is provided, or if parent is not found.
  * @example
- * const frameResult = await createFrame({ frame: { x: 10, y: 10, width: 200, height: 150 } });
- * const batchResult = await createFrame({ frames: [{ width: 100 }, { width: 120 }] });
+ * const frameResult = await createFrame({ frame: { x: 10, y: 10, width: 200, height: 150, cornerRadius: 8 } });
+ * const batchResult = await createFrame({ frames: [{ width: 100, cornerRadius: [8, 8, 0, 0] }, { width: 120, cornerRadius: 12 }] });
  */
 export async function createFrame(params) {
+  console.log("createFrame", params);
   let framesArr;
   if (params.frames) {
     framesArr = params.frames;
@@ -36,7 +38,8 @@ export async function createFrame(params) {
   for (const cfg of framesArr) {
     const {
       x = 0, y = 0, width = 100, height = 100,
-      name = "Frame", parentId, fillColor, strokeColor, strokeWeight
+      name = "Frame", parentId, fillColor, strokeColor, strokeWeight,
+      cornerRadius
     } = cfg || {};
 
     const frame = figma.createFrame();
@@ -46,6 +49,20 @@ export async function createFrame(params) {
 
     if (fillColor) setFill(frame, fillColor);
     if (strokeColor) setStroke(frame, strokeColor, strokeWeight);
+    
+    // Apply corner radius
+    if (cornerRadius !== undefined) {
+      if (Array.isArray(cornerRadius)) {
+        // Individual corner radii [topLeft, topRight, bottomRight, bottomLeft]
+        frame.topLeftRadius = cornerRadius[0] || 0;
+        frame.topRightRadius = cornerRadius[1] || 0;
+        frame.bottomRightRadius = cornerRadius[2] || 0;
+        frame.bottomLeftRadius = cornerRadius[3] || 0;
+      } else {
+        // Uniform corner radius for all corners
+        frame.cornerRadius = cornerRadius;
+      }
+    }
 
     const parent = parentId
       ? await figma.getNodeByIdAsync(parentId)

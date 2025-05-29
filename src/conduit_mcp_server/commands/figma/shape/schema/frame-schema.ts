@@ -15,7 +15,8 @@ import { isValidNodeId } from "../../../../utils/figma/is-valid-node-id.js";
  *   width: 400,
  *   height: 300,
  *   name: "Main Content Frame",
- *   fillColor: { r: 1, g: 1, b: 1, a: 1 }
+ *   fillColor: { r: 1, g: 1, b: 1, a: 1 },
+ *   cornerRadius: 12
  * };
  * ```
  */
@@ -60,6 +61,14 @@ export const SingleFrameSchema = z.object({
   /** Optional stroke (border) thickness in pixels */
   strokeWeight: z.number()
     .describe("Stroke weight for the frame.")
+    .optional(),
+  
+  /** Optional corner radius for the frame - can be a single number for all corners or array of 4 numbers for individual corners */
+  cornerRadius: z.union([
+    z.number().min(0).describe("Uniform corner radius for all corners. Example: 8"),
+    z.array(z.number().min(0)).length(4).describe("Individual corner radii [topLeft, topRight, bottomRight, bottomLeft]. Example: [8, 8, 0, 0]")
+  ])
+    .describe("Corner radius configuration. Use a single number for uniform corners or array of 4 numbers for individual corner control.")
     .optional()
 });
 

@@ -38,6 +38,7 @@ export function registerFramesTools(server: McpServer, figmaClient: FigmaClient)
    * - `fillColor`: Background fill color as RGBA object (optional)
    * - `strokeColor`: Border color as RGBA object (optional)
    * - `strokeWeight`: Border thickness in pixels (optional)
+   * - `cornerRadius`: Corner radius - single number for all corners or array of 4 numbers for individual corners (optional)
    *
    * @param {Object} args - The input configuration object
    * @param {Object} [args.frame] - Single frame configuration
@@ -50,6 +51,7 @@ export function registerFramesTools(server: McpServer, figmaClient: FigmaClient)
    * @param {Object} [args.frame.fillColor] - Optional RGBA fill color
    * @param {Object} [args.frame.strokeColor] - Optional RGBA stroke color  
    * @param {number} [args.frame.strokeWeight] - Optional stroke weight
+   * @param {number|number[]} [args.frame.cornerRadius] - Optional corner radius (single value or array of 4 values)
    * @param {Object[]} [args.frames] - Array of frame configurations (alternative to single)
    * 
    * @returns {Promise} Promise resolving to MCP response format
@@ -61,37 +63,42 @@ export function registerFramesTools(server: McpServer, figmaClient: FigmaClient)
    * @throws {Error} When figmaClient.createFrame fails or returns invalid data
    * 
    * @example
-   * // Create main artboard frame
+   * // Create main artboard frame with rounded corners
    * const result = await createFrame({
    *   frame: {
    *     x: 50, y: 100, width: 400, height: 300,
    *     name: "Main Artboard",
-   *     fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1.0 }
+   *     fillColor: { r: 0.98, g: 0.98, b: 0.98, a: 1.0 },
+   *     cornerRadius: 12
    *   }
    * });
    * 
    * @example
-   * // Create multiple layout frames
+   * // Create multiple layout frames with different corner styles
    * const result = await createFrame({
    *   frames: [
-   *     { x: 10, y: 20, width: 200, height: 150, name: "Header" },
-   *     { x: 10, y: 180, width: 200, height: 300, name: "Content" }
+   *     { x: 10, y: 20, width: 200, height: 150, name: "Header", cornerRadius: [8, 8, 0, 0] },
+   *     { x: 10, y: 180, width: 200, height: 300, name: "Content", cornerRadius: 16 }
    *   ]
    * });
    */
   server.tool(
     MCP_COMMANDS.CREATE_FRAME,
-    `Creates one or more frame nodes in the specified Figma document. Accepts either a single frame config (via 'frame') or an array of configs (via 'frames'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, and stroke weight.
+    `Creates one or more frame nodes in the specified Figma document. Accepts either a single frame config (via 'frame') or an array of configs (via 'frames'). Optionally, you can provide a name, a parent node ID, fill color, stroke color, stroke weight, and corner radius.
+
+Corner radius can be:
+- A single number for uniform corners (e.g., 8)
+- An array of 4 numbers for individual corners [topLeft, topRight, bottomRight, bottomLeft] (e.g., [8, 8, 0, 0])
 
 Returns:
   - content: Array of objects. Each object contains a type: "text" and a text field with the created frame node ID(s).
 `,
     {
       frame: SingleFrameSchema
-        .describe("A single frame configuration object. Each object should include coordinates, dimensions, and optional properties for a frame.")
+        .describe("A single frame configuration object. Each object should include coordinates, dimensions, and optional properties for a frame including corner radius.")
         .optional(),
       frames: BatchFramesSchema
-        .describe("An array of frame configuration objects. Each object should include coordinates, dimensions, and optional properties for a frame.")
+        .describe("An array of frame configuration objects. Each object should include coordinates, dimensions, and optional properties for a frame including corner radius.")
         .optional(),
     },
     {
@@ -107,22 +114,35 @@ Returns:
             y: 100,
             width: 400,
             height: 300,
-            name: "Main Frame"
+            name: "Main Frame",
+            cornerRadius: 12
+          }
+        },
+        {
+          frame: {
+            x: 50,
+            y: 100,
+            width: 400,
+            height: 300,
+            name: "Card Frame",
+            cornerRadius: [16, 16, 8, 8]
           }
         },
         {
           frames: [
-            { x: 10, y: 20, width: 100, height: 50, name: "Frame1" },
-            { x: 120, y: 20, width: 80, height: 40 }
+            { x: 10, y: 20, width: 100, height: 50, name: "Frame1", cornerRadius: 8 },
+            { x: 120, y: 20, width: 80, height: 40, cornerRadius: [4, 4, 0, 0] }
           ]
         }
       ]),
       edgeCaseWarnings: [
         "Width and height must be greater than zero.",
         "If parentId is invalid, the frame will be added to the root.",
-        "Fill and stroke colors must be valid color objects."
+        "Fill and stroke colors must be valid color objects.",
+        "Corner radius values must be non-negative numbers.",
+        "Corner radius array must contain exactly 4 values [topLeft, topRight, bottomRight, bottomLeft]."
       ],
-      extraInfo: "Useful for generating UI containers, artboards, or design primitives programmatically. Batch creation is efficient for generating multiple frames at once."
+      extraInfo: "Useful for generating UI containers, artboards, or design primitives programmatically. Batch creation is efficient for generating multiple frames at once. Corner radius support enables creation of modern rounded UI elements."
     },
     // Tool handler: supports both single object and array input via 'frame' or 'frames'.
     async (args) => {

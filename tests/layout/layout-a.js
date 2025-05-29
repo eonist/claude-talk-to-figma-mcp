@@ -179,7 +179,7 @@ async function create_header(parentId) {
     width: 100, // will be stretched to fill parent
     height: 32,
     name: "Header",
-    fillColor: { r: 0.5, g: 0.5, b: 0.5, a: 1 }, // gray
+    fillColor: { r: 0.1, g: 0.1, b: 0.1, a: 0.2 }, // gray
     parentId
   };
   const headerResult = await runStep({
