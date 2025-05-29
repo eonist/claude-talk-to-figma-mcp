@@ -229,6 +229,20 @@ async function create_header(parentId) {
   });
   console.log("💥 Set_auto_layout_resizing for header frame. NodeId:", headerId, "Result:", headerResizingResult);
 
+  // 4. Set auto layout resizing: hug vertically for the header frame itself
+  const headerVerticalHugResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: headerId,
+      axis: "vertical",
+      mode: "HUG"
+    },
+    assert: r => r && r.nodeId === headerId,
+    label: "Set header frame to hug height"
+  });
+  console.log("💥 Set_auto_layout_resizing for header frame (vertical hug). NodeId:", headerId, "Result:", headerVerticalHugResult);
+
   // 4. Create the "Cash" text node
   const cashTextResult = await create_header_cash_text(headerId);
 
