@@ -201,20 +201,18 @@ async function create_header(parentId) {
   // Log IDs for debugging
   console.log("Attempting to move header", headerId, "into parent", parentId);
 
-  // Move header into parent frame
+  // Insert header into parent frame using set_node
   const insertResult = await runStep({
     ws, channel,
-    command: "move_node",
+    command: "set_node",
     params: {
-      nodeId: headerId,
-      x: 0,
-      y: 0,
-      parentId
+      parentId,
+      childId: headerId
     },
-    assert: r => r && r["0"] && r["0"].nodeId === headerId,
-    label: "Move header into green frame"
+    assert: r => r && r.parentId === parentId && r.childId === headerId,
+    label: "Insert header into green frame"
   });
-  console.log("Move header result:", insertResult);
+  console.log("Insert header result:", insertResult);
 
   // 2. Set auto layout on the header: horizontal, no wrap
   // const autoLayoutParams = {
