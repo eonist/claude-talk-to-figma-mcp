@@ -141,12 +141,82 @@ async function create_green_rounded_rectangle(parentId) {
     label: "Set auto layout on NeonGreenFrame"
   });
 
+  // 5. Create header inside the green frame
+  const headerResult = await create_header(frameId);
+
   // Return all results for reporting
   return {
     ...rectResult,
     effectResult,
     convertResult,
-    autoLayoutResult
+    autoLayoutResult,
+    headerResult
+  };
+}
+
+/**
+ * Creates a header frame inside the given parent frame.
+ * The header stretches to 100% width, has fixed height 32px, gray background, and horizontal auto layout.
+ * @param {string} parentId - The parent frame ID (neon green frame)
+ * @returns {Promise} Test result with header creation status
+ */
+async function create_header(parentId) {
+  // 1. Create the header frame
+  const params = {
+    x: 0, y: 0,
+    width: 10, // will be stretched to fill parent
+    height: 32,
+    name: "Header",
+    fillColor: { r: 0.5, g: 0.5, b: 0.5, a: 1 }, // gray
+    parentId
+  };
+  const headerResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_header"
+  });
+  const headerId = headerResult.response?.ids?.[0];
+  if (!headerId) return headerResult;
+
+  // 2. Set auto layout on the header: horizontal, no wrap
+  const autoLayoutParams = {
+    layout: {
+      nodeId: headerId,
+      mode: "HORIZONTAL",
+      layoutWrap: "NO_WRAP"
+    }
+  };
+  const autoLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: autoLayoutParams,
+    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === headerId,
+    label: "Set auto layout on header"
+  });
+
+  // 3. Set auto layout resizing: fill horizontally, fixed vertically
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: headerId,
+      axis: "horizontal",
+      mode: "FILL"
+    },
+    assert: r => r && r.nodeId === headerId,
+    label: "Set header to fill parent width"
+  });
+
+  // Return all results for reporting
+  return {
+    ...headerResult,
+    autoLayoutResult,
+    resizingResult
   };
 }
 
