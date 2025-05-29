@@ -3,6 +3,13 @@
  * Each command should be an async function that receives params and returns a result.
  */
 
+/**
+ * Registers effect-related commands for managing visual effects on Figma nodes.
+ * Provides methods to set effects, apply effect styles, and create effect style variables.
+ * 
+ * All methods are async and interact with the Figma API via the MCP client.
+ */
+
 import { MCP_COMMANDS } from "../../types/commands.js";
 import { ensureNodeIdIsString } from "../../utils/node-utils.js";
 import type { FigmaClient } from "./index.js";
