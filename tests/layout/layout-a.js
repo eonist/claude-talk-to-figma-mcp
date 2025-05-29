@@ -501,7 +501,7 @@ async function create_header_usd_capsule(parentId) {
   const capsuleParams = {
     x: 0, y: 0,
     width: 10, // will hug content
-    //height: 24, // enough for 14px text + padding
+    height: 24, // ⚠️️ fix this later. we should not set 24 here. we should hug height. but its not working atm. try to debug autolayout in layout unit-tests or something its very fragile
     name: "USD Capsule",
     fillColor: { r: 0, g: 0, b: 0, a: 0.1 },
     cornerRadius: 16,
@@ -700,3 +700,13 @@ export async function layoutATest(results, parentFrameId) {
   // const headerResult = await create_header(frameId);
    //results.push(headerResult);
 }
+
+// move the growth section code into its own function (use sonnet in pplx)
+
+// in the init method we should; create green frame
+
+// add header to it
+
+// add growth section
+
+// add bar section (next task)
