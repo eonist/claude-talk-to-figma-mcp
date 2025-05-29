@@ -82,6 +82,7 @@ async function create_green_rounded_rectangle(parentId) {
     label: `create_green_rounded_rectangle (${params.name})`
   });
   const rectId = rectResult.response?.ids?.[0];
+  console.log("Created rectangle with ID:", rectId, "Result:", rectResult);
   if (!rectId) return rectResult;
 
   // 2. Apply drop shadow effect to the rectangle
@@ -107,6 +108,7 @@ async function create_green_rounded_rectangle(parentId) {
     assert: r => r && r.nodeId === rectId,
     label: "Apply drop shadow to NeonGreenRectangle"
   });
+  console.log("Applied drop shadow to rectangle. Result:", effectResult);
 
   // 3. Convert rectangle to frame (should copy effects)
   const convertResult = await runStep({
@@ -116,8 +118,12 @@ async function create_green_rounded_rectangle(parentId) {
     assert: r => r && r.frameId,
     label: "Convert rectangle to frame"
   });
+  console.log("Convert rectangle to frame result (full):", JSON.stringify(convertResult, null, 2));
   const frameId = convertResult.response?.id;
-  if (!frameId) return { ...rectResult, effectResult, convertResult };
+  if (!frameId) {
+    console.error("convert_rectangle_to_frame failed. Response:", convertResult);
+    return { ...rectResult, effectResult, convertResult };
+  }
 
   // 4. Apply auto layout to the frame
   const autoLayoutParams = {
@@ -140,9 +146,11 @@ async function create_green_rounded_rectangle(parentId) {
     assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === frameId,
     label: "Set auto layout on NeonGreenFrame"
   });
+  console.log("Set auto layout on green frame. Result:", autoLayoutResult);
 
   // 5. Create header inside the green frame
   const headerResult = await create_header(frameId);
+  console.log("Header creation result:", headerResult);
 
   // Return all results for reporting
   return {
@@ -181,19 +189,29 @@ async function create_header(parentId) {
     label: "create_header"
   });
   const headerId = headerResult.response?.ids?.[0];
+  console.log("Created header frame with ID:", headerId, "Result:", headerResult);
   if (!headerId) return headerResult;
 
-  // Insert header into parent frame
+  // Wait briefly to ensure parent is ready
+  await new Promise(res => setTimeout(res, 200));
+
+  // Log IDs for debugging
+  console.log("Attempting to move header", headerId, "into parent", parentId);
+
+  // Move header into parent frame
   const insertResult = await runStep({
     ws, channel,
-    command: "set_node",
+    command: "move_node",
     params: {
-      parentId,
-      childId: headerId
+      nodeId: headerId,
+      x: 0,
+      y: 0,
+      parentId
     },
-    assert: r => r && r.parentId === parentId && r.childId === headerId,
-    label: "Insert header into green frame"
+    assert: r => r && r["0"] && r["0"].nodeId === headerId,
+    label: "Move header into green frame"
   });
+  console.log("Move header result:", insertResult);
 
   // 2. Set auto layout on the header: horizontal, no wrap
   // const autoLayoutParams = {
