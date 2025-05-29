@@ -392,10 +392,15 @@ export async function setAutoLayoutResizing(params) {
         typeof node.width === "number"
       ) {
         try {
-          node.resize(undefined, node.height);
-          console.log(`✅ [setAlignBehavior] Cleared width for node ${node.name} (${node.id}) to enable STRETCH in vertical parent`);
+          node.resize(0, node.height);
+          console.log(`✅ [setAlignBehavior] Set width to 0 for node ${node.name} (${node.id}) to enable STRETCH in vertical parent`);
         } catch (e) {
-          console.log(`❌ [setAlignBehavior] Failed to clear width for node ${node.name} (${node.id}):`, e);
+          try {
+            node.resize(undefined, node.height);
+            console.log(`✅ [setAlignBehavior] Cleared width for node ${node.name} (${node.id}) to enable STRETCH in vertical parent`);
+          } catch (e2) {
+            console.log(`❌ [setAlignBehavior] Failed to clear width for node ${node.name} (${node.id}):`, e2);
+          }
         }
       }
       node.layoutAlign = "STRETCH";

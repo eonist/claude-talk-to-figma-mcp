@@ -177,7 +177,7 @@ async function create_header(parentId) {
   const params = {
     x: 0, y: 0,
     // width: 100, // remove width for FILL
-    height: 32,
+    // height: 32, // remove height for HUG
     name: "Header",
     fillColor: { r: 1, g: 1, b: 1, a: 0 }, // gray
     parentId

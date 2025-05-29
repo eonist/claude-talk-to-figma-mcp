@@ -37,7 +37,7 @@ export async function createFrame(params) {
   const ids = [];
   for (const cfg of framesArr) {
     const {
-      x = 0, y = 0, width, height,
+      x = 0, y = 0, width = undefined, height = undefined,
       name = "Frame", parentId, fillColor, strokeColor, strokeWeight,
       cornerRadius
     } = cfg || {};
@@ -47,6 +47,11 @@ export async function createFrame(params) {
     if (typeof width === "number" && typeof height === "number") {
       frame.resize(width, height);
     }
+    console.log("💥 frame.name", frame.name);
+    console.log("💥 width", width);
+    console.log("💥 height", height);
+    console.log("💥 frame.width", frame.width);
+    console.log("💥 frame.height", frame.height);
     frame.name = name;
 
     if (fillColor) setFill(frame, fillColor);
