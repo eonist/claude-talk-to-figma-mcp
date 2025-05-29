@@ -278,6 +278,7 @@ async function create_header_cash_text(parentId) {
     assert: r => r && r.nodeId === textId,
     label: "Set cash text to fill header"
   });
+  console.log("Set_auto_layout_resizing for cash text. NodeId:", textId, "Result:", resizingResult);
 
   return {
     ...textResult,

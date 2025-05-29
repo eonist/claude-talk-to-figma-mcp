@@ -295,7 +295,7 @@ export async function setAutoLayoutUnified(params) {
 export async function setAutoLayoutResizing(params) {
   const { nodeId, axis, mode, horizontal, vertical } = params || {};
   
-  // console.log(`💥 [setAutoLayoutResizing] called with params:`, JSON.stringify(params, null, 2));
+  console.log(`💥 [setAutoLayoutResizing] called with params:`, JSON.stringify(params, null, 2));
   
   // Validation
   if (!nodeId) throw new Error("Missing nodeId parameter");
@@ -319,29 +319,29 @@ export async function setAutoLayoutResizing(params) {
   const node = await figma.getNodeByIdAsync(nodeId);
   if (!node) throw new Error(`Node with id ${nodeId} not found`);
 
-  // console.log(`🔍 Before changes:`, {
-  //   layoutMode: node.layoutMode,
-  //   primaryAxisSizingMode: node.primaryAxisSizingMode,
-  //   counterAxisSizingMode: node.counterAxisSizingMode,
-  //   layoutGrow: node.layoutGrow,
-  //   layoutAlign: node.layoutAlign
-  // });
+   console.log(`🔍 Before changes:`, {
+     layoutMode: node.layoutMode,
+     primaryAxisSizingMode: node.primaryAxisSizingMode,
+     counterAxisSizingMode: node.counterAxisSizingMode,
+     layoutGrow: node.layoutGrow,
+     layoutAlign: node.layoutAlign
+   });
 
-  // console.log(`🔍 Node details:`, {
-  //   name: node.name,
-  //   width: node.width,
-  //   height: node.height,
-  //   layoutMode: node.layoutMode,
-  //   hasLayoutProperties: "layoutGrow" in node,
-  //   layoutGrow: node.layoutGrow,
-  //   layoutAlign: node.layoutAlign,
-  //   parent: node.parent ? {
-  //     name: node.parent.name,
-  //     layoutMode: node.parent.layoutMode,
-  //     width: node.parent.width,
-  //     height: node.parent.height
-  //   } : null
-  // });
+   console.log(`🔍 Node details:`, {
+     name: node.name,
+     width: node.width,
+     height: node.height,
+     layoutMode: node.layoutMode,
+     hasLayoutProperties: "layoutGrow" in node,
+     layoutGrow: node.layoutGrow,
+     layoutAlign: node.layoutAlign,
+     parent: node.parent ? {
+       name: node.parent.name,
+       layoutMode: node.parent.layoutMode,
+       width: node.parent.width,
+       height: node.parent.height
+     } : null
+   });
 
   /**
    * Validates that the node can have layout behavior applied
@@ -362,7 +362,7 @@ export async function setAutoLayoutResizing(params) {
   function setGrowBehavior(node, mode) {
     if (!("layoutGrow" in node)) return;
     
-    // console.log(`🔧 Setting grow behavior: ${mode}`);
+    console.log(`🔧 Setting grow behavior: ${mode}`);
     
     switch (mode) {
       case "FILL":
@@ -381,7 +381,7 @@ export async function setAutoLayoutResizing(params) {
   function setAlignBehavior(node, mode) {
     if (!("layoutAlign" in node)) return;
     
-    // console.log(`🔧 Setting align behavior: ${mode}`);
+    console.log(`🔧 Setting align behavior: ${mode}`);
     
     switch (mode) {
       case "FILL":
@@ -403,12 +403,12 @@ export async function setAutoLayoutResizing(params) {
     const parent = node.parent;
     const isHorizontalLayout = parent.layoutMode === "HORIZONTAL";
     
-    // console.log(`🔧 Applying layout behavior:`, {
-    //   horizontal,
-    //   vertical,
-    //   isHorizontalLayout,
-    //   parentLayoutMode: parent.layoutMode
-    // });
+     console.log(`🔧 Applying layout behavior:`, {
+       horizontal,
+       vertical,
+       isHorizontalLayout,
+       parentLayoutMode: parent.layoutMode
+     });
     
     // Apply horizontal behavior
     if (horizontal) {
@@ -443,13 +443,13 @@ export async function setAutoLayoutResizing(params) {
     vertical: verticalMode 
   });
   
-  // console.log(`✅ After changes:`, {
-  //   layoutGrow: node.layoutGrow,
-  //   layoutAlign: node.layoutAlign,
-  //   width: node.width,
-  //   height: node.height,
-  //   parentLayoutMode: result.parentLayoutMode
-  // });
+   console.log(`✅ After changes:`, {
+     layoutGrow: node.layoutGrow,
+     layoutAlign: node.layoutAlign,
+     width: node.width,
+     height: node.height,
+     parentLayoutMode: result.parentLayoutMode
+   });
   
   // Fixed: Replace spread operator with Object.assign for compatibility
   return Object.assign({
