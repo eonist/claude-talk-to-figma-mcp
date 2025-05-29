@@ -25,6 +25,7 @@
  */
 export async function setAutoLayout(params) {
   // LOGGING: Print all received params for debugging
+  console.log("⚠️⚠️⚠️⚠️️ this is deprecated use setAutoLayoutUnified⚠️⚠️⚠️⚠️")
   console.log("[setAutoLayout] called with params:", JSON.stringify(params, null, 2));
   const { 
     nodeId, 
@@ -148,6 +149,10 @@ export async function setAutoLayoutUnified(params) {
       counterAxisSizing, 
       itemSpacing,
       counterAxisSpacing, // NEW: Added support for vertical gap between wrapped rows
+      primaryAxisAlignItems, // new
+      counterAxisAlignItems, // new
+      //counterAxisSizingMode, // not yet added
+      //primaryAxisSizingMode, // not yet added
       layoutWrap, 
       padding, 
       paddingLeft, // NEW: Added individual padding support
@@ -192,6 +197,10 @@ export async function setAutoLayoutUnified(params) {
       // NEW: Set counter axis spacing (vertical gap between rows when wrapping)
       if (typeof counterAxisSpacing === "number") node.counterAxisSpacing = counterAxisSpacing;
       
+      // new
+      if (primaryAxisAlignItems !== undefined) node.primaryAxisAlignItems = primaryAxisAlignItems;
+      if (counterAxisAlignItems !== undefined) node.counterAxisAlignItems = counterAxisAlignItems;
+
       // Set layout wrap
       if (layoutWrap !== undefined) node.layoutWrap = layoutWrap;
       
