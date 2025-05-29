@@ -251,101 +251,120 @@ export async function setAutoLayoutUnified(params) {
  *   - {string} primaryAxisSizingMode - The primary axis sizing mode after modification
  *   - {string} counterAxisSizingMode - The counter axis sizing mode after modification
  * 
- * @throws {Error} Throws an error if:
- *   - nodeId parameter is missing or falsy
- *   - axis parameter is missing or not "horizontal" or "vertical"
- *   - mode parameter is missing or not one of "HUG", "FIXED", "FILL"
- *   - the specified node doesn't exist or doesn't support auto layout
- * 
- * @example
- * // Set a node to hug its content horizontally
- * const result = await setAutoLayoutResizing({
- *   nodeId: "123:456",
- *   axis: "horizontal",
- *   mode: "HUG"
- * });
- * console.log(result.primaryAxisSizingMode); // "AUTO"
- * 
- * @example
- * // Set a node to fill available space vertically
- * await setAutoLayoutResizing({
- *   nodeId: "789:012",
- *   axis: "vertical",
- *   mode: "FILL"
- * });
- * 
- * @example
- * // Set a node to fixed dimensions horizontally
- * await setAutoLayoutResizing({
- *   nodeId: "345:678",
- *   axis: "horizontal",
- *   mode: "FIXED"
- * });
+ * @throws {Error} Throws an error if parameters are invalid or node doesn't support auto layout
  */
+  
 export async function setAutoLayoutResizing(params) {
   console.log("💥 [setAutoLayoutResizing] called with params:", JSON.stringify(params, null, 2));
   const { nodeId, axis, mode } = params || {};
+  
+  // Validation
   if (!nodeId) throw new Error("Missing nodeId parameter");
-  if (!axis || (axis !== "horizontal" && axis !== "vertical")) throw new Error("Invalid or missing axis parameter");
-  if (!mode || !["HUG", "FIXED", "FILL"].includes(mode)) throw new Error("Invalid or missing mode parameter");
+  if (!axis || (axis !== "horizontal" && axis !== "vertical")) {
+    throw new Error("Invalid or missing axis parameter");
+  }
+  if (!mode || !["HUG", "FIXED", "FILL"].includes(mode)) {
+    throw new Error("Invalid or missing mode parameter");
+  }
+
   const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node || !("primaryAxisSizingMode" in node)) throw new Error(`Node ${nodeId} does not support auto layout`);
-  if (mode === "HUG") {
+  if (!node) throw new Error(`Node with id ${nodeId} not found`);
+  
+  console.log(`🔍 Node details:`, {
+    name: node.name,
+    layoutMode: node.layoutMode,
+    hasLayoutProperties: "layoutGrow" in node,
+    layoutGrow: node.layoutGrow,
+    layoutAlign: node.layoutAlign,
+    parent: node.parent ? {
+      name: node.parent.name,
+      layoutMode: node.parent.layoutMode
+    } : null
+  });
+
+  // Check if this node is a child in an auto layout container
+  if (!node.parent || !("layoutMode" in node.parent) || node.parent.layoutMode === "NONE") {
+    throw new Error(`Node ${nodeId} is not a child of an auto layout container`);
+  }
+
+  // Check if the node has layout properties (meaning it's a child in auto layout)
+  if (!("layoutGrow" in node) && !("layoutAlign" in node)) {
+    throw new Error(`Node ${nodeId} doesn't have layout properties`);
+  }
+
+  const parentLayoutMode = node.parent.layoutMode;
+  
+  if (mode === "FILL") {
     if (axis === "horizontal") {
-      node.primaryAxisSizingMode = "AUTO";
-    } else {
-      node.counterAxisSizingMode = "AUTO";
-    }
-    for (const child of node.children) {
-      if (axis === "horizontal") {
-        if (node.layoutMode === "HORIZONTAL" && "layoutGrow" in child) {
-          child.layoutGrow = 0;
+      if (parentLayoutMode === "HORIZONTAL") {
+        // Parent is horizontal, so horizontal filling means layoutGrow
+        if ("layoutGrow" in node) {
+          node.layoutGrow = 1;
         }
-        if (node.layoutMode !== "HORIZONTAL" && "layoutAlign" in child) {
-          child.layoutAlign = "INHERIT";
+      } else if (parentLayoutMode === "VERTICAL") {
+        // Parent is vertical, so horizontal filling means stretch alignment
+        if ("layoutAlign" in node) {
+          node.layoutAlign = "STRETCH";
         }
-      } else {
-        if (node.layoutMode === "VERTICAL" && "layoutGrow" in child) {
-          child.layoutGrow = 0;
+      }
+    } else { // vertical axis
+      if (parentLayoutMode === "VERTICAL") {
+        // Parent is vertical, so vertical filling means layoutGrow
+        if ("layoutGrow" in node) {
+          node.layoutGrow = 1;
         }
-        if (node.layoutMode !== "VERTICAL" && "layoutAlign" in child) {
-          child.layoutAlign = "INHERIT";
+      } else if (parentLayoutMode === "HORIZONTAL") {
+        // Parent is horizontal, so vertical filling means stretch alignment
+        if ("layoutAlign" in node) {
+          node.layoutAlign = "STRETCH";
         }
       }
     }
-  } else if (mode === "FILL") {
+  } else if (mode === "HUG") {
     if (axis === "horizontal") {
-      node.primaryAxisSizingMode = "AUTO";
-    } else {
-      node.counterAxisSizingMode = "AUTO";
-    }
-    for (const child of node.children) {
-      if (axis === "horizontal") {
-        if (node.layoutMode === "HORIZONTAL" && "layoutGrow" in child) {
-          child.layoutGrow = 1;
-        }
-        if (node.layoutMode !== "HORIZONTAL" && "layoutAlign" in child) {
-          child.layoutAlign = "STRETCH";
+      if (parentLayoutMode === "HORIZONTAL") {
+        if ("layoutGrow" in node) {
+          node.layoutGrow = 0;
         }
       } else {
-        if (node.layoutMode === "VERTICAL" && "layoutGrow" in child) {
-          child.layoutGrow = 1;
+        if ("layoutAlign" in node) {
+          node.layoutAlign = "INHERIT";
         }
-        if (node.layoutMode !== "VERTICAL" && "layoutAlign" in child) {
-          child.layoutAlign = "STRETCH";
+      }
+    } else { // vertical
+      if (parentLayoutMode === "VERTICAL") {
+        if ("layoutGrow" in node) {
+          node.layoutGrow = 0;
+        }
+      } else {
+        if ("layoutAlign" in node) {
+          node.layoutAlign = "INHERIT";
         }
       }
     }
-  } else {
-    if (axis === "horizontal") {
-      node.primaryAxisSizingMode = "FIXED";
-    } else {
-      node.counterAxisSizingMode = "FIXED";
+  } else { // FIXED
+    // For fixed, we typically want to not grow and inherit alignment
+    if ("layoutGrow" in node) {
+      node.layoutGrow = 0;
+    }
+    if ("layoutAlign" in node) {
+      node.layoutAlign = "INHERIT";
     }
   }
+
+  console.log(`✅ After changes:`, {
+    layoutGrow: node.layoutGrow,
+    layoutAlign: node.layoutAlign,
+    width: node.width,
+    height: node.height
+  });
+
   return {
     id: node.id,
-    primaryAxisSizingMode: node.primaryAxisSizingMode,
-    counterAxisSizingMode: node.counterAxisSizingMode
+    layoutGrow: node.layoutGrow,
+    layoutAlign: node.layoutAlign,
+    width: node.width,
+    height: node.height,
+    parentLayoutMode: parentLayoutMode
   };
 }

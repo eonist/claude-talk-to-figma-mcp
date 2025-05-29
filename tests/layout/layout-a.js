@@ -198,22 +198,22 @@ async function create_header(parentId) {
   // No need to move or insert header; parentId is set at creation
 
   // 2. Set auto layout on the header: horizontal, no wrap
-   const autoLayoutParams = {
-     layout: {
-       nodeId: headerId,
-       mode: "HORIZONTAL",
-       layoutWrap: "NO_WRAP",
-       primaryAxisSizing: "FIXED",
-       //counterAxisSizing: "FIXED"
-     }
-   };
-   const autoLayoutResult = await runStep({
-     ws, channel,
-     command: "set_auto_layout",
-     params: autoLayoutParams,
-     assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === headerId,
-     label: "Set auto layout on header"
-   });
+//   const autoLayoutParams = {
+//     layout: {
+//       nodeId: headerId,
+//       mode: "HORIZONTAL",
+//       layoutWrap: "NO_WRAP",
+//       primaryAxisSizing: "FIXED",
+//       //counterAxisSizing: "FIXED"
+//     }
+//   };
+//   const autoLayoutResult = await runStep({
+//     ws, channel,
+//     command: "set_auto_layout",
+//     params: autoLayoutParams,
+//     assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === headerId,
+//     label: "Set auto layout on header"
+//   });
 
   // 3. Set auto layout resizing: fill horizontally, fixed vertically
   const resizingResult = await runStep({
@@ -231,7 +231,7 @@ async function create_header(parentId) {
   // Return all results for reporting
   return {
     ...headerResult,
-    autoLayoutResult,
+    //autoLayoutResult,
     resizingResult
   };
 }
