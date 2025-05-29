@@ -17,7 +17,7 @@ export function setFill(node, color) {
   node.fills = [{
     type: "SOLID",
     color: { r: color.r, g: color.g, b: color.b },
-    opacity: color.a || 1
+    opacity: color.a !== undefined ? color.a : 1
   }];
 }
 
@@ -36,7 +36,8 @@ export function setStroke(node, color, weight) {
   node.strokes = [{
     type: "SOLID",
     color: { r: color.r, g: color.g, b: color.b },
-    opacity: color.a || 1
+    opacity: color.a !== undefined ? color.a : 1
   }];
   if (weight !== undefined) node.strokeWeight = weight;
 }
+ 

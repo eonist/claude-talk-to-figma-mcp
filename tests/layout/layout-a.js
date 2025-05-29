@@ -138,6 +138,7 @@ async function create_green_rounded_rectangle(parentId) {
       paddingRight: 15,
       paddingTop: 15,
       paddingBottom: 15,
+      itemSpacing: 15,
       primaryAxisSizing: "FIXED",
       counterAxisSizing: "FIXED"
     }
@@ -179,7 +180,7 @@ async function create_header(parentId) {
     width: 100, // will be stretched to fill parent
     height: 32,
     name: "Header",
-    fillColor: { r: 0.1, g: 0.1, b: 0.1, a: 0.2 }, // gray
+    fillColor: { r: 1, g: 1, b: 1, a: 0 }, // gray
     parentId
   };
   const headerResult = await runStep({
@@ -304,8 +305,8 @@ async function create_header_usd_capsule(parentId) {
   const usdTextParams = {
     x: 0, y: 0,
     text: "USD",
-    fontSize: 14,
-    fontWeight: 700,
+    fontSize: 12,
+    fontWeight: 500,
     fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
     opacity: 0.7,
     parentId: capsuleId
@@ -345,7 +346,7 @@ async function create_header_amount_text(parentId) {
     x: 0, y: 0,
     text: "816,754",
     fontSize: 24,
-    fontWeight: 700,
+    fontWeight: 400,
     fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
     parentId
   };
@@ -379,8 +380,8 @@ async function create_header_cash_text(parentId) {
   const params = {
     x: 0, y: 0,
     text: "Cash",
-    fontSize: 16,
-    fontWeight: 700,
+    fontSize: 12,
+    fontWeight: 500,
     fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
     parentId
   };
