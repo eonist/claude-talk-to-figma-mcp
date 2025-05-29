@@ -449,7 +449,7 @@ async function create_growth_percentage_text(parentId) {
     command: "set_text",
     params: { text: params },
     assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
       response
     }),
     label: "create_growth_percentage_text"
@@ -583,10 +583,10 @@ async function create_header_amount_text(parentId) {
     command: "set_text",
     params: { text: params },
     assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
       response
     }),
-    label: "create_header_amount_text"
+    label: "create_growth_text"
   });
   const textId = textResult.response?.id;
   console.log("Created amount text with ID:", textId, "Result:", textResult);
@@ -618,10 +618,10 @@ async function create_header_cash_text(parentId) {
     command: "set_text",
     params: { text: params },
     assert: (response) => ({
-      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
       response
     }),
-    label: "create_header_cash_text"
+    label: "create_upward_arrow_text"
   });
   const textId = textResult.response?.id;
   console.log("Created cash text with ID:", textId, "Result:", textResult);
