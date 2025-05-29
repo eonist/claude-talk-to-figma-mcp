@@ -233,13 +233,103 @@ async function create_header(parentId) {
   // 5. Create the "Amount" text node
   const amountTextResult = await create_header_amount_text(headerId);
 
+  // 6. Create the "USD" capsule
+  const usdCapsuleResult = await create_header_usd_capsule(headerId);
+
   // Return all results for reporting
   return {
     ...headerResult,
     autoLayoutResult,
     headerResizingResult,
     cashTextResult,
-    amountTextResult
+    amountTextResult,
+    usdCapsuleResult
+  };
+}
+
+/**
+ * Creates the "USD" capsule indicator in the header frame.
+ * @param {string} parentId - The header frame ID
+ * @returns {Promise} Test result with capsule creation status
+ */
+async function create_header_usd_capsule(parentId) {
+  console.log("💥 create_header_usd_capsule called with parentId:", parentId);
+  // 1. Create the capsule frame
+  const capsuleParams = {
+    x: 0, y: 0,
+    width: 10, // will hug content
+    height: 24, // enough for 14px text + padding
+    name: "USD Capsule",
+    fillColor: { r: 0, g: 0, b: 0, a: 0.1 },
+    cornerRadius: 16,
+    parentId
+  };
+  const capsuleResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: capsuleParams },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_header_usd_capsule"
+  });
+  const capsuleId = capsuleResult.response?.ids?.[0];
+  console.log("Created USD capsule frame with ID:", capsuleId, "Result:", capsuleResult);
+  if (!capsuleId) return capsuleResult;
+
+  // 2. Set auto layout on the capsule: horizontal, no wrap, center alignment, padding 4px
+  const capsuleLayoutParams = {
+    layout: {
+      nodeId: capsuleId,
+      mode: "HORIZONTAL",
+      layoutWrap: "NO_WRAP",
+      paddingLeft: 4,
+      paddingRight: 4,
+      paddingTop: 4,
+      paddingBottom: 4,
+      primaryAxisAlignItems: "CENTER",
+      counterAxisAlignItems: "CENTER"
+    }
+  };
+  const capsuleLayoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: capsuleLayoutParams,
+    assert: r => r && r["0"] && r["0"].success === true && r["0"].nodeId === capsuleId,
+    label: "Set auto layout on USD capsule"
+  });
+
+  // 3. Create the "USD" text node inside the capsule
+  const usdTextParams = {
+    x: 0, y: 0,
+    text: "USD",
+    fontSize: 14,
+    fontWeight: 700,
+    fontColor: { r: 0, g: 0, b: 0, a: 0.4 },
+    opacity: 0.7,
+    parentId: capsuleId
+  };
+  const usdTextResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: usdTextParams },
+    assert: (response) => ({
+      pass: Array.isArray(response.ids) && response.ids.length > 0,
+      response
+    }),
+    label: "create_header_usd_text"
+  });
+  const usdTextId = usdTextResult.response?.id;
+  console.log("Created USD text with ID:", usdTextId, "Result:", usdTextResult);
+  if (!usdTextId) return { ...capsuleResult, capsuleLayoutResult, usdTextResult };
+
+  // No need to set resizing: HUG is default for text nodes
+
+  return {
+    ...capsuleResult,
+    capsuleLayoutResult,
+    usdTextResult
   };
 }
 
