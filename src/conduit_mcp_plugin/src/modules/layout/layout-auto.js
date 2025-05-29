@@ -230,141 +230,229 @@ export async function setAutoLayoutUnified(params) {
   }
   return results;
 }
+ 
 /**
- * Sets the auto layout resizing behavior for a Figma node along a specified axis.
- * This function configures how a node and its children behave in auto layout containers,
- * supporting three resizing modes: HUG (content-based sizing), FILL (stretch to fill),
- * and FIXED (explicit dimensions).
+ * Sets the auto layout resizing behavior for a Figma node along specified axes.
+ * This function configures how a node behaves within its auto layout parent container.
  *
  * @async
  * @function setAutoLayoutResizing
  * @param {Object} params - Configuration parameters for auto layout resizing
  * @param {string} params.nodeId - The unique identifier of the Figma node to modify
- * @param {("horizontal"|"vertical")} params.axis - The axis along which to apply resizing behavior
- * @param {("HUG"|"FIXED"|"FILL")} params.mode - The resizing mode to apply:
- *   - "HUG": Node sizes itself to fit its content
- *   - "FILL": Node stretches to fill available space
- *   - "FIXED": Node maintains explicit dimensions
+ * @param {("horizontal"|"vertical")} [params.axis] - The axis along which to apply resizing behavior (deprecated, use horizontal/vertical instead)
+ * @param {("HUG"|"FIXED"|"FILL")} [params.mode] - The resizing mode (deprecated, use horizontal/vertical instead)
+ * @param {("HUG"|"FIXED"|"FILL")} [params.horizontal] - Horizontal resizing behavior
+ * @param {("HUG"|"FIXED"|"FILL")} [params.vertical] - Vertical resizing behavior
  * 
- * @returns {Promise<Object>} A promise that resolves to an object containing:
- *   - {string} id - The node's unique identifier
- *   - {string} primaryAxisSizingMode - The primary axis sizing mode after modification
- *   - {string} counterAxisSizingMode - The counter axis sizing mode after modification
+ * @returns {Promise} A promise that resolves to an object containing the node's layout state
+ * @throws {Error} Throws an error if parameters are invalid or node doesn't support layout behavior
  * 
- * @throws {Error} Throws an error if parameters are invalid or node doesn't support auto layout
+ * @example
+ * // Fill both directions
+ * await setAutoLayoutResizing({
+ *   nodeId: "320:4665",
+ *   horizontal: "FILL",
+ *   vertical: "FILL"
+ * });
+ * 
+ * @important **FIGMA CAVEATS & LIMITATIONS:**
+ * 
+ * 1. **Auto layout only works on frames** - This function only works on nodes that are direct 
+ *    children of frames with auto layout enabled. Regular shapes or groups won't work.
+ * 
+ * 2. **Manual positioning is disabled** - Once a node is in an auto layout container, you cannot 
+ *    manually drag or position it. All positioning is controlled by layout properties.
+ * 
+ * 3. **layoutGrow vs layoutAlign behavior** - Figma uses different properties depending on axis:
+ *    - Primary axis (direction of layout): Uses `layoutGrow` (0 = hug/fixed, 1 = fill)
+ *    - Counter axis (perpendicular): Uses `layoutAlign` ("INHERIT" = hug, "STRETCH" = fill)
+ * 
+ * 4. **Component instances may need detaching** - When working with component instances inside 
+ *    auto layout, you may need to detach them to get full layout flexibility. Components and 
+ *    auto layout "aren't quite as intelligent as we might like them to be".
+ * 
+ * 5. **Text alignment can interfere** - Text layers may have alignment settings that conflict 
+ *    with intended layout behavior. Check text alignment if results are unexpected.
+ * 
+ * 6. **Frame conversion side effects** - When enabling auto layout, Figma converts shapes to 
+ *    frames, which may change visual properties. The frame itself becomes the visual container, 
+ *    "taking on all the styles and effects from the container shape it's just swallowed up".
+ * 
+ * 7. **Constraints vs Auto Layout confusion** - Don't confuse auto layout alignment with 
+ *    constraints. Constraints work on children of frames WITHOUT auto layout, while this 
+ *    function works on children OF auto layout frames.
+ * 
+ * 8. **FILL mode requires parent space** - For FILL to work properly, the parent auto layout 
+ *    frame must have sufficient space. If the parent is also set to "hug contents", FILL 
+ *    behavior may not work as expected.
+ * 
+ * 9. **Nested auto layout complexity** - Multiple levels of auto layout can create complex 
+ *    interactions. Changes to child nodes may affect parent sizing unexpectedly.
+ * 
+ * 10. **Grid auto layout differences** - If the parent uses grid auto layout, some resizing 
+ *     properties may behave differently than horizontal/vertical layouts.
  */
-  
 export async function setAutoLayoutResizing(params) {
-  console.log("💥 [setAutoLayoutResizing] called with params:", JSON.stringify(params, null, 2));
-  const { nodeId, axis, mode } = params || {};
+  const { nodeId, axis, mode, horizontal, vertical } = params || {};
+  
+  // console.log(`💥 [setAutoLayoutResizing] called with params:`, JSON.stringify(params, null, 2));
   
   // Validation
   if (!nodeId) throw new Error("Missing nodeId parameter");
-  if (!axis || (axis !== "horizontal" && axis !== "vertical")) {
-    throw new Error("Invalid or missing axis parameter");
+  
+  // Support both old API (axis/mode) and new API (horizontal/vertical)
+  let horizontalMode = horizontal;
+  let verticalMode = vertical;
+  
+  if (axis && mode) {
+    if (axis === "horizontal") {
+      horizontalMode = mode;
+    } else if (axis === "vertical") {
+      verticalMode = mode;
+    }
   }
-  if (!mode || !["HUG", "FIXED", "FILL"].includes(mode)) {
-    throw new Error("Invalid or missing mode parameter");
+  
+  if (!horizontalMode && !verticalMode) {
+    throw new Error("Must specify either horizontal, vertical, or both axis/mode parameters");
   }
 
   const node = await figma.getNodeByIdAsync(nodeId);
   if (!node) throw new Error(`Node with id ${nodeId} not found`);
-  
-  console.log(`🔍 Node details:`, {
-    name: node.name,
-    layoutMode: node.layoutMode,
-    hasLayoutProperties: "layoutGrow" in node,
-    layoutGrow: node.layoutGrow,
-    layoutAlign: node.layoutAlign,
-    parent: node.parent ? {
-      name: node.parent.name,
-      layoutMode: node.parent.layoutMode
-    } : null
-  });
 
-  // Check if this node is a child in an auto layout container
-  if (!node.parent || !("layoutMode" in node.parent) || node.parent.layoutMode === "NONE") {
-    throw new Error(`Node ${nodeId} is not a child of an auto layout container`);
-  }
+  // console.log(`🔍 Before changes:`, {
+  //   layoutMode: node.layoutMode,
+  //   primaryAxisSizingMode: node.primaryAxisSizingMode,
+  //   counterAxisSizingMode: node.counterAxisSizingMode,
+  //   layoutGrow: node.layoutGrow,
+  //   layoutAlign: node.layoutAlign
+  // });
 
-  // Check if the node has layout properties (meaning it's a child in auto layout)
-  if (!("layoutGrow" in node) && !("layoutAlign" in node)) {
-    throw new Error(`Node ${nodeId} doesn't have layout properties`);
-  }
+  // console.log(`🔍 Node details:`, {
+  //   name: node.name,
+  //   width: node.width,
+  //   height: node.height,
+  //   layoutMode: node.layoutMode,
+  //   hasLayoutProperties: "layoutGrow" in node,
+  //   layoutGrow: node.layoutGrow,
+  //   layoutAlign: node.layoutAlign,
+  //   parent: node.parent ? {
+  //     name: node.parent.name,
+  //     layoutMode: node.parent.layoutMode,
+  //     width: node.parent.width,
+  //     height: node.parent.height
+  //   } : null
+  // });
 
-  const parentLayoutMode = node.parent.layoutMode;
-  
-  if (mode === "FILL") {
-    if (axis === "horizontal") {
-      if (parentLayoutMode === "HORIZONTAL") {
-        // Parent is horizontal, so horizontal filling means layoutGrow
-        if ("layoutGrow" in node) {
-          node.layoutGrow = 1;
-        }
-      } else if (parentLayoutMode === "VERTICAL") {
-        // Parent is vertical, so horizontal filling means stretch alignment
-        if ("layoutAlign" in node) {
-          node.layoutAlign = "STRETCH";
-        }
-      }
-    } else { // vertical axis
-      if (parentLayoutMode === "VERTICAL") {
-        // Parent is vertical, so vertical filling means layoutGrow
-        if ("layoutGrow" in node) {
-          node.layoutGrow = 1;
-        }
-      } else if (parentLayoutMode === "HORIZONTAL") {
-        // Parent is horizontal, so vertical filling means stretch alignment
-        if ("layoutAlign" in node) {
-          node.layoutAlign = "STRETCH";
-        }
-      }
+  /**
+   * Validates that the node can have layout behavior applied
+   */
+  function validateLayoutContext(node) {
+    if (!node.parent || !("layoutMode" in node.parent) || node.parent.layoutMode === "NONE") {
+      throw new Error(`Node is not a child of an auto layout container`);
     }
-  } else if (mode === "HUG") {
-    if (axis === "horizontal") {
-      if (parentLayoutMode === "HORIZONTAL") {
-        if ("layoutGrow" in node) {
-          node.layoutGrow = 0;
-        }
+    
+    if (!("layoutGrow" in node) && !("layoutAlign" in node)) {
+      throw new Error(`Node doesn't support layout properties`);
+    }
+  }
+
+  /**
+   * Sets the grow behavior (for primary axis)
+   */
+  function setGrowBehavior(node, mode) {
+    if (!("layoutGrow" in node)) return;
+    
+    // console.log(`🔧 Setting grow behavior: ${mode}`);
+    
+    switch (mode) {
+      case "FILL":
+        node.layoutGrow = 1;
+        break;
+      case "HUG":
+      case "FIXED":
+        node.layoutGrow = 0;
+        break;
+    }
+  }
+
+  /**
+   * Sets the alignment behavior (for counter axis)
+   */
+  function setAlignBehavior(node, mode) {
+    if (!("layoutAlign" in node)) return;
+    
+    // console.log(`🔧 Setting align behavior: ${mode}`);
+    
+    switch (mode) {
+      case "FILL":
+        node.layoutAlign = "STRETCH";
+        break;
+      case "HUG":
+      case "FIXED":
+        node.layoutAlign = "INHERIT";
+        break;
+    }
+  }
+
+  /**
+   * Core logic for applying layout behavior
+   */
+  function applyLayoutBehavior(node, { horizontal, vertical }) {
+    validateLayoutContext(node);
+    
+    const parent = node.parent;
+    const isHorizontalLayout = parent.layoutMode === "HORIZONTAL";
+    
+    // console.log(`🔧 Applying layout behavior:`, {
+    //   horizontal,
+    //   vertical,
+    //   isHorizontalLayout,
+    //   parentLayoutMode: parent.layoutMode
+    // });
+    
+    // Apply horizontal behavior
+    if (horizontal) {
+      if (isHorizontalLayout) {
+        setGrowBehavior(node, horizontal);
       } else {
-        if ("layoutAlign" in node) {
-          node.layoutAlign = "INHERIT";
-        }
+        setAlignBehavior(node, horizontal);
       }
-    } else { // vertical
-      if (parentLayoutMode === "VERTICAL") {
-        if ("layoutGrow" in node) {
-          node.layoutGrow = 0;
-        }
+    }
+    
+    // Apply vertical behavior  
+    if (vertical) {
+      if (isHorizontalLayout) {
+        setAlignBehavior(node, vertical);
       } else {
-        if ("layoutAlign" in node) {
-          node.layoutAlign = "INHERIT";
-        }
+        setGrowBehavior(node, vertical);
       }
     }
-  } else { // FIXED
-    // For fixed, we typically want to not grow and inherit alignment
-    if ("layoutGrow" in node) {
-      node.layoutGrow = 0;
-    }
-    if ("layoutAlign" in node) {
-      node.layoutAlign = "INHERIT";
-    }
+    
+    return {
+      layoutGrow: node.layoutGrow,
+      layoutAlign: node.layoutAlign,
+      width: node.width,
+      height: node.height,
+      parentLayoutMode: parent.layoutMode
+    };
   }
 
-  console.log(`✅ After changes:`, {
-    layoutGrow: node.layoutGrow,
-    layoutAlign: node.layoutAlign,
-    width: node.width,
-    height: node.height
+  // Apply the layout behavior
+  const result = applyLayoutBehavior(node, { 
+    horizontal: horizontalMode, 
+    vertical: verticalMode 
   });
-
-  return {
-    id: node.id,
-    layoutGrow: node.layoutGrow,
-    layoutAlign: node.layoutAlign,
-    width: node.width,
-    height: node.height,
-    parentLayoutMode: parentLayoutMode
-  };
+  
+  // console.log(`✅ After changes:`, {
+  //   layoutGrow: node.layoutGrow,
+  //   layoutAlign: node.layoutAlign,
+  //   width: node.width,
+  //   height: node.height,
+  //   parentLayoutMode: result.parentLayoutMode
+  // });
+  
+  // Fixed: Replace spread operator with Object.assign for compatibility
+  return Object.assign({
+    id: node.id
+  }, result);
 }
