@@ -501,7 +501,7 @@ async function create_header_usd_capsule(parentId) {
   const capsuleParams = {
     x: 0, y: 0,
     width: 10, // will hug content
-    //height: 24, // enough for 14px text + padding
+    height: 24, // enough for 14px text + padding
     name: "USD Capsule",
     fillColor: { r: 0, g: 0, b: 0, a: 0.1 },
     cornerRadius: 16,
@@ -543,20 +543,6 @@ async function create_header_usd_capsule(parentId) {
     label: "Set auto layout on USD capsule"
   });
 
-  // 3. Set auto layout resizing: hug vertically for the capsule frame itself
-  const capsuleVerticalHugResult = await runStep({
-    ws, channel,
-    command: "set_auto_layout_resizing",
-    params: {
-      nodeId: capsuleId,
-      axis: "vertical",
-      mode: "AUTO"
-    },
-    assert: r => r && r.nodeId === capsuleId,
-    label: "Set USD capsule to hug height"
-  });
-  console.log("💥 Set_auto_layout_resizing for USD capsule (vertical hug/auto). NodeId:", capsuleId, "Result:", capsuleVerticalHugResult);
-
   // 4. Create the "USD" text node inside the capsule
   const usdTextParams = {
     x: 0, y: 0,
@@ -579,9 +565,21 @@ async function create_header_usd_capsule(parentId) {
   });
   const usdTextId = usdTextResult.response?.id;
   console.log("Created USD text with ID:", usdTextId, "Result:", usdTextResult);
-  if (!usdTextId) return { ...capsuleResult, capsuleLayoutResult, capsuleVerticalHugResult, usdTextResult };
+  if (!usdTextId) return { ...capsuleResult, capsuleLayoutResult, usdTextResult };
 
-  // No need to set resizing: HUG is default for text nodes
+  // 5. Set auto layout resizing: hug vertically for the capsule frame itself (after adding child)
+  const capsuleVerticalHugResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: capsuleId,
+      axis: "vertical",
+      mode: "AUTO"
+    },
+    assert: r => r && r.nodeId === capsuleId,
+    label: "Set USD capsule to hug height"
+  });
+  console.log("💥 Set_auto_layout_resizing for USD capsule (vertical hug/auto). NodeId:", capsuleId, "Result:", capsuleVerticalHugResult);
 
   return {
     ...capsuleResult,

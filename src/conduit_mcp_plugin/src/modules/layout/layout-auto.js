@@ -444,11 +444,20 @@ export async function setAutoLayoutResizing(params) {
         setAlignBehavior(node, vertical);
       } else {
         setGrowBehavior(node, vertical);
-        // For hug, set counterAxisSizingMode to "AUTO" and do NOT set height, let Figma auto-calculate
+        // For hug, set counterAxisSizingMode to "AUTO" and clear height if possible
         if (vertical === "HUG" || vertical === "AUTO") {
           try {
             node.counterAxisSizingMode = "AUTO";
             console.log(`✅ [applyLayoutBehavior] Set counterAxisSizingMode to "AUTO" for node ${node.name} (${node.id}) in vertical parent (hug height)`);
+            // Try to clear height if possible
+            if (typeof node.height === "number" && node.height > 0) {
+              try {
+                node.resize(node.width, undefined);
+                console.log(`✅ [applyLayoutBehavior] Cleared height for node ${node.name} (${node.id}) to enable vertical hug`);
+              } catch (e2) {
+                console.log(`❌ [applyLayoutBehavior] Failed to clear height for node ${node.name} (${node.id}):`, e2);
+              }
+            }
           } catch (e) {
             console.log(`❌ [applyLayoutBehavior] Failed to set counterAxisSizingMode to "AUTO" for node ${node.name} (${node.id}):`, e);
           }
