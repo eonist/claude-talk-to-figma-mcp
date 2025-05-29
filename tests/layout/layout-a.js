@@ -214,35 +214,20 @@ async function create_header(parentId) {
     label: "Set auto layout on header"
   });
 
-  // 3. Set auto layout resizing: fill horizontally for the header frame itself
-  console.log("💥 About to call set_auto_layout_resizing for header frame. NodeId:", headerId);
+  // 3. Set auto layout resizing: fill horizontally and hug vertically for the header frame itself
+  console.log("💥 About to call set_auto_layout_resizing for header frame (FILL horizontal, AUTO vertical). NodeId:", headerId);
   const headerResizingResult = await runStep({
     ws, channel,
     command: "set_auto_layout_resizing",
     params: {
       nodeId: headerId,
-      axis: "horizontal",
-      mode: "FILL"
+      horizontal: "FILL",
+      vertical: "AUTO"
     },
     assert: r => r && r.nodeId === headerId,
-    label: "Set header frame to fill parent width"
+    label: "Set header frame to fill width and hug height"
   });
-  console.log("💥 Set_auto_layout_resizing for header frame. NodeId:", headerId, "Result:", headerResizingResult);
-
-  // 4. Set auto layout resizing: hug vertically for the header frame itself
-  console.log("💥 About to call set_auto_layout_resizing for header frame (vertical hug/auto). NodeId:", headerId);
-  const headerVerticalHugResult = await runStep({
-    ws, channel,
-    command: "set_auto_layout_resizing",
-    params: {
-      nodeId: headerId,
-      axis: "vertical",
-      mode: "AUTO"
-    },
-    assert: r => r && r.nodeId === headerId,
-    label: "Set header frame to hug height"
-  });
-  console.log("💥 Set_auto_layout_resizing for header frame (vertical hug/auto). NodeId:", headerId, "Result:", headerVerticalHugResult);
+  console.log("💥 Set_auto_layout_resizing for header frame (FILL horizontal, AUTO vertical). NodeId:", headerId, "Result:", headerResizingResult);
 
   // 4. Create the "Cash" text node
   const cashTextResult = await create_header_cash_text(headerId);

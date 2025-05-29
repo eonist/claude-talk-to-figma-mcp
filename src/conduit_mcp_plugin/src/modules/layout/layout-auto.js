@@ -444,6 +444,10 @@ export async function setAutoLayoutResizing(params) {
         setAlignBehavior(node, vertical);
       } else {
         setGrowBehavior(node, vertical);
+        // For hug, do NOT set height, let Figma auto-calculate
+        if (vertical === "HUG" || vertical === "AUTO") {
+          console.log(`✅ [applyLayoutBehavior] Set vertical hug for node ${node.name} (${node.id}) in vertical parent (no fixed height)`);
+        }
       }
     }
     
