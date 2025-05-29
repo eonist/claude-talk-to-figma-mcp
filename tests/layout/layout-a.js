@@ -720,11 +720,3 @@ export async function layoutATest(results, parentFrameId) {
 
   // (Optional: add bar section in future)
 }
- 
-// in the layoutATest (init) method we should; create green frame
-
-// add header to the green frame
-
-// add growth section to the green frame
-
-// add bar section (next task)
