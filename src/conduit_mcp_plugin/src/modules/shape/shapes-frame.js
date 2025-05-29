@@ -37,14 +37,16 @@ export async function createFrame(params) {
   const ids = [];
   for (const cfg of framesArr) {
     const {
-      x = 0, y = 0, width = 100, height = 100,
+      x = 0, y = 0, width, height,
       name = "Frame", parentId, fillColor, strokeColor, strokeWeight,
       cornerRadius
     } = cfg || {};
 
     const frame = figma.createFrame();
     frame.x = x; frame.y = y;
-    frame.resize(width, height);
+    if (typeof width === "number" && typeof height === "number") {
+      frame.resize(width, height);
+    }
     frame.name = name;
 
     if (fillColor) setFill(frame, fillColor);
