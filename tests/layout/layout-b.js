@@ -462,6 +462,111 @@ async function create_progress_bar_element_rectangle(parentId, fillColor) {
   return barResult;
 }
 
+
+/**
+ * Creates the amount display section (amount-display-section) with main amount and subtitle.
+ * @param {string} parentId - The progress-section-frame ID
+ * @returns {Promise} Test result with section and text creation status
+ */
+async function create_amount_display_section(parentId) {
+  // 1. Create the horizontal auto-layout frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "amount-display-section",
+    parentId
+  };
+  const sectionResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_amount_display_section"
+  });
+
+  const sectionId = sectionResult.response?.ids?.[0];
+  if (!sectionId) return sectionResult;
+
+  // 2. Set horizontal auto-layout, spacing 8
+  const layoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: sectionId,
+        mode: "HORIZONTAL",
+        itemSpacing: 8
+      }
+    },
+    assert: (response) => ({
+      pass: response && response["0"] && response["0"].success === true && response["0"].nodeId === sectionId,
+      response
+    }),
+    label: "set_auto_layout on amount-display-section"
+  });
+
+  // 3. Create main amount text
+  const mainAmountParams = {
+    x: 0,
+    y: 0,
+    text: "€ 2,565",
+    fontSize: 48,
+    fontWeight: 700,
+    fontFamily: "Inter",
+    fontStyle: "Bold",
+    fontColor: { r: 1, g: 1, b: 1, a: 1 },
+    lineHeight: 1.2,
+    name: "main-amount",
+    parentId: sectionId
+  };
+  const mainAmountResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: mainAmountParams },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_main_amount"
+  });
+
+  // 4. Create subtitle text
+  const subtitleParams = {
+    x: 0,
+    y: 0,
+    text: "pledged of\n€5,000 goal",
+    fontSize: 12,
+    fontWeight: 400,
+    fontFamily: "Inter",
+    fontStyle: "Regular",
+    fontColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 }, // #CCCCCC
+    lineHeight: 1.4,
+    name: "subtitle",
+    parentId: sectionId
+  };
+  const subtitleResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: subtitleParams },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_subtitle"
+  });
+
+  return {
+    sectionResult,
+    layoutResult,
+    mainAmountResult,
+    subtitleResult
+  };
+}
+
+
 /**
  * Main entry point for the layout-b test.
  * Creates the main container frame and all children in strict sequence.
@@ -496,5 +601,6 @@ export async function layoutBTest(results, parentFrameId) {
   results.push(indicatorsContainerResult);
 
   // 6. Create the pledgetext and add it to progress section
-  
+  const amountDisplayResult = await create_amount_display_section(progressSectionFrameId);
+  results.push(amountDisplayResult);
 }
