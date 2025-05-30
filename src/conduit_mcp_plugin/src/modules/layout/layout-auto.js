@@ -6,7 +6,9 @@
 
 /**
  * Adjusts auto-layout resizing behavior for a node along a specified axis.
- *
+ * 
+ * @note using FILL for primaryAxisSizing counterAxisSizing, rather use setAutoLayoutResizing. As setting stretch etc is involved. temp hack fix for now
+ * 
  * @async
  * @function
  * @param {Object} params - Parameters for resizing configuration.
@@ -32,14 +34,12 @@ export async function setAutoLayoutUnified(params) {
     const { 
       nodeId, 
       mode, 
-      primaryAxisSizing, 
-      counterAxisSizing, 
+      primaryAxisSizing, // primaryAxisSizingMode
+      counterAxisSizing, // counterAxisSizingMode
       itemSpacing,
       counterAxisSpacing, // NEW: Added support for vertical gap between wrapped rows
       primaryAxisAlignItems, // new
       counterAxisAlignItems, // new
-      // counterAxisSizingMode, // not yet added
-      // primaryAxisSizingMode, // not yet added
       layoutWrap, 
       padding, 
       paddingLeft, // NEW: Added individual padding support

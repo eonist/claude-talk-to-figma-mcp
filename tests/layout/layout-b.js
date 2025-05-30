@@ -102,8 +102,8 @@ async function create_progress_section_frame(parentId) {
       paddingTop: 16,
       paddingBottom: 16,
       itemSpacing: 12,
-      primaryAxisSizing: "AUTO",
-      counterAxisSizing: "FILL"
+      // primaryAxisSizing: "AUTO",
+      // counterAxisSizing: "FILL"
     }
   };
   const layoutResult = await runStep({
@@ -117,9 +117,25 @@ async function create_progress_section_frame(parentId) {
     label: `set_auto_layout on progress-section-frame`
   });
 
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: frameId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === frameId,
+      response
+    }),
+    label: "set_auto_layout_resizing on progress-section-frame"
+  });
+
   return {
     ...frameResult,
-    layoutResult
+    layoutResult,
+    resizingResult
   };
 }
 
@@ -128,7 +144,7 @@ async function create_progress_bar_container_frame(parentId) {
     x: 0,
     y: 0,
     name: "progress-bar-container",
-    fillColor: { r: 1, g: 1, b: 1, a: 0 },
+    fillColor: { r: 0, g: 1, b: 0, a: 0.2 }, // debug color
     parentId
   };
   const frameResult = await runStep({
@@ -151,8 +167,8 @@ async function create_progress_bar_container_frame(parentId) {
       mode: "VERTICAL",
       primaryAxisAlignItems: "CENTER",
       counterAxisAlignItems: "MIN",
-      primaryAxisSizing: "AUTO",
-      counterAxisSizing: "FILL"
+      // primaryAxisSizing: "AUTO",
+      // counterAxisSizing: "FILL"
     }
   };
   const layoutResult = await runStep({
@@ -166,9 +182,25 @@ async function create_progress_bar_container_frame(parentId) {
     label: `set_auto_layout on progress-bar-container`
   });
 
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: frameId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === frameId,
+      response
+    }),
+    label: "set_auto_layout_resizing on progress-bar-container"
+  });
+
   return {
     ...frameResult,
-    layoutResult
+    layoutResult,
+    resizingResult
   };
 }
 
@@ -340,10 +372,10 @@ export async function layoutBTest(results, parentFrameId) {
   if (!progressSectionFrameId) return;
 
   // 3. Create progress bar container
-  // const barContainerResult = await create_progress_bar_container_frame(progressSectionFrameId);
-  // results.push(barContainerResult);
-  // const progressBarContainerId = barContainerResult.response?.ids?.[0];
-  // if (!progressBarContainerId) return;
+  const barContainerResult = await create_progress_bar_container_frame(progressSectionFrameId);
+  results.push(barContainerResult);
+  const progressBarContainerId = barContainerResult.response?.ids?.[0];
+  if (!progressBarContainerId) return;
 
   // 4. Add progress indicator labels
   // const labelContainerResult = await create_progress_indicators_label_container(progressBarContainerId);
