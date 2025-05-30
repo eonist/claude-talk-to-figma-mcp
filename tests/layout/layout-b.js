@@ -604,7 +604,205 @@ async function create_subtitle_text(parentId) {
   });
   return result;
 }
+  
+/**
+ * Creates the statistics grid container and its stat cards.
+ * @param {string} parentId - The main-container-frame ID
+ * @returns {Promise} Test result with container and card creation status
+ */
+async function create_statistics_container(parentId) {
+  // 1. Create the horizontal auto-layout frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "statistics-container",
+    parentId
+  };
+  const containerResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_statistics_container"
+  });
 
+  const containerId = containerResult.response?.ids?.[0];
+  if (!containerId) return containerResult;
+
+  // 2. Set horizontal auto-layout, spacing 16, space-between
+  const layoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: containerId,
+        mode: "HORIZONTAL",
+        itemSpacing: 16,
+        primaryAxisAlignItems: "SPACE_BETWEEN"
+      }
+    },
+    assert: (response) => ({
+      pass: response && response["0"] && response["0"].success === true && response["0"].nodeId === containerId,
+      response
+    }),
+    label: "set_auto_layout on statistics-container"
+  });
+
+  // 3. Create the 3 stat cards
+  const cardData = [
+    { number: "54", label: "backers" },
+    { number: "52", label: "% complete" },
+    { number: "15", label: "days to go" }
+  ];
+  const cardResults = [];
+  for (const { number, label } of cardData) {
+    const cardResult = await create_stat_card(containerId, number, label);
+    cardResults.push(cardResult);
+  }
+
+  return {
+    containerResult,
+    layoutResult,
+    cardResults
+  };
+}
+
+
+/**
+ * Creates a stat card with number and label.
+ * @param {string} parentId - The statistics-container ID
+ * @param {string} number - The card number text
+ * @param {string} label - The card label text
+ * @returns {Promise} Test result with card and text creation status
+ */
+async function create_stat_card(parentId, number, label) {
+  // 1. Create the vertical auto-layout frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "stat-card",
+    fillColor: { r: 1, g: 1, b: 1, a: 0 },
+    cornerRadius: 16,
+    strokeColor: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
+    strokeWeight: 2,
+    parentId
+  };
+  const cardResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_stat_card"
+  });
+
+  const cardId = cardResult.response?.ids?.[0];
+  if (!cardId) return cardResult;
+
+  // 2. Set vertical auto-layout, spacing 4, center alignment, padding 20
+  const layoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: cardId,
+        mode: "VERTICAL",
+        itemSpacing: 4,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingTop: 20,
+        paddingBottom: 20,
+        primaryAxisAlignItems: "CENTER",
+        counterAxisAlignItems: "CENTER"
+      }
+    },
+    assert: (response) => ({
+      pass: response && response["0"] && response["0"].success === true && response["0"].nodeId === cardId,
+      response
+    }),
+    label: "set_auto_layout on stat-card"
+  });
+
+  // 3. Create card number and label
+  const numberResult = await create_stat_card_number(cardId, number);
+  const labelResult = await create_stat_card_label(cardId, label);
+
+  return {
+    cardResult,
+    layoutResult,
+    numberResult,
+    labelResult
+  };
+}
+
+/**
+ * Creates the card number text node for a stat card.
+ * @param {string} parentId - The stat-card frame ID
+ * @param {string} number - The number text
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_stat_card_number(parentId, number) {
+  const params = {
+    x: 0,
+    y: 0,
+    text: number,
+    fontSize: 36,
+    fontWeight: 700,
+    fontFamily: "Inter",
+    fontStyle: "Bold",
+    fontColor: { r: 1, g: 1, b: 1, a: 1 },
+    name: "card-number",
+    parentId
+  };
+  const result = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_stat_card_number"
+  });
+  return result;
+}
+
+/**
+ * Creates the card label text node for a stat card.
+ * @param {string} parentId - The stat-card frame ID
+ * @param {string} label - The label text
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_stat_card_label(parentId, label) {
+  const params = {
+    x: 0,
+    y: 0,
+    text: label,
+    fontSize: 12,
+    fontWeight: 400,
+    fontFamily: "Inter",
+    fontStyle: "Regular",
+    fontColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
+    name: "card-label",
+    parentId
+  };
+  const result = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_stat_card_label"
+  });
+  return result;
+}
 
 /**
  * Main entry point for the layout-b test.
@@ -643,5 +841,8 @@ export async function layoutBTest(results, parentFrameId) {
   const amountDisplayResult = await create_amount_display_section(progressSectionFrameId);
   results.push(amountDisplayResult);
 
-  // 7. 
+  // 7. Create statistics grid
+  const statisticsResult = await create_statistics_container(mainContainerFrameId);
+  results.push(statisticsResult);
+
 }
