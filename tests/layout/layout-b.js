@@ -239,6 +239,103 @@ async function create_progress_indicators_label_container(parentId) {
 }
 
 /**
+ * Creates the progress indicators container and its bars:
+ * - Auto-layout: Horizontal
+ * - Spacing: 12px between elements
+ * - Fill width, hug height
+ * - Name: progress-indicators-container
+ * - Parent: progress-bar-container
+ * 
+ * Also creates 24 child bars:
+ * - First 12: #CCFF00, last 12: #404040
+ * - 12px width × 32px height (fixed)
+ * - Corner radius: 12px
+ * - Name: progress-bar-element
+ * - Parent: progress-indicators-container
+ * 
+ * @param {string} parentId - The progress-bar-container frame ID
+ * @returns {Promise} Test result with container and bar creation status
+ */
+async function create_progress_indicators_container(parentId) {
+  // 1. Create the indicators container frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "progress-indicators-container",
+    parentId
+  };
+  const containerResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: `create_progress_indicators_container (${params.name})`
+  });
+
+  const containerId = containerResult.response?.ids?.[0];
+  if (!containerId) return containerResult;
+
+  // 2. Set horizontal auto-layout, 12px spacing, fill width, hug height
+  const layoutParams = {
+    layout: {
+      nodeId: containerId,
+      mode: "HORIZONTAL",
+      itemSpacing: 12,
+      primaryAxisSizing: "AUTO",      // horizontal: hug contents
+      counterAxisSizing: "FILL"       // vertical: fill width
+    }
+  };
+  const layoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: layoutParams,
+    assert: (response) => ({
+      pass: response && response["0"] && response["0"].success === true && response["0"].nodeId === containerId,
+      response
+    }),
+    label: `set_auto_layout on progress-indicators-container`
+  });
+
+  // 3. Create the 24 bars
+  const barResults = [];
+  for (let i = 0; i < 24; i++) {
+    const fillColor = i < 12
+      ? { r: 0.8, g: 1, b: 0, a: 1 } // #CCFF00
+      : { r: 0.25, g: 0.25, b: 0.25, a: 1 }; // #404040
+    const barParams = {
+      x: 0,
+      y: 0,
+      width: 12,
+      height: 32,
+      cornerRadius: 12,
+      fillColor,
+      name: "progress-bar-element",
+      parentId: containerId
+    };
+    const barResult = await runStep({
+      ws, channel,
+      command: "create_rectangle",
+      params: { rectangle: barParams },
+      assert: (response) => ({
+        pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+        response
+      }),
+      label: `create_progress_bar_element (${i + 1})`
+    });
+    barResults.push(barResult);
+  }
+
+  return {
+    containerResult,
+    layoutResult,
+    barResults
+  };
+}
+
+/**
  * Creates the progress section frame as specified:
  * - Vertical auto-layout
  * - 12px spacing between elements
@@ -353,5 +450,9 @@ export async function layoutBTest(results, parentFrameId) {
     results.push(labelContainerResult);
   }
 
-  // 6. 
+  // 6. Add progress indicators container and bars
+  if (progressBarContainerId) {
+    const indicatorsContainerResult = await create_progress_indicators_container(progressBarContainerId);
+    results.push(indicatorsContainerResult);
+  }
 }
