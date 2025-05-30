@@ -384,8 +384,8 @@ async function create_progress_indicators_container(parentId) {
     layout: {
       nodeId: containerId,
       mode: "HORIZONTAL",
-      itemSpacing: 8,
-     //  primaryAxisSizing: "AUTO",  // ⚠️️ do not uncomment this
+      itemSpacing: 6,
+      // primaryAxisSizing: "AUTO",  // ⚠️️ do not uncomment this
       // counterAxisSizing: "FILL"  // ⚠️️ do not uncomment this
     }
   };
@@ -616,6 +616,7 @@ async function create_statistics_container(parentId) {
     x: 0,
     y: 0,
     name: "statistics-container",
+    fillColor: { r: 0, g: 0, b: 1, a: 0.0 }, // transperant color
     parentId
   };
   const containerResult = await runStep({
@@ -640,8 +641,8 @@ async function create_statistics_container(parentId) {
       layout: {
         nodeId: containerId,
         mode: "HORIZONTAL",
-        itemSpacing: 16,
-        primaryAxisAlignItems: "SPACE_BETWEEN"
+        itemSpacing: 20,
+        //primaryAxisAlignItems: "SPACE_BETWEEN"
       }
     },
     assert: (response) => ({
@@ -650,6 +651,23 @@ async function create_statistics_container(parentId) {
     }),
     label: "set_auto_layout on statistics-container"
   });
+
+
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: containerId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === containerId,
+      response
+    }),
+    label: "set_auto_layout_resizing on statistics-container"
+  });
+
 
   // 3. Create the 3 stat cards
   const cardData = [
@@ -666,6 +684,7 @@ async function create_statistics_container(parentId) {
   return {
     containerResult,
     layoutResult,
+    resizingResult,
     cardResults
   };
 }
@@ -728,6 +747,21 @@ async function create_stat_card(parentId, number, label) {
     label: "set_auto_layout on stat-card"
   });
 
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: cardId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === cardId,
+      response
+    }),
+    label: "set_auto_layout_resizing on stat-card"
+  });
+
   // 3. Create card number and label
   const numberResult = await create_stat_card_number(cardId, number);
   const labelResult = await create_stat_card_label(cardId, label);
@@ -735,6 +769,7 @@ async function create_stat_card(parentId, number, label) {
   return {
     cardResult,
     layoutResult,
+    resizingResult,
     numberResult,
     labelResult
   };
