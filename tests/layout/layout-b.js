@@ -85,12 +85,14 @@ async function create_main_container_frame(parentId) {
   };
 }
 
+// has progress and pledge goal
+
 async function create_progress_section_frame(parentId) {
   const params = {
     x: 0,
     y: 0,
     name: "progress-section-frame",
-    fillColor: { r: 1, g: 1, b: 1, a: 0 },
+    fillColor: { r: 1, g: 0, b: 0, a: 0.2 },
     cornerRadius: 16,
     strokeColor: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
     strokeWeight: 2,
@@ -119,6 +121,8 @@ async function create_progress_section_frame(parentId) {
       paddingTop: 16,
       paddingBottom: 16,
       itemSpacing: 12,
+      primaryAxisAlignItems: "MIN", // sets vertical align to top
+      counterAxisAlignItems: "CENTER" // centers content horizontally
       // primaryAxisSizing: "AUTO", // ⚠️️ do not uncomment this
       // counterAxisSizing: "FILL"  // ⚠️️ do not uncomment this
     }
@@ -157,12 +161,14 @@ async function create_progress_section_frame(parentId) {
   };
 }
 
+// has progress indicators and current pledge goal text
+
 async function create_progress_bar_container_frame(parentId) {
   const params = {
     x: 0,
     y: 0,
     name: "progress-bar-container",
-    fillColor: { r: 0, g: 1, b: 0, a: 0.2 },
+    fillColor: { r: 0, g: 1, b: 0, a: 0.2 }, 
     parentId
   };
   const frameResult = await runStep({
@@ -183,8 +189,8 @@ async function create_progress_bar_container_frame(parentId) {
     layout: {
       nodeId: frameId,
       mode: "VERTICAL",
-      primaryAxisAlignItems: "CENTER",
-      counterAxisAlignItems: "MIN",
+      primaryAxisAlignItems: "MIN", // top align
+      counterAxisAlignItems: "CENTER", // center horizontally
       // primaryAxisSizing: "AUTO",  // ⚠️️ do not uncomment this
       // counterAxisSizing: "FILL"  // ⚠️️ do not uncomment this
     }
@@ -205,7 +211,7 @@ async function create_progress_bar_container_frame(parentId) {
     command: "set_auto_layout_resizing",
     params: {
       nodeId: frameId,
-      horizontal: "FILL",
+      horizontal: "AUTO", // was fill
       vertical: "AUTO"
     },
     assert: (response) => ({
@@ -228,7 +234,7 @@ async function create_progress_indicators_label_container(parentId) {
   const params = {
     x: 0,
     y: 0,
-    fillColor: { r: 1, g: 1, b: 1, a: 0.0 },
+    fillColor: { r: 1, g: 1, b: 1, a: 0.0 }, // transperant color
     name: "progress-indicators-label-container",
     parentId
   };
@@ -272,7 +278,7 @@ async function create_progress_indicators_label_container(parentId) {
     command: "set_auto_layout_resizing",
     params: {
       nodeId: containerId,
-      horizontal: "FILL",
+      horizontal: "FILL", 
       vertical: "AUTO"
     },
     assert: (response) => ({
@@ -356,6 +362,7 @@ async function create_progress_indicators_container(parentId) {
     x: 0,
     y: 0,
     name: "progress-indicators-container",
+    fillColor: { r: 0, g: 0, b: 1, a: 0.2 }, // transperant color
     parentId
   };
   const containerResult = await runStep({
@@ -376,7 +383,7 @@ async function create_progress_indicators_container(parentId) {
     layout: {
       nodeId: containerId,
       mode: "HORIZONTAL",
-      itemSpacing: 12,
+      itemSpacing: 8,
      //  primaryAxisSizing: "AUTO",  // ⚠️️ do not uncomment this
       // counterAxisSizing: "FILL"  // ⚠️️ do not uncomment this
     }
@@ -392,6 +399,20 @@ async function create_progress_indicators_container(parentId) {
     label: `set_auto_layout on progress-indicators-container`
   });
 
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: containerId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === frameId,
+      response
+    }),
+    label: "set_auto_layout_resizing on progress-indicators-container"
+  });
 
   const barResults = [];
   for (let i = 0; i < 24; i++) {
@@ -405,6 +426,7 @@ async function create_progress_indicators_container(parentId) {
   return {
     containerResult,
     layoutResult,
+    resizingResult,
     barResults
   };
 }
@@ -419,9 +441,9 @@ async function create_progress_bar_element_rectangle(parentId, fillColor) {
   const barParams = {
     x: 0,
     y: 0,
-    width: 12,
-    height: 32,
-    cornerRadius: 12,
+    width: 6,
+    height: 42,
+    cornerRadius: 6,
     fillColor,
     name: "progress-bar-element",
     parentId
@@ -438,8 +460,6 @@ async function create_progress_bar_element_rectangle(parentId, fillColor) {
   });
   return barResult;
 }
-
-
 
 /**
  * Main entry point for the layout-b test.
