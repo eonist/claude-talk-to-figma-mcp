@@ -962,6 +962,290 @@ async function create_description_text(parentId) {
   };
 }
 
+import { ws, channel, runStep } from "../test-runner.js";
+
+/**
+ * Creates the action buttons section (button-container) with primary and secondary buttons.
+ * @param {string} parentId - The main-container-frame ID
+ * @returns {Promise} Test result with container and button creation status
+ */
+async function create_button_container(parentId) {
+  // 1. Create the horizontal auto-layout frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "button-container",
+    parentId
+  };
+  const containerResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_button_container"
+  });
+
+  const containerId = containerResult.response?.ids?.[0];
+  if (!containerId) return containerResult;
+
+  // 2. Set horizontal auto-layout, spacing 12
+  const layoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: containerId,
+        mode: "HORIZONTAL",
+        itemSpacing: 12
+      }
+    },
+    assert: (response) => ({
+      pass: response && response["0"] && response["0"].success === true && response["0"].nodeId === containerId,
+      response
+    }),
+    label: "set_auto_layout on button-container"
+  });
+
+  // 3. Create primary and secondary buttons
+  const primaryResult = await create_primary_button(containerId);
+  const secondaryResult = await create_secondary_button(containerId);
+
+  return {
+    containerResult,
+    layoutResult,
+    primaryResult,
+    secondaryResult
+  };
+}
+
+/**
+ * Creates the primary button with a gradient background.
+ * @param {string} parentId - The button-container ID
+ * @returns {Promise} Test result with button and text creation status
+ */
+async function create_primary_button(parentId) {
+  // 1. Create the button frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "primary-button",
+    cornerRadius: 8,
+    parentId
+  };
+  const buttonResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_primary_button"
+  });
+
+  const buttonId = buttonResult.response?.ids?.[0];
+  if (!buttonId) return buttonResult;
+
+  // 2. Set auto-layout, padding 16 horizontal, 12 vertical, center alignment
+  await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: buttonId,
+        mode: "HORIZONTAL",
+        paddingLeft: 16,
+        paddingRight: 16,
+        paddingTop: 12,
+        paddingBottom: 12,
+        primaryAxisAlignItems: "CENTER",
+        counterAxisAlignItems: "CENTER"
+      }
+    },
+    assert: () => ({ pass: true }),
+    label: "set_auto_layout on primary-button"
+  });
+
+  // 3. Set auto layout resizing: hug width/height
+  await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: buttonId,
+      horizontal: "AUTO",
+      vertical: "AUTO"
+    },
+    assert: () => ({ pass: true }),
+    label: "set_auto_layout_resizing on primary-button"
+  });
+
+  // 4. Create the gradient style
+  const gradientParams = {
+    name: "PrimaryButtonGradient",
+    gradientType: "LINEAR",
+    stops: [
+      { position: 0, color: [1, 0.722, 0, 1] },   // #FFB800
+      { position: 1, color: [1, 0.541, 0, 1] }    // #FF8A00
+    ],
+    transformMatrix: [[1, 0, 0], [0, 1, 0]]
+  };
+  const gradientResult = await runStep({
+    ws, channel,
+    command: "create_gradient_style",
+    params: { gradients: gradientParams },
+    assert: (response) => ({ pass: !!(response && response.id), response }),
+    label: "create_primary_button_gradient"
+  });
+  const gradientStyleId = gradientResult.response?.id;
+  if (gradientStyleId) {
+    // 5. Apply the gradient to the button
+    await runStep({
+      ws, channel,
+      command: "set_gradient",
+      params: {
+        entries: {
+          nodeId: buttonId,
+          gradientStyleId,
+          applyTo: "FILL"
+        }
+      },
+      assert: () => ({ pass: true }),
+      label: "apply_gradient_to_primary_button"
+    });
+  }
+
+  // 6. Create the button text
+  const textParams = {
+    x: 0,
+    y: 0,
+    text: "Back this project",
+    fontSize: 14,
+    fontWeight: 700,
+    fontFamily: "Inter",
+    fontStyle: "Bold",
+    fontColor: { r: 0, g: 0, b: 0, a: 1 },
+    textAlign: "CENTER",
+    name: "primary-button-text",
+    parentId: buttonId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: textParams },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_primary_button_text"
+  });
+
+  return {
+    buttonResult,
+    gradientResult,
+    textResult
+  };
+}
+
+/**
+ * Creates the secondary button.
+ * @param {string} parentId - The button-container ID
+ * @returns {Promise} Test result with button and text creation status
+ */
+async function create_secondary_button(parentId) {
+  // 1. Create the button frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "secondary-button",
+    cornerRadius: 8,
+    strokeColor: { r: 0.333, g: 0.333, b: 0.333, a: 1 }, // #555555
+    strokeWeight: 2,
+    parentId
+  };
+  const buttonResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_secondary_button"
+  });
+
+  const buttonId = buttonResult.response?.ids?.[0];
+  if (!buttonId) return buttonResult;
+
+  // 2. Set auto-layout, padding 16 horizontal, 12 vertical, center alignment
+  await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: buttonId,
+        mode: "HORIZONTAL",
+        paddingLeft: 16,
+        paddingRight: 16,
+        paddingTop: 12,
+        paddingBottom: 12,
+        primaryAxisAlignItems: "CENTER",
+        counterAxisAlignItems: "CENTER"
+      }
+    },
+    assert: () => ({ pass: true }),
+    label: "set_auto_layout on secondary-button"
+  });
+
+  // 3. Set auto layout resizing: hug width/height
+  await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: buttonId,
+      horizontal: "AUTO",
+      vertical: "AUTO"
+    },
+    assert: () => ({ pass: true }),
+    label: "set_auto_layout_resizing on secondary-button"
+  });
+
+  // 4. Create the button text
+  const textParams = {
+    x: 0,
+    y: 0,
+    text: "Remind me",
+    fontSize: 14,
+    fontWeight: 700,
+    fontFamily: "Inter",
+    fontStyle: "Bold",
+    fontColor: { r: 1, g: 1, b: 1, a: 1 },
+    textAlign: "CENTER",
+    name: "secondary-button-text",
+    parentId: buttonId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: textParams },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_secondary_button_text"
+  });
+
+  return {
+    buttonResult,
+    textResult
+  };
+}
+
+ 
+
+
 /**
  * Main entry point for the layout-b test.
  * Creates the main container frame and all children in strict sequence.
@@ -1007,6 +1291,8 @@ export async function layoutBTest(results, parentFrameId) {
   const descriptionResult = await create_description_text(mainContainerFrameId);
   results.push(descriptionResult);
 
-  // 9. 
+  // 9. Create buttons section
+  const buttonContainerResult = await create_button_container(mainContainerFrameId);
+  results.push(buttonContainerResult);
 
 }
