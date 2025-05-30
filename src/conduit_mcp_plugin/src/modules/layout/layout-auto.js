@@ -3,119 +3,6 @@
  * Exports: setAutoLayout, setAutoLayoutResizing
  */
 
-/**
- * Configures auto layout properties for a node in Figma.
- *
- * @async
- * @function
- * @param {Object} params - Parameters for auto layout configuration.
- * @param {string} params.nodeId - The ID of the node to configure.
- * @param {"NONE"|"HORIZONTAL"|"VERTICAL"} params.layoutMode - The auto layout mode to set.
- * @param {number} [params.paddingTop] - Top padding.
- * @param {number} [params.paddingBottom] - Bottom padding.
- * @param {number} [params.paddingLeft] - Left padding.
- * @param {number} [params.paddingRight] - Right padding.
- * @param {number} [params.itemSpacing] - Spacing between items.
- * @param {string} [params.primaryAxisAlignItems] - Alignment along the primary axis.
- * @param {string} [params.counterAxisAlignItems] - Alignment along the counter axis.
- * @param {string} [params.layoutWrap] - Layout wrap mode.
- * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout.
- * @returns {Promise<Object>} Updated node layout properties.
- * @throws {Error} If nodeId or layoutMode is missing, node is not found, or does not support auto layout.
- */
-export async function setAutoLayout(params) {
-  // LOGGING: Print all received params for debugging
-  console.log("⚠️⚠️⚠️⚠️️ this is deprecated use setAutoLayoutUnified⚠️⚠️⚠️⚠️")
-  console.log("[setAutoLayout] called with params:", JSON.stringify(params, null, 2));
-  const { 
-    nodeId, 
-    layoutMode, 
-    paddingTop, 
-    paddingBottom, 
-    paddingLeft, 
-    paddingRight, 
-    itemSpacing, 
-    primaryAxisAlignItems, 
-    counterAxisAlignItems, 
-    layoutWrap, 
-    strokesIncludedInLayout,
-    // New for sizing
-    counterAxisSizingMode,
-    primaryAxisSizingMode,
-    axis,
-    mode
-  } = params || {};
-
-  if (!nodeId) throw new Error("Missing nodeId parameter");
-  if (!layoutMode) throw new Error("Missing layoutMode parameter");
-
-  const node = await figma.getNodeByIdAsync(nodeId);
-  if (!node) throw new Error(`Node not found with ID: ${nodeId}`);
-  if (!("layoutMode" in node)) throw new Error(`Node does not support auto layout: ${nodeId}`);
-
-  if (layoutMode === "NONE") {
-    node.layoutMode = "NONE";
-  } else {
-    node.layoutMode = layoutMode;
-    if (paddingTop !== undefined) node.paddingTop = paddingTop;
-    if (paddingBottom !== undefined) node.paddingBottom = paddingBottom;
-    if (paddingLeft !== undefined) node.paddingLeft = paddingLeft;
-    if (paddingRight !== undefined) node.paddingRight = paddingRight;
-    if (itemSpacing !== undefined) node.itemSpacing = itemSpacing;
-    if (primaryAxisAlignItems !== undefined) node.primaryAxisAlignItems = primaryAxisAlignItems;
-    if (counterAxisAlignItems !== undefined) node.counterAxisAlignItems = counterAxisAlignItems;
-    if (layoutWrap !== undefined) node.layoutWrap = layoutWrap;
-    if (strokesIncludedInLayout !== undefined) node.strokesIncludedInLayout = strokesIncludedInLayout;
-
-    // --- Sizing logic for hug/fill/fixed ---
-    // Direct property support
-    if (typeof primaryAxisSizingMode === "string") {
-      node.primaryAxisSizingMode = primaryAxisSizingMode;
-      console.log(`[setAutoLayout] Set node.primaryAxisSizingMode = ${primaryAxisSizingMode}`);
-    }
-    if (typeof counterAxisSizingMode === "string") {
-      node.counterAxisSizingMode = counterAxisSizingMode;
-      console.log(`[setAutoLayout] Set node.counterAxisSizingMode = ${counterAxisSizingMode}`);
-    }
-    // Axis/mode mapping support (for legacy or alternate API usage)
-    if (axis && mode) {
-      if (axis === "vertical") {
-        if (layoutMode === "HORIZONTAL") {
-          node.counterAxisSizingMode = mode;
-          console.log(`[setAutoLayout] Set node.counterAxisSizingMode (height in HORIZONTAL) = ${mode}`);
-        } else if (layoutMode === "VERTICAL") {
-          node.primaryAxisSizingMode = mode;
-          console.log(`[setAutoLayout] Set node.primaryAxisSizingMode (height in VERTICAL) = ${mode}`);
-        }
-      } else if (axis === "horizontal") {
-        if (layoutMode === "VERTICAL") {
-          node.counterAxisSizingMode = mode;
-          console.log(`[setAutoLayout] Set node.counterAxisSizingMode (width in VERTICAL) = ${mode}`);
-        } else if (layoutMode === "HORIZONTAL") {
-          node.primaryAxisSizingMode = mode;
-          console.log(`[setAutoLayout] Set node.primaryAxisSizingMode (width in HORIZONTAL) = ${mode}`);
-        }
-      }
-    }
-  }
-
-  return {
-    id: node.id,
-    name: node.name,
-    layoutMode: node.layoutMode,
-    paddingTop: node.paddingTop,
-    paddingBottom: node.paddingBottom,
-    paddingLeft: node.paddingLeft,
-    paddingRight: node.paddingRight,
-    itemSpacing: node.itemSpacing,
-    primaryAxisAlignItems: node.primaryAxisAlignItems,
-    counterAxisAlignItems: node.counterAxisAlignItems,
-    layoutWrap: node.layoutWrap,
-    strokesIncludedInLayout: node.strokesIncludedInLayout,
-    primaryAxisSizingMode: node.primaryAxisSizingMode,
-    counterAxisSizingMode: node.counterAxisSizingMode
-  };
-}
 
 /**
  * Adjusts auto-layout resizing behavior for a node along a specified axis.
@@ -501,4 +388,119 @@ export async function setAutoLayoutResizing(params) {
   return Object.assign({
     id: node.id
   }, result);
+}
+
+
+/**
+ * Configures auto layout properties for a node in Figma.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Parameters for auto layout configuration.
+ * @param {string} params.nodeId - The ID of the node to configure.
+ * @param {"NONE"|"HORIZONTAL"|"VERTICAL"} params.layoutMode - The auto layout mode to set.
+ * @param {number} [params.paddingTop] - Top padding.
+ * @param {number} [params.paddingBottom] - Bottom padding.
+ * @param {number} [params.paddingLeft] - Left padding.
+ * @param {number} [params.paddingRight] - Right padding.
+ * @param {number} [params.itemSpacing] - Spacing between items.
+ * @param {string} [params.primaryAxisAlignItems] - Alignment along the primary axis.
+ * @param {string} [params.counterAxisAlignItems] - Alignment along the counter axis.
+ * @param {string} [params.layoutWrap] - Layout wrap mode.
+ * @param {boolean} [params.strokesIncludedInLayout] - Whether strokes are included in layout.
+ * @returns {Promise<Object>} Updated node layout properties.
+ * @throws {Error} If nodeId or layoutMode is missing, node is not found, or does not support auto layout.
+ */
+export async function setAutoLayout(params) {
+  // LOGGING: Print all received params for debugging
+  console.log("⚠️⚠️⚠️⚠️️ this is deprecated use setAutoLayoutUnified⚠️⚠️⚠️⚠️")
+  console.log("[setAutoLayout] called with params:", JSON.stringify(params, null, 2));
+  const { 
+    nodeId, 
+    layoutMode, 
+    paddingTop, 
+    paddingBottom, 
+    paddingLeft, 
+    paddingRight, 
+    itemSpacing, 
+    primaryAxisAlignItems, 
+    counterAxisAlignItems, 
+    layoutWrap, 
+    strokesIncludedInLayout,
+    // New for sizing
+    counterAxisSizingMode,
+    primaryAxisSizingMode,
+    axis,
+    mode
+  } = params || {};
+
+  if (!nodeId) throw new Error("Missing nodeId parameter");
+  if (!layoutMode) throw new Error("Missing layoutMode parameter");
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) throw new Error(`Node not found with ID: ${nodeId}`);
+  if (!("layoutMode" in node)) throw new Error(`Node does not support auto layout: ${nodeId}`);
+
+  if (layoutMode === "NONE") {
+    node.layoutMode = "NONE";
+  } else {
+    node.layoutMode = layoutMode;
+    if (paddingTop !== undefined) node.paddingTop = paddingTop;
+    if (paddingBottom !== undefined) node.paddingBottom = paddingBottom;
+    if (paddingLeft !== undefined) node.paddingLeft = paddingLeft;
+    if (paddingRight !== undefined) node.paddingRight = paddingRight;
+    if (itemSpacing !== undefined) node.itemSpacing = itemSpacing;
+    if (primaryAxisAlignItems !== undefined) node.primaryAxisAlignItems = primaryAxisAlignItems;
+    if (counterAxisAlignItems !== undefined) node.counterAxisAlignItems = counterAxisAlignItems;
+    if (layoutWrap !== undefined) node.layoutWrap = layoutWrap;
+    if (strokesIncludedInLayout !== undefined) node.strokesIncludedInLayout = strokesIncludedInLayout;
+
+    // --- Sizing logic for hug/fill/fixed ---
+    // Direct property support
+    if (typeof primaryAxisSizingMode === "string") {
+      node.primaryAxisSizingMode = primaryAxisSizingMode;
+      console.log(`[setAutoLayout] Set node.primaryAxisSizingMode = ${primaryAxisSizingMode}`);
+    }
+    if (typeof counterAxisSizingMode === "string") {
+      node.counterAxisSizingMode = counterAxisSizingMode;
+      console.log(`[setAutoLayout] Set node.counterAxisSizingMode = ${counterAxisSizingMode}`);
+    }
+    // Axis/mode mapping support (for legacy or alternate API usage)
+    if (axis && mode) {
+      if (axis === "vertical") {
+        if (layoutMode === "HORIZONTAL") {
+          node.counterAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.counterAxisSizingMode (height in HORIZONTAL) = ${mode}`);
+        } else if (layoutMode === "VERTICAL") {
+          node.primaryAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.primaryAxisSizingMode (height in VERTICAL) = ${mode}`);
+        }
+      } else if (axis === "horizontal") {
+        if (layoutMode === "VERTICAL") {
+          node.counterAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.counterAxisSizingMode (width in VERTICAL) = ${mode}`);
+        } else if (layoutMode === "HORIZONTAL") {
+          node.primaryAxisSizingMode = mode;
+          console.log(`[setAutoLayout] Set node.primaryAxisSizingMode (width in HORIZONTAL) = ${mode}`);
+        }
+      }
+    }
+  }
+
+  return {
+    id: node.id,
+    name: node.name,
+    layoutMode: node.layoutMode,
+    paddingTop: node.paddingTop,
+    paddingBottom: node.paddingBottom,
+    paddingLeft: node.paddingLeft,
+    paddingRight: node.paddingRight,
+    itemSpacing: node.itemSpacing,
+    primaryAxisAlignItems: node.primaryAxisAlignItems,
+    counterAxisAlignItems: node.counterAxisAlignItems,
+    layoutWrap: node.layoutWrap,
+    strokesIncludedInLayout: node.strokesIncludedInLayout,
+    primaryAxisSizingMode: node.primaryAxisSizingMode,
+    counterAxisSizingMode: node.counterAxisSizingMode
+  };
 }

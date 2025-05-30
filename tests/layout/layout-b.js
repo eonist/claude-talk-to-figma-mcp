@@ -19,7 +19,7 @@ async function create_main_container_frame(parentId) {
   const params = {
     x: 0,
     y: 0,
-    width: 400,
+    width: 400, height: 0, // zero is a temp hack fix
     // height is not set, so it can hug contents (vertical "AUTO")
     name: "main-container-frame",
     fillColor: { r: 0.0, g: 0.0, b: 0.0, a: 1 }, // #000000
@@ -49,8 +49,8 @@ async function create_main_container_frame(parentId) {
       paddingTop: 24,
       paddingBottom: 24,
       itemSpacing: 20,
-      primaryAxisSizing: "AUTO",      // vertical: hug contents
-      counterAxisSizing: "FIXED"      // horizontal: fixed
+      primaryAxisSizing: "AUTO", // vertical: hug contents
+      counterAxisSizing: "FIXED" // horizontal: fixed
     }
   };
   const layoutResult = await runStep({
@@ -99,6 +99,8 @@ async function create_progress_bar_container_frame(parentId) {
   const params = {
     x: 0,
     y: 0,
+    // width: 0,
+    // height: 0,
     name: "progress-bar-container",
     fillColor: { r: 1, g: 1, b: 1, a: 0 }, // transparent
     parentId
@@ -429,13 +431,7 @@ export async function layoutBTest(results, parentFrameId) {
     progressSectionFrameId = progressSectionResult.response?.ids?.[0];
   }
 
-  // 3. Create progress bar container
-  if (progressSectionFrameId) {
-    const progressBarContainerResult = await create_progress_bar_container_frame(progressSectionFrameId);
-    results.push(progressBarContainerResult);
-  }
-
-  // 4. Create progress indicators label container  
+  // 3. Create progress indicators label container  
   let progressBarContainerId;
   if (progressSectionFrameId) {
     const progressBarContainerResult = await create_progress_bar_container_frame(progressSectionFrameId);
@@ -443,16 +439,18 @@ export async function layoutBTest(results, parentFrameId) {
     progressBarContainerId = progressBarContainerResult.response?.ids?.[0];
   }
 
-  // 5. Add progress indicator labels
+  // 4. Add progress indicator labels
 
-  if (progressBarContainerId) {
-    const labelContainerResult = await create_progress_indicators_label_container(progressBarContainerId);
-    results.push(labelContainerResult);
-  }
+   if (progressBarContainerId) {
+     const labelContainerResult = await create_progress_indicators_label_container(progressBarContainerId);
+     results.push(labelContainerResult);
+   }
 
-  // 6. Add progress indicators container and bars
-  if (progressBarContainerId) {
-    const indicatorsContainerResult = await create_progress_indicators_container(progressBarContainerId);
-    results.push(indicatorsContainerResult);
-  }
+  // 5. Add progress indicators container and bars
+  // if (progressBarContainerId) {
+  //   const indicatorsContainerResult = await create_progress_indicators_container(progressBarContainerId);
+  //   results.push(indicatorsContainerResult);
+  // }
+
+  // 6.
 }
