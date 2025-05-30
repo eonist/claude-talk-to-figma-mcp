@@ -228,6 +228,7 @@ async function create_progress_indicators_label_container(parentId) {
   const params = {
     x: 0,
     y: 0,
+    fillColor: { r: 1, g: 1, b: 1, a: 0.0 },
     name: "progress-indicators-label-container",
     parentId
   };
@@ -249,6 +250,8 @@ async function create_progress_indicators_label_container(parentId) {
     layout: {
       nodeId: containerId,
       mode: "HORIZONTAL",
+      // itemSpacing: "AUTO", // ⚠️️ Auto cant be set. so we ue space_between instead
+      primaryAxisAlignItems: "SPACE_BETWEEN", // spacing functionality is achieved through the primaryAxisAlignItems property configured to  'SPACE_BETWEEN'
       // primaryAxisSizing: "AUTO", // ⚠️️ do not uncomment this
       // counterAxisSizing: "FILL" // ⚠️️ do not uncomment this
     }
@@ -328,21 +331,21 @@ async function create_progress_indicator_label(parentId, value) {
   if (!textId) return textResult;
 
   // 2. Set auto layout resizing: horizontal FILL
-  const resizingResult = await runStep({
-    ws, channel,
-    command: "set_auto_layout_resizing",
-    params: {
-      nodeId: textId,
-      axis: "horizontal",
-      mode: "FILL"
-    },
-    assert: r => r && r.nodeId === textId,
-    label: "Set text to fill horizontally"
-  });
+  // const resizingResult = await runStep({
+  //   ws, channel,
+  //   command: "set_auto_layout_resizing",
+  //   params: {
+  //     nodeId: textId,
+  //     axis: "horizontal",
+  //     mode: "FILL"
+  //   },
+  //   assert: r => r && r.nodeId === textId,
+  //   label: "Set text to fill horizontally"
+  // });
 
   return {
     textResult,
-    resizingResult
+   // resizingResult
   };
 }
 
