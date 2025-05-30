@@ -392,31 +392,13 @@ async function create_progress_indicators_container(parentId) {
     label: `set_auto_layout on progress-indicators-container`
   });
 
+
   const barResults = [];
   for (let i = 0; i < 24; i++) {
     const fillColor = i < 12
       ? { r: 0.8, g: 1, b: 0, a: 1 }
       : { r: 0.25, g: 0.25, b: 0.25, a: 1 };
-    const barParams = {
-      x: 0,
-      y: 0,
-      width: 12,
-      height: 32,
-      cornerRadius: 12,
-      fillColor,
-      name: "progress-bar-element",
-      parentId: containerId
-    };
-    const barResult = await runStep({
-      ws, channel,
-      command: "create_rectangle",
-      params: { rectangle: barParams },
-      assert: (response) => ({
-        pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
-        response
-      }),
-      label: `create_progress_bar_element (${i + 1})`
-    });
+    const barResult = await create_progress_bar_element_rectangle(containerId, fillColor);
     barResults.push(barResult);
   }
 
@@ -426,6 +408,37 @@ async function create_progress_indicators_container(parentId) {
     barResults
   };
 }
+
+/**
+ * Creates a progress bar element rectangle.
+ * @param {string} parentId - The parent container ID
+ * @param {object} fillColor - The fill color object
+ * @returns {Promise} Test result with rectangle creation status
+ */
+async function create_progress_bar_element_rectangle(parentId, fillColor) {
+  const barParams = {
+    x: 0,
+    y: 0,
+    width: 12,
+    height: 32,
+    cornerRadius: 12,
+    fillColor,
+    name: "progress-bar-element",
+    parentId
+  };
+  const barResult = await runStep({
+    ws, channel,
+    command: "create_rectangle",
+    params: { rectangle: barParams },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: `create_progress_bar_element`
+  });
+  return barResult;
+}
+
 
 
 /**
@@ -458,6 +471,6 @@ export async function layoutBTest(results, parentFrameId) {
   results.push(labelContainerResult);
 
   // // 5. Add progress indicators container and bars
-  // const indicatorsContainerResult = await create_progress_indicators_container(progressBarContainerId);
-  // results.push(indicatorsContainerResult);
+  const indicatorsContainerResult = await create_progress_indicators_container(progressBarContainerId);
+  results.push(indicatorsContainerResult);
 }
