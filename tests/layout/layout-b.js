@@ -499,6 +499,8 @@ async function create_amount_display_section(parentId) {
       layout: {
         nodeId: sectionId,
         mode: "HORIZONTAL",
+        // primaryAxisAlignItems: "CENTER",
+        counterAxisAlignItems: "CENTER",
         itemSpacing: 8
       }
     },
