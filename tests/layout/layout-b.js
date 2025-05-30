@@ -839,6 +839,126 @@ async function create_stat_card_label(parentId, label) {
   return result;
 }
 
+
+
+/**
+ * Creates the description text section.
+ * @param {string} parentId - The main-container-frame ID
+ * @returns {Promise} Test result with frame and text creation status
+ */
+async function create_description_text(parentId) {
+  // 1. Create the auto-layout frame
+  const params = {
+    x: 0,
+    y: 0,
+    name: "description-text",
+    fillColor: { r: 1, g: 1, b: 1, a: 0 },
+    parentId
+  };
+  const frameResult = await runStep({
+    ws, channel,
+    command: "create_frame",
+    params: { frame: params },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_description_text"
+  });
+
+  const frameId = frameResult.response?.ids?.[0];
+  if (!frameId) return frameResult;
+
+  // 2. Set auto-layout, fill width, hug height, horizontal padding 16, center alignment
+  const layoutResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout",
+    params: {
+      layout: {
+        nodeId: frameId,
+        mode: "HORIZONTAL",
+        paddingLeft: 16,
+        paddingRight: 16,
+        primaryAxisAlignItems: "CENTER",
+        counterAxisAlignItems: "CENTER"
+      }
+    },
+    assert: (response) => ({
+      pass: response && response["0"] && response["0"].success === true && response["0"].nodeId === frameId,
+      response
+    }),
+    label: "set_auto_layout on description-text"
+  });
+
+  // 3. Set auto layout resizing: fill width, hug height
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: frameId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === frameId,
+      response
+    }),
+    label: "set_auto_layout_resizing on description-text"
+  });
+
+  // 4. Create the text node
+  const textParams = {
+    x: 0,
+    y: 0,
+    text: "All or nothing. This project will only be funded if it reaches its goal by Fri 15 December.",
+    fontSize: 12,
+    fontWeight: 400,
+    fontFamily: "Inter",
+    fontStyle: "Regular",
+    fontColor: { r: 0.533, g: 0.533, b: 0.533, a: 1 }, // #888888
+    lineHeight: 1.4,
+    textAlign: "CENTER",
+    name: "description-text",
+    parentId: frameId
+  };
+  const textResult = await runStep({
+    ws, channel,
+    command: "set_text",
+    params: { text: textParams },
+    assert: (response) => ({
+      pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
+      response
+    }),
+    label: "create_description_text_text"
+  });
+
+  const textId = textResult.response?.ids?.[0];
+  if (!textId) return textResult;
+
+  const autoResizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: textId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === textId,
+      response
+    }),
+    label: "set_auto_layout_resizing on description-text"
+  });
+
+  return {
+    frameResult,
+    layoutResult,
+    resizingResult,
+    textResult,
+    autoResizingResult
+  };
+}
+
 /**
  * Main entry point for the layout-b test.
  * Creates the main container frame and all children in strict sequence.
@@ -879,5 +999,9 @@ export async function layoutBTest(results, parentFrameId) {
   // 7. Create statistics grid
   const statisticsResult = await create_statistics_container(mainContainerFrameId);
   results.push(statisticsResult);
+
+  // 8. Create description text
+  const descriptionResult = await create_description_text(mainContainerFrameId);
+  results.push(descriptionResult);
 
 }
