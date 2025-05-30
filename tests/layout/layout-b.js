@@ -473,6 +473,7 @@ async function create_amount_display_section(parentId) {
   const params = {
     x: 0,
     y: 0,
+    fillColor: { r: 0, g: 0, b: 1, a: 0.0 }, // transperant color
     name: "amount-display-section",
     parentId
   };
@@ -506,6 +507,21 @@ async function create_amount_display_section(parentId) {
       response
     }),
     label: "set_auto_layout on amount-display-section"
+  });
+
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: sectionId,
+      horizontal: "AUTO",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === sectionId,
+      response
+    }),
+    label: "set_auto_layout_resizing on amount-display-section"
   });
 
   // 3. Create main amount text
@@ -561,6 +577,7 @@ async function create_amount_display_section(parentId) {
   return {
     sectionResult,
     layoutResult,
+    resizingResult,
     mainAmountResult,
     subtitleResult
   };
