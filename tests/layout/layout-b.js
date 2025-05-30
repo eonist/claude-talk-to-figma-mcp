@@ -879,8 +879,8 @@ async function create_description_text(parentId) {
         mode: "HORIZONTAL",
         paddingLeft: 16,
         paddingRight: 16,
-        primaryAxisAlignItems: "CENTER",
-        counterAxisAlignItems: "CENTER"
+        // primaryAxisAlignItems: "CENTER",
+        // counterAxisAlignItems: "CENTER"
       }
     },
     assert: (response) => ({
@@ -910,7 +910,10 @@ async function create_description_text(parentId) {
   const textParams = {
     x: 0,
     y: 0,
-    text: "All or nothing. This project will only be funded if it reaches its goal by Fri 15 December.",
+    // height: 0,
+    // width: 0,
+    // ⚠️️ we should not need to use \n in the text. but currently the autolayout resize for text is buggy. fix later
+    text: "All or nothing. This project will only be funded if it\nreaches its goal by Fri 15 December.",
     fontSize: 12,
     fontWeight: 400,
     fontFamily: "Inter",
@@ -1003,5 +1006,7 @@ export async function layoutBTest(results, parentFrameId) {
   // 8. Create description text
   const descriptionResult = await create_description_text(mainContainerFrameId);
   results.push(descriptionResult);
+
+  // 9. 
 
 }
