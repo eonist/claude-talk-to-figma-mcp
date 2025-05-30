@@ -312,7 +312,7 @@ async function create_progress_indicator_label(parentId, value) {
     y: 0,
     text: value,
     fontSize: 12,
-    fontColor: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
+    fontColor: { r: 0.8, g: 0.8, b: 0.8, a: 0.4 },
     name: "progress-indicator-label",
     parentId
   };
