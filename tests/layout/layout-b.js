@@ -527,7 +527,27 @@ async function create_amount_display_section(parentId) {
   });
 
   // 3. Create main amount text
-  const mainAmountParams = {
+  const mainAmountResult = await create_main_amount_text(sectionId);
+
+  // 4. Create subtitle text
+  const subtitleResult = await create_subtitle_text(sectionId);
+
+  return {
+    sectionResult,
+    layoutResult,
+    resizingResult,
+    mainAmountResult,
+    subtitleResult
+  };
+}
+
+/**
+ * Creates the main amount text node for the amount display section.
+ * @param {string} parentId - The amount-display-section frame ID
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_main_amount_text(parentId) {
+  const params = {
     x: 0,
     y: 0,
     text: "€ 2,565",
@@ -538,21 +558,28 @@ async function create_amount_display_section(parentId) {
     fontColor: { r: 1, g: 1, b: 1, a: 1 },
     lineHeight: 1.2,
     name: "main-amount",
-    parentId: sectionId
+    parentId
   };
-  const mainAmountResult = await runStep({
+  const result = await runStep({
     ws, channel,
     command: "set_text",
-    params: { text: mainAmountParams },
+    params: { text: params },
     assert: (response) => ({
       pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
       response
     }),
     label: "create_main_amount"
   });
+  return result;
+}
 
-  // 4. Create subtitle text
-  const subtitleParams = {
+/**
+ * Creates the subtitle text node for the amount display section.
+ * @param {string} parentId - The amount-display-section frame ID
+ * @returns {Promise} Test result with text creation status
+ */
+async function create_subtitle_text(parentId) {
+  const params = {
     x: 0,
     y: 0,
     text: "pledged of\n€5,000 goal",
@@ -560,29 +587,22 @@ async function create_amount_display_section(parentId) {
     fontWeight: 400,
     fontFamily: "Inter",
     fontStyle: "Regular",
-    fontColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 }, // #CCCCCC
+    fontColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
     lineHeight: 1.4,
     name: "subtitle",
-    parentId: sectionId
+    parentId
   };
-  const subtitleResult = await runStep({
+  const result = await runStep({
     ws, channel,
     command: "set_text",
-    params: { text: subtitleParams },
+    params: { text: params },
     assert: (response) => ({
       pass: (Array.isArray(response.ids) && response.ids.length > 0) || typeof response.id === "string",
       response
     }),
     label: "create_subtitle"
   });
-
-  return {
-    sectionResult,
-    layoutResult,
-    resizingResult,
-    mainAmountResult,
-    subtitleResult
-  };
+  return result;
 }
 
 
