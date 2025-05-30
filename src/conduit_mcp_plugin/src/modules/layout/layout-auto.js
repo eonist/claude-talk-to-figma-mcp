@@ -151,8 +151,8 @@ export async function setAutoLayoutUnified(params) {
       counterAxisSpacing, // NEW: Added support for vertical gap between wrapped rows
       primaryAxisAlignItems, // new
       counterAxisAlignItems, // new
-      //counterAxisSizingMode, // not yet added
-      //primaryAxisSizingMode, // not yet added
+      // counterAxisSizingMode, // not yet added
+      // primaryAxisSizingMode, // not yet added
       layoutWrap, 
       padding, 
       paddingLeft, // NEW: Added individual padding support

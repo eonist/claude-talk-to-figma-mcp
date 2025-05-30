@@ -55,6 +55,7 @@ import { imageScene } from './scene/image-scene.js';
 import { maskScene } from './scene/mask-scene.js';
 import { layoutScene } from './scene/layout-scene.js';
 import { layoutATest } from './layout/layout-a.js';
+import { layoutBTest } from './layout/layout-b.js';
 
 // --- Container Frame Config ---
 const CONTAINER_FRAME_CONFIG = {
@@ -167,7 +168,8 @@ async function main() {
     //imageScene,
     //layoutScene,
     //maskScene,
-    layoutATest
+    // layoutATest,
+    layoutBTest
   ];
   const results = [];
   for (const scene of sequence) {

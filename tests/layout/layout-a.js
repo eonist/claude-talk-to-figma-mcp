@@ -660,70 +660,6 @@ async function create_header_cash_text(parentId) {
   };
 }
 
-/**
- * Main entry point for the layout-a test.
- * Creates a padded frame and a green rounded rectangle inside it.
- * @param {Array} results - Array to collect test results
- * @param {string} [parentFrameId] - Optional parent frame ID
- */
-export async function layoutATest(results, parentFrameId) {
-  // 1. Create the padded frame
-  const frameResult = await create_padded_frame(parentFrameId);
-  results.push(frameResult);
-
-  // 2. Get the frame ID
-  const frameId = frameResult.response?.ids?.[0];
-  if (!frameId) {
-    console.warn("Could not get frame ID for placing rectangle inside frame");
-    return;
-  }
-
-  // 3. Create the green frame inside the padded frame
-  const greenFrameResult = await create_green_rounded_rectangle(frameId);
-  results.push(greenFrameResult);
-
-  // 4. Get the green frame ID (from convertResult)
-  const greenFrameId = greenFrameResult.convertResult?.response?.id;
-  if (!greenFrameId) {
-    console.warn("Could not get green frame ID for header/growth section");
-    return;
-  }
-
-  // 5. Add header to the green frame
-  const headerResult = await create_header(greenFrameId);
-  results.push(headerResult);
-
-  // 6. Add growth section to the green frame
-  const growthSectionResult = await create_growth_metrics_section(greenFrameId);
-  results.push(growthSectionResult);
-
-  // 7. Add "+38%" percentage text to the growth section
-  const growthSectionId = growthSectionResult.sectionId;
-  if (growthSectionId) {
-    const growthPercentResult = await create_growth_percentage_text(growthSectionId);
-    results.push(growthPercentResult);
-
-    // 8. Add subtitle frame to the growth section
-    const subtitleResult = await create_subtitle_frame(growthSectionId);
-    results.push(subtitleResult);
-
-    // 9. Add "Growth since last day" text and up-right arrow to the subtitle frame
-    const subtitleId = subtitleResult.subtitleId;
-    if (subtitleId) {
-      const growthTextResult = await create_growth_text(subtitleId);
-      results.push(growthTextResult);
-
-      const arrowTextResult = await create_upward_arrow_text(subtitleId);
-      results.push(arrowTextResult);
-    }
-  }
-
-  // 10. Add chart component to the green frame
-  const chartResult = await create_chart_component(greenFrameId);
-  results.push(chartResult);
-
-  // (Optional: add bar section in future)
-}
 
 /**
  * Creates a chart component with 5 bars distributed horizontally.
@@ -858,4 +794,69 @@ async function create_chart_component(parentId) {
     chartResizingResult,
     barResults
   };
+}
+
+/**
+ * Main entry point for the layout-a test.
+ * Creates a padded frame and a green rounded rectangle inside it.
+ * @param {Array} results - Array to collect test results
+ * @param {string} [parentFrameId] - Optional parent frame ID
+ */
+export async function layoutATest(results, parentFrameId) {
+  // 1. Create the padded frame
+  const frameResult = await create_padded_frame(parentFrameId);
+  results.push(frameResult);
+
+  // 2. Get the frame ID
+  const frameId = frameResult.response?.ids?.[0];
+  if (!frameId) {
+    console.warn("Could not get frame ID for placing rectangle inside frame");
+    return;
+  }
+
+  // 3. Create the green frame inside the padded frame
+  const greenFrameResult = await create_green_rounded_rectangle(frameId);
+  results.push(greenFrameResult);
+
+  // 4. Get the green frame ID (from convertResult)
+  const greenFrameId = greenFrameResult.convertResult?.response?.id;
+  if (!greenFrameId) {
+    console.warn("Could not get green frame ID for header/growth section");
+    return;
+  }
+
+  // 5. Add header to the green frame
+  const headerResult = await create_header(greenFrameId);
+  results.push(headerResult);
+
+  // 6. Add growth section to the green frame
+  const growthSectionResult = await create_growth_metrics_section(greenFrameId);
+  results.push(growthSectionResult);
+
+  // 7. Add "+38%" percentage text to the growth section
+  const growthSectionId = growthSectionResult.sectionId;
+  if (growthSectionId) {
+    const growthPercentResult = await create_growth_percentage_text(growthSectionId);
+    results.push(growthPercentResult);
+
+    // 8. Add subtitle frame to the growth section
+    const subtitleResult = await create_subtitle_frame(growthSectionId);
+    results.push(subtitleResult);
+
+    // 9. Add "Growth since last day" text and up-right arrow to the subtitle frame
+    const subtitleId = subtitleResult.subtitleId;
+    if (subtitleId) {
+      const growthTextResult = await create_growth_text(subtitleId);
+      results.push(growthTextResult);
+
+      const arrowTextResult = await create_upward_arrow_text(subtitleId);
+      results.push(arrowTextResult);
+    }
+  }
+
+  // 10. Add chart component to the green frame
+  const chartResult = await create_chart_component(greenFrameId);
+  results.push(chartResult);
+
+  // (Optional: add bar section in future)
 }
