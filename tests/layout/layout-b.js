@@ -642,4 +642,6 @@ export async function layoutBTest(results, parentFrameId) {
   // 6. Create the pledgetext and add it to progress section
   const amountDisplayResult = await create_amount_display_section(progressSectionFrameId);
   results.push(amountDisplayResult);
+
+  // 7. 
 }
