@@ -92,9 +92,9 @@ async function create_progress_section_frame(parentId) {
     x: 0,
     y: 0,
     name: "progress-section-frame",
-    fillColor: { r: 1, g: 0, b: 0, a: 0.2 },
+    fillColor: { r: 1, g: 0, b: 0, a: 0.0 }, // transperant fill color
     cornerRadius: 16,
-    strokeColor: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
+    strokeColor: { r: 0.2, g: 0.2, b: 0.2, a: 1 }, // stroke
     strokeWeight: 2,
     parentId
   };
@@ -116,8 +116,8 @@ async function create_progress_section_frame(parentId) {
     layout: {
       nodeId: frameId,
       mode: "VERTICAL",
-      paddingLeft: 16,
-      paddingRight: 16,
+      paddingLeft: 24,
+      paddingRight: 24,
       paddingTop: 16,
       paddingBottom: 16,
       itemSpacing: 12,
@@ -168,7 +168,7 @@ async function create_progress_bar_container_frame(parentId) {
     x: 0,
     y: 0,
     name: "progress-bar-container",
-    fillColor: { r: 0, g: 1, b: 0, a: 0.2 }, 
+    fillColor: { r: 0, g: 1, b: 0, a: 0.0 }, // transperant fill color
     parentId
   };
   const frameResult = await runStep({
@@ -189,6 +189,7 @@ async function create_progress_bar_container_frame(parentId) {
     layout: {
       nodeId: frameId,
       mode: "VERTICAL",
+      itemSpacing: 12, // vertical space between text indicators and bar indicators
       primaryAxisAlignItems: "MIN", // top align
       counterAxisAlignItems: "CENTER", // center horizontally
       // primaryAxisSizing: "AUTO",  // ⚠️️ do not uncomment this
@@ -234,7 +235,7 @@ async function create_progress_indicators_label_container(parentId) {
   const params = {
     x: 0,
     y: 0,
-    fillColor: { r: 1, g: 1, b: 1, a: 0.0 }, // transperant color
+    fillColor: { r: 1, g: 1, b: 1, a: 0.0 }, // transperant fill color
     name: "progress-indicators-label-container",
     parentId
   };
@@ -362,7 +363,7 @@ async function create_progress_indicators_container(parentId) {
     x: 0,
     y: 0,
     name: "progress-indicators-container",
-    fillColor: { r: 0, g: 0, b: 1, a: 0.2 }, // transperant color
+    fillColor: { r: 0, g: 0, b: 1, a: 0.0 }, // transperant color
     parentId
   };
   const containerResult = await runStep({
@@ -490,7 +491,10 @@ export async function layoutBTest(results, parentFrameId) {
   const labelContainerResult = await create_progress_indicators_label_container(progressBarContainerId);
   results.push(labelContainerResult);
 
-  // // 5. Add progress indicators container and bars
+  // 5. Add progress indicators container and bars
   const indicatorsContainerResult = await create_progress_indicators_container(progressBarContainerId);
   results.push(indicatorsContainerResult);
+
+  // 6. Create the pledgetext and add it to progress section
+  
 }
