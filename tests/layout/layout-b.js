@@ -229,8 +229,8 @@ async function create_progress_indicators_label_container(parentId) {
     layout: {
       nodeId: containerId,
       mode: "HORIZONTAL",
-      primaryAxisSizing: "AUTO",
-      counterAxisSizing: "FILL"
+     // primaryAxisSizing: "AUTO",
+      // counterAxisSizing: "FILL"
     }
   };
   const layoutResult = await runStep({
@@ -242,6 +242,21 @@ async function create_progress_indicators_label_container(parentId) {
       response
     }),
     label: `set_auto_layout on progress-indicators-label-container`
+  });
+
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: containerId,
+      horizontal: "FILL", // fill
+      vertical: "AUTO" // hug
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === containerId,
+      response
+    }),
+    label: "set_auto_layout_resizing on progress-indicators-label-container"
   });
 
   const labelValues = ["0", "25", "50", "75", "100"];
@@ -272,6 +287,7 @@ async function create_progress_indicators_label_container(parentId) {
   return {
     containerResult,
     layoutResult,
+    resizingResult,
     labelResults
   };
 }
@@ -378,8 +394,8 @@ export async function layoutBTest(results, parentFrameId) {
   if (!progressBarContainerId) return;
 
   // 4. Add progress indicator labels
-  // const labelContainerResult = await create_progress_indicators_label_container(progressBarContainerId);
-  // results.push(labelContainerResult);
+  const labelContainerResult = await create_progress_indicators_label_container(progressBarContainerId);
+  results.push(labelContainerResult);
 
   // 5. Add progress indicators container and bars
 //  const indicatorsContainerResult = await create_progress_indicators_container(progressBarContainerId);
