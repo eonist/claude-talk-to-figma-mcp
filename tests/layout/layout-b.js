@@ -19,7 +19,7 @@ async function create_main_container_frame(parentId) {
     x: 0,
     y: 0,
     width: 400,
-    height: 540,
+    height: 0,
     name: "main-container-frame",
     fillColor: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
     ...(parentId && { parentId })
@@ -962,8 +962,6 @@ async function create_description_text(parentId) {
   };
 }
 
-import { ws, channel, runStep } from "../test-runner.js";
-
 /**
  * Creates the action buttons section (button-container) with primary and secondary buttons.
  * @param {string} parentId - The main-container-frame ID
@@ -974,7 +972,10 @@ async function create_button_container(parentId) {
   const params = {
     x: 0,
     y: 0,
+    // width: 0,
+    // height: 32,
     name: "button-container",
+    fillColor: { r: 0, g: 1, b: 1, a: 0.0 }, // transperant fill
     parentId
   };
   const containerResult = await runStep({
@@ -999,6 +1000,8 @@ async function create_button_container(parentId) {
       layout: {
         nodeId: containerId,
         mode: "HORIZONTAL",
+         primaryAxisAlignItems: "CENTER",
+         counterAxisAlignItems: "CENTER",
         itemSpacing: 12
       }
     },
@@ -1009,6 +1012,23 @@ async function create_button_container(parentId) {
     label: "set_auto_layout on button-container"
   });
 
+ 
+  const resizingResult = await runStep({
+    ws, channel,
+    command: "set_auto_layout_resizing",
+    params: {
+      nodeId: containerId,
+      horizontal: "FILL",
+      vertical: "AUTO"
+    },
+    assert: (response) => ({
+      pass: response && response.nodeId === frameId,
+      response
+    }),
+    label: "set_auto_layout_resizing on button-container"
+  });
+
+
   // 3. Create primary and secondary buttons
   const primaryResult = await create_primary_button(containerId);
   const secondaryResult = await create_secondary_button(containerId);
@@ -1016,6 +1036,7 @@ async function create_button_container(parentId) {
   return {
     containerResult,
     layoutResult,
+    resizingResult,
     primaryResult,
     secondaryResult
   };
@@ -1031,6 +1052,8 @@ async function create_primary_button(parentId) {
   const params = {
     x: 0,
     y: 0,
+    width: 0,
+    height: 32,
     name: "primary-button",
     cornerRadius: 8,
     parentId
@@ -1069,16 +1092,19 @@ async function create_primary_button(parentId) {
     label: "set_auto_layout on primary-button"
   });
 
-  // 3. Set auto layout resizing: hug width/height
-  await runStep({
+
+  const resizingResult = await runStep({
     ws, channel,
     command: "set_auto_layout_resizing",
     params: {
       nodeId: buttonId,
       horizontal: "AUTO",
-      vertical: "AUTO"
+      vertical: "FIXED"
     },
-    assert: () => ({ pass: true }),
+    assert: (response) => ({
+      pass: response && response.nodeId === buttonId,
+      response
+    }),
     label: "set_auto_layout_resizing on primary-button"
   });
 
@@ -1090,7 +1116,12 @@ async function create_primary_button(parentId) {
       { position: 0, color: [1, 0.722, 0, 1] },   // #FFB800
       { position: 1, color: [1, 0.541, 0, 1] }    // #FF8A00
     ],
-    transformMatrix: [[1, 0, 0], [0, 1, 0]]
+    // Vertical linear gradient (original)
+    transformMatrix: [
+      [0, 1, 0],     // 90-degree rotation: cos(90°), sin(90°), x-translation
+      [-1, 0, 1]     // -sin(90°), cos(90°), y-translation
+    ]
+    // transformMatrix: [[1, 0, 0], [0, 1, 0]] // horizontal
   };
   const gradientResult = await runStep({
     ws, channel,
@@ -1122,7 +1153,7 @@ async function create_primary_button(parentId) {
     x: 0,
     y: 0,
     text: "Back this project",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 700,
     fontFamily: "Inter",
     fontStyle: "Bold",
@@ -1142,10 +1173,29 @@ async function create_primary_button(parentId) {
     label: "create_primary_button_text"
   });
 
+
+  // const textId = textResult.response?.ids?.[0];
+  // if (!textId) return textResult;
+// 
+  // // 3. Set auto layout resizing: hug width/height
+  // await runStep({
+    // ws, channel,
+    // command: "set_auto_layout_resizing",
+    // params: {
+      // nodeId: textId,
+      // horizontal: "AUTO",
+      // vertical: "AUTO"
+    // },
+    // assert: () => ({ pass: true }),
+    // label: "set_auto_layout_resizing on secondary-button"
+  // });
+
+
   return {
     buttonResult,
     gradientResult,
-    textResult
+    textResult,
+    resizingResult
   };
 }
 
@@ -1159,7 +1209,10 @@ async function create_secondary_button(parentId) {
   const params = {
     x: 0,
     y: 0,
+    width: 0,
+    height: 32,
     name: "secondary-button",
+    fillColor: { r: 1, g: 1, b: 1, a: 0 }, // transperant fill
     cornerRadius: 8,
     strokeColor: { r: 0.333, g: 0.333, b: 0.333, a: 1 }, // #555555
     strokeWeight: 2,
@@ -1199,6 +1252,7 @@ async function create_secondary_button(parentId) {
     label: "set_auto_layout on secondary-button"
   });
 
+
   // 3. Set auto layout resizing: hug width/height
   await runStep({
     ws, channel,
@@ -1206,18 +1260,19 @@ async function create_secondary_button(parentId) {
     params: {
       nodeId: buttonId,
       horizontal: "AUTO",
-      vertical: "AUTO"
+      vertical: "FIXED"
     },
     assert: () => ({ pass: true }),
     label: "set_auto_layout_resizing on secondary-button"
   });
+
 
   // 4. Create the button text
   const textParams = {
     x: 0,
     y: 0,
     text: "Remind me",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 700,
     fontFamily: "Inter",
     fontStyle: "Bold",
@@ -1226,6 +1281,7 @@ async function create_secondary_button(parentId) {
     name: "secondary-button-text",
     parentId: buttonId
   };
+
   const textResult = await runStep({
     ws, channel,
     command: "set_text",
@@ -1237,13 +1293,27 @@ async function create_secondary_button(parentId) {
     label: "create_secondary_button_text"
   });
 
+//  const textId = textResult.response?.ids?.[0];
+//  if (!textId) return textResult;
+//
+//  // 3. Set auto layout resizing: hug width/height
+//  await runStep({
+//    ws, channel,
+//    command: "set_auto_layout_resizing",
+//    params: {
+//      nodeId: textId,
+//      horizontal: "AUTO",
+//      vertical: "AUTO"
+//    },
+//    assert: () => ({ pass: true }),
+//    label: "set_auto_layout_resizing on text"
+//  });
+
   return {
     buttonResult,
     textResult
   };
 }
-
- 
 
 
 /**
@@ -1258,6 +1328,8 @@ export async function layoutBTest(results, parentFrameId) {
   results.push(mainResult);
   const mainContainerFrameId = mainResult.response?.ids?.[0];
   if (!mainContainerFrameId) return;
+
+
 
   // 2. Create progress section
    const sectionResult = await create_progress_section_frame(mainContainerFrameId);
