@@ -124,8 +124,10 @@ irm bun.sh/install.ps1 | iex
 ### Quick Example
 
 ```
+User: Talk to figma on channel "xxxxxxx"
+Agent: Connecting to Figma. Connected on channel "xxxxxxxx"
 User: "Create a responsive navigation bar with our brand color #3366FF and add 5 menu items"
-Claude: [executes commands in Figma and displays the results]
+Agent: [executes commands in Figma and displays the results]
 ```
 
 ### Docs:
