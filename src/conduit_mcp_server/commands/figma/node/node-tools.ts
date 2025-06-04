@@ -101,7 +101,6 @@ Returns:
         const results = [];
         for (const nodeId of nodeIdList) {
           const nodeInfoResult = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId });
-          // nodeInfoResult.content is an array of { type: "text", text: JSON.stringify(node or [node]) }
           let node = null;
           if (
             nodeInfoResult &&
@@ -111,12 +110,21 @@ Returns:
           ) {
             try {
               const parsed = JSON.parse(nodeInfoResult.content[0].text);
-              // The plugin may return an array, a wrapped object, or a direct object
+              // Robust extraction logic:
               if (Array.isArray(parsed)) {
-                node = parsed.length > 0 ? parsed[0] : null;
+                // Array of wrapped objects or direct objects
+                if (parsed.length > 0 && parsed.every(el => el && typeof el === "object" && "document" in el)) {
+                  // Array of wrapped objects: extract all documents
+                  node = parsed.map(el => el.document);
+                } else {
+                  // Array of direct objects or other
+                  node = parsed;
+                }
               } else if (parsed && typeof parsed === "object" && "document" in parsed) {
+                // Single wrapped object
                 node = parsed.document;
               } else if (typeof parsed === "object" && parsed !== null) {
+                // Direct object
                 node = parsed;
               } else {
                 node = null;
@@ -127,16 +135,12 @@ Returns:
           }
           results.push(node);
         }
-        // TEMPORARY: Return the raw value for debugging
+        // Only return the node info array (no debug)
         return {
           content: [
             {
               type: "text",
               text: JSON.stringify(results)
-            },
-            {
-              type: "text",
-              text: "RAW_DEBUG:" + JSON.stringify(results)
             }
           ]
         };
