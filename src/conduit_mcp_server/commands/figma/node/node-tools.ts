@@ -101,7 +101,7 @@ Returns:
         const results = [];
         for (const nodeId of nodeIdList) {
           const nodeInfoResult = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId });
-          // nodeInfoResult.content is an array of { type: "text", text: JSON.stringify([node]) }
+          // nodeInfoResult.content is an array of { type: "text", text: JSON.stringify(node or [node]) }
           let node = null;
           if (
             nodeInfoResult &&
@@ -110,8 +110,15 @@ Returns:
             nodeInfoResult.content[0].type === "text"
           ) {
             try {
-              const arr = JSON.parse(nodeInfoResult.content[0].text);
-              node = arr && arr.length > 0 ? arr[0] : null;
+              const parsed = JSON.parse(nodeInfoResult.content[0].text);
+              // The plugin may return a single object or an array
+              if (Array.isArray(parsed)) {
+                node = parsed.length > 0 ? parsed[0] : null;
+              } else if (typeof parsed === "object" && parsed !== null) {
+                node = parsed;
+              } else {
+                node = null;
+              }
             } catch (e) {
               node = null;
             }
