@@ -96,7 +96,7 @@ Returns:
         } else {
           return { content: [{ type: "text", text: "You must provide either 'nodeId' or 'nodeIds'." }] };
         }
-        logger.debug(`Getting info for ${nodeIdList.length} node(s)`);
+        logger.debug(`💥 Getting info for ${nodeIdList.length} node(s)`);
         // Directly fetch node info for each nodeId
         const results = [];
         for (const nodeId of nodeIdList) {
@@ -108,30 +108,41 @@ Returns:
             nodeInfoResult.content.length > 0 &&
             nodeInfoResult.content[0].type === "text"
           ) {
+            logger.debug(`💥 matches format`);
             try {
               const parsed = JSON.parse(nodeInfoResult.content[0].text);
               // Robust extraction logic:
               if (Array.isArray(parsed)) {
+                logger.debug(`💥 isArray`);
                 // Array of wrapped objects or direct objects
                 if (parsed.length > 0 && parsed.every(el => el && typeof el === "object" && "document" in el)) {
                   // Array of wrapped objects: extract all documents
+                  logger.debug(`💥 isArray len > 0`);
                   node = parsed.map(el => el.document);
                 } else {
                   // Array of direct objects or other
+                  logger.debug(`💥 Array of direct objects or other`);
                   node = parsed;
                 }
               } else if (parsed && typeof parsed === "object" && "document" in parsed) {
                 // Single wrapped object
+                logger.debug(`💥 Single wrapped object`);
                 node = parsed.document;
               } else if (typeof parsed === "object" && parsed !== null) {
                 // Direct object
+                logger.debug(`💥 Direct object`);
                 node = parsed;
               } else {
+                logger.debug(`💥 no match, null`);
                 node = null;
               }
             } catch (e) {
+              logger.debug(`💥 err`);
               node = null;
             }
+          } else {
+            logger.debug(`💥 does not match format`);
+            node = null;
           }
           results.push(node);
         }
