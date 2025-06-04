@@ -104,7 +104,18 @@ Returns:
           let node = null;
           let step = "init";
           try {
+            // NEW: If nodeInfoResult is a wrapped object with nodeId/document, extract directly
             if (
+              nodeInfoResult &&
+              typeof nodeInfoResult === "object" &&
+              "nodeId" in nodeInfoResult &&
+              "document" in nodeInfoResult
+            ) {
+              step = "direct_wrapped";
+              node = nodeInfoResult.document;
+            }
+            // Otherwise, use the previous content array logic
+            else if (
               nodeInfoResult &&
               Array.isArray(nodeInfoResult.content) &&
               nodeInfoResult.content.length > 0 &&
@@ -112,7 +123,6 @@ Returns:
             ) {
               step = "parse";
               const parsed = JSON.parse(nodeInfoResult.content[0].text);
-              // Robust extraction logic:
               if (Array.isArray(parsed)) {
                 step = "array";
                 if (parsed.length > 0 && parsed.every(el => el && typeof el === "object" && "document" in el)) {
