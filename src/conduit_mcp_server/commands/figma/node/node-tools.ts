@@ -111,9 +111,13 @@ Returns:
           ) {
             try {
               const parsed = JSON.parse(nodeInfoResult.content[0].text);
-              // The plugin may return a single object or an array
+              // The plugin may return a single object, an array, or a wrapped object
               if (Array.isArray(parsed)) {
+                // If it's an array of objects, use the first object if present
                 node = parsed.length > 0 ? parsed[0] : null;
+              } else if (parsed && typeof parsed === "object" && "nodeId" in parsed && "document" in parsed) {
+                // If it's a wrapped object with nodeId/document, use as-is
+                node = parsed;
               } else if (typeof parsed === "object" && parsed !== null) {
                 node = parsed;
               } else {
