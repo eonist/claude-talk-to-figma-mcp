@@ -102,16 +102,14 @@ Returns:
         for (const nodeId of nodeIdList) {
           const nodeInfoResult = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId });
           let node = null;
-          let step = "init";
           try {
-            // NEW: If nodeInfoResult is a wrapped object with nodeId/document, extract directly
+            // If nodeInfoResult is a wrapped object with nodeId/document, extract directly
             if (
               nodeInfoResult &&
               typeof nodeInfoResult === "object" &&
               "nodeId" in nodeInfoResult &&
               "document" in nodeInfoResult
             ) {
-              step = "direct_wrapped";
               node = nodeInfoResult.document;
             }
             // Otherwise, use the previous content array logic
@@ -121,33 +119,25 @@ Returns:
               nodeInfoResult.content.length > 0 &&
               nodeInfoResult.content[0].type === "text"
             ) {
-              step = "parse";
               const parsed = JSON.parse(nodeInfoResult.content[0].text);
               if (Array.isArray(parsed)) {
-                step = "array";
                 if (parsed.length > 0 && parsed.every(el => el && typeof el === "object" && "document" in el)) {
-                  step = "array_of_wrapped";
                   node = parsed.map(el => el.document);
                 } else {
-                  step = "array_of_direct";
                   node = parsed;
                 }
               } else if (parsed && typeof parsed === "object" && "document" in parsed) {
-                step = "single_wrapped";
                 node = parsed.document;
               } else if (typeof parsed === "object" && parsed !== null) {
-                step = "direct_object";
                 node = parsed;
               } else {
-                step = "no_match";
-                node = { error: "extraction_error", step, parsed };
+                node = { error: "extraction_error", parsed };
               }
             } else {
-              step = "no_content";
               node = { error: "no_content", nodeInfoResult };
             }
           } catch (e) {
-            node = { error: "parse_error", step, raw: nodeInfoResult && nodeInfoResult.content && nodeInfoResult.content[0] ? nodeInfoResult.content[0].text : null, exception: e instanceof Error ? e.message : String(e) };
+            node = { error: "parse_error", raw: nodeInfoResult && nodeInfoResult.content && nodeInfoResult.content[0] ? nodeInfoResult.content[0].text : null, exception: e instanceof Error ? e.message : String(e) };
           }
           results.push(node);
         }
