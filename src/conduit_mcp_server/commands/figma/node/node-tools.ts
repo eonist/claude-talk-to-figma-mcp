@@ -111,13 +111,11 @@ Returns:
           ) {
             try {
               const parsed = JSON.parse(nodeInfoResult.content[0].text);
-              // The plugin may return a single object, an array, or a wrapped object
+              // The plugin may return an array, a wrapped object, or a direct object
               if (Array.isArray(parsed)) {
-                // If it's an array of objects, use the first object if present
                 node = parsed.length > 0 ? parsed[0] : null;
-              } else if (parsed && typeof parsed === "object" && "nodeId" in parsed && "document" in parsed) {
-                // If it's a wrapped object with nodeId/document, use as-is
-                node = parsed;
+              } else if (parsed && typeof parsed === "object" && "document" in parsed) {
+                node = parsed.document;
               } else if (typeof parsed === "object" && parsed !== null) {
                 node = parsed;
               } else {
@@ -129,11 +127,16 @@ Returns:
           }
           results.push(node);
         }
+        // TEMPORARY: Return the raw value for debugging
         return {
           content: [
             {
               type: "text",
               text: JSON.stringify(results)
+            },
+            {
+              type: "text",
+              text: "RAW_DEBUG:" + JSON.stringify(results)
             }
           ]
         };
