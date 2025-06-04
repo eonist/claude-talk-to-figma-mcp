@@ -96,57 +96,51 @@ Returns:
         } else {
           return { content: [{ type: "text", text: "You must provide either 'nodeId' or 'nodeIds'." }] };
         }
-        logger.debug(`💥 Getting info for ${nodeIdList.length} node(s)`);
+        logger.debug(`Getting info for ${nodeIdList.length} node(s)`);
         // Directly fetch node info for each nodeId
         const results = [];
         for (const nodeId of nodeIdList) {
           const nodeInfoResult = await figmaClient.executeCommand(MCP_COMMANDS.GET_NODE_INFO, { nodeId });
           let node = null;
-          if (
-            nodeInfoResult &&
-            Array.isArray(nodeInfoResult.content) &&
-            nodeInfoResult.content.length > 0 &&
-            nodeInfoResult.content[0].type === "text"
-          ) {
-            logger.debug(`💥 matches format`);
-            try {
+          let step = "init";
+          try {
+            if (
+              nodeInfoResult &&
+              Array.isArray(nodeInfoResult.content) &&
+              nodeInfoResult.content.length > 0 &&
+              nodeInfoResult.content[0].type === "text"
+            ) {
+              step = "parse";
               const parsed = JSON.parse(nodeInfoResult.content[0].text);
               // Robust extraction logic:
               if (Array.isArray(parsed)) {
-                logger.debug(`💥 isArray`);
-                // Array of wrapped objects or direct objects
+                step = "array";
                 if (parsed.length > 0 && parsed.every(el => el && typeof el === "object" && "document" in el)) {
-                  // Array of wrapped objects: extract all documents
-                  logger.debug(`💥 isArray len > 0`);
+                  step = "array_of_wrapped";
                   node = parsed.map(el => el.document);
                 } else {
-                  // Array of direct objects or other
-                  logger.debug(`💥 Array of direct objects or other`);
+                  step = "array_of_direct";
                   node = parsed;
                 }
               } else if (parsed && typeof parsed === "object" && "document" in parsed) {
-                // Single wrapped object
-                logger.debug(`💥 Single wrapped object`);
+                step = "single_wrapped";
                 node = parsed.document;
               } else if (typeof parsed === "object" && parsed !== null) {
-                // Direct object
-                logger.debug(`💥 Direct object`);
+                step = "direct_object";
                 node = parsed;
               } else {
-                logger.debug(`💥 no match, null`);
-                node = null;
+                step = "no_match";
+                node = { error: "extraction_error", step, parsed };
               }
-            } catch (e) {
-              logger.debug(`💥 err`);
-              node = null;
+            } else {
+              step = "no_content";
+              node = { error: "no_content", nodeInfoResult };
             }
-          } else {
-            logger.debug(`💥 does not match format`);
-            node = null;
+          } catch (e) {
+            node = { error: "parse_error", step, raw: nodeInfoResult && nodeInfoResult.content && nodeInfoResult.content[0] ? nodeInfoResult.content[0].text : null, exception: e instanceof Error ? e.message : String(e) };
           }
           results.push(node);
         }
-        // Only return the node info array (no debug)
         return {
           content: [
             {
